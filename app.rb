@@ -47,14 +47,14 @@ post '/' do
   text = request.body.read
   
   # Before we do anything, verify the message wasn't tampered with
-  # verify = Encryption::decrypt(text)
+  verify = Encryption::decrypt()
   
-  # if(!verify)
-  #   db['updates'].insert({
-  #     :title => "Failed to verify update",
-  #     :timestamp => Time.now.to_i,
-  #     :message => text
-  #     })
+  if(!verify)
+    db['updates'].insert({
+      :title => "Failed to verify update",
+      :timestamp => Time.now.to_i,
+      :message => text
+      })
     
   #   return
   # end
