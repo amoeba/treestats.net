@@ -159,8 +159,8 @@ module Character
           "name" => "summoning", "base" => "???", "training" => "???"
         }
       },
-      "created_at" => Time.now,
-      "updated_at" => Time.now
+      "created_at" => Time.now.to_i,
+      "updated_at" => Time.now.to_i
     }
 
     values.merge(blank)
