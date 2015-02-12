@@ -68,7 +68,7 @@ post '/' do
   # Updates
 
   # Check in the update
-  db['updates'].insert(json_text.merge!({ :timestamp => Time.now.to_i }))
+  db['updates'].insert(json_text.merge({ :timestamp => Time.now.to_i }))
 
 
   # Server Populations
