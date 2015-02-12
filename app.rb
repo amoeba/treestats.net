@@ -99,17 +99,11 @@ post '/' do
 
   # Replace character if found, otherwise create
   if(db['characters'].find({:server => server, :name => name}).count > 0)
-    db['characters'].update({
-      :server => server, :name => name},
-      json_text.tap { |h| h.delete(:_id)}.merge!({ :updated_at => Time.now.to_i })
-  )
+    db['characters'].update({:server => server, :name => name}, Character.create(json_text))
   else
-    db['characters'].insert(
-      json_text.merge!({
-        :created_at => Time.now.to_i,
-        :updated_at => Time.now.to_i
-        }))
+    db['characters'].insert(Character.create(json_text))
   end
+
 
   # Add any monarchs/patrons/vassals we don't already know about
 
