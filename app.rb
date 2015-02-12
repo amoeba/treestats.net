@@ -92,14 +92,11 @@ post '/' do
   # Handle character create/update logic
   name = json_text['name']
 
-  # Pre-process "birth" field so it's stored as UNIX time
-  puts json_text['birth']
-  puts json_text['birth'].class
-  
-  puts Time.strptime(json_text['birth'].to_s, "%m/%d/%Y %H:%M:%S %p")
-  
-  json_text['birth'] = Time.strptime(json_text['birth'].to_s, "%m/%d/%Y %H:%M:%S %p").to_i
-  
+  # Pre-process "birth" field so it's stored as UNIX time with GMT-5
+  if(json_text.has_key?("birth"))
+    json_text['birth'] = Time.strptime(json_text['birth'].to_s + " -5", "%m/%d/%Y %H:%M:%S %p %z").to_i
+  end
+
   # Replace character if found, otherwise create
   if(db['characters'].find({:server => server, :name => name}).count > 0)
     db['characters'].update({
