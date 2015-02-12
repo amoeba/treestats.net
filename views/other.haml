@@ -13,4 +13,8 @@
         %tr
           %td
             %a{:href => "/#{character['server']}/#{character['name']}"}= "#{character['name']} (#{character['server']})"
-          %td= params[:other] == "birth" ? Time.at(character[params[:other]]) : character[params[:other]]
+          %td
+            - if(params[:other] == "birth" && character[params[:other]] == "???")
+              = Time.at(character[params[:other]])
+            - else
+              = character[params[:other]]
