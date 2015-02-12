@@ -1,0 +1,225 @@
+<h2 class="title">
+  <%= "#{@character['name']} (#{@character['server']})" %>
+</h2>
+<%= @tree.inspect %>
+<% #%p= "Created: #{@character["created_at}" %>
+<% #%p= "Last Updated: #{@character["updated_at}" %>
+<table class="char">
+  <tbody>
+    <tr class="line">
+      <td class="tab" colspan="2">Attributes</td>
+    </tr>
+    <tr class="header">
+      <td class="center">
+        <span class="name">
+          <%= "#{@character['title']} #{@character['name']}" %>
+        </span>
+        <span class="block">
+          <%= "#{@character['gender']} #{@character['race']} #{@character['class_template']}" %>
+        </span>
+        <span class="block">Non-Player Killer</span>
+      </td>
+      <td class="center">
+        <span class="block">Character</span>
+        <span class="block">Level</span>
+        <span class="block level">
+          <%= @character["level"] %>
+        </span>
+      </td>
+    </tr>
+    <tr class="line header">
+      <td class="internal" colspan="2">
+        <table class="internal">
+          <tbody>
+            <tr>
+              <td class="internal">
+                <span>Total Experience (XP):</span>
+              </td>
+              <td class="internal right">
+                <span>
+                  <%= add_commas(@character["total_xp"].to_s) %>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>Strength</td>
+      <td class="right">
+        <span class="creation">
+          <%= "(#{@character["attributes"]["strength"]["creation"]}) " %>
+        </span>
+        <%= @character["attributes"]["strength"]["base"] %>
+      </td>
+    </tr>
+    <tr>
+      <td>Endurance</td>
+      <td class="right">
+        <span class="creation">
+          <%= "(#{@character["attributes"]["endurance"]["creation"]}) " %>
+        </span>
+        <%= @character["attributes"]["endurance"]["base"] %>
+      </td>
+    </tr>
+    <tr>
+      <td>Coordination</td>
+      <td class="right">
+        <span class="creation">
+          <%= "(#{@character["attributes"]["coordination"]["creation"]}) " %>
+        </span>
+        <%= @character["attributes"]["coordination"]["base"] %>
+      </td>
+    </tr>
+    <tr>
+      <td>Quickness</td>
+      <td class="right">
+        <span class="creation">
+          <%= "(#{@character["attributes"]["quickness"]["creation"]}) " %>
+        </span>
+        <%= @character["attributes"]["quickness"]["base"] %>
+      </td>
+    </tr>
+    <tr>
+      <td>Focus</td>
+      <td class="right">
+        <span class="creation">
+          <%= "(#{@character["attributes"]["focus"]["creation"]}) " %>
+        </span>
+        <%= @character["attributes"]["focus"]["base"] %>
+      </td>
+    </tr>
+    <tr>
+      <td>Self</td>
+      <td class="right">
+        <span class="creation">
+          <%= "(#{@character["attributes"]["self"]["creation"]}) " %>
+        </span>
+        <%= @character["attributes"]["self"]["base"] %>
+      </td>
+    </tr>
+    <tr>
+      <td>Health</td>
+      <td class="right">
+        <%= "#{@character["vitals"]["health"]} / #{@character["vitals"]["health"]}" %>
+      </td>
+    </tr>
+    <tr>
+      <td>Stamina</td>
+      <td class="right">
+        <%= "#{@character["vitals"]["stamina"]} / #{@character["vitals"]["stamina"]}" %>
+      </td>
+    </tr>
+    <tr class="line">
+      <td>Mana</td>
+      <td class="right">
+        <%= "#{@character["vitals"]["mana"]} / #{@character["vitals"]["mana"]}" %>
+      </td>
+    </tr>
+    <tr class="header">
+      <td class="internal" colspan="2">
+        <table class="internal">
+          <tbody>
+            <tr>
+              <td class="internal">
+                <span>Unassigned Experience:</span>
+              </td>
+              <td class="internal right">
+                <span>
+                  <%= add_commas(@character["unassigned_xp"].to_s) %>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<table class="char">
+  <tbody>
+    <tr class="line">
+      <td class="tab" colspan="2">Skills</td>
+    </tr>
+    <tr>
+      <td class="specialized" colspan="2">Specialized Skills</td>
+    </tr>
+    <% @character['skills'].select { |key,value| value['training'] == "Specialized"}.sort.each do |skill| %>
+      <tr>
+        <td>
+          <%= skill[1]["name"].split("_").map(&:capitalize).join(" ") %>
+        </td>
+        <td class="right">
+          <%= skill[1]["base"] %>
+        </td>
+      </tr>
+    <% end %>
+    <tr>
+      <td class="trained" colspan="2">Trained Skills</td>
+    </tr>
+    <% @character['skills'].select { |key,value| value['training'] == "Trained"}.sort.each do |skill| %>
+      <tr>
+        <td>
+          <%= skill[1]["name"].split("_").map(&:capitalize).join(" ") %>
+        </td>
+        <td class="right">
+          <%= skill[1]["base"] %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<table class="char">
+  <tbody>
+    <tr class="line">
+      <td class="tab" colspan="4">Allegiance</td>
+    </tr>
+    <tr>
+      <td class="center" colspan="4">
+        <%= @character["allegiance"] %>
+      </td>
+    </tr>
+    <tr class="line">
+      <td colspan="2">
+        <%= "Followers: #{@character['followers']}" %>
+      </td>
+      <td colspan="2">
+        <%= "Rank: #{@character['rank']}" %>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4">MONARCH</td>
+    </tr>
+    <tr>
+      <td colspan="4">
+        <%= "#{@character['monarch']['title']} #{@character['monarch']['name']}" if @character['monarch'] %>
+      </td>
+    </tr>
+    <tr class="line">
+      <td colspan="4">
+        <%= "Followers: #{@character["monarch"]["followers"]}" if @character["monarch"] %>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4">PATRON</td>
+    </tr>
+    <tr class="line">
+      <td colspan="4">
+        <%= "#{@character['patron']['title']} #{@character['patron']['name']}" if @character['patron'] %>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4">VASSALS</td>
+    </tr>
+    <% if @character["vassals"] %>
+      <% @character["vassals"].each do |vassal| %>
+        <tr>
+          <td class="vassal" colspan="4">
+            <%= "#{vassal['title']} #{vassal["name"]}" %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>

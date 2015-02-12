@@ -1,0 +1,16 @@
+-if @characters.count == 0
+  %span Couldn't find any characters for this ranking.
+- else
+  %h2.title= params[:other].split("_").map(&:capitalize).join(" ")
+
+  %table
+    %thead
+      %tr
+        %th Character
+        %th= params[:other].split("_").map(&:capitalize).join(" ")
+    %tbody
+      - @characters.to_a.each do |character|
+        %tr
+          %td
+            %a{:href => "/#{character['server']}/#{character['name']}"}= "#{character['name']} (#{character['server']})"
+          %td= params[:other] == "birth" ? Time.at(character[params[:other]]) : character[params[:other]]

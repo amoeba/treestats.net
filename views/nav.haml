@@ -1,0 +1,124 @@
+%h2 Navigation
+
+%ul
+  %li
+    %a{:href => "/"} Front
+  %li
+    %a{:href => "/servers/"} Servers
+  %li
+    %a{:href => "/characters/"} Characters
+  %li
+    %a{:href => "/serverpops/"} Server Populations
+
+%h2 Servers
+
+%ul
+  %li
+    %a{:href => "/Darktide/"} Darktide
+  %li
+    %a{:href => "/Frostfell/"} Frostfell
+  %li
+    %a{:href => "/Harvestgain/"} Harvestgain
+  %li
+    %a{:href => "/Leafcull"} Leafcull
+  %li
+    %a{:href => "/Morningthaw/"} Morningthaw
+  %li
+    %a{:href => "/Thistledown/"} Thistledown
+  %li
+    %a{:href => "/Solclaim/"} Solclaim
+  %li
+    %a{:href => "/Verdantine/"} Verdantine
+  %li
+    %a{:href => "/WintersEbb/"} WintersEbb
+
+%h2 Attribute Rankings
+
+%form{:action => '/rankings', :method => 'get'}
+  %select{:name => 'server'}
+    %option{:value => "All"} All Servers
+    %option{:value => "Darktide"} Darktide
+    %option{:value => "Frostfell"} Frostfell
+    %option{:value => "Harvestgain"} Harvestgain
+    %option{:value => "Leafcull"} Leafcull
+    %option{:value => "Morningthaw"} Morningthaw
+    %option{:value => "Thistledown"} Thistledown
+    %option{:value => "Solclaim"} Solclaim
+    %option{:value => "WintersEbb"} WintersEbb
+  %select{:name => 'sort'}
+    %option{:value => 'attributes.strength.base'} Strength
+    %option{:value => 'attributes.endurance.base'} Endurance
+    %option{:value => 'attributes.coordination.base'} Coordination
+    %option{:value => 'attributes.quickness.base'} Quickness
+    %option{:value => 'attributes.focus.base'} Focus
+    %option{:value => 'attributes.self.base'} Self
+    %option{:value => 'vitals.health.base'} Health
+    %option{:value => 'vitals.stamina.base'} Stamina
+    %option{:value => 'vitals.mana.base'} Mana
+  %input{:type => 'submit'}
+
+%h2 Skill Rankings
+
+%form{:action => '/rankings', :method => 'get'}
+  %select{:name => 'server'}
+    %option{:value => "All"} All Servers
+    %option{:value => "Darktide"} Darktide
+    %option{:value => "Frostfell"} Frostfell
+    %option{:value => "Harvestgain"} Harvestgain
+    %option{:value => "Leafcull"} Leafcull
+    %option{:value => "Morningthaw"} Morningthaw
+    %option{:value => "Thistledown"} Thistledown
+    %option{:value => "Solclaim"} Solclaim
+    %option{:value => "WintersEbb"} WintersEbb
+  %select{:name => 'sort'}
+    %option{:value => 'skills.alchemy.base'} Alchemy
+    %option{:value => 'skills.arcane_lore.base'} Arcane Lore
+    %option{:value => 'skills.armor_tinkering.base'} Armor Tinkering
+    %option{:value => 'skills.assess_creature.base'} Assess Creature
+    %option{:value => 'skills.assess_person.base'} Assess Person
+    %option{:value => 'skills.cooking.base'} Cooking
+    %option{:value => 'skills.creature_enchantment.base'} Creature Enchantment
+    %option{:value => 'skills.deception.base'} Deception
+    %option{:value => 'skills.dirty_fighting.base'} Dirty Fighting
+    %option{:value => 'skills.dual_wield.base'} Dual Wield
+    %option{:value => 'skills.fletching.base'} Fletching
+    %option{:value => 'skills.finesse_weapons.base'} Finesse Weapons
+    %option{:value => 'skills.healing.base'} Healing
+    %option{:value => 'skills.heavy_weapons.base'} Heavy Weapons
+    %option{:value => 'skills.item_enchantment.base'} Item Enchantment
+    %option{:value => 'skills.item_inkering.base'} Item Tinkering
+    %option{:value => 'skills.jump.base'} Jump
+    %option{:value => 'skills.headership.base'} Leadership
+    %option{:value => 'skills.life_magic.base'} Life Magic
+    %option{:value => 'skills.light_weapons.base'} Light Weapons
+    %option{:value => 'skills.lockpick.base'} Lockpick
+    %option{:value => 'skills.loyalty.base'} Loyalty
+    %option{:value => 'skills.magic_efense.base'} Magic Defense
+    %option{:value => 'skills.magic_item_tinkering.base'} Magic Item Tinkering
+    %option{:value => 'skills.mana_conversion.base'} Mana Conversion
+    %option{:value => 'skills.melee_defense.base'} Melee Defense
+    %option{:value => 'skills.missile_defense.base'} Missile Defense
+    %option{:value => 'skills.missile_weapons.base'} Missile Weapons
+    %option{:value => 'skills.recklessness.base'} Recklessness
+    %option{:value => 'skills.run.base'} Run
+    %option{:value => 'skills.salvaging.base'} Salvaging
+    %option{:value => 'skills.shield.base'} Shield
+    %option{:value => 'skills.sneak_attack.base'} Sneak Attack
+    %option{:value => 'skills.two_handed_combat.base'} Two Handed Combat
+    %option{:value => 'skills.void_magic.base'} Void Magic
+    %option{:value => 'skills.war_magic.base'} War Magic
+    %option{:value => 'skills.weapon_tinkering.base'} Weapon Tinkering
+    %option{:value => 'skills.summoning.base'} Summoning
+  %input{:type => 'submit'}
+
+
+
+%h2 Other Rankings
+
+%ul
+  %li
+    %a{:href => '/other/birth'} Oldest Char
+  %li
+    %a{:href => '/other/deaths'} Most Deaths
+  %li
+    %a{:href => '/other/unassigned_xp'} Unassigned XP

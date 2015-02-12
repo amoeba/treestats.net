@@ -1,0 +1,25 @@
+- if @characters.count == 0
+  %span Couldn't find any characters for this ranking.
+- else
+  %h2.title Rankings
+
+  %p
+    %b Server:
+    = params[:server]
+  %p
+    %b= "#{@tokens[0].capitalize.chop!}:"
+    = @tokens[1].split("_").map(&:capitalize).join(" ")
+
+  %table
+    %thead
+      %tr
+        %th Name
+        %th= @tokens[1].split("_").map(&:capitalize).join(" ")
+    %tbody
+    
+      - @characters.to_a.each do |c|
+        %tr
+          %td
+            %a{:href => "/#{c['server']}/#{c['name']}"}= "#{c['name']} (#{c['server']})"
+          %td= "#{c[@tokens[0]][@tokens[1]][@tokens[2]]}"
+          

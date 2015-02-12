@@ -1,0 +1,15 @@
+%h2.title Characters
+
+- if @characters.count == 0
+  %span There are no characters to display.
+- else
+  %span
+    There
+    = @characters.count > 1 ? "are" : "is"
+    = "#{@characters.count} character#{@characters.count > 1 ? "s" : ""}"
+    in the database.
+
+  %ul
+    - @characters.each do |c|
+      %li
+        %a{:href => "/#{c['server']}/#{c['name']}"}= "#{c['name']} (#{c['server']})"

@@ -1,0 +1,294 @@
+{
+    "key": "WintersEbb-TreeTest4",
+    "name": "TreeTest4",
+    "race": "Sho",
+    "gender": "Male",
+    "class_template": "Vagabond",
+    "level": 100,
+    "rank": 2,
+    "title": "Jinin",
+    "followers": "2",
+    "server": "WintersEbb",
+    "server_population": 100,
+    "deaths": 0,
+    "birth": "1/1/1999 00:00:00 PM",
+    "total_xp": 100,
+    "unassigned_xp": 100,
+    "attributes": {
+        "strength": {
+            "name": "Strength",
+            "base": 100,
+            "creation": 10
+        },
+        "endurance": {
+            "name": "Endurance",
+            "base": 100,
+            "creation": 10
+        },
+        "quickness": {
+            "name": "Quickness",
+            "base": 100,
+            "creation": 100
+        },
+        "coordination": {
+            "name": "Coordination",
+            "base": 100,
+            "creation": 100
+        },
+        "focus": {
+            "name": "Focus",
+            "base": 100,
+            "creation": 100
+        },
+        "self": {
+            "name": "Self",
+            "base": 100,
+            "creation": 10
+        }
+    },
+    "vitals": {
+        "health": {
+          "name" : "Health",
+          "base" : 100
+        },
+        "stamina": {
+          "name" : "Stamina",
+          "base" : 100
+        },
+        "mana": {
+          "name" : "Mana",
+          "base" : 100
+        }
+    },
+    "skills": {
+        "melee_defense": {
+            "name": "melee_defense",
+            "base": 274,
+            "training": "Specialized"
+        },
+        "missile_defense": {
+            "name": "missile_defense",
+            "base": 84,
+            "training": "Untrained"
+        },
+        "arcane_lore": {
+            "name": "arcane_lore",
+            "base": 68,
+            "training": "Trained"
+        },
+        "magic_defense": {
+            "name": "magic_defense",
+            "base": 212,
+            "training": "Specialized"
+        },
+        "mana_conversion": {
+            "name": "mana_conversion",
+            "base": 48,
+            "training": "Trained"
+        },
+        "item_tinkering": {
+            "name": "item_tinkering",
+            "base": 210,
+            "training": "Untrained"
+        },
+        "assess_person": {
+            "name": "assess_person",
+            "base": 0,
+            "training": "Untrained"
+        },
+        "deception": {
+            "name": "deception",
+            "base": 0,
+            "training": "Untrained"
+        },
+        "healing": {
+            "name": "healing",
+            "base": 147,
+            "training": "Trained"
+        },
+        "jump": {
+            "name": "jump",
+            "base": 240,
+            "training": "Trained"
+        },
+        "lockpick": {
+            "name": "lockpick",
+            "base": 0,
+            "training": "Unusable"
+        },
+        "run": {
+            "name": "run",
+            "base": 282,
+            "training": "Trained"
+        },
+        "assess_creature": {
+            "name": "assess_creature",
+            "base": 0,
+            "training": "Untrained"
+        },
+        "weapon_tinkering": {
+            "name": "weapon_tinkering",
+            "base": 145,
+            "training": "Untrained"
+        },
+        "armor_tinkering": {
+            "name": "armor_tinkering",
+            "base": 145,
+            "training": "Untrained"
+        },
+        "magic_item_tinkering": {
+            "name": "magic_item_tinkering",
+            "base": 190,
+            "training": "Untrained"
+        },
+        "creature_enchantment": {
+            "name": "creature_enchantment",
+            "base": 0,
+            "training": "Unusable"
+        },
+        "item_enchantment": {
+            "name": "item_enchantment",
+            "base": 73,
+            "training": "Trained"
+        },
+        "life_magic": {
+            "name": "life_magic",
+            "base": 0,
+            "training": "Unusable"
+        },
+        "war_magic": {
+            "name": "war_magic",
+            "base": 0,
+            "training": "Unusable"
+        },
+        "leadership": {
+            "name": "leadership",
+            "base": 0,
+            "training": "Untrained"
+        },
+        "loyalty": {
+            "name": "loyalty",
+            "base": 75,
+            "training": "Trained"
+        },
+        "fletching": {
+            "name": "fletching",
+            "base": 205,
+            "training": "Trained"
+        },
+        "alchemy": {
+            "name": "alchemy",
+            "base": 0,
+            "training": "Unusable"
+        },
+        "cooking": {
+            "name": "cooking",
+            "base": 0,
+            "training": "Unusable"
+        },
+        "salvaging": {
+            "name": "salvaging",
+            "base": 5,
+            "training": "Trained"
+        },
+        "two_handed_combat": {
+            "name": "two_handed_combat",
+            "base": 110,
+            "training": "Untrained"
+        },
+        "void_magic": {
+            "name": "void_magic",
+            "base": 0,
+            "training": "Unusable"
+        },
+        "heavy_weapons": {
+            "name": "heavy_weapons",
+            "base": 110,
+            "training": "Untrained"
+        },
+        "light_weapons": {
+            "name": "light_weapons",
+            "base": 110,
+            "training": "Untrained"
+        },
+        "finesse_weapons": {
+            "name": "finesse_weapons",
+            "base": 140,
+            "training": "Untrained"
+        },
+        "missile_weapons": {
+            "name": "missile_weapons",
+            "base": 294,
+            "training": "Specialized"
+        },
+        "shield": {
+            "name": "shield",
+            "base": 165,
+            "training": "Untrained"
+        },
+        "dual_wield": {
+            "name": "dual_wield",
+            "base": 153,
+            "training": "Untrained"
+        },
+        "recklessness": {
+            "name": "recklessness",
+            "base": 187,
+            "training": "Trained"
+        },
+        "sneak_attack": {
+            "name": "sneak_attack",
+            "base": 0,
+            "training": "Unusable"
+        },
+        "dirty_fighting": {
+            "name": "dirty_fighting",
+            "base": 0,
+            "training": "Unusable"
+        },
+        "summoning": {
+            "name": "summoning",
+            "base": 0,
+            "training": "Unusable"
+        }
+    },
+    "monarch": {
+        "name": "TreeTest3",
+        "race": "Sho",
+        "rank": 1,
+        "title": "Jo-Chueh",
+        "gender": "Male",
+        "followers": 1
+    },
+    "patron": {
+        "name": "TreeTest3",
+        "race": "Sho",
+        "rank": 1,
+        "title": "Jinin",
+        "gender": "Male",
+        "followers": 1
+    },
+    "vassals": [
+      {
+          "name": "TreeTest5",
+          "race": "Sho",
+          "rank": 1,
+          "title": "Jinin",
+          "gender": "Male"
+      },
+      {
+          "name": "TreeTest4-1",
+          "race": "Sho",
+          "rank": 1,
+          "title": "Jinin",
+          "gender": "Male"
+      },
+      {
+          "name": "TreeTest4-2",
+          "race": "Sho",
+          "rank": 1,
+          "title": "Jinin",
+          "gender": "Male"
+      }
+    ]
+}
