@@ -56,8 +56,8 @@ post '/' do
       :message => text
       })
     
-  #   return
-  # end
+    return
+  end
   
   # Parse message
   json_text = JSON.parse(text)
@@ -113,12 +113,9 @@ post '/' do
     monarch = db['characters'].find({:name => monarch_name, :server => server})
 
     if(monarch.count == 0)
-      newchar = Character.create({
-        'name' => monarch_name,
-        'server' => server
-        })
+      newchar = Character.create({'name' => monarch_name, 'server' => server})
 
-        db['characters'].insert(newchar)
+      db['characters'].insert(newchar)
     end
   end
 
@@ -208,7 +205,6 @@ post '/' do
   end
 
   # RESPOND
-  #########
   ""
 end
 
