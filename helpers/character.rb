@@ -1,6 +1,8 @@
 module Character
   def self.create(values = {}, options = {})
     blank = {
+      "name" => "???",
+      "server" => "???",
       "race" => "???",
       "gender" => "???",
       "class_template" => "???",
@@ -163,6 +165,6 @@ module Character
       "updated_at" => Time.now.to_i
     }
 
-    values.merge(blank)
+    blank.merge(values)
   end
 end
