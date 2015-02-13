@@ -16,5 +16,7 @@
           %td
             - if(params[:other] == "birth" && character[params[:other]] == "???")
               = Time.at(character[params[:other]])
+            - elsif(params["other"] == "unassigned_xp")
+              = add_commas(character[params[:other]].to_i.to_s)
             - else
               = character[params[:other]]
