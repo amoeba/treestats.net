@@ -11,16 +11,16 @@ popchart.add = function(selector, server, data)
     'population' : d.population};
   });
   
-var customTimeFormat = d3.time.format.multi([
-  [".%L", function(d) { return d.getMilliseconds(); }],
-  [":%S", function(d) { return d.getSeconds(); }],
-  ["%I:%M", function(d) { return d.getMinutes(); }],
-  ["%I %p", function(d) { return d.getHours(); }],
-  ["%a %d", function(d) { return d.getDay() && d.getDate() != 1; }],
-  ["%b %d", function(d) { return d.getDate() != 1; }],
-  ["%B", function(d) { return d.getMonth(); }],
-  ["%Y", function() { return true; }]
-]);
+  var customTimeFormat = d3.time.format.multi([
+    [".%L", function(d) { return d.getMilliseconds(); }],
+    [":%S", function(d) { return d.getSeconds(); }],
+    ["%I:%M", function(d) { return d.getMinutes(); }],
+    ["%I %p", function(d) { return d.getHours(); }],
+    ["%a %d", function(d) { return d.getDay() && d.getDate() != 1; }],
+    ["%b %d", function(d) { return d.getDate() != 1; }],
+    ["%B", function(d) { return d.getMonth(); }],
+    ["%Y", function() { return true; }]
+  ]);
   
   var margin = { 'top' : 20, 'right' : 20, 'bottom' : 50, 'left' : 60 },
       width = 300,
