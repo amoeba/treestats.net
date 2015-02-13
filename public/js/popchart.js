@@ -22,7 +22,7 @@ popchart.add = function(selector, server, data)
     ["%Y", function() { return true; }]
   ]);
   
-  var margin = { 'top' : 20, 'right' : 20, 'bottom' : 50, 'left' : 60 },
+  var margin = { 'top' : 35, 'right' : 15, 'bottom' : 30, 'left' : 45 },
       width = 300,
       height = 150;
     
@@ -99,10 +99,6 @@ popchart.add = function(selector, server, data)
     .attr("class", "x axis")
     .attr("transform", "translate(0, " + height + ")")
     .call(xAxis)
-    .append("text")
-      .text("Date")
-      .attr("text-anchor", "middle")
-      .attr("transform", "translate(" + width / 2 + ",35)")
     
   // Add y axis
   svg.append("g")
@@ -110,9 +106,10 @@ popchart.add = function(selector, server, data)
     .attr("transform", "translate(0,0)")
     .call(yAxis)
     .append("text")
+      .attr("class", "axislabel")
       .text("Players")
-      .attr("text-anchor", "middle")
-      .attr("transform", "translate(-35," + height/ 2 + "),rotate(-90)")
+      .attr("text-anchor", "end")
+      .attr("transform", "translate(0,-15)")
     
   //Add lines
   var line = d3.svg.line()
