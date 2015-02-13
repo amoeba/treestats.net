@@ -39,10 +39,6 @@ end
 post '/' do
   # TODO
   # Catch failed parse
-  # Add all monarchs/patrons/vassals as stubs when you update
-  #   This will fix tree code and make the site more full anyway
-  #   SUBTODO: Adjust character, rankings, and any other views to be tolerant of this
-  # Response
 
   text = request.body.read
   
