@@ -115,10 +115,19 @@
 
 %h2 Other Rankings
 
-%ul
-  %li
-    %a{:href => '/other/birth'} Oldest Char
-  %li
-    %a{:href => '/other/deaths'} Most Deaths
-  %li
-    %a{:href => '/other/unassigned_xp'} Unassigned XP
+%form{:action => '/rankings', :method => 'get'}
+  %select{:name => 'server'}
+    %option{:value => "All"} All Servers
+    %option{:value => "Darktide"} Darktide
+    %option{:value => "Frostfell"} Frostfell
+    %option{:value => "Harvestgain"} Harvestgain
+    %option{:value => "Leafcull"} Leafcull
+    %option{:value => "Morningthaw"} Morningthaw
+    %option{:value => "Thistledown"} Thistledown
+    %option{:value => "Solclaim"} Solclaim
+    %option{:value => "WintersEbb"} WintersEbb
+  %select{:name => 'sort'}
+    %option{:value => 'birth'} Oldest Char
+    %option{:value => 'deaths'} Most Deaths
+    %option{:value => 'unassigned_xp'} Unassigned XP
+  %input{:type => 'submit'}
