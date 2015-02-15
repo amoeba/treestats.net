@@ -1,6 +1,5 @@
 class Tree
-  def initialize(db, server, name)
-    @db = db
+  def initialize(server, name)
     @server = server
     @name = name
   end
@@ -19,30 +18,25 @@ class Tree
     highest_patron = nil
 
     # Find the character
-    character = @db['characters'].find({:server => @server, :name => @name})
+    character = Character.find_by(server: @server, name: @name)
 
     # Return early if we're done
-    return nil if character.count != 1
-
-    # Grab the character directly
-    character = character.to_a[0]
+    return nil if character.nil?
 
     # Return early if no patron
-    return character['name'] if !character['patron']
-
-    highest_patron = character['patron']['name']
-
+    return character.name if !character.patron
+    
+    highest_patron = character.patron['name']
+    
     # Do the finding
-    patron = @db['characters'].find({:server => @server, :name => character['patron']['name']}) if character['patron']
-
+    patron = Character.find_by(server: @server, name: highest_patron)
+    
     # Trarverse upward toward the ultimate patron
-    while patron.count == 1
-      patron = patron.to_a[0]
+    while patron
+      highest_patron = patron.name
 
-      highest_patron = patron['name']
-
-      if !patron['patron'].nil?
-        patron = @db['characters'].find({:server => @server, :name => patron['patron']['name']})
+      if(patron.patron)
+        patron = Character.find_by(server: @server, name: patron.patron.name)
       else
         return highest_patron
       end
@@ -52,13 +46,11 @@ class Tree
   end
 
   def walk_tree(current)
-    character = @db['characters'].find({:server => @server, :name => current['name']})
-
-    return if character.count != 1
+    character = Character.find_by(server: @server, name: current['name'])
     
-    character = character.to_a[0]
+    return if character.nil?
 
-    if !character['vassals'].nil?
+    if(character['vassals'])
       current.merge!({'children' => []})
 
       character['vassals'].each_with_index do |vassal, i|
