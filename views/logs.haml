@@ -1,0 +1,17 @@
+%h2.title Logs
+
+- if @logs.length < 1
+  No logs to display
+-else 
+  %table
+    %thead
+      %tr
+        %td Time
+        %td Title
+        %td Message
+    %tbody
+      - @logs.each do |log|
+        %tr
+          %td ...time
+          %td= log.title
+          %td= log.message
