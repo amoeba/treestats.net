@@ -1,0 +1,22 @@
+development:
+  sessions:
+    default:
+      database: treestats-dev
+      hosts:
+        - localhost:27017
+
+test:
+  sessions:
+    default:
+      database: treestats-test
+      hosts:
+        - localhost:27017
+        
+production:
+  sessions:
+    default:
+      hosts:
+        - <%= ENV['MONGO_HOST']:<%= ENV['MONGO_PORT'] %>
+      database: <%= ENV['MONGO_DB'] %>
+      username: <%= ENV['MONGO_USER'] %>
+      password: <%= ENV['MONGO_PASS'] %>
