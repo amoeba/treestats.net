@@ -2,6 +2,7 @@
 # egdb.users.find({age:18}, {name:1})
 
 Dir["./helpers/*.rb"].each { |file| require file }
+Dir["./models/*.rb"].each { |file| require file }
 
 module Treestats
   class App < Sinatra::Base
