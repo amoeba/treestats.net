@@ -10,219 +10,285 @@ module Treestats
       Mongoid.load!("./config/mongoid.yml")
     end
 
-
-  # Pre-process "birth" field so it's stored as UNIX time with GMT-5
-  if(json_text.has_key?("birth"))
-    json_text['birth'] = Time.strptime(json_text['birth'].to_s + " -5", "%m/%d/%Y %H:%M:%S %p %z").to_i
-  end
-
-  # Replace character if found, otherwise create
-  if(db['characters'].find({:server => server, :name => name}).count > 0)
-    db['characters'].update({:server => server, :name => name}, Character.create(json_text))
-  else
-    db['characters'].insert(Character.create(json_text))
-  end
-
-
-  # Add any monarchs/patrons/vassals we don't already know about
-
-  # Monarch
-  if(json_text['monarch'])
-    monarch_name = json_text['monarch']['name']
-    monarch = db['characters'].find({:name => monarch_name, :server => server})
-
-    if(monarch.count == 0)
-      newchar = Character.create({'name' => monarch_name, 'server' => server})
-
-      db['characters'].insert(newchar)
+    not_found do
+      haml :not_found
     end
-  end
 
-  # Patron
-  if(json_text['patron'])
-    patron_name = json_text['patron']['name']
-    patron = db['characters'].find({:name => patron_name, :server => server})
+    get '/' do
+      haml :index
+    end
 
-    # Patron record doesn't already exist
-    if(patron.count == 0)
-      newchar = Character::create({
-        'name' => patron_name,
-        'server' => server,
-        'vassals' => [{
-          'name' => name,
-          'race' => json_text['race'],
-          'rank' => json_text['rank'],
-          'title' => json_text['title'],
-          'gender' => json_text['gender']
-          }]
-      })
+    post '/' do
+      # TODO
+      # Catch failed parse
 
+      text = request.body.read
+      
+      # Parse message
+      json_text = JSON.parse(text)
+      
+      # Updates
+
+      # Check in the update
+      # OLD db['updates'].insert(json_text.merge({ :timestamp => Time.now.to_i }))
+      Log.create(title: "POST", message: text)
+
+      # Server Populations
+
+      # Save server and server population before processing the character
+      server = json_text['server']
+      server_pop = json_text['server_population']
+
+      # Remove server_population from json_text
+      json_text = json_text.tap { |h| h.delete('server_population')}
+
+      PlayerCount.create(server: server, count: server_pop)
+      
+      # Characters
+
+      # Handle character create/update logic
+      name = json_text['name']
+          
+      # Pre-process "birth" field so it's stored as DateTime with GMT-5
+      if(json_text.has_key?("birth"))
+        json_text["birth"] = CharacterHelper::parse_birth(json_text["birth"])
+      end
+      
+      
+      character = Character.where(name: name, server: server)
+    
+      if(character.exists?)
+        record = character.first
+        
+        record.update_attributes(json_text)
+        record.touch
+      else
+        Character.create(json_text)
+      end
+
+      # # Add any monarchs/patrons/vassals we don't already know about
+
+      # Monarch
       if(json_text['monarch'])
-        newchar.merge!({
-          'monarch' => {
-            'name' => json_text['monarch']['name'],
-            'race' => json_text['monarch']['race'],
-            'rank' => json_text['monarch']['rank'],
-            'title' => json_text['monarch']['title'],
-            'gender' => json_text['monarch']['gender']
-        }})
-      end
+        monarch_name = json_text['monarch']['name']
+        monarch = Character.where(name: monarch_name, server: server)
 
-      db['characters'].insert(newchar)
-    else # Patron record does exist
-      patron = patron.to_a[0]
-
-      # See if the character isn't in the patron's vassals, add if so
-      if(patron['vassals'] && patron['vassals'].length > 0)
-        vassals = patron['vassals']
-
-        if(!vassals.collect { |i| i['name']}.include?(name))
-          vassals.push({'name' => name})
+        if(!monarch.exists?)
+          Character.create(name: monarch_name, server: server)
         end
       end
+
+      # Patron
+      if(json_text['patron'])
+        patron_name = json_text['patron']['name']
+        patron = Character.where(name: patron_name, server: server)
+
+        # Patron record doesn't already exist
+        if(!patron.exists?)
+          patron_attributes = {
+            'name' => patron_name,
+            'server' => server,
+            'vassals' => [{
+              'name' => name,
+              'race' => json_text['race'],
+              'rank' => json_text['rank'],
+              'title' => json_text['title'],
+              'gender' => json_text['gender']
+              }]
+          }
+          
+          # Add monarch if we have that information
+          if(json_text['monarch'])
+            patron_attributes.merge!({
+              'monarch' => {
+                'name' => json_text['monarch']['name'],
+                'race' => json_text['monarch']['race'],
+                'rank' => json_text['monarch']['rank'],
+                'title' => json_text['monarch']['title'],
+                'gender' => json_text['monarch']['gender']
+            }})
+          end
+
+          Character.create(patron_attributes)
+        else # Patron record does exist
+          record = patron.first
+
+          # See if the character isn't in the patron's vassals, add if so
+          if(record['vassals'] && record['vassals'].length > 0)
+            if(!record.vassals.collect { |v| v['name'] }.include?(name))
+              Character.add_to_set(:vassals, {'name' => name})
+            end
+          end
+          
+          record.touch
+        end
+      end
+
+      # Vassals
+      if(json_text['vassals'] && json_text['vassals'].length > 0)
+        json_text['vassals'].each do |vassal|
+          vassal_name = vassal['name']
+          query = Character.where(name: vassal_name, server: server)
+
+          if(!query.exists?)
+            vassal_attributes = {
+              'name' => vassal_name,
+              'server' => server
+            }
+
+            if(json_text['monarch'])
+              vassal_attributes.merge!({
+                'monarch' => {
+                  'name' => json_text['monarch']['name'],
+                  'race' => json_text['monarch']['race'],
+                  'rank' => json_text['monarch']['rank'],
+                  'title' => json_text['monarch']['title'],
+                  'gender' => json_text['monarch']['gender']
+              }})
+            end
+
+            if(json_text['patron'])
+              vassal_attributes.merge!({
+                'patron' => {
+                  'name' => json_text['patron']['name'],
+                  'race' => json_text['patron']['race'],
+                  'rank' => json_text['patron']['rank'],
+                  'title' => json_text['patron']['title'],
+                  'gender' => json_text['patron']['gender']
+              }})
+            end
+
+            Character.create(vassal_attributes)
+          end
+        end
+
+      end
+
+      # RESPOND
+      ""
     end
-  end
 
-  # Vassals
-  if(json_text['vassals'] && json_text['vassals'].length > 0)
-    json_text['vassals'].each do |vassal|
-      vassal_name = vassal['name']
-      vassal = db['characters'].find({:name => vassal_name, :server => server})
-
-      if(vassal.count == 0)
-        newchar = Character.create({
-          'name' => vassal_name,
-          'server' => server
-        })
-
-        if(json_text['monarch'])
-          newchar.merge!({
-            'monarch' => {
-              'name' => json_text['monarch']['name'],
-              'race' => json_text['monarch']['race'],
-              'rank' => json_text['monarch']['rank'],
-              'title' => json_text['monarch']['title'],
-              'gender' => json_text['monarch']['gender']
-          }})
-        end
-
-        if(json_text['patron'])
-          newchar.merge!({
-            'patron' => {
-              'name' => json_text['patron']['name'],
-              'race' => json_text['patron']['race'],
-              'rank' => json_text['patron']['rank'],
-              'title' => json_text['patron']['title'],
-              'gender' => json_text['patron']['gender']
-          }})
-        end
-
-        db['characters'].insert(newchar)
-      end
+    get "/servers/?" do
+      haml :servers
     end
 
-  end
+    get '/characters/?' do
+     # TODO
+     #   - Sorting
+     #   - Limiting
+     #   - Pagination
+     
+     @characters = Character.all
 
-  # RESPOND
-  ""
-end
+      haml :characters
+    end
 
-get "/servers/?" do
-  haml :servers
-end
+    get '/player_counts.json' do
+      content_type :json
+      
+      response = {}
+      
+      player_counts = PlayerCount.all
+      
+      # Remove _id field and respond with json
+      if(player_counts.exists?)
+        response = player_counts.collect { |p| { 
+          :server => p['server'], 
+          :count => p['count'], 
+          :timestamp => p['created_at'].to_i 
+        }}.to_json
+      end
+      
+      response
+    end
 
-get '/characters/?' do
-  @characters = db['characters'].find({}, {:sort => { 'name' => 1 }}).limit(100)
+    get '/player_counts/?' do
+      haml :player_counts
+    end
 
-  haml :characters
-end
+    get '/other/:other/?' do |other|
+      criteria = {}
+      
+      # Add server if needed
+      if(params[:server] && params[:server] != 'All')
+        criteria['server'] = params[:server]
+      end
+      
+      # Sorting
+      if(params[:other] == "birth")
+        sort = { other => 1 }
+      else
+        sort = { other => -1 }
+      end
+      
+      @characters = Character.where(criteria).sort(sort)
 
-get '/serverpops.json' do
-  serverpops = db['serverpops'].find.to_a.map { |i| i.select { |k,v| k != "_id"} }
-  
-  response = {}
+      haml :other
+    end
 
-  if(serverpops.count > 0)
-    response = serverpops.to_json
-  end
-  
-  response
-end
+    get '/tree/:server/:name?' do |server, name|
+      content_type :json
 
-get '/serverpops/?' do
-  haml :serverpops
-end
+      character = Character.find_by(server: server, name: name)
+      
+      return "{}" if character.nil?
 
-get '/other/:other/?' do |other|
-  if(params[:other] == "birth")
-    sort = {:sort => { other => 1 }}
-  else
-    sort = {:sort => { other => -1 }}
-  end
-  
-  @characters = db['characters'].find(
-    {params[:other] => { '$not' => /[\?]{3}/}},
-    sort
-  ).limit(100)
+      t = Tree.new(server, name)
+      tree = t.get_tree
 
-  haml :other
-end
+      tree.to_json
+    end
 
-get '/tree/:key/?' do
-  content_type :json
+    get '/rankings/?' do
+      criteria = {}
 
-  server, name = params[:key].split("-")
-  character = db['characters'].find({:server => server, :name => name})
+      # Add server if needed
+      if(params[:server] && params[:server] != 'All')
+        criteria['server'] = params[:server]
+      end
 
-  return "{}" if character.count != 1
+      @characters = Character.where(criteria).sort({ params[:sort] => -1})
+      
+      # Tokenize sort field so we can pull the values
+      @tokens = params[:sort].split(".")
+ 
+      
+      haml :rankings
+    end
 
-  character = character.to_a[0]
+    get '/logs/?' do
+      @logs = Log.all
+      
+      haml :logs
+    end
+    
+    
+    get '/:server/?' do |server|
+      # TODO
+      # - Limiting
+      # - Sorting
+      
+      @characters = Character.where(server: server)
 
-  t = Tree.new(db, server, name)
-  tree = t.get_tree
+      haml :server
+    end
 
-  tree.to_json
-end
+    get '/:server/:name.json' do |s,n|
+      @character = Character.find_by(server: s, name: n)
+      
+      response = ""
+      
+      if @character
+        response = @character.as_document.tap {|h| h.delete("_id")}.to_json
+      end
+      
+      response.to_json
+    end
 
-get '/rankings/?' do
-  criteria = {}
+    get '/:server/:name/?' do |s,n|
+      @character = Character.find_by(server: s, name: n)
 
-  # Add server if needed
-  if(params[:server] != 'All')
-    criteria[:server] = params[:server]
-  end
-
-  criteria[params[:sort]] = { '$not' => /[\?]{3}/}
-
-  @characters = db['characters'].find(criteria, { :sort => { params[:sort] => -1 }}).limit(100)
-  
-  # Tokenize sort field so we can pull the values
-  @tokens = params[:sort].split(".")
-  
-  haml :rankings
-end
-
-get '/:server/?' do |s|
-  @characters = db['characters'].find({'server' => s}, {:sort => { 'name' => 1}}).limit(100)
-
-  haml :server
-end
-
-get '/:server/:name.json' do |s,n|
-  @character = db['characters'].find({'server' => s, 'name' => n})
-  
-  response = ""
-  
-  if @character.count == 1
-    response = @character.to_a[0].to_json
-  end
-  
-  response.to_json
-end
-
-get '/:server/:name/?' do |s,n|
-  @character = db['characters'].find({'server' => s, 'name' => n})
-
-  haml :character
+      haml :character
+    end
   end
 end
