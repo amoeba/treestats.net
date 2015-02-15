@@ -1,92 +1,14 @@
 # TODO Optimize queries using projections
 # egdb.users.find({age:18}, {name:1})
 
-require 'sinatra'
-require 'haml'
-require 'mongo'
-include Mongo
-require 'json/ext'
-require 'json'
-require 'time'
-
 Dir["./helpers/*.rb"].each { |file| require file }
 
+module Treestats
+  class App < Sinatra::Base
+    configure do
+      Mongoid.load!("./config/mongoid.yml")
+    end
 
-# Mongo(Mongolab) setup
-
-if(ENV['MONGOLAB_URI'])
-  mongo_uri = ENV['MONGOLAB_URI']
-  db_name = mongo_uri[%r{/([^/\?]+)(\?|$)}, 1]
-  client = MongoClient.from_uri(mongo_uri)
-  db = client.db(db_name)
-else
-  host    = ENV['MONGO_RUBY_DRIVER_HOST'] || 'localhost'
-  port    = ENV['MONGO_RUBY_DRIVER_PORT'] || MongoClient::DEFAULT_PORT
-  client = MongoClient.new(host, port)
-  db     = client['treestats']
-end
-
-
-# Routes
-not_found do
-  haml :not_found
-end
-
-get '/' do
-  haml :index
-end
-
-post '/' do
-  # TODO
-  # Catch failed parse
-
-  text = request.body.read
-  
-  # Before we do anything, verify the message wasn't tampered with
-  verify = Encryption::decrypt()
-  
-  if(!verify)
-    db['updates'].insert({
-      :title => "Failed to verify update",
-      :timestamp => Time.now.to_i,
-      :message => text
-      })
-    
-    return
-  end
-  
-  # Parse message
-  json_text = JSON.parse(text)
-  
-  # Remove key
-  json_text.tap { |h| h.delete('key')}
-
-  # Updates
-
-  # Check in the update
-  db['updates'].insert(json_text.merge({ :timestamp => Time.now.to_i }))
-
-
-  # Server Populations
-
-  # Save server and server population before processing the character
-  server = json_text['server']
-  server_pop = json_text['server_population']
-
-  # Remove server_population from json_text
-  json_text = json_text.tap { |h| h.delete('server_population')}
-
-  db['serverpops'].insert({
-    :server => server,
-    :population => server_pop,
-    :timestamp => Time.now.to_i
-  })
-
-
-  # Characters
-
-  # Handle character create/update logic
-  name = json_text['name']
 
   # Pre-process "birth" field so it's stored as UNIX time with GMT-5
   if(json_text.has_key?("birth"))
@@ -301,4 +223,5 @@ get '/:server/:name/?' do |s,n|
   @character = db['characters'].find({'server' => s, 'name' => n})
 
   haml :character
+  end
 end
