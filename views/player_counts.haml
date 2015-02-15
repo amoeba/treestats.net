@@ -1,4 +1,4 @@
-%h2.title Server Populations
+%h2.title Player Counts
 
 %script{:src => '/js/d3.min.js'}
 %script{:src => "/js/popchart.js"}
@@ -58,8 +58,7 @@
   }
   
 :javascript
-  d3.json("/serverpops.json", function(error, json) {
-    
+  d3.json("/player_counts.json", function(error, json) {
     var servers = ["Darktide", "Frostfell", "Harvestgain", "Leafcull", "Morningthaw", "Thistledown", "Solclaim", "Verdantine", "WintersEbb"]
     
     var contentDiv = document.getElementById("content");
@@ -68,7 +67,7 @@
     
     servers.forEach(function(server) {
       var values = json.filter(function(d) { return d.server == server})
-    
+      
       if(values.length > 0) {
         // Container
         var containerDiv = document.createElement("div")
@@ -83,6 +82,7 @@
         
         
         contentDiv.appendChild(containerDiv)
+        
         popchart.add("#" + server, server, values);
       }
     });
