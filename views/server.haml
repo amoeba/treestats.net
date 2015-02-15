@@ -4,6 +4,6 @@
   %span No characters to display for this server.
 - else
   %ul
-    - @characters.to_a.each do |c|
+    - @characters.each do |c|
       %li
         %a{:href => "/#{c['server']}/#{c['name']}"}= "#{c['name']} (#{c['server']})"

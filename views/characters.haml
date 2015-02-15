@@ -1,8 +1,8 @@
 %h2.title Characters
 
-- if @characters.count == 0
+- if !@characters.any?
   %span There are no characters to display.
-- else
+- else    
   %span
     There
     = @characters.count > 1 ? "are" : "is"

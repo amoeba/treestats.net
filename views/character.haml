@@ -1,165 +1,19 @@
-- if @character.count != 1
+- if @character.nil?
   %span Couldn't find the requested character.
 - else
-  - @character = @character.to_a[0]
   %h2.title= "#{@character['name']} (#{@character['server']})"
 
   %span.last_updated
     %span.last_updated_name Last Updated
-    %span.last_updated_text= nice_date(@character["updated_at"])
+    %span.last_updated_text= @character["updated_at"]
 
   .row
-    %table.char
-      %tbody
-        %tr.line
-          %td.tab{:colspan => 2} Attributes
-        %tr.header
-          %td.center
-            %span.name= "#{@character['title']} #{@character['name']}"
-            %span.block= "#{@character['gender']} #{@character['race']} #{@character['class_template']}"
-            %span.block Non-Player Killer
-          %td.center
-            %span.block Character
-            %span.block Level
-            %span.block.level= @character["level"]
-        %tr.line.header
-          %td.internal{:colspan => 2}
-            %table.internal
-              %tbody
-                %tr
-                  %td.internal
-                    %span Total Experience (XP):
-                  %td.internal.right
-                    %span= add_commas(@character["total_xp"].to_s)
-        %tr
-          %td Strength
-          %td.right
-            %span.creation= "(#{@character["attributes"]["strength"]["creation"]}) "
-            = @character["attributes"]["strength"]["base"]
-        %tr
-          %td Endurance
-          %td.right
-            %span.creation= "(#{@character["attributes"]["endurance"]["creation"]}) "
-            = @character["attributes"]["endurance"]["base"]
-        %tr
-          %td Coordination
-          %td.right
-            %span.creation= "(#{@character["attributes"]["coordination"]["creation"]}) "
-            = @character["attributes"]["coordination"]["base"]
-        %tr
-          %td Quickness
-          %td.right
-            %span.creation= "(#{@character["attributes"]["quickness"]["creation"]}) "
-            = @character["attributes"]["quickness"]["base"]
-        %tr
-          %td Focus
-          %td.right
-            %span.creation= "(#{@character["attributes"]["focus"]["creation"]}) "
-            = @character["attributes"]["focus"]["base"]
-        %tr
-          %td Self
-          %td.right
-            %span.creation= "(#{@character["attributes"]["self"]["creation"]}) "
-            = @character["attributes"]["self"]["base"]
-        %tr
-          %td Health
-          %td.right= "#{@character["vitals"]["health"]["base"]} / #{@character["vitals"]["health"]["base"]}"
-        %tr
-          %td Stamina
-          %td.right= "#{@character["vitals"]["stamina"]["base"]} / #{@character["vitals"]["stamina"]["base"]}"
-        %tr.line
-          %td Mana
-          %td.right= "#{@character["vitals"]["mana"]["base"]} / #{@character["vitals"]["mana"]["base"]}"
-        %tr.header
-          %td.internal{:colspan => 2}
-            %table.internal
-              %tbody
-                %tr
-                  %td.internal
-                    %span Unassigned Experience:
-                  %td.internal.right
-                    %span= add_commas(@character["unassigned_xp"].to_s)
-
-    %table.char
-      %tbody
-        %tr.line
-          %td.tab{:colspan => 2} Skills
-        %tr
-          %td.specialized{:colspan => 2} Specialized Skills
-        - @character['skills'].select { |key,value| value['training'] == "Specialized"}.sort.each do |skill|
-          %tr
-            %td= skill[1]["name"].split("_").map(&:capitalize).join(" ")
-            %td.right= skill[1]["base"]
-        %tr
-          %td.trained{:colspan => 2} Trained Skills
-        - @character['skills'].select { |key,value| value['training'] == "Trained"}.sort.each do |skill|
-          %tr
-            %td= skill[1]["name"].split("_").map(&:capitalize).join(" ")
-            %td.right= skill[1]["base"]
-    %table.char
-      %tbody
-        %tr.line
-          %td.tab{:colspan => 4} Allegiance
-        %tr
-          %td.center{:colspan => 4}= @character["allegiance"]
-        %tr.line
-          %td{:colspan => 2}= "Followers: #{@character['followers']}"
-          %td{:colspan => 2}= "Rank: #{@character['rank']}"
-        %tr
-          %td{:colspan => 4} MONARCH
-        %tr
-          %td{:colspan => 4}
-            - if @character['monarch']
-              %a{:href => "/#{params[:server]}/#{@character['monarch']['name']}"}= "#{@character['monarch']['title']} #{@character['monarch']['name']}"
-        %tr.line
-          %td{:colspan => 4}
-            - if @character['monarch']
-              = "Followers: #{@character["monarch"]["followers"]}"
-        %tr
-          %td{:colspan => 4} PATRON
-        %tr.line
-          %td{:colspan => 4}
-            - if @character['patron']
-              %a{:href => "/#{params[:server]}/#{@character['patron']['name']}"}= "#{@character['patron']['title']} #{@character['patron']['name']}"
-        %tr
-          %td{:colspan => 4} VASSALS
-        - if @character["vassals"]
-          - @character["vassals"].each do |vassal|
-            %tr
-              %td.vassal{:colspan => 4}
-                %a{:href => "/#{params[:server]}/#{vassal['name']}"}= "#{vassal['title']} #{vassal["name"]}"
-    %table.char
-      %tbody
-        %tr.line
-          %td.tab Other
-        %tr
-          %td
-            Birth:
-            = @character['birth'] == "???" ? @character['birth'] : Time.at(@character['birth'])
-        %tr
-          %td= "Deaths: #{@character['deaths']}"
-            
-%table.char.tree
-  %tbody
-    %tr.line
-      %td.tab Tree
-    %tr
-      %td#tree
-        %span.overlaytext You can scroll to zoom and drag to pan.
-
-%script{:src => '/js/d3.min.js'}
-%script{:src => '/js/beziertree.js'}
-
-:javascript
-  var tokens = window.location.href.split("/"),
-      request_url = ["/tree", [tokens[tokens.length - 2], tokens[tokens.length - 1]].join("-")].join("/");
-
-  var server_name = tokens.length == 5 ? tokens[tokens.length - 2] : null;
-  var player_name = tokens.length == 5 ? decodeURIComponent(tokens[tokens.length - 1]) : null;
-
-  d3.json(request_url, function(error, json) {
-    draw('#tree', json, server_name, player_name, {
-      width: 616,
-      height: 616
-    });
-  });
+    - if @character.attribs
+      = haml :_attributes_pane
+      = haml :_skills_pane
+      = haml :_allegiance_pane
+      = haml :_other_pane
+    - else
+      = haml :_stub_pane
+      
+= haml :_tree_pane

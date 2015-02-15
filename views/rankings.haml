@@ -1,25 +1,32 @@
-- if @characters.count == 0
+%h2.title Rankings
+
+%p
+  %b Server:
+  = params[:server]
+%p
+  %b Ranking:
+  - if @tokens.length > 1
+    = @tokens[1].split("_").map(&:capitalize).join(" ")
+  - else
+    = @tokens[0].split("_").map(&:capitalize).join(" ")
+      
+- if !@characters.exists?
   %span Couldn't find any characters for this ranking.
 - else
-  %h2.title Rankings
-
-  %p
-    %b Server:
-    = params[:server]
-  %p
-    %b= "#{@tokens[0].capitalize.chop!}:"
-    = @tokens[1].split("_").map(&:capitalize).join(" ")
-
   %table
     %thead
       %tr
         %th Name
-        %th= @tokens[1].split("_").map(&:capitalize).join(" ")
+        %th= (@tokens.length == 1 ? @tokens : @tokens[1].split("_")).map(&:capitalize).join(" ")
     %tbody
     
-      - @characters.to_a.each do |c|
+      - @characters.each do |character|
+        - next if character.attribs.nil? # Go next if this is a stub character
         %tr
           %td
-            %a{:href => "/#{c['server']}/#{c['name']}"}= "#{c['name']} (#{c['server']})"
-          %td= "#{c[@tokens[0]][@tokens[1]][@tokens[2]]}"
+            %a{:href => "/#{character['server']}/#{character['name']}"}= "#{character['name']} (#{character['server']})"
+          - if @tokens.length == 1
+            %td= character[@tokens[0]]
+          - else
+            %td= character[@tokens[0]][@tokens[1]][@tokens[2]]
           
