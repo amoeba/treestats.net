@@ -1,0 +1,16 @@
+%table.char
+  %tbody
+    %tr.line
+      %td.tab{:colspan => 2} Skills
+    %tr
+      %td.specialized{:colspan => 2} Specialized Skills
+    - @character['skills'].select { |key,value| value['training'] == "Specialized"}.sort.each do |skill|
+      %tr
+        %td= skill[1]["name"].split("_").map(&:capitalize).join(" ")
+        %td.right= skill[1]["base"]
+    %tr
+      %td.trained{:colspan => 2} Trained Skills
+    - @character['skills'].select { |key,value| value['training'] == "Trained"}.sort.each do |skill|
+      %tr
+        %td= skill[1]["name"].split("_").map(&:capitalize).join(" ")
+        %td.right= skill[1]["base"]

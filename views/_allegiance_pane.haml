@@ -1,0 +1,32 @@
+%table.char
+  %tbody
+    %tr.line
+      %td.tab{:colspan => 4} Allegiance
+    %tr
+      %td.center{:colspan => 4}= @character['allegiance']
+    %tr.line
+      %td{:colspan => 2}= "Followers: #{@character['followers']}"
+      %td{:colspan => 2}= "Rank: #{@character['rank']}"
+    %tr
+      %td{:colspan => 4} MONARCH
+    %tr
+      %td{:colspan => 4}
+        - if @character['monarch']
+          %a{:href => "/#{params[:server]}/#{@character['monarch']['name']}"}= "#{@character['monarch']['title']} #{@character['monarch']['name']}"
+    %tr.line
+      %td{:colspan => 4}
+        - if @character['monarch']
+          = "Followers: #{@character['monarch']['followers']}"
+    %tr
+      %td{:colspan => 4} PATRON
+    %tr.line
+      %td{:colspan => 4}
+        - if @character['patron']
+          %a{:href => "/#{params[:server]}/#{@character['patron']['name']}"}= "#{@character['patron']['title']} #{@character['patron']['name']}"
+    %tr
+      %td{:colspan => 4} VASSALS
+    - if @character['vassals']
+      - @character['vassals'].each do |vassal|
+        %tr
+          %td.vassal{:colspan => 4}
+            %a{:href => "/#{params[:server]}/#{vassal['name']}"}= "#{vassal['title']} #{vassal['name']}"
