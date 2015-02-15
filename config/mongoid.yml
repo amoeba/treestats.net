@@ -15,8 +15,4 @@ test:
 production:
   sessions:
     default:
-      hosts:
-        - <%= ENV['MONGO_HOST']:<%= ENV['MONGO_PORT'] %>
-      database: <%= ENV['MONGO_DB'] %>
-      username: <%= ENV['MONGO_USER'] %>
-      password: <%= ENV['MONGO_PASS'] %>
+      uri: <%= ENV['MONGOHQ_URL'] %>
