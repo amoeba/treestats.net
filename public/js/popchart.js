@@ -8,7 +8,7 @@ popchart.add = function(selector, server, data)
 
   var values = data.map(function(d) { return {
     'timestamp' : parse(d.timestamp), 
-    'population' : d.population};
+    'count' : d.count};
   });
   
   var customTimeFormat = d3.time.format.multi([
@@ -27,7 +27,7 @@ popchart.add = function(selector, server, data)
       height = 150;
     
   var xvals = values.map(function(r) { return r.timestamp; });
-  var yvals = values.map(function(r) { return r.population; });
+  var yvals = values.map(function(r) { return r.count; });
   
   // Custom domains, highly experimental
   var xDomainStart = Date.parse(d3.min(xvals).getFullYear()) - 1000 * 60 * 60 * 24 * 7,
@@ -71,7 +71,7 @@ popchart.add = function(selector, server, data)
   function onMouseOver(d) {
     d3.select(this).attr("fill","black")
          
-    tooltip.html(d.population);
+    tooltip.html(d.count);
     
     return tooltip
       .transition()
@@ -115,7 +115,7 @@ popchart.add = function(selector, server, data)
   var line = d3.svg.line()
     .interpolate("linear")
     .x(function(d) { return x(d.timestamp); })
-    .y(function(d) { return y(d.population); })
+    .y(function(d) { return y(d.count); })
     
   svg.selectAll("path")
     .data(values)
