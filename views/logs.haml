@@ -12,6 +12,6 @@
     %tbody
       - @logs.each do |log|
         %tr
-          %td ...time
+          %td= log.created_at
           %td= log.title
           %td= log.message
