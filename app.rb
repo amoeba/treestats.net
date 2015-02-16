@@ -193,7 +193,7 @@ module Treestats
       
       response = {}
       
-      player_counts = PlayerCount.all
+      player_counts = PlayerCount.all.sort(server: 1, created_at: 1)
       
       # Remove _id field and respond with json
       if(player_counts.exists?)
