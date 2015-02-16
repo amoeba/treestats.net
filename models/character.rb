@@ -24,7 +24,7 @@ class Character
   field :p,   as: :patron,          type: Hash
   field :v,   as: :vassals,         type: Array
   
-  
+  field :ve,  as: :version,         type: Integer
   # |document|
     #DateTime.strptime("7/19/2002 10:14:26 PM EST", "%m/%d/%Y %H:%M:%S %p %Z")
     # Convert birth to a date  
