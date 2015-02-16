@@ -31,7 +31,7 @@ class Tree
     # Do the finding
     patron = Character.find_by(server: @server, name: highest_patron)
     
-    # Trarverse upward toward the ultimate patron
+    # Traverse upward toward the ultimate patron
     while patron
       highest_patron = patron.name
 
