@@ -197,10 +197,10 @@ module Treestats
       
       # Remove _id field and respond with json
       if(player_counts.exists?)
-        response = player_counts.collect { |p| { 
-          :server => p['server'], 
-          :count => p['count'], 
-          :timestamp => p['created_at'].to_i 
+        response = player_counts.collect { |pc| { 
+          :server => pc.server, 
+          :count => pc.count, 
+          :timestamp => pc.created_at 
         }}.to_json
       end
       
