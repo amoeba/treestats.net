@@ -36,7 +36,7 @@ class Tree
       highest_patron = patron.name
 
       if(patron.patron)
-        patron = Character.find_by(server: @server, name: patron.patron.name)
+        patron = Character.find_by(server: @server, name: patron.patron['name'])
       else
         return highest_patron
       end
