@@ -254,6 +254,8 @@ module Treestats
       # Handle sort orders (e.g. birth needs to be 1, others need to be -1)
       sort_order = params[:sort] == "birth" ? 1 : -1
       
+      puts "Sorting by #{params[:sort]} in #{sort_order} order"
+      
       @characters = Character.where(criteria).sort({ params[:sort] => sort_order})
       
       # Tokenize sort field so we can pull the values
