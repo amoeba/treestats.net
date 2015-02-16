@@ -11,8 +11,6 @@ popchart.add = function(selector, server, data)
     'count' : d.count};
   });
   
-  console.log(values);
-  
   var customTimeFormat = d3.time.format.multi([
     [".%L", function(d) { return d.getMilliseconds(); }],
     [":%S", function(d) { return d.getSeconds(); }],
