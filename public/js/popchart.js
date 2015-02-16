@@ -4,12 +4,14 @@ popchart.add = function(selector, server, data)
 {
   var server = server || "unknown";
 
-  var parse = function(timestamp) { return new Date(timestamp * 1000); }
+  var parse = function(timestamp) { return new Date(timestamp); }
 
   var values = data.map(function(d) { return {
     'timestamp' : parse(d.timestamp), 
     'count' : d.count};
   });
+  
+  console.log(values);
   
   var customTimeFormat = d3.time.format.multi([
     [".%L", function(d) { return d.getMilliseconds(); }],
