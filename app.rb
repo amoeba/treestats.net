@@ -35,7 +35,6 @@ module Treestats
       # Updates
 
       # Check in the update
-      # OLD db['updates'].insert(json_text.merge({ :timestamp => Time.now.to_i }))
       Log.create(title: "POST", message: text)
 
       # Server Populations
