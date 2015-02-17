@@ -120,7 +120,7 @@ module Treestats
           # See if the character isn't in the patron's vassals, add if so
           if(record['vassals'])
             if(!record.vassals.collect { |v| v['name'] }.include?(name))
-              record.add_to_set(:vassals, { 'name' => name })
+              record.add_to_set(vassals: { 'name' => name })
             end
           end
           
