@@ -281,7 +281,7 @@ module Treestats
       
       # Sort values
       
-      if(@tokens.length == 1)
+      if(@params[:sort] == "birth")
         @records.sort! { |a,b| a[:value] <=> b[:value] }
       else
         @records.sort! { |a,b| b[:value] <=> a[:value] }
