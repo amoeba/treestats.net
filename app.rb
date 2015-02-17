@@ -118,9 +118,9 @@ module Treestats
           record = patron.first
 
           # See if the character isn't in the patron's vassals, add if so
-          if(record['vassals'] && record['vassals'].length > 0)
+          if(record['vassals'])
             if(!record.vassals.collect { |v| v['name'] }.include?(name))
-              Character.add_to_set(:vassals, {'name' => name})
+              record.add_to_set(:vassals, { 'name' => name })
             end
           end
           
