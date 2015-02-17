@@ -1,3 +1,9 @@
+require 'sinatra/base'
+require 'json'
+require 'mongoid'
+require 'json'
+require 'haml'
+
 # TODO Optimize queries using projections
 # egdb.users.find({age:18}, {name:1})
 

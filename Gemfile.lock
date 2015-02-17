@@ -10,9 +10,12 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    addressable (2.3.7)
     bson (2.3.0)
     builder (3.2.2)
     connection_pool (2.1.1)
+    crack (0.4.2)
+      safe_yaml (~> 1.0.0)
     haml (4.0.6)
       tilt
     i18n (0.7.0)
@@ -34,7 +37,10 @@ GEM
     rack (1.6.0)
     rack-protection (1.5.3)
       rack
+    rack-test (0.6.3)
+      rack (>= 1.0)
     rake (10.4.2)
+    safe_yaml (1.0.4)
     sinatra (1.4.5)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -43,6 +49,9 @@ GEM
     tilt (1.4.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    webmock (1.20.4)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
 
 PLATFORMS
   ruby
@@ -52,5 +61,7 @@ DEPENDENCIES
   json
   mongoid (~> 4.0.0)
   puma
+  rack-test
   rake
   sinatra
+  webmock
