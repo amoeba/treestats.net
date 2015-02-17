@@ -19,14 +19,9 @@
         %th Name
         %th= (@tokens.length == 1 ? @tokens : @tokens[1].split("_")).map(&:capitalize).join(" ")
     %tbody
-    
-      - @characters.each do |character|
-        - next if character.attribs.nil? # Go next if this is a stub character
+      - @records.each do |character|
         %tr
           %td
-            %a{:href => "/#{character['server']}/#{character['name']}"}= "#{character['name']} (#{character['server']})"
-          - if(@tokens.length == 1)
-            %td= character[@tokens[0]]
-          - else
-            %td= character[@tokens[0]][@tokens[1]][@tokens[2]]
+            %a{:href => "/#{character[:server]}/#{character[:name]}"}= "#{character[:name]} (#{character[:server]})"
+            %td= character[:value]
           

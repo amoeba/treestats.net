@@ -246,21 +246,47 @@ module Treestats
     get '/rankings/?' do
       criteria = {}
 
+      # Tokenize
+      
+      # Tokenize sort field so we can pull the values out
+      # This is either 1 or 3 in length
+      
+      @tokens = params[:sort].split(".")
+      
+      
+      # Handle criteria
+      
       # Add server if needed
       if(params[:server] && params[:server] != 'All')
-        criteria['server'] = params[:server]
+        criteria[:server] = params[:server]
       end
+      
+      # Add criterion for non-nullness
+      criteria[:"#{@tokens[0]}".exists] = true
+      
 
-      # Handle sort orders (e.g. birth needs to be 1, others need to be -1)
-      sort_order = params[:sort] == "birth" ? 1 : -1
+      # Grab records
       
-      puts "Sorting by #{params[:sort]} in #{sort_order} order"
+      @characters = Character.where(criteria)
+
+      # Collect the records
       
-      @characters = Character.where(criteria).sort({ params[:sort] => sort_order})
+      @records = @characters.to_a.collect do |char|
+        {
+          :server => char.server,
+          :name => char.name,
+          :value => @tokens.length == 1 ? char[@tokens[0]] : char[@tokens[0]][@tokens[1]][@tokens[2]]
+        }
+      end
       
-      # Tokenize sort field so we can pull the values
-      @tokens = params[:sort].split(".")
- 
+      # Sort values
+      
+      if(@tokens.length == 1)
+        @records.sort! { |a,b| a[:value] <=> b[:value] }
+      else
+        @records.sort! { |a,b| b[:value] <=> a[:value] }
+      end
+      
       
       haml :rankings
     end
