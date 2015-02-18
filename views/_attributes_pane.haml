@@ -65,6 +65,11 @@
           %tbody
             %tr
               %td.internal
+                %span Skill Credits Available:
+              %td.internal.right
+                %span= add_commas(@character['skill_credits'].to_s)
+            %tr
+              %td.internal
                 %span Unassigned Experience:
               %td.internal.right
                 %span= add_commas(@character['unassigned_xp'].to_s)
