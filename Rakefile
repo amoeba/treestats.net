@@ -12,6 +12,6 @@ end
 task :deploy do
   `git branch deploy`
   `git filter-branch --index-filter 'git rm --cached --ignore-unmatch helpers/encryption.rb' deploy`
-  `git push origin deploy`
+  `git push --force origin deploy`
   `git branch -D deploy`
 end
