@@ -9,8 +9,9 @@ task :test do
   end
 end
 
-task :sync do
-  # make a new branch off master
-  # git filter-branch --index-filter 'git rm --cached --ignore-unmatch private.txt' private  
-  # push new branch to master on github
+task :deploy do
+  `git branch deploy`
+  `git filter-branch --index-filter 'git rm --cached --ignore-unmatch helpers/encryption.rb' deploy`
+  `git push origin deploy`
+  `git branch -D deploy`
 end
