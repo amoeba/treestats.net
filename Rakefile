@@ -10,8 +10,15 @@ task :test do
 end
 
 task :deploy do
+  puts ">> git branch deploy"
   `git branch deploy`
+  
+  puts ">> git filter-branch"
   `git filter-branch --index-filter 'git rm --cached --ignore-unmatch helpers/encryption.rb' deploy`
-  `git push --force origin deploy`
+  
+  puts ">> git push --force origin deploy"
+  `git push --force origin:master deploy`
+  
+  puts ">> git branch -D deploy"
   `git branch -D deploy`
 end
