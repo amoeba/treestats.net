@@ -15,6 +15,7 @@ class Character
   field :b,   as: :birth,           type: DateTime
   field :tx,  as: :total_xp,        type: Integer
   field :u,   as: :unassigned_xp,   type: Integer
+  field :sc,  as: :skill_credits,   type: Integer
   
   field :a,   as: :attribs,         type: Hash
   field :vi,  as: :vitals,          type: Hash
