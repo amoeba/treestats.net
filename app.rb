@@ -34,11 +34,7 @@ module Treestats
       verify = Encryption::decrypt(text)
   
       if(!verify)
-        db['updates'].insert({
-        :title => "Failed to verify update",
-        :timestamp => Time.now.to_i,
-        :message => text
-        })
+        Log.create(title: "Failed to verify update", message: text)
     
         return
       end
