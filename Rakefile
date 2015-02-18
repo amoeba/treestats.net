@@ -13,6 +13,8 @@ task :deploy do
   puts ">> git branch deploy"
   `git branch deploy`
   
+  `git branch -v`
+  
   puts ">> git filter-branch"
   `git filter-branch --index-filter 'git rm --cached --ignore-unmatch helpers/encryption.rb' -f deploy`
   
@@ -21,4 +23,6 @@ task :deploy do
   
   puts ">> git branch -D deploy"
   `git branch -D deploy`
+  
+  `git branch -v`
 end
