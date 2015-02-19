@@ -197,7 +197,7 @@ module Treestats
      #   - Limiting
      #   - Pagination
      
-     @characters = Character.all
+     @characters = Character.all.limit(100).desc(:updated_at)
 
       haml :characters
     end
