@@ -26,4 +26,7 @@ class Character
   field :v,   as: :vassals,         type: Array
   
   field :ve,  as: :version,         type: Integer
+  
+  field :tc   as: :current_title,   type: Integer
+  field :ti   as: :titles,          type: Array
 end
