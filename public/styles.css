@@ -293,3 +293,7 @@ span.overlaytext
   float: left;
   margin-right: 1em;
 }
+
+.current_title {
+  color: #00FF00;
+}

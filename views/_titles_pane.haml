@@ -7,6 +7,6 @@
         %tr
           %td
             - if t == @character.current_title
-              %span.current_title= t
+              %span.current_title= TitleHelper::get_title_name(t)
             - else
-              %span= t
+              %span= TitleHelper::get_title_name(t)
