@@ -1,0 +1,14 @@
+%table.char
+  %tbody
+    %tr.line
+      %td.tab Titles
+    - if @character.current_title && @character.titles
+      - @character.titles.each do |t|
+        %tr
+          %td
+            - if t == @character.current_title
+              %span.current_title= t
+            else
+              %span= t
+      %tr
+        %td= "Deaths: #{@character['deaths']}"
