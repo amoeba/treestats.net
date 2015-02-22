@@ -1,41 +1,66 @@
-var popchart = {}
+var popchart = popchart || {};
 
-popchart.add = function(selector, server, data)
+popchart.add = function(selector, json)
 {
-  var server = server || "unknown";
-
   var parse = function(timestamp) { return new Date(timestamp); }
-
-  var values = data.map(function(d) { return {
-    'timestamp' : parse(d.timestamp), 
-    'count' : d.count};
+  
+  var data = json.map(function(d) { 
+    return {
+      'date' : parse(d.timestamp),
+      'day'       : '',
+      'count' : d.count,
+      'server' : d.server
+    };
   });
   
-  var customTimeFormat = d3.time.format.multi([
-    [".%L", function(d) { return d.getMilliseconds(); }],
-    [":%S", function(d) { return d.getSeconds(); }],
-    ["%I:%M", function(d) { return d.getMinutes(); }],
-    ["%I %p", function(d) { return d.getHours(); }],
-    ["%a %d", function(d) { return d.getDay() && d.getDate() != 1; }],
-    ["%b %d", function(d) { return d.getDate() != 1; }],
-    ["%B", function(d) { return d.getMonth(); }],
-    ["%Y", function() { return true; }]
-  ]);
-  
-  var margin = { 'top' : 35, 'right' : 15, 'bottom' : 30, 'left' : 45 },
-      width = 300,
-      height = 150;
+  // Add in 'days' (%Y-%m-%d format)
+  for(var i = 0; i < data.length; i++) {
+    var t = data[i].date;
     
-  var xvals = values.map(function(r) { return r.timestamp; });
-  var yvals = values.map(function(r) { return r.count; });
-  
-  // Custom domains, highly experimental
-  var xDomainStart = Date.parse(d3.min(xvals).getFullYear()) - 1000 * 60 * 60 * 24 * 7,
-      maxDate = d3.max(xvals),
-      xDomainEnd = Date.parse((maxDate.getFullYear()) + "/" + (maxDate.getMonth() + 1) + "/1") + 1000 * 60 * 60 * 24 * 31
+    data[i].day = new Date(t.getFullYear(), t.getMonth(), t.getDate(), 12);
+  }
 
+  var servers = d3.set(data.map(function(d) { return d.server; })).values();
+  var unique_days = d3.set(data.map(function(d) { return d.day; })).values().map(function(d) { return new Date(d); });
+  
+  var values = servers.map(function(s) {
+    var server_days = d3.set(data
+      .filter(function(d) { return d.server == s; })
+      .map(function(d) { return d.day; }))
+    .values()
+    .map(function(d) { return new Date(d); });
+
+    return {
+      'server' : s,
+      'values' : server_days.map(function(day) {
+        var counts = [];
+      
+        for(var i= 0; i < data.length; i++) {
+          if(data[i].server == s && data[i].day.getTime() == day.getTime()) {
+            counts.push(data[i].count);
+          }  
+        }
+
+        return {
+          'server' : s,
+          'day'  : day,
+          'mean' : d3.mean(counts),
+          'min'  : d3.min(counts),
+          'max'  : d3.max(counts)
+        }  
+      })
+    }
+  });
+
+  var margin = { 'top' : 35, 'right' : 80, 'bottom' : 30, 'left' : 45 },
+      width = 600,
+      height = 400;
+    
+  var xvals = unique_days;
+  var yvals = data.map(function(v) { return v.count; });
+ 
   var x = d3.time.scale()
-    .domain([xDomainStart, xDomainEnd])
+    .domain(d3.extent(xvals))
     .range([0, width]);
     
   var y = d3.scale.linear()
@@ -43,56 +68,23 @@ popchart.add = function(selector, server, data)
     .range([height, 0])
     .nice();
 
+  var color = d3.scale.category10()
+    .domain(servers);
+ 
   var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom")
-    .tickFormat(customTimeFormat)
-    .ticks(2);
+    .ticks(5);
     
   var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
-      
-
+       
   var svg = d3.select(selector).append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  // Tooltips
-  var tooltip = d3.select("body")
-      .append("div")
-      .attr("id", "tooltip")
-      .style("position", "absolute")
-      .style("z-index", "10")
-      .style("opacity", 0);
-
-  function onMouseOver(d) {
-    d3.select(this).attr("fill","black")
-         
-    tooltip.html(d.count);
-    
-    return tooltip
-      .transition()
-      .duration(250)
-      .style("opacity", 0.9);
-  }
-
-  function onMouseOut(){
-    d3.select(this).attr("fill","white")
-    return tooltip
-      .transition()
-      .duration(250)
-      .style("opacity", 0);
-  }
-
-  function onMouseMove (d) {
-    return tooltip
-      .style("top", (d3.event.pageY + 5)+"px")
-      .style("left", (d3.event.pageX + 10)+"px");
-  }
-
       
   // Add x axis
   svg.append("g")
@@ -106,24 +98,63 @@ popchart.add = function(selector, server, data)
     .attr("transform", "translate(0,0)")
     .call(yAxis)
     .append("text")
-      .attr("class", "axislabel")
+      .attr("class", "label")
       .text("Players")
       .attr("text-anchor", "end")
-      .attr("transform", "translate(0,-15)")
+      .attr("transform", "translate(0,-15)");
     
-  //Add lines
+  // Generators
   var line = d3.svg.line()
     .interpolate("linear")
-    .x(function(d) { return x(d.timestamp); })
-    .y(function(d) { return y(d.count); })
+    .x(function(d) { return x(d.day); })
+    .y(function(d) { return y(d.mean); })
     
-  svg.selectAll("path")
+  var area = d3.svg.area()
+    .interpolate("linear")
+    .x(function(d) { return x(d.day); })
+    .y0(function(d) { return y(d.min); })
+    .y1(function(d) { return y(d.max); })
+    
+  // Mean Line Layer
+  var server = svg.selectAll(".server")
     .data(values)
-    .enter()
-    .append("path")  
+      .enter().append("g")
+        .attr("class", "server");
+        
+  server.append("path")
     .attr("class", "line")
-    .attr("d", line(values))
-    .on("mouseover", onMouseOver)
-    .on("mousemove", onMouseMove)
-    .on("mouseout", onMouseOut);
+    .attr("d", function(d) { return line(d.values); })
+    .style("stroke", function(d) { return color(d.server); })
+    .style("opacity", 1);
+        
+  server.append("text")  
+    .attr("class", "text")
+    .datum(function(d) { return { server: d.server, value: d.values[d.values.length - 1]}; })
+    .attr("transform", function(d) { console.log(d); return "translate(" + x(d.value.day) + "," + y(d.value.mean) + ")"; })
+    .attr("dx", function(d) { return 10 })
+    .attr("dy", function(d) { return ( 20 * (Math.random() - 0.5)); })
+    .text(function(d) { return d.server; })
+    .style("fill", function(d) { return color(d.server); });
+
+
+  // Ribbon Layer
+  var ribbon = svg.selectAll(".ribbon")
+    .data(values)
+      .enter().append("g")
+        .attr("class", "ribbon");
+
+  // Adds just the ribbon 
+  ribbon.append("path")
+    .attr("class", "line")
+    .attr("d", function(d) { return area(d.values); })
+    .style("fill", function(d) { return color(d.server); })
+    .style("opacity", 0.25);
+   
+  // Add line borders around the areas 
+  ribbon.append("path")
+    .attr("class", "line")
+    .attr("d", function(d) { return area(d.values); })
+    .style("stroke", function(d) { return color(d.server); })
+    .style("fill", "none")
+    .style("opacity", 1);
 }

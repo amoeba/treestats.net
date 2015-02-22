@@ -4,18 +4,12 @@
 %script{:src => "/js/popchart.js"}
 
 :css
-  path.line {
-    fill: none;
-    stroke: white;
-    stroke-width: 1px;
+  svg {
+    background-color: black;
+    border: 2px solid #AF7A30;
   }
-
-  .axis {
-    shape-rendering: crispEdges;
-  }
-
-  text
-  {
+  
+  text {
     fill: white;
     font-weight: normal;
     font-size: 10px;
@@ -25,7 +19,7 @@
     stroke: white;
   }
 
-  .axislabel {
+  .axis label {
     fill: #CCC;
   }
   
@@ -42,50 +36,10 @@
     fill: none;
     stroke: white;
   }
-
-  #tooltip {
-    text-aign: center;
-    font-size: 10px;
-    color: black;
-    background-color: white;
-    padding: 2px;
-    border: 1px solid black;
-  }
   
-  svg {
-    background-color: black;
-    border: 2px solid #AF7A30;
-  }
+
   
 :javascript
   d3.json("/player_counts.json", function(error, json) {
-    var servers = ["Darktide", "Frostfell", "Harvestgain", "Leafcull", "Morningthaw", "Thistledown", "Solclaim", "Verdantine", "WintersEbb"]
-    
-    var contentDiv = document.getElementById("content");
-    
-    if(!contentDiv) { return; }
-    
-    servers.forEach(function(server) {
-      var values = json.filter(function(d) { return d.server == server})
-      
-      if(values.length > 0) {
-        // Container
-        var containerDiv = document.createElement("div")
-        containerDiv.setAttribute("class", "servergraph")
-        containerDiv.setAttribute("id", server)
-        
-        // Server title
-        var serverTitle = document.createElement("h3");
-        serverTitle.innerHTML = server;
-        
-        containerDiv.appendChild(serverTitle);
-        
-        
-        contentDiv.appendChild(containerDiv)
-        
-        popchart.add("#" + server, server, values);
-      }
-    });
-    
-
+    popchart.add("#content", json);
   });
