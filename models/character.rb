@@ -21,7 +21,7 @@ class Character
   field :vi,  as: :vitals,          type: Hash
   field :sk,  as: :skills,          type: Hash
   
-  field :an,  as: :allegiance_name  type: String
+  field :an,  as: :allegiance_name, type: String
   field :m,   as: :monarch,         type: Hash
   field :p,   as: :patron,          type: Hash
   field :v,   as: :vassals,         type: Array
