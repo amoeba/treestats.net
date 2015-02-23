@@ -21,12 +21,13 @@ class Character
   field :vi,  as: :vitals,          type: Hash
   field :sk,  as: :skills,          type: Hash
   
+  field :an,  as: :allegiance_name  type: String
   field :m,   as: :monarch,         type: Hash
   field :p,   as: :patron,          type: Hash
   field :v,   as: :vassals,         type: Array
   
   field :ve,  as: :version,         type: Integer
   
-  field :tc,   as: :current_title,   type: Integer
-  field :ti,   as: :titles,          type: Array
+  field :tc,  as: :current_title,   type: Integer
+  field :ti,  as: :titles,          type: Array
 end
