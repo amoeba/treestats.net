@@ -5,7 +5,10 @@
     %tr.header.line
       %td.center
         %span.name= "#{@character['title']} #{@character['name']}"
-        %span.block.title= "#{@character['gender']} #{@character['race']} #{TitleHelper::get_title_name(@character['current_title'])}"
+        %span.block.title
+          = "#{@character['gender']} #{@character['race']}"
+          - if @character['current_title']
+            = TitleHelper::get_title_name(@character['current_title'])
       %td.center
         %span.block Character
         %span.block Level
