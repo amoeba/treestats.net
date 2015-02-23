@@ -82,6 +82,10 @@ span.block
   display: block;
 }
 
+span.title {
+  font-size: 85%;  
+}
+
 table.char
 {
   width: 300px;
