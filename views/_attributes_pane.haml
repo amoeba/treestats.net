@@ -5,8 +5,7 @@
     %tr.header
       %td.center
         %span.name= "#{@character['title']} #{@character['name']}"
-        %span.block= "#{@character['gender']} #{@character['race']} #{@character['class_template']}"
-        %span.block Non-Player Killer
+        %span.block.title= "#{@character['gender']} #{@character['race']} #{TitleHelper::get_title_name(@character['current_title'])}"
       %td.center
         %span.block Character
         %span.block Level
