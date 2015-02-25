@@ -242,6 +242,10 @@ td.vassal
   font-size: 90%;
 }
 
+td.icon
+{
+  width: 10px;
+}
 span.name
 {
   font-size: 110%;
