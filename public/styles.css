@@ -204,6 +204,10 @@ tr.line
   border-bottom: 2px solid #AF7A30;
 }
 
+tr.colnames td {
+  background-color: #222;
+}
+
 td.tab
 {
   background-color: #0A3509;
