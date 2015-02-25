@@ -1,8 +1,40 @@
 %table.char
-  %tbody
+  %thead
     %tr.line
       %td.tab{:colspan => 2} Other Properties
-    - @character.properties.each do |k,v|
+    %tr.colnames
+      %td ID / Name
+      %td Value
+  %tbody
+    - @character.properties.sort { |a,b| a[0].to_i <=> b[0].to_i}.each do |k,v|
       %tr
-        %td= k
+        %td= PropertiesHelper::get_property_name(k)
+        %td= v
+
+%table.char
+  %thead
+    %tr.line
+      %td.tab{:colspan => 2} Augmentations
+    %tr.colnames
+      %td Name
+      %td Uses
+  %tbody
+    - @character.properties.each do |k,v|
+    - next unless PropertiesHelper::is_type(k, :aug)
+      %tr
+        %td= PropertiesHelper::get_property_name(k)
+        %td= v
+        
+%table.char
+  %thead
+    %tr.line
+      %td.tab{:colspan => 2} Ratings
+    %tr.colnames
+      %td Name
+      %td Uses
+  %tbody
+    - @character.properties.each do |k,v|
+    - next unless PropertiesHelper::is_type(k, :rating)
+      %tr
+        %td= PropertiesHelper::get_property_name(k)
         %td= v
