@@ -20,5 +20,6 @@
 
 .row
   = haml :_tree_pane
-.row
-  = haml :_properties_pane
+- if @character.properties
+  .row
+    = haml :_properties_pane
