@@ -9,24 +9,28 @@
           = "#{@character['gender']} #{@character['race']}"
           - if @character['current_title']
             = TitleHelper::get_title_name(@character['current_title'])
-      %td.center
+        %table.internal.xplum
+          %tbody
+            - if @character['luminance_earned']
+              %tr
+                %td.internal
+                  %span Luminance:
+                %td.internal.right
+                  %span= "#{add_commas(@character['luminance_earned'].to_s)} / #{add_commas(@character['luminance_total'].to_s)}"
+            - else
+              %tr
+                %td{:colspan => 2} &nbsp;
+            %tr
+              %td.left
+                %span Total Experience (XP):
+              %td.right
+                %span= add_commas(@character['total_xp'].to_s)
+            
+        
+      %td.center.level
         %span.block Character
         %span.block Level
         %span.block.level= @character['level']
-    %tr.line.header
-      %td.internal{:colspan => 2}
-        %table.internal
-          %tbody
-            %tr
-              %td.internal
-                %span Luminance:
-              %td.internal.right
-                %span= "#{add_commas(@character['luminance_earned'].to_s)} / #{add_commas(@character['luminance_total'].to_s)}"
-            %tr
-              %td.internal
-                %span Total Experience (XP):
-              %td.internal.right
-                %span= add_commas(@character['total_xp'].to_s)
     %tr
       %td Strength
       %td.right

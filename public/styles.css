@@ -177,6 +177,21 @@ table.internal
 {
   width: 100%;
   margin: 0;
+  padding: 0;
+  border-collapse: collapse;
+  
+}
+
+table.internal tr, 
+table.internal td, 
+table.internal span
+{
+  margin: 0;
+  padding: 0;
+}
+
+table.xplum tr td {
+  font-size: 85%;
 }
 
 tr.header
@@ -202,10 +217,19 @@ td.internal
   padding: 0;
 }
 
+td.level
+{
+  width: 65px;
+  border-left: 2px solid #AF7A30;
+}
 
 td.center
 {
   text-align: center;
+}
+
+td.left {
+  text-align: left;
 }
 
 td.right
@@ -229,6 +253,7 @@ span.level
   color: #FFF27F;
   margin-top: 0;
 }
+
 td.specialized
 {
   background-color: purple;
