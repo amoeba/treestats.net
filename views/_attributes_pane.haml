@@ -13,9 +13,9 @@
           %tbody
             - if @character['luminance_earned']
               %tr
-                %td.internal
+                %td.left
                   %span Luminance:
-                %td.internal.right
+                %td.right
                   %span= "#{add_commas(@character['luminance_earned'].to_s)} / #{add_commas(@character['luminance_total'].to_s)}"
             - else
               %tr
