@@ -19,6 +19,11 @@
           %tbody
             %tr
               %td.internal
+                %span Luminance:
+              %td.internal.right
+                %span= "#{add_commas(@character['luminance_earned'].to_s)} / #{add_commas(@character['luminance_total'])}"
+            %tr
+              %td.internal
                 %span Total Experience (XP):
               %td.internal.right
                 %span= add_commas(@character['total_xp'].to_s)
