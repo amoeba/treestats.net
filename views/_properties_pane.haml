@@ -1,0 +1,8 @@
+%table.char
+  %tbody
+    %tr.line
+      %td.tab{:colspan => 2} Other Properties
+    - @character.properties.each do |k,v|
+      %tr
+        %td= k
+        %td= v
