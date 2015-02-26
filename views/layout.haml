@@ -9,9 +9,14 @@
       %tbody
         %tr
           %td#header{:colspan => 2}
-            %h1
-              %a{:href => "/"} TreeStats
-            = haml :_search
+            %table
+              %tbody
+                %tr
+                  %td.logo
+                    %h1
+                      %a{:href => "/"} TreeStats
+                  %td.search
+                    = haml :_search
         %tr.line
           %td#nav
             = haml :nav
