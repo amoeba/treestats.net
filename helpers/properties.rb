@@ -74,9 +74,9 @@ module PropertiesHelper
     "283" => { :type => :society, :name => "Society2Status"},
     "284" => { :type => :society, :name => "Society3Status"},
     
-    "354" => { :type => :mastery, :name => "Melee Mastery"},
-    "355" => { :type => :mastery, :name => "Ranged Mastery"},
-    "362" => { :type => :mastery, :name => "Summoning Mastery"},
+    "354" => { :type => :mastery, :name => "Melee"},
+    "355" => { :type => :mastery, :name => "Ranged"},
+    "362" => { :type => :mastery, :name => "Summoning"},
     
     "243" => { :type => :resist, :name => "Acid Resistance"},
     "244" => { :type => :resist, :name => "Fire Resistance"},
