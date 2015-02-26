@@ -202,6 +202,26 @@ module Treestats
       haml :characters
     end
 
+    get '/search/?' do
+      name = nil
+      server = nil
+      criteria = {}
+      
+      if(params && params[:name] && params[:name].length >= 3)
+        name = /#{Regexp.escape(params[:name])}/i
+        
+        criteria[:name] = name
+      end
+      
+      if(params[:server] && params[:server] != "All Servers")
+        criteria[:server] = params[:server]
+      end
+        
+      @characters = Character.limit(100).find_by(criteria)
+      
+      haml :search
+    end
+    
     get '/player_counts.json' do
       content_type :json
       
