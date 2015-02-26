@@ -113,6 +113,10 @@ module PropertiesHelper
     return PROPERTIES[id] && PROPERTIES[id][:type] == type
   end
   
+  def self.is_known(id)
+    return PROPERTIES[id]
+  end
+  
   def self.get_mastery_name(type, id)
     return nil if MASTERY_NAMES[type].nil?
     return nil if MASTERY_NAMES[type][id].nil?
