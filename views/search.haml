@@ -1,0 +1,11 @@
+%h2.title Search
+
+= haml :_search
+
+- if @characters.nil?
+  %span No characters found.
+-else
+  %ul
+    - @characters.to_a.each do |c|
+      %li
+        %a{:href => "/#{c.server}/#{c.name}"}= "#{c.name} (#{c.server})"
