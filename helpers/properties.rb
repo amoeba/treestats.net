@@ -118,8 +118,8 @@ module PropertiesHelper
   end
   
   def self.get_mastery_name(type, id)
-    return nil if MASTERY_NAMES[type].nil?
-    return nil if MASTERY_NAMES[type][id].nil?
+    return id if MASTERY_NAMES[type].nil?
+    return id if MASTERY_NAMES[type][id].nil?
     
     MASTERY_NAMES[type][id]
   end
