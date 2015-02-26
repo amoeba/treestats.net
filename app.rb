@@ -338,7 +338,7 @@ module Treestats
       # - Limiting
       # - Sorting
       
-      @characters = Character.where(server: server)
+      @characters = Character.where(server: server).limit(100).desc(:updated_at)
 
       haml :server
     end
