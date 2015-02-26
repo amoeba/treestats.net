@@ -3,7 +3,7 @@
 - else
   %h2.title= "#{@character['name']} (#{@character['server']})"
 
-  %span.last_updated
+  .last_updated
     %span.last_updated_name Last Updated
     %span.last_updated_text= @character["updated_at"]
 
@@ -12,14 +12,26 @@
       = haml :_attributes_pane
       = haml :_skills_pane
       = haml :_allegiance_pane
-      = haml :_other_pane
       = haml :_titles_pane
+      - if @character.properties
+        = haml :_properties_pane  
     - else
       = haml :_stub_pane
-      
-
+    
 .row
   = haml :_tree_pane
-- if @character.properties
-  .row
-    = haml :_properties_pane
+
+.row
+  - if @character.properties
+    %table.char
+      %thead
+        %tr.line
+          %td.tab{:colspan => 2} Unknown Properties
+        %tr.colnames
+          %td ID / Name
+          %td Value
+      %tbody
+        - @character.properties.sort { |a,b| a[0].to_i <=> b[0].to_i}.reject { |k,v| PropertiesHelper::is_known(k) }.each do |k,v|
+          %tr
+            %td= PropertiesHelper::get_property_name(k)
+            %td= v
