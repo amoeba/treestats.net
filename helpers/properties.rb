@@ -90,6 +90,7 @@ module PropertiesHelper
         2 => "Swords",
         3 => "Axes",
         4 => "Maces",
+        6 => "Daggers",
         7 => "Staves",
         11 => "Two-Handed"
       },
