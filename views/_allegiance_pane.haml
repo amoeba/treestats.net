@@ -3,12 +3,12 @@
     %tr.line
       %td.tab{:colspan => 4} Allegiance
     %tr
-      %td{:colspan => 4}= @character['allegiance_name']
+      %td.gold{:colspan => 4}= @character['allegiance_name']
     %tr.line
       %td{:colspan => 2}= "Followers: #{@character['followers']}"
       %td{:colspan => 2}= "Rank: #{@character['rank']}"
     %tr
-      %td{:colspan => 4} MONARCH
+      %td.gold{:colspan => 4} MONARCH
     %tr
       %td{:colspan => 4}
         - if @character['monarch']
@@ -18,13 +18,13 @@
         - if @character['monarch']
           = "Followers: #{@character['monarch']['followers']}"
     %tr
-      %td{:colspan => 4} PATRON
+      %td.gold{:colspan => 4} PATRON
     %tr.line
       %td{:colspan => 4}
         - if @character['patron']
           %a{:href => "/#{params[:server]}/#{@character['patron']['name']}"}= "#{@character['patron']['title']} #{@character['patron']['name']}"
     %tr
-      %td{:colspan => 4} VASSALS
+      %td.gold{:colspan => 4} VASSALS
     - if @character['vassals']
       - @character['vassals'].each do |vassal|
         %tr
