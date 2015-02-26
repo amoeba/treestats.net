@@ -7,7 +7,7 @@
     There
     = @characters.count > 1 ? "are" : "is"
     = "#{@characters.count} character#{@characters.count > 1 ? "s" : ""}"
-    in the database.
+    in the database. Here's 100 of the most recently updated ones.
 
   %ul
     - @characters.each do |c|
