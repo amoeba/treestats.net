@@ -217,7 +217,7 @@ module Treestats
         criteria[:server] = params[:server]
       end
         
-      @characters = Character.limit(100).find_by(criteria)
+      @characters = Character.limit(100).where(criteria)
       
       haml :search
     end
