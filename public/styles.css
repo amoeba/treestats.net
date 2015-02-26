@@ -9,10 +9,14 @@ body
   font-family: 'Open Sans', Sans-serif;
 }
 
-body > table
+table
 {
   width: 100%;
   border-collapse: collapse;
+  border-spacing: 0;
+}
+
+table, thead, tbody, tr, td {
   margin: 0;
   padding: 0;
 }
@@ -28,11 +32,27 @@ body > table
   vertical-align: middle;
 }
 
+#header table {
+  background: none;
+}
+
 #header h1
 {
   margin: 0;
   padding: 0;
   font-size: 55px;
+}
+
+td.logo {
+  width: 400px;
+}
+
+td.search {
+  vertical-align: bottom;
+}
+
+td.search form {
+  display: inline;
 }
 
 #nav
@@ -72,10 +92,6 @@ a:visited
 {
   color: white;
 }
-td
-{
-  border: 1px solid #000;
-}
 
 span.block
 {
@@ -86,44 +102,41 @@ span.title {
   font-size: 85%;  
 }
 
-table.char
-{
+table.char {
   width: 300px;
   font-size: 13px;
   border: 2px solid #AF7A30;
-  border-collapse: collapse;
   float: left;
-  margin-left: 2em;
+  margin-right: 1.5em;
   margin-bottom: 1.5em;
-}
-
-table, tbody, tr, td
-{
-  margin: 0;
-  padding: 0;
-}
-
-tr
-{
-  padding: 0;
-  margin: 0;
-  height: 20px;
 }
 
 td
 {
-  background-color: black;
-  color: white;
-  padding: 3px;
-  margin: 0px;
   vertical-align: top;
+}
+
+table.char td {
+  padding: 2px 4px 2px 4px;
+}
+
+table.skills td {
+  padding: 1px 4px 1px 4px;
+  height: 20px;
+}
+
+tbody > div {
+  overflow: scroll;
+  height: 100px;
 }
 
 h2.title
 {
-  margin-top: 0;
+  margin: 0 0 21px 0;
   color: gold;
 }
+
+
 
 #header a
 {
@@ -164,7 +177,7 @@ h2.title
 }
 
 .row {
-  max-width: 700px;
+  max-width: 960px;
 }
 
 th
@@ -178,6 +191,7 @@ table.internal
   width: 100%;
   margin: 0;
   padding: 0;
+  border-spacing: 0;
   border-collapse: collapse;
   
 }
@@ -227,6 +241,9 @@ td.level
   border-left: 2px solid #AF7A30;
 }
 
+td.gold {
+  color: gold;
+}
 td.center
 {
   text-align: center;
@@ -262,6 +279,9 @@ span.level
   margin-top: 0;
 }
 
+table.skills td.specialized, table td.trained {
+  height: 20px;
+}
 td.specialized
 {
   background-color: purple;
@@ -274,11 +294,14 @@ td.trained
   background: linear-gradient(to right, #0F3C3E, #0F3C3E, black);
 }
 
+table.char span.title {
+  margin-bottom: 1em;
+}
 span.creation {
   color: #CCC;
 }
 
-span.last_updated {
+div.last_updated {
   display: block;
   width: 100%;
   margin: 0 0 1.5em 0;
