@@ -1,7 +1,5 @@
 %table.char.skills
   %tbody
-    %tr.line
-      %td.tab{:colspan => 3} Skills
     %tr
       %td.specialized{:colspan => 3} Specialized Skills
     - @character['skills'].select { |key,value| value['training'] == "Specialized"}.sort.each do |skill|

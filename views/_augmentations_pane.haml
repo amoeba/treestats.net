@@ -1,0 +1,22 @@
+%table.char
+  %tbody
+    %tr
+      %td.specialized{:colspan => 2} Augmentations
+    %tr.colnames
+      %td Name
+      %td Uses
+    - @character.properties.each do |k,v|
+    - next unless PropertiesHelper::is_type(k, :aug)
+      %tr
+        %td= PropertiesHelper::get_property_name(k)
+        %td= v
+    %tr
+      %td.specialized{:colspan => 2} Auras
+    %tr.colnames
+      %td Name
+      %td Uses
+    - @character.properties.each do |k,v|
+    - next unless PropertiesHelper::is_type(k, :aura)
+      %tr
+        %td= PropertiesHelper::get_property_name(k)
+        %td= v

@@ -103,12 +103,9 @@ span.title {
 }
 
 table.char {
-  width: 300px;
+  width: 100%;
   font-size: 13px;
   border: 2px solid #AF7A30;
-  float: left;
-  margin-right: 1.5em;
-  margin-bottom: 1.5em;
 }
 
 td
@@ -176,8 +173,8 @@ h2.title
   font-size: 14px;
 }
 
-.row {
-  max-width: 960px;
+#treecontainer {
+  clear: left;  
 }
 
 th
@@ -356,4 +353,63 @@ span.overlaytext
 
 .current_title {
   color: #00FF00;
+}
+
+/* Tab functionality */
+
+.tabcontainer {
+  display: block;
+  float: left;
+  width: 300px;
+  height: 400px;  
+  margin-right: 20px;
+}
+
+.tabbox {
+  width: 300px;
+  position: relative;
+  top: 14;
+  left: 14;
+}
+
+.box {
+  position: absolute;
+  top: 25px;
+  left: 0px;
+  width: 100%;
+  background-color: black;
+  overflow: auto;
+  color: white;
+}
+
+.tab {
+  float: left;
+  display: block;
+  padding: 5px 0px;
+  width: 100px;
+  height: 25px;
+  font-size: 12px;
+  color: #EEE;
+  text-align: center;
+  cursor: pointer;
+}
+
+.tabbar {
+  height: 25px;
+}
+
+.tab.active {
+  background-image: url('/images/tab.jpg');
+}
+
+.tab.inactive {
+  background-image: url('/images/tab_off.jpg');
+}
+
+.box.active {
+  visibility: visible;
+}
+
+.box.inactive {
+  visibility: hidden
 }

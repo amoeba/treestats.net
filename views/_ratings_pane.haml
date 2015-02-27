@@ -1,0 +1,11 @@
+%table.char
+  %thead
+    %tr.colnames
+      %td Name
+      %td Uses
+  %tbody
+    - @character.properties.each do |k,v|
+    - next unless PropertiesHelper::is_type(k, :rating)
+      %tr
+        %td= PropertiesHelper::get_property_name(k)
+        %td= v

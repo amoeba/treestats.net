@@ -1,0 +1,31 @@
+%table.char
+  %tbody
+    %tr
+      %td.specialized{:colspan => 2} General
+    %tr
+      %td Birth:
+      %td= @character['birth'].strftime("%b %d, %Y at %H:%M %Z")
+    %tr
+      %td Deaths
+      %td= add_commas(@character['deaths'].to_s)
+    %tr
+      %td.specialized{:colspan => 2} Masteries
+    - @character.properties.each do |k,v|
+    - next unless PropertiesHelper::is_type(k, :mastery)
+      %tr
+        %td= PropertiesHelper::get_property_name(k)
+        %td= PropertiesHelper::get_mastery_name(k,v)
+    %tr
+      %td.specialized{:colspan => 2} Resistances
+    - @character.properties.each do |k,v|
+    - next unless PropertiesHelper::is_type(k, :resist)
+      %tr
+        %td= PropertiesHelper::get_property_name(k)
+        %td= v
+    %tr
+      %td.specialized{:colspan => 2} Society
+    - @character.properties.each do |k,v|
+    - next unless PropertiesHelper::is_type(k, :society)
+      %tr
+        %td= PropertiesHelper::get_property_name(k)
+        %td= v

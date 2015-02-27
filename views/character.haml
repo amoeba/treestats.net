@@ -7,31 +7,85 @@
     %span.last_updated_name Last Updated
     %span.last_updated_text= @character["updated_at"]
 
-  .row
-    - if @character.attribs
-      = haml :_attributes_pane
-      = haml :_skills_pane
-      = haml :_allegiance_pane
-      = haml :_titles_pane
-      - if @character.properties
-        = haml :_properties_pane  
-    - else
-      = haml :_stub_pane
-    
-.row
-  = haml :_tree_pane
 
-.row
-  - if @character.properties
-    %table.char
-      %thead
-        %tr.line
-          %td.tab{:colspan => 2} Unknown Properties
-        %tr.colnames
-          %td ID / Name
-          %td Value
-      %tbody
-        - @character.properties.sort { |a,b| a[0].to_i <=> b[0].to_i}.reject { |k,v| PropertiesHelper::is_known(k) }.each do |k,v|
-          %tr
-            %td= PropertiesHelper::get_property_name(k)
-            %td= v
+
+  .tabcontainer
+    .tabbox
+      .tabbar
+        .tab.active Attributes
+        .tab.inactive Skills
+        .tab.inactive Titles
+      .box.active
+        = haml :_attributes_pane
+      .box.inactive
+        = haml :_skills_pane
+      .box.inactive
+        = haml :_titles_pane
+        
+  .tabcontainer    
+    .tabbox
+      .tabbar
+        .tab.active Augmentations
+        .tab.inactive Ratings
+        .tab.inactive Other
+      .box.active
+        = haml :_augmentations_pane
+      .box.inactive
+        = haml :_ratings_pane
+      .box.inactive
+        = haml :_other_pane
+        
+  .row
+    = haml :_tree_pane
+/   .row
+/     - if @character.attribs
+/       = haml :_attributes_pane
+/       = haml :_skills_pane
+/       = haml :_allegiance_pane
+/       = haml :_titles_pane
+/       - if @character.properties
+/         = haml :_properties_pane  
+/     - else
+/       = haml :_stub_pane
+    
+/ .row
+/   = haml :_tree_pane
+
+/ .row
+/   - if @character.properties
+/     %table.char
+/       %thead
+/         %tr.line
+/           %td.tab{:colspan => 2} Unknown Properties
+/         %tr.colnames
+/           %td ID / Name
+/           %td Value
+/       %tbody
+/         - @character.properties.sort { |a,b| a[0].to_i <=> b[0].to_i}.reject { |k,v| PropertiesHelper::is_known(k) }.each do |k,v|
+/           %tr
+/             %td= PropertiesHelper::get_property_name(k)
+/             %td= v
+
+%script{:type => 'text/javascript', :src => '/js/tabs.js'}
+
+:javascript
+  var tabboxes = select_by_class("tabbox");
+
+  for(var i = 0; i < tabboxes.length; i++) {
+    var children = tabboxes[i].childNodes;
+    
+    for(var j = 0; j < children.length; j++) {
+      if(has_class(children[j], "tabbar")) {
+        var tabs = children[j].childNodes;
+        
+        for(var k = 0; k < tabs.length; k++) {
+          if(has_class(tabs[k], "tab")) {
+            tabs[k].addEventListener("click", function() {
+              activate(this);
+            });
+            
+          }
+        }
+      }
+    }
+  }
