@@ -8,32 +8,34 @@
     %span.last_updated_text= @character["updated_at"]
 
 
-
-  .tabcontainer
-    .tabbox
-      .tabbar
-        .tab.active Attributes
-        .tab.inactive Skills
-        .tab.inactive Titles
-      .box.active
-        = haml :_attributes_pane
-      .box.inactive
-        = haml :_skills_pane
-      .box.inactive
-        = haml :_titles_pane
-        
-  .tabcontainer    
-    .tabbox
-      .tabbar
-        .tab.active Augmentations
-        .tab.inactive Ratings
-        .tab.inactive Other
-      .box.active
-        = haml :_augmentations_pane
-      .box.inactive
-        = haml :_ratings_pane
-      .box.inactive
-        = haml :_other_pane
+  - if @character.attribs
+    .tabcontainer
+      .tabbox
+        .tabbar
+          .tab.active Attributes
+          .tab.inactive Skills
+          .tab.inactive Titles
+        .box.active
+          = haml :_attributes_pane
+        .box.inactive
+          = haml :_skills_pane
+        .box.inactive
+          = haml :_titles_pane
+          
+    .tabcontainer    
+      .tabbox
+        .tabbar
+          .tab.active Augmentations
+          .tab.inactive Ratings
+          .tab.inactive Other
+        .box.active
+          = haml :_augmentations_pane
+        .box.inactive
+          = haml :_ratings_pane
+        .box.inactive
+          = haml :_other_pane
+  - else
+    = haml :_stub_pane
         
   .row
     = haml :_tree_pane

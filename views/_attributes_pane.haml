@@ -1,7 +1,7 @@
 %table.char
-  %tbody
+  %thead
     %tr.header.line
-      %td.center
+      %td.headerleft.center
         %span.name= "#{@character['title']} #{@character['name']}"
         %span.block.title
           = "#{@character['gender']} #{@character['race']}"
@@ -18,19 +18,16 @@
                 %td.right
                   %span= "#{add_commas(@character['luminance_earned'].to_s)} / #{add_commas(@character['luminance_total'].to_s)}"
             - else
-              %tr
-                %td{:colspan => 2} &nbsp;
             %tr
               %td.left
                 %span Total Experience (XP):
               %td.right
                 %span= add_commas(@character['total_xp'].to_s)
-            
-        
-      %td.center.level
+      %td.headerright.center.level
         %span.block Character
         %span.block Level
         %span.block.level= @character['level']
+  %tbody.attributes
     %tr
       %td Strength
       %td.right
@@ -70,7 +67,9 @@
     %tr.line
       %td Mana
       %td.right= "#{@character['vitals']['mana']['base']} / #{@character['vitals']['mana']['base']}"
-    %tr.header
+    
+  %tfoot
+    %tr
       %td.internal{:colspan => 2}
         %table.internal
           %tbody

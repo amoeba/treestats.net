@@ -105,7 +105,9 @@ span.title {
 table.char {
   width: 100%;
   font-size: 13px;
-  border: 2px solid #AF7A30;
+  border-left: 2px solid #AF7A30;
+  border-right: 2px solid #AF7A30;
+  border-bottom: 2px solid #AF7A30;
 }
 
 td
@@ -113,11 +115,11 @@ td
   vertical-align: top;
 }
 
-table.char td {
+table.char tbody td {
   padding: 2px 4px 2px 4px;
 }
 
-table.skills td {
+table.skills tbody td {
   padding: 1px 4px 1px 4px;
   height: 20px;
 }
@@ -210,6 +212,12 @@ tr.header
   font-size: 100%;
 }
 
+tr.header > td {
+    
+  border-top: 2px solid #AF7A30;
+
+}
+
 tr.line
 {
   border-bottom: 2px solid #AF7A30;
@@ -225,22 +233,24 @@ td.tab
   text-align: center;
 }
 
-
-td.internal
-{
-  margin: 0;
-  padding: 0;
-}
-
 td.level
 {
   width: 65px;
   border-left: 2px solid #AF7A30;
 }
 
+td.headerleft {
+  background-color: #004000;
+}
+
+td.headerright {
+  background-color: #000040;
+}
+
 td.gold {
   color: gold;
 }
+
 td.center
 {
   text-align: center;
@@ -276,9 +286,10 @@ span.level
   margin-top: 0;
 }
 
-table.skills td.specialized, table td.trained {
+table.skills tbody td.specialized, table.skills tbody td.trained {
   height: 20px;
 }
+
 td.specialized
 {
   background-color: purple;
@@ -291,9 +302,10 @@ td.trained
   background: linear-gradient(to right, #0F3C3E, #0F3C3E, black);
 }
 
-table.char span.title {
+tbody.attributes span.title, tbody.skills span.title {
   margin-bottom: 1em;
 }
+
 span.creation {
   color: #CCC;
 }
@@ -361,7 +373,7 @@ span.overlaytext
   display: block;
   float: left;
   width: 300px;
-  height: 400px;  
+  height: 550px;  
   margin-right: 20px;
 }
 
@@ -374,7 +386,7 @@ span.overlaytext
 
 .box {
   position: absolute;
-  top: 25px;
+  top: 29px;
   left: 0px;
   width: 100%;
   background-color: black;
@@ -389,21 +401,26 @@ span.overlaytext
   width: 100px;
   height: 25px;
   font-size: 12px;
-  color: #EEE;
+  color: white;
   text-align: center;
   cursor: pointer;
 }
 
 .tabbar {
-  height: 25px;
+  height: 29px;
+  border-top: 2px solid #AF7A30;
+  border-left: 2px solid #AF7A30;
+  border-right: 2px solid #AF7A30;
 }
 
 .tab.active {
-  background-image: url('/images/tab.jpg');
+  /*background-image: url('/images/tab.jpg');*/
+  background-color: #004000;
 }
 
 .tab.inactive {
-  background-image: url('/images/tab_off.jpg');
+  /*background-image: url('/images/tab_off.jpg');*/
+
 }
 
 .box.active {
