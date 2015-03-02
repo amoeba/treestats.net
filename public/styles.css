@@ -430,3 +430,8 @@ span.overlaytext
   font-size: 85%;
   margin: 5px;
 }
+
+/* Listings */
+table.listing th {
+  background-color: #222;
+}
