@@ -417,3 +417,8 @@ span.overlaytext
 .box.inactive {
   display: none;
 }
+
+.box > span {
+  font-size: 85%;
+  margin: 5px;
+}
