@@ -7,17 +7,15 @@
           = "#{@character['gender']} #{@character['race']}"
           - if @character['current_title']
             = TitleHelper::get_title_name(@character['current_title'])
+        %span.block.title &nbsp;
         %table.internal.xplum
           %tbody
-            - if @character['luminance_earned']
-              %tr
-                %td
+            - if @character['luminance_earned'] && @character['luminance_earned'] > 0
               %tr
                 %td.left
                   %span Luminance:
                 %td.right
                   %span= "#{add_commas(@character['luminance_earned'].to_s)} / #{add_commas(@character['luminance_total'].to_s)}"
-            - else
             %tr
               %td.left
                 %span Total Experience (XP):
