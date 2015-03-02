@@ -1,8 +1,5 @@
-#treecontainer
-  %h3 Allegiance Tree
-
-  #tree
-    %span.overlaytext You can scroll to zoom and drag to pan. Click on a character to navigate to their character page.
+#tree
+  %span.overlaytext You can scroll to zoom and drag to pan. Click on a character to navigate to their character page.
 
 %script{:src => '/js/d3.min.js'}
 %script{:src => '/js/tree.js'}
@@ -16,7 +13,7 @@
 
   d3.json(request_url, function(error, json) {
     draw('#tree', json, server_name, player_name, {
-      width: 616,
-      height: 424
+      width: 592,
+      height: 600
     });
   });
