@@ -1,10 +1,13 @@
-%table.char
-  %tbody
-    %tr.colnames
-      %td Name
-      %td Uses
-    - @character.properties.each do |k,v|
-    - next unless PropertiesHelper::is_type(k, :rating)
-      %tr
-        %td= PropertiesHelper::get_property_name(k)
-        %td= v
+- if @character.properties
+  %table.char
+    %tbody
+      %tr.colnames
+        %td Name
+        %td Uses
+      - @character.properties.each do |k,v|
+      - next unless PropertiesHelper::is_type(k, :rating)
+        %tr
+          %td= PropertiesHelper::get_property_name(k)
+          %td= v
+- else
+  %span This char doesn't have any augmentations or auras.
