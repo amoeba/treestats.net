@@ -13,15 +13,17 @@
 - if !@characters.exists?
   %span Couldn't find any characters for this ranking.
 - else
-  %table
+  %table.listing
     %thead
       %tr
         %th Name
+        %th Server
         %th= (@tokens.length == 1 ? @tokens : @tokens[1].split("_")).map(&:capitalize).join(" ")
     %tbody
       - @records.each do |character|
         %tr
           %td
-            %a{:href => "/#{character[:server]}/#{character[:name]}"}= "#{character[:name]} (#{character[:server]})"
-            %td= character[:value]
+            %a{:href => "/#{character[:server]}/#{character[:name]}"}= character[:name]
+          %td= character[:server]
+          %td= character[:value]
           
