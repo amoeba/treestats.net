@@ -21,22 +21,33 @@
       .box.inactive
         = haml :_titles_pane
         
-    .tabcontainer    
-      .tabbar
-        .tab.active Augmentations
-        .tab.inactive Ratings
-        .tab.inactive Other
-      .box.active
-        = haml :_augmentations_pane
-      .box.inactive
-        = haml :_ratings_pane
-      .box.inactive
-        = haml :_other_pane
-    .tabcontainer    
-      .tabbar
-        .tab.active Allegiance
-      .box.active
-        = haml :_allegiance_pane
+    - if @character.properties
+      .tabcontainer    
+        .tabbar
+          .tab.active Augmentations
+          .tab.inactive Ratings
+          .tab.inactive Other
+        .box.active
+          = haml :_augmentations_pane
+        .box.inactive
+          = haml :_ratings_pane
+        .box.inactive
+          = haml :_other_pane  
+      .tabcontainer    
+        .tabbar
+          .tab.active Allegiance
+        .box.active
+          = haml :_allegiance_pane
+    - else
+      .tabcontainer    
+        .tabbar
+          .tab.active Allegiance
+          .tab.inactive Other
+        .box.active
+          = haml :_allegiance_pane
+        .box.inactive
+          = haml :_other_pane  
+         
   - else
     = haml :_stub_pane
         
