@@ -187,6 +187,10 @@ module Treestats
       ""
     end
 
+    get "/download/?" do
+      puts "Not implemented (yet)."  
+    end
+    
     get "/servers/?" do
       haml :servers
     end
