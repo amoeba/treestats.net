@@ -73,6 +73,10 @@ td.search form {
   background-color: #000022;
 }
 
+#content > table {
+  width: 400px;
+}
+
 #footer
 {
   font-size: 85%;
@@ -115,6 +119,10 @@ table.char tbody td {
   padding: 2px 4px 2px 4px;
 }
 
+
+table.char table.internal tbody td {
+  padding: 0;
+}
 
 table.char tbody.skills td.skill_icon {
   padding: 0px 0px 0px 4px;
@@ -199,6 +207,7 @@ td.level
 {
   width: 65px;
   border-left: 2px solid #AF7A30;
+  font-size: 85%;
 }
 
 td.headerleft {
@@ -268,7 +277,7 @@ span.name
 
 span.level
 {
-  font-size: 160%;
+  font-size: 200%;
   color: #FFF27F;
   margin-top: 0;
 }
@@ -355,7 +364,7 @@ span.overlaytext
 .tabcontainer {
   display: block;
   float: left;
-  width: 300px;
+  width: 320px;
   margin: 0 1.5em 1.5em 0;
 }
 
@@ -364,7 +373,6 @@ span.overlaytext
 }
 
 .tabbar {
-  width: 300px;
   height: 30px;
 }
 
