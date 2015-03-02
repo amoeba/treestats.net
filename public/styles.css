@@ -47,12 +47,20 @@ td.logo {
   width: 400px;
 }
 
-td.search {
-  vertical-align: bottom;
+#search {
+  width: 50%;
+  padding: 6px;
+  background-color: rgba(0, 100, 0, 0.5);
 }
 
-td.search form {
+#search form {
   display: inline;
+}
+
+#download {
+  width: 50%;
+  padding: 6px;
+  background-color: rgba(0, 100, 0, 0.5);
 }
 
 #nav
