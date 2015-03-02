@@ -10,71 +10,49 @@
 
   - if @character.attribs
     .tabcontainer
-      .tabbox
-        .tabbar
-          .tab.active Attributes
-          .tab.inactive Skills
-          .tab.inactive Titles
-        .box.active
-          = haml :_attributes_pane
-        .box.inactive
-          = haml :_skills_pane
-        .box.inactive
-          = haml :_titles_pane
-          
+      .tabbar
+        .tab.active Attributes
+        .tab.inactive Skills
+        .tab.inactive Titles
+      .box.active
+        = haml :_attributes_pane
+      .box.inactive
+        = haml :_skills_pane
+      .box.inactive
+        = haml :_titles_pane
+        
     .tabcontainer    
-      .tabbox
-        .tabbar
-          .tab.active Augmentations
-          .tab.inactive Ratings
-          .tab.inactive Other
-        .box.active
-          = haml :_augmentations_pane
-        .box.inactive
-          = haml :_ratings_pane
-        .box.inactive
-          = haml :_other_pane
+      .tabbar
+        .tab.active Augmentations
+        .tab.inactive Ratings
+        .tab.inactive Other
+      .box.active
+        = haml :_augmentations_pane
+      .box.inactive
+        = haml :_ratings_pane
+      .box.inactive
+        = haml :_other_pane
+    .tabcontainer    
+      .tabbar
+        .tab.active Allegiance
+      .box.active
+        = haml :_allegiance_pane
   - else
     = haml :_stub_pane
         
-  .row
-    = haml :_tree_pane
-/   .row
-/     - if @character.attribs
-/       = haml :_attributes_pane
-/       = haml :_skills_pane
-/       = haml :_allegiance_pane
-/       = haml :_titles_pane
-/       - if @character.properties
-/         = haml :_properties_pane  
-/     - else
-/       = haml :_stub_pane
-    
-/ .row
-/   = haml :_tree_pane
-
-/ .row
-/   - if @character.properties
-/     %table.char
-/       %thead
-/         %tr.line
-/           %td.tab{:colspan => 2} Unknown Properties
-/         %tr.colnames
-/           %td ID / Name
-/           %td Value
-/       %tbody
-/         - @character.properties.sort { |a,b| a[0].to_i <=> b[0].to_i}.reject { |k,v| PropertiesHelper::is_known(k) }.each do |k,v|
-/           %tr
-/             %td= PropertiesHelper::get_property_name(k)
-/             %td= v
+  .tabcontainer.tree
+    .tabbar
+      .tab.active Tree
+    .box.active
+      = haml :_tree_pane
 
 %script{:type => 'text/javascript', :src => '/js/tabs.js'}
 
 :javascript
-  var tabboxes = select_by_class("tabbox");
+  var tabcontainers = select_by_class("tabcontainer");
 
-  for(var i = 0; i < tabboxes.length; i++) {
-    var children = tabboxes[i].childNodes;
+  for(var i = 0; i < tabcontainers.length; i++) {
+    var children = tabcontainers[i].childNodes;
     
     for(var j = 0; j < children.length; j++) {
       if(has_class(children[j], "tabbar")) {

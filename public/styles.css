@@ -105,13 +105,9 @@ span.title {
 table.char {
   width: 100%;
   font-size: 13px;
-  border-left: 2px solid #AF7A30;
-  border-right: 2px solid #AF7A30;
-  border-bottom: 2px solid #AF7A30;
 }
 
-td
-{
+td {
   vertical-align: top;
 }
 
@@ -119,14 +115,9 @@ table.char tbody td {
   padding: 2px 4px 2px 4px;
 }
 
-table.skills tbody td {
-  padding: 1px 4px 1px 4px;
-  height: 20px;
-}
 
-tbody > div {
-  overflow: scroll;
-  height: 100px;
+table.char tbody.skills td.skill_icon {
+  padding: 0px 0px 0px 4px;
 }
 
 h2.title
@@ -134,8 +125,6 @@ h2.title
   margin: 0 0 21px 0;
   color: gold;
 }
-
-
 
 #header a
 {
@@ -175,26 +164,16 @@ h2.title
   font-size: 14px;
 }
 
-#treecontainer {
-  clear: left;  
-}
 
-th
-{
-  padding: 3px;
-  background-color: #0F3C3E;
-}
 
 table.internal
 {
   width: 100%;
-  margin: 0;
-  padding: 0;
   border-spacing: 0;
   border-collapse: collapse;
-  
 }
 
+table.internal,
 table.internal tr, 
 table.internal td, 
 table.internal span
@@ -207,17 +186,6 @@ table.xplum tr td {
   font-size: 85%;
 }
 
-tr.header
-{
-  font-size: 100%;
-}
-
-tr.header > td {
-    
-  border-top: 2px solid #AF7A30;
-
-}
-
 tr.line
 {
   border-bottom: 2px solid #AF7A30;
@@ -225,12 +193,6 @@ tr.line
 
 tr.colnames td {
   background-color: #222;
-}
-
-td.tab
-{
-  background-color: #0A3509;
-  text-align: center;
 }
 
 td.level
@@ -241,10 +203,12 @@ td.level
 
 td.headerleft {
   background-color: #004000;
+  background-color: rgba(0, 100, 0, 0.4);
 }
 
 td.headerright {
   background-color: #000040;
+  background-color: rgba(0, 0, 100, 0.4);
 }
 
 td.gold {
@@ -270,10 +234,33 @@ td.vassal
   font-size: 90%;
 }
 
-td.icon
+td.skill_icon,
+td.skill_name,
+td.skill_base {
+  padding: 0px;
+}
+
+td.attribs_name {
+  width: 150px;
+}
+
+td.attribs_base {
+  width: 90px;
+}
+
+td.skill_icon
 {
   width: 10px;
 }
+
+td.skill_name {
+  width: 100px;
+}
+
+td.skill_base {
+  width: 50px;
+}
+
 span.name
 {
   font-size: 110%;
@@ -292,12 +279,14 @@ table.skills tbody td.specialized, table.skills tbody td.trained {
 
 td.specialized
 {
+  width: 300px;
   background-color: purple;
   background: linear-gradient(to right, #392067, #392067, black);
  }
 
 td.trained
 {
+  with: 300px;
   background-color: green;
   background: linear-gradient(to right, #0F3C3E, #0F3C3E, black);
 }
@@ -319,36 +308,30 @@ div.last_updated {
 }
 
 span.last_updated_name {
+  display: inline;
   margin: 0;
-  padding: 3px;
+  padding: 5px;
   background-color: #c00;
   color: #fff;
   border: 1px solid #CCC;
+  font-weight: bold;
 }
 
 span.last_updated_text {
+  display: inline;
   margin: 0;
-  padding: 3px;
+  padding: 5px;
   background-color: black;
-  border: 1px solid #CCC;
-}
-
-table.tree {
-  clear: left;
 }
 
 #tree {
-  float: left;
-  width: 615px;
-  height: 442px;
-  margin-left: 0px;
-  margin-bottom: 0px;
   color: white;
   font-size: 14px;
 }
 
 span.overlaytext
 {
+  margin: 5px;
   font-size: 11px;
   color: #CCC;
 }
@@ -373,60 +356,56 @@ span.overlaytext
   display: block;
   float: left;
   width: 300px;
-  height: 550px;  
-  margin-right: 20px;
+  margin: 0 1.5em 1.5em 0;
 }
 
-.tabbox {
-  width: 304px;
-  position: relative;
-  top: 14;
-  left: 14;
+.tabcontainer.tree { 
+  width: 600px;
+}
+
+.tabbar {
+  width: 300px;
+  height: 30px;
 }
 
 .box {
-  position: absolute;
-  top: 29px;
-  left: 0px;
-  width: 100%;
   background-color: black;
-  overflow: auto;
   color: white;
+  border: 2px solid #AF7A30;
 }
 
 .tab {
   float: left;
   display: block;
   padding: 5px 0px;
-  width: 100px;
-  height: 25px;
+  width: 96px;
+  height: 18px;
   font-size: 12px;
   color: white;
   text-align: center;
   cursor: pointer;
 }
 
-.tabbar {
-  height: 29px;
-  border-top: 2px solid #AF7A30;
-  border-left: 2px solid #AF7A30;
-  border-right: 2px solid #AF7A30;
-}
-
 .tab.active {
-  /*background-image: url('/images/tab.jpg');*/
+  border-top: 2px solid #AF7A30;
+  border-right: 2px solid #AF7A30;
+  border-left: 2px solid #AF7A30;
+  border-bottom: none;
   background-color: #004000;
+  background-color: rgba(0, 100, 0, 0.4);
+  font-weight: bold;
 }
 
 .tab.inactive {
-  /*background-image: url('/images/tab_off.jpg');*/
-
+  border-top: 2px solid #000022;
+  border-right: 2px solid #000022;
+  border-left: 2px solid #000022;
 }
 
 .box.active {
-  visibility: visible;
+  display: block;
 }
 
 .box.inactive {
-  visibility: hidden
+  display: none;
 }

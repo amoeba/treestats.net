@@ -14,7 +14,6 @@ var activate = function(ele) {
       clicked_index = -1,
       children = ele.parentNode.parentNode.childNodes;
   
-  
   for(var i in children) {
     if (has_class(children[i], "tabbar")) {
       var tabs = children[i].childNodes;
