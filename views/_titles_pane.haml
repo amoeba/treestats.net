@@ -1,5 +1,7 @@
 %table.char
   %tbody
+    %tr.colnames
+      %td Name
     - if @character.current_title && @character.titles
       - @character.titles.each do |t|
         %tr
