@@ -331,7 +331,7 @@ module Treestats
     end
 
     get '/logs/?' do
-      @logs = Log.all
+      @logs = Log.all.desc(:created_at).limit(20)
       
       haml :logs
     end
