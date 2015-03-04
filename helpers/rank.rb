@@ -1,7 +1,7 @@
 module RankHelper
   RANKS = {
     0 => { # Aluvian
-      0 => {
+      1 => {
         0 =>  "",
         1 =>  "Yeoman",
         2 =>  "Baronet",
@@ -14,7 +14,7 @@ module RankHelper
         9 =>  "King",
         10 => "High King"
       },
-      1 => {
+      2 => {
         0 =>  "",
         1 =>  "Yeoman",
         2 =>  "Baronet",
@@ -29,7 +29,7 @@ module RankHelper
       }
     },
     1 => { # Gharu
-      0 => {
+      1 => {
         0 =>  "",
         1 =>  "Sayyid",
         2 =>  "Shayk",
@@ -42,7 +42,7 @@ module RankHelper
         9 =>  "Malik",
         10 => "Sultan"
       },
-      1 => {
+      2 => {
         0 =>  "",
         1 =>  "Sayyida",
         2 =>  "Shayka",
@@ -57,7 +57,7 @@ module RankHelper
       }
     },
     2 => { # Sho
-      0 => {
+      1 => {
         0 =>  "",
         1 =>  "Jinin",
         2 =>  "Jo-Chueh",
@@ -70,7 +70,7 @@ module RankHelper
         9 =>  "Ou",
         10 => "Koutei"
       },
-      1 => {
+      2 => {
         0 =>  "",
         1 =>  "Jinin",
         2 =>  "Jo-Chueh",
@@ -85,7 +85,7 @@ module RankHelper
       }
     },
     3 => { # Viamontian
-      0 => {
+      1 => {
         0 =>  "",
         1 =>  "Squire",
         2 =>  "Banner",
@@ -98,7 +98,7 @@ module RankHelper
         9 =>  "King",
         10 => "High King"
       },
-      1 => {
+      2 => {
         0 =>  "",
         1 =>  "Dame",
         2 =>  "Banner",
@@ -113,7 +113,7 @@ module RankHelper
       }
     },
     4 => { # Umbrean
-      0 => {
+      1 => {
         0 =>  "",
         1 =>  "Tenebrous",
         2 =>  "Shade",
@@ -126,7 +126,7 @@ module RankHelper
         9 =>  "Highborn",
         10 => "King"
       },
-      1 => {
+      2 => {
         0 =>  "",
         1 =>  "Tenebrous",
         2 =>  "Shade",
@@ -141,7 +141,7 @@ module RankHelper
       }
     },
     9 => { # Penumbrean
-      0 => {
+      1 => {
         0 =>  "",
         1 =>  "Tenebrous",
         2 =>  "Shade",
@@ -154,7 +154,7 @@ module RankHelper
         9 =>  "Highborn",
         10 => "King"
       },
-      1 => {
+      2 => {
         0 =>  "",
         1 =>  "Tenebrous",
         2 =>  "Shade",
@@ -169,7 +169,7 @@ module RankHelper
       }
     },
     5 => { # Gear Knight
-      0 => {
+      1 => {
         0 =>  "",
         1 =>  "Tribunus",
         2 =>  "Praefectus",
@@ -182,7 +182,7 @@ module RankHelper
         9 =>  "Secondus",
         10 => "Primus"
       },
-      1 => {
+      2 => {
         0 =>  "",
         1 =>  "Tribunus",
         2 =>  "Praefectus",
@@ -197,7 +197,7 @@ module RankHelper
       }
     },
     10 => { # Undead
-      0 => {
+      1 => {
         0 =>  "",
         1 =>  "Neophyte",
         2 =>  "Acolyte",
@@ -210,7 +210,7 @@ module RankHelper
         9 =>  "Highness",
         10 => "Annointed"
       },
-      1 => {
+      2 => {
         0 =>  "",
         1 =>  "Neophyte",
         2 =>  "Acolyte",
@@ -225,7 +225,7 @@ module RankHelper
       }
     },
     8 => { # Empyrean
-      0 => {
+      1 => {
         0 =>  "",
         1 =>  "Ensign",
         2 =>  "Corporal",
@@ -238,7 +238,7 @@ module RankHelper
         9 =>  "Ipharsin",
         10 => "Aulin"
       },
-      1 => {
+      2 => {
         0 =>  "",
         1 =>  "Ensign",
         2 =>  "Corporal",
@@ -253,7 +253,7 @@ module RankHelper
       }
     },
     6 => { # Tumerok
-      0 => {
+      1 => {
         0 =>  "",
         1 =>  "Xutua",
         2 =>  "Tuona",
@@ -266,7 +266,7 @@ module RankHelper
         9 =>  "Sutah",
         10 => "Tah"
       },
-      1 => {
+      2 => {
         0 =>  "",
         1 =>  "Xutua",
         2 =>  "Tuona",
@@ -281,7 +281,7 @@ module RankHelper
       }
     },
     7 => { # Lugian
-      0 => {
+      1 => {
         0 =>  "",
         1 =>  "Laigus",
         2 =>  "Raigus",
@@ -294,7 +294,7 @@ module RankHelper
         9 =>  "Extas",
         10 => "Tiatus"
       },
-      1 => {
+      2 => {
         0 =>  "",
         1 =>  "Laigus",
         2 =>  "Raigus",
