@@ -2,7 +2,9 @@
   %tbody
     %tr
       %td.headerleft.center
-        %span.name= "#{@character['title']} #{@character['name']}"
+        %span.name
+          = RankHelper::get_rank_name(@character['race'], @character['gender'], @character['rank'])
+          = @character['name']
         %span.block.title
           = GenderHelper::get_gender_name(@character['gender'])
           = RaceHelper::get_race_name(@character['race'])
