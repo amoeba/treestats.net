@@ -1,0 +1,15 @@
+- if @character.properties
+  %table.char
+    %tbody
+      %tr.colnames
+        %td{:colspan => 2} Note: If you know what these properties are, please get in touch.
+      %tr.colnames
+        %td ID
+        %td Value
+      - @character.properties.sort { |a,b| a[0].to_i <=> b[0].to_i}.each do |k,v|
+      - next if PropertiesHelper::is_known(k)
+        %tr
+          %td= k
+          %td= v
+- else
+  %span This char doesn't have any unknown properties.

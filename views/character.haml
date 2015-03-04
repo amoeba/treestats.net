@@ -56,7 +56,14 @@
       .tab.active Allegiance Tree
     .box.active
       = haml :_tree_pane
-
+      
+  - if @character.properties
+    .tabcontainer    
+      .tabbar
+        .tab.active Unknown Properties
+      .box.active
+        = haml :_properties_pane
+          
 %script{:type => 'text/javascript', :src => '/js/tabs.js'}
 
 :javascript
