@@ -4,11 +4,10 @@ class Character
   
   field :n,   as: :name,              type: String
   field :s,   as: :server,            type: String
-  field :r,   as: :race,              type: String
-  field :g,   as: :gender,            type: String
+  field :r,   as: :race,              type: Integer
+  field :g,   as: :gender,            type: Integer
   field :l,   as: :level,             type: Integer
   field :rn,  as: :rank,              type: Integer
-  field :t,   as: :title,             type: String
   field :f,   as: :followers,         type: Integer
   field :d,   as: :deaths,            type: Integer
   field :b,   as: :birth,             type: DateTime
