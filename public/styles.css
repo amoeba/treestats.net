@@ -393,10 +393,10 @@ span.overlaytext
 .tab {
   float: left;
   display: block;
-  padding: 5px 0px;
-  width: 96px;
+  padding: 5px 5px;
   height: 18px;
   font-size: 12px;
+  font-weight: bold;
   color: white;
   text-align: center;
   cursor: pointer;
@@ -409,7 +409,6 @@ span.overlaytext
   border-bottom: none;
   background-color: #004000;
   background-color: rgba(0, 100, 0, 0.4);
-  font-weight: bold;
 }
 
 .tab.inactive {
