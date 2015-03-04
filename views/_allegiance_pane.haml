@@ -10,7 +10,10 @@
     %tr
       %td{:colspan => 4}
         - if @character['monarch']
-          %a{:href => "/#{params[:server]}/#{@character['monarch']['name']}"}= "#{@character['monarch']['title']} #{@character['monarch']['name']}"
+          %a{:href => "/#{params[:server]}/#{@character['monarch']['name']}"}
+            %abbr{:title => "Rank #{@character.rank}"}
+              = RankHelper::get_rank_name(@character.race, @character.gender, @character.rank)
+            = @character['monarch']['name']
     %tr.line
       %td{:colspan => 4}
         - if @character['monarch']
@@ -27,4 +30,7 @@
       - @character['vassals'].each do |vassal|
         %tr
           %td.vassal{:colspan => 4}
-            %a{:href => "/#{params[:server]}/#{vassal['name']}"}= "#{vassal['title']} #{vassal['name']}"
+            %a{:href => "/#{params[:server]}/#{vassal['name']}"}
+              %abbr{:title => "Rank #{@character['rank']}"}
+                = RankHelper::get_rank_name(vassal['race'], vassal['gender'], vassal['rank'])
+              = vassal['name']
