@@ -8,6 +8,16 @@
     %tr
       %td Deaths
       %td= add_commas(@character['deaths'].to_s)
+    %tr
+      %td Fishing Skill
+      %td
+        - if @character.properties.has_key?("192")
+          = @character.properties["192"]
+    %tr
+      %td Chess Rank
+      %td
+        - if @character.properties.has_key?("181")
+          = @character.properties["181"]
     - if @character.properties
       %tr
         %td.specialized{:colspan => 2} Masteries
