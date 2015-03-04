@@ -11,8 +11,8 @@
       %td{:colspan => 4}
         - if @character['monarch']
           %a{:href => "/#{params[:server]}/#{@character['monarch']['name']}"}
-            %abbr{:title => "Rank #{@character.rank}"}
-              = RankHelper::get_rank_name(@character.race, @character.gender, @character.rank)
+            %abbr{:title => "Rank #{@character['monarch']['rank']}"}
+              = RankHelper::get_rank_name(@character['monarch']['race'], @character['monarch']['gender'], @character['monarch']['rank'])
             = @character['monarch']['name']
     %tr.line
       %td{:colspan => 4}
