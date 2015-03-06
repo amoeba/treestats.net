@@ -36,7 +36,7 @@ module Treestats
       if(!verify)
         Log.create(title: "Failed to verify update", message: text)
     
-        return
+        return "Failed to verify character update. Character was not saved."
       end
       
       # Parse message
@@ -184,7 +184,7 @@ module Treestats
       end
 
       # RESPOND
-      ""
+      "Character successfully saved."
     end
 
     get "/download/?" do
