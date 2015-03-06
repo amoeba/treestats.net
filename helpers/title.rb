@@ -831,7 +831,7 @@ module TitleHelper
     if(TITLES.has_key?(id))
       return TITLES[id]
     else
-      return "not_found"
+      return "not_found (#{id})"
     end
   end
 end
