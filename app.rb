@@ -184,7 +184,7 @@ module Treestats
       end
 
       # RESPOND
-      "Character successfully saved."
+      "Character was updated successfully."
     end
 
     get "/download/?" do
