@@ -23,7 +23,8 @@
     %tr.line
       %td{:colspan => 4}
         - if @character['patron']
-          %a{:href => "/#{params[:server]}/#{@character['patron']['name']}"}= "#{@character['patron']['title']} #{@character['patron']['name']}"
+          %a{:href => "/#{params[:server]}/#{@character['patron']['name']}"}
+            = RankHelper::get_rank_name(@character['patron']['race'], @character['patron']['gender'], @character['patron']['rank'])
     %tr
       %td.gold{:colspan => 4} VASSALS
     - if @character['vassals']
