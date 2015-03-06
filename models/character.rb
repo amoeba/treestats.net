@@ -4,8 +4,8 @@ class Character
   
   field :n,   as: :name,              type: String
   field :s,   as: :server,            type: String
-  field :r,   as: :race,              type: Integer
-  field :g,   as: :gender,            type: Integer
+  field :r,   as: :race,              type: String
+  field :g,   as: :gender,            type: String
   field :l,   as: :level,             type: Integer
   field :rn,  as: :rank,              type: Integer
   field :f,   as: :followers,         type: Integer
