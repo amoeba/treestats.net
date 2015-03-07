@@ -3,7 +3,7 @@
     %tr.header.line
       %td{:colspan => 3}
         = haml :_char_header
-  %tbody.skills.scrollable
+  %tbody.skills
     %tr
       %td.specialized{:colspan => 3} Specialized Skills
     - @character['skills'].select { |key,value| value['training'] == "Specialized"}.sort.each do |skill|
