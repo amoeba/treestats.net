@@ -373,7 +373,8 @@ span.overlaytext
   display: block;
   float: left;
   width: 320px;
-  margin: 0 1.5em 1.5em 0;
+  height: 400px;
+  margin: 0 1.5em 3em 0;
 }
 
 .tabcontainer.tree { 
@@ -388,6 +389,8 @@ span.overlaytext
   background-color: black;
   color: white;
   border: 2px solid #AF7A30;
+  max-height: 400px;
+  overflow: auto;
 }
 
 .tab {
@@ -430,7 +433,9 @@ span.overlaytext
   margin: 5px;
 }
 
+
 /* Listings */
+
 table.listing th {
   background-color: #222;
 }
