@@ -195,13 +195,8 @@ module Treestats
       haml :servers
     end
 
-    get '/characters/?' do
-     # TODO
-     #   - Sorting
-     #   - Limiting
-     #   - Pagination
-     
-     @characters = Character.all.limit(100).desc(:updated_at)
+    get '/characters/?' do     
+     @characters = Character.all.limit(100).desc(:updated_at).where(:attribs.exists => true)
 
       haml :characters
     end
@@ -285,11 +280,8 @@ module Treestats
     get '/rankings/?' do
       criteria = {}
 
-      # Tokenize
-      
       # Tokenize sort field so we can pull the values out
       # This is either 1 or 3 in length
-      
       @tokens = params[:sort].split(".")
       
       
@@ -305,11 +297,9 @@ module Treestats
       
 
       # Grab records
-      
       @characters = Character.where(criteria)
 
       # Collect the records
-      
       @records = @characters.to_a.collect do |char|
         {
           :server => char.server,
@@ -319,7 +309,6 @@ module Treestats
       end
       
       # Sort values
-      
       if(@params[:sort] == "birth")
         @records.sort! { |a,b| a[:value] <=> b[:value] }
       else
@@ -337,12 +326,8 @@ module Treestats
     end
     
     
-    get '/:server/?' do |server|
-      # TODO
-      # - Limiting
-      # - Sorting
-      
-      @characters = Character.where(server: server).limit(100).desc(:updated_at)
+    get '/:server/?' do |server|      
+      @characters = Character.where(server: server).limit(100).desc(:updated_at).where(:attribs.exists => true)
 
       haml :server
     end

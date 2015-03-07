@@ -73,6 +73,7 @@ module PropertiesHelper
     "282" => { :type => :society, :name => "Society1Status"},
     "283" => { :type => :society, :name => "Society2Status"},
     "284" => { :type => :society, :name => "Society3Status"},
+    "287" => { :type => :society, :name => "Ribbons"},
     
     "354" => { :type => :mastery, :name => "Melee"},
     "355" => { :type => :mastery, :name => "Ranged"},
