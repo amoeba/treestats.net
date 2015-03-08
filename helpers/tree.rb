@@ -63,6 +63,9 @@ class Tree
     all_vassals = all_vassals.concat(character['vassals'].collect { |v| v['name'] }) if character['vassals']
     all_vassals = all_vassals.concat(vassals.collect { |v| v['name']}) if vassals && vassals.count > 0
     
+    # Make unique
+    all_vassals = all_vassals.uniq
+    
     puts "After"
     puts all_vassals
     
