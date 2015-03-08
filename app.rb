@@ -85,8 +85,14 @@ module Treestats
         Character.create(json_text)
       end
 
+      # Add the allegiance
+      Allegiance.find_or_create_by(server: json_text['server'], name: json_text['allegiance_name'])
+      
+      
       # # Add any monarchs/patrons/vassals we don't already know about
 
+      allegiance_name = json_text['allegiance_name']
+      
       # Monarch
       if(json_text['monarch'])
         monarch_name = json_text['monarch']['name']
@@ -201,22 +207,46 @@ module Treestats
       haml :characters
     end
 
-    get '/search/?' do
-      name = nil
-      server = nil
-      criteria = {}
-      
-      if(params && params[:name] && params[:name].length >= 3)
-        name = /#{Regexp.escape(params[:name])}/i
-        
-        criteria[:name] = name
+    get '/allegiances/:key' do |key|
+      puts key
+      if(key.length == 2)
+        @server, @name = key.split("-")
+        @characters = Characters.where(server: server, allegiance_name: name).limit(50).asc(:name)
       end
       
+      haml :allegiance  
+    end
+    
+    get '/allegiances/?' do
+      @allegiances = Allegiance.all
+      
+      haml :allegiances
+    end
+    
+    get '/search/?' do
+      criteria = {}
+      
+      # Deal with which server we're searching
       if(params[:server] && params[:server] != "All Servers")
         criteria[:server] = params[:server]
       end
+      
+      # Deal with whether we're searching players or allegiances  
+      if(params && params[:character])
+        if(params[:character].length >= 0)
+          criteria[:name] = /#{Regexp.escape(params[:character])}/i
+        end
+          
+        puts criteria
+        @records = Character.limit(50).asc(:name).where(criteria)
+      elsif(params && params[:allegiance])
+        if(params[:allegiance].length >= 0)
+          criteria[:name] = /#{Regexp.escape(params[:allegiance])}/i
+        end
         
-      @characters = Character.limit(100).where(criteria)
+        puts criteria
+        @records = Allegiance.limit(50).asc(:server).where(criteria)
+      end
       
       haml :search
     end

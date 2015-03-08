@@ -1,4 +1,4 @@
-%span Search:
+%span Players
 %form{:action => '/search', :method => 'get'}
   %select{:name => 'server', :value => params[:server]}
     - ["All Servers", "Darktide", "Frostfell", "Harvestgain", "Leafcull", "Morningthaw", "Thistledown", "Solclaim", "WintersEbb"].each do |s|
@@ -7,5 +7,17 @@
       - else
         %option{:value => s}= s
     
-  %input{:name => 'name', :type => 'text', :value => params[:name]}
+  %input{:name => 'character', :type => 'text', :value => params[:player]}
+  %input{:type => 'submit'}
+  
+%span Allegiances
+%form{:action => '/search', :method => 'get'}
+  %select{:name => 'server', :value => params[:server]}
+    - ["All Servers", "Darktide", "Frostfell", "Harvestgain", "Leafcull", "Morningthaw", "Thistledown", "Solclaim", "WintersEbb"].each do |s|
+      - if params[:server] && params[:server] == s
+        %option{:value => s, :selected => true}= s
+      - else
+        %option{:value => s}= s
+    
+  %input{:name => 'allegiance', :type => 'text', :value => params[:allegiance]}
   %input{:type => 'submit'}

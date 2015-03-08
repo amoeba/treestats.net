@@ -1,8 +1,15 @@
 %h2.title Search
-- if @characters.nil?
-  %span No characters found.
--else
-  %ul
-    - @characters.to_a.each do |c|
-      %li
-        %a{:href => "/#{c.server}/#{c.name}"}= "#{c.name} (#{c.server})"
+- if @records
+  - if params && params[:character]
+    %ul
+      - @records.to_a.each do |r|
+        %li
+          %a{:href => "/#{r.server}/#{r.name}"}= "#{r.name} (#{r.server})"
+  - elsif params && params[:allegiance]
+    %span Not fully implemented yet.
+    %ul
+      - @records.to_a.each do |r|
+        %li
+          = "#{r.name} (#{r.server})"
+- else
+  %span No records found.
