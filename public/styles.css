@@ -48,7 +48,7 @@ td.logo {
 }
 
 #search {
-  width: 50%;
+  width: 75%;
   padding: 6px;
   background-color: black;
 }
@@ -58,7 +58,7 @@ td.logo {
 }
 
 #download {
-  width: 50%;
+  width: 25%;
   padding: 6px;
   background-color: black;
 }

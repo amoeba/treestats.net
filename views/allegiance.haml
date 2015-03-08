@@ -1,0 +1,12 @@
+
+- if !@characters
+  %h2.title Allegiance Member Search
+  %span No characters found.
+- else
+  %h2.title= "#{@name} (#{@server})"
+
+  %span Not fully implemented yet.
+  %ul
+    - @characters.each do |c|
+      %li
+        = "#{c.server} - #{c.name}"
