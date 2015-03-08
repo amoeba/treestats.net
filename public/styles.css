@@ -377,8 +377,15 @@ span.overlaytext
   margin: 0 1.5em 3em 0;
 }
 
-.tabcontainer.tree { 
-  width: 600px;
+.tabcontainer.tree {
+  width: 660px;
+  height: 660px;
+}
+
+.tabcontainer.tree .box {
+  overflow: visible;
+  height: 660px;
+  max-height: 660px;
 }
 
 .tabbar {
@@ -390,7 +397,8 @@ span.overlaytext
   color: white;
   border: 2px solid #AF7A30;
   max-height: 400px;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .tab {
