@@ -90,22 +90,19 @@ module Treestats
       
       
       # # Add any monarchs/patrons/vassals we don't already know about
-
       allegiance_name = json_text['allegiance_name']
       
       # Monarch
       if(json_text['monarch'])
         monarch_name = json_text['monarch']['name']
-        monarch = Character.where(name: monarch_name, server: server)
-
-        if(!monarch.exists?)
-          Character.create(name: monarch_name, server: server)
-        end
+        
+        Character.find_or_create_by(name: monarch_name, server: server, allegiance_name: allegiance_name)
       end
 
       # Patron
       if(json_text['patron'])
         patron_name = json_text['patron']['name']
+        
         patron = Character.where(name: patron_name, server: server)
 
         # Patron record doesn't already exist
@@ -113,6 +110,7 @@ module Treestats
           patron_attributes = {
             'name' => patron_name,
             'server' => server,
+            'allegiance_name' => allegiance_name,
             'vassals' => [{
               'name' => name,
               'race' => json_text['race'],
@@ -153,12 +151,14 @@ module Treestats
       if(json_text['vassals'] && json_text['vassals'].length > 0)
         json_text['vassals'].each do |vassal|
           vassal_name = vassal['name']
+          
           query = Character.where(name: vassal_name, server: server)
 
           if(!query.exists?)
             vassal_attributes = {
               'name' => vassal_name,
-              'server' => server
+              'server' => server,
+              'allegiance_name' => allegiance_name
             }
 
             if(json_text['monarch'])
@@ -202,7 +202,7 @@ module Treestats
     end
 
     get '/characters/?' do     
-     @characters = Character.all.limit(100).desc(:updated_at).where(:attribs.exists => true)
+      @characters = Character.all.limit(100).desc(:updated_at).where(:attribs.exists => true)
 
       haml :characters
     end
