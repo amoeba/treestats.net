@@ -3,13 +3,13 @@
     %tr.colnames
       %td Name
     - if @character.current_title && @character.titles
-      - @character.titles.each do |t|
+      - TitleHelper::sorted_titles(@character.titles).each do |title|
         %tr
           %td
-            - if t == @character.current_title
-              %span.current_title= TitleHelper::get_title_name(t)
+            - if title == TitleHelper::get_title_name(@character.current_title)
+              %span.current_title= title
             - else
-              %span= TitleHelper::get_title_name(t)
+              %span= title
     - else
       %tr
         %td No titles.
