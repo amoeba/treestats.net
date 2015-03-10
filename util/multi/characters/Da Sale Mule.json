@@ -1,0 +1,395 @@
+{
+  "version": "1",
+  "name": "Da Mule Sale",
+  "race": "Lugian",
+  "gender": "Male",
+  "level": 268,
+  "allegiance_name": "Knights of Fortune",
+  "rank": 3,
+  "followers": 33,
+  "server": "Morningthaw",
+  "server_population": 175,
+  "deaths": 3,
+  "birth": "1/20/2013 2:23:33 AM",
+  "total_xp": 168762050118,
+  "unassigned_xp": 94144346169,
+  "skill_credits": 5,
+  "luminance_earned": 0,
+  "luminance_total": 0,
+  "attribs": {
+    "strength": {
+      "name": "Strength",
+      "base": 290,
+      "creation": 100
+    },
+    "endurance": {
+      "name": "Endurance",
+      "base": 200,
+      "creation": 10
+    },
+    "quickness": {
+      "name": "Quickness",
+      "base": 290,
+      "creation": 100
+    },
+    "coordination": {
+      "name": "Coordination",
+      "base": 290,
+      "creation": 100
+    },
+    "focus": {
+      "name": "Focus",
+      "base": 200,
+      "creation": 10
+    },
+    "self": {
+      "name": "Self",
+      "base": 200,
+      "creation": 10
+    }
+  },
+  "vitals": {
+    "health": {
+      "name": "Health",
+      "base": 296
+    },
+    "stamina": {
+      "name": "Stamina",
+      "base": 396
+    },
+    "mana": {
+      "name": "Mana",
+      "base": 396
+    }
+  },
+  "skills": {
+    "melee_defense": {
+      "name": "melee_defense",
+      "base": 429,
+      "training": "Specialized"
+    },
+    "missile_defense": {
+      "name": "missile_defense",
+      "base": 116,
+      "training": "Untrained"
+    },
+    "arcane_lore": {
+      "name": "arcane_lore",
+      "base": 200,
+      "training": "Trained"
+    },
+    "magic_defense": {
+      "name": "magic_defense",
+      "base": 265,
+      "training": "Trained"
+    },
+    "mana_conversion": {
+      "name": "mana_conversion",
+      "base": 275,
+      "training": "Trained"
+    },
+    "item_tinkering": {
+      "name": "item_tinkering",
+      "base": 245,
+      "training": "Untrained"
+    },
+    "assess_person": {
+      "name": "assess_person",
+      "base": 0,
+      "training": "Untrained"
+    },
+    "deception": {
+      "name": "deception",
+      "base": 0,
+      "training": "Untrained"
+    },
+    "healing": {
+      "name": "healing",
+      "base": 371,
+      "training": "Trained"
+    },
+    "jump": {
+      "name": "jump",
+      "base": 295,
+      "training": "Trained"
+    },
+    "lockpick": {
+      "name": "lockpick",
+      "base": 0,
+      "training": "Unusable"
+    },
+    "run": {
+      "name": "run",
+      "base": 400,
+      "training": "Trained"
+    },
+    "assess_creature": {
+      "name": "assess_creature",
+      "base": 0,
+      "training": "Untrained"
+    },
+    "weapon_tinkering": {
+      "name": "weapon_tinkering",
+      "base": 245,
+      "training": "Untrained"
+    },
+    "armor_tinkering": {
+      "name": "armor_tinkering",
+      "base": 200,
+      "training": "Untrained"
+    },
+    "magic_item_tinkering": {
+      "name": "magic_item_tinkering",
+      "base": 200,
+      "training": "Untrained"
+    },
+    "creature_enchantment": {
+      "name": "creature_enchantment",
+      "base": 308,
+      "training": "Trained"
+    },
+    "item_enchantment": {
+      "name": "item_enchantment",
+      "base": 308,
+      "training": "Trained"
+    },
+    "life_magic": {
+      "name": "life_magic",
+      "base": 308,
+      "training": "Trained"
+    },
+    "war_magic": {
+      "name": "war_magic",
+      "base": 0,
+      "training": "Unusable"
+    },
+    "leadership": {
+      "name": "leadership",
+      "base": 208,
+      "training": "Trained"
+    },
+    "loyalty": {
+      "name": "loyalty",
+      "base": 5,
+      "training": "Trained"
+    },
+    "fletching": {
+      "name": "fletching",
+      "base": 0,
+      "training": "Unusable"
+    },
+    "alchemy": {
+      "name": "alchemy",
+      "base": 0,
+      "training": "Unusable"
+    },
+    "cooking": {
+      "name": "cooking",
+      "base": 0,
+      "training": "Unusable"
+    },
+    "salvaging": {
+      "name": "salvaging",
+      "base": 5,
+      "training": "Trained"
+    },
+    "two_handed_combat": {
+      "name": "two_handed_combat",
+      "base": 429,
+      "training": "Specialized"
+    },
+    "void_magic": {
+      "name": "void_magic",
+      "base": 0,
+      "training": "Unusable"
+    },
+    "heavy_weapons": {
+      "name": "heavy_weapons",
+      "base": 193,
+      "training": "Untrained"
+    },
+    "light_weapons": {
+      "name": "light_weapons",
+      "base": 193,
+      "training": "Untrained"
+    },
+    "finesse_weapons": {
+      "name": "finesse_weapons",
+      "base": 193,
+      "training": "Untrained"
+    },
+    "missile_weapons": {
+      "name": "missile_weapons",
+      "base": 155,
+      "training": "Specialized"
+    },
+    "shield": {
+      "name": "shield",
+      "base": 290,
+      "training": "Untrained"
+    },
+    "dual_wield": {
+      "name": "dual_wield",
+      "base": 193,
+      "training": "Untrained"
+    },
+    "recklessness": {
+      "name": "recklessness",
+      "base": 0,
+      "training": "Unusable"
+    },
+    "sneak_attack": {
+      "name": "sneak_attack",
+      "base": 0,
+      "training": "Unusable"
+    },
+    "dirty_fighting": {
+      "name": "dirty_fighting",
+      "base": 0,
+      "training": "Unusable"
+    },
+    "summoning": {
+      "name": "summoning",
+      "base": 0,
+      "training": "Unusable"
+    }
+  },
+  "monarch": {
+    "name": "Mr Adventure",
+    "race": 1,
+    "rank": 10,
+    "gender": 1,
+    "followers": 26275
+  },
+  "patron": {
+    "name": "Clyde Barrow",
+    "race": 2,
+    "rank": 6,
+    "gender": 1
+  },
+  "vassals": [
+    {
+      "name": "Da Summoner",
+      "race": 6,
+      "rank": 2,
+      "gender": 1
+    },
+    {
+      "name": "Trade-master",
+      "race": 1,
+      "rank": 1,
+      "gender": 1
+    },
+    {
+      "name": "The Mullinator",
+      "race": 4,
+      "rank": 1,
+      "gender": 1
+    },
+    {
+      "name": "Katsuyori",
+      "race": 5,
+      "rank": 1,
+      "gender": 1
+    },
+    {
+      "name": "Da Uber Noob",
+      "race": 7,
+      "rank": 1,
+      "gender": 1
+    },
+    {
+      "name": "Neo Nok",
+      "race": 1,
+      "rank": 1,
+      "gender": 1
+    },
+    {
+      "name": "Ms Adventure",
+      "race": 2,
+      "rank": 2,
+      "gender": 2
+    },
+    {
+      "name": "Yaroz",
+      "race": 3,
+      "rank": 2,
+      "gender": 1
+    }
+  ],
+  "current_title": 1,
+  "titles": [
+    771,
+    770,
+    769,
+    768,
+    767,
+    766,
+    765,
+    435,
+    33,
+    112,
+    116,
+    117,
+    61,
+    43,
+    433,
+    1
+  ],
+  "properties": {
+    "384": 0,
+    "386": 0,
+    "387": 0,
+    "323": 0,
+    "388": 0,
+    "389": 0,
+    "390": 0,
+    "199": 1131925962,
+    "329": 0,
+    "330": 0,
+    "331": 0,
+    "139": 55,
+    "333": 0,
+    "334": 0,
+    "335": 0,
+    "336": 0,
+    "338": 0,
+    "339": 0,
+    "340": 0,
+    "342": 0,
+    "343": 0,
+    "344": 0,
+    "350": 0,
+    "351": 0,
+    "354": 3,
+    "355": 10,
+    "230": 1,
+    "360": 0,
+    "40": 1,
+    "361": 0,
+    "365": 0,
+    "47": 0,
+    "370": 0,
+    "371": 0,
+    "307": 0,
+    "372": 0,
+    "308": 0,
+    "373": 0,
+    "374": 0,
+    "375": 0,
+    "376": 0,
+    "312": 0,
+    "377": 0,
+    "313": 0,
+    "378": 0,
+    "314": 0,
+    "379": 0,
+    "315": 0,
+    "316": 0,
+    "381": 0,
+    "317": 0,
+    "382": 0,
+    "318": 0,
+    "383": 0
+  }
+}
