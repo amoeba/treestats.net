@@ -46,42 +46,17 @@ class Tree
   end
 
   def walk_tree(current)
-    # Find the current level's parent
     character = Character.find_by(server: @server, name: current['name'])
     
-    puts "Reached leaf" if character.nil?
     return if character.nil?
 
-    # Find any disconnected vassals for this level's parent
-    vassals = Character.where({ :server => @server, :'p.name' => current['name'] })
-    
-    puts "Before"
-    puts character['vassals']
-    
-    # Create the union of connected and disconnected vassals for this level's parent
-    all_vassals = []
-    all_vassals = all_vassals.concat(character['vassals'].collect { |v| v['name'] }) if character['vassals']
-    all_vassals = all_vassals.concat(vassals.collect { |v| v['name']}) if vassals && vassals.count > 0
-    
-    # Make unique
-    all_vassals = all_vassals.uniq
-    
-    puts "After"
-    puts all_vassals
-    
-    # Add each vassal from the above union to this level's parent and recurse
-    if(all_vassals.length > 0)
+    if(character['vassals'])
       current.merge!({'children' => []})
 
-      all_vassals.each_with_index do |v,i|
-        current['children'] << { 'name' => v }
-        
+      character['vassals'].each_with_index do |vassal, i|
+        current['children'] << { 'name' => vassal['name'] }
         walk_tree(current['children'][i])
       end
-      
-      # all_vassals.each do |v|
-      #   current['children'] << { 'name' => v['name'] }
-      # end
     end
   end
 end
