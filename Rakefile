@@ -9,6 +9,7 @@ task :test do
   end
 end
 
+desc "Deploy to GitHub"
 task :deploy do
   puts ">> git branch deploy"
   `git branch deploy`
