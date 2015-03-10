@@ -10,6 +10,5 @@ gem 'json'
 gem 'puma'
 
 group :test do
-  gem "webmock"
   gem "rack-test"
 end

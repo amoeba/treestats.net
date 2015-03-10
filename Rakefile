@@ -1,12 +1,9 @@
-require 'rake/testtask'
-
-require './app'
 task :default, :test
 
-task :test do
-  Rake::TestTask.new do |t|
-    t.pattern = "spec/*_spec.rb"
-  end
+
+desc "Run all tests"
+task(:test) do
+  Dir['./spec/**/*_spec.rb'].each { |f| load f }
 end
 
 desc "Deploy to GitHub"

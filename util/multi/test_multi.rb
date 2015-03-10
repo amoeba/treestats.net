@@ -4,8 +4,8 @@ require 'net/http'
 require 'json'
 require 'base64'
 
-uri = URI.parse("http://floating-meadow-8649.herokuapp.com/")
-# uri = URI.parse("http://localhost:9292")
+# uri = URI.parse("http://floating-meadow-8649.herokuapp.com/")
+uri = URI.parse("http://localhost:9292")
 
 endpoint = Net::HTTP.new(uri.host, uri.port)
 

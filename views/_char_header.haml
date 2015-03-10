@@ -6,8 +6,8 @@
           = RankHelper::get_rank_name(@character['race'], @character['gender'], @character['rank'])
           = @character['name']
         %span.block.title
-          = @character['gender']
-          = @character['race']
+          = GenderHelper::get_gender_name(@character['gender'])
+          = RaceHelper::get_race_name(@character['race'])
           - if @character['current_title']
             = TitleHelper::get_title_name(@character['current_title'])
         %span.block.title &nbsp;
