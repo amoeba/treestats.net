@@ -30,15 +30,19 @@ module Treestats
 
       text = request.body.read
       
+      # VERIFY
       # Before we do anything, verify the message wasn't tampered with
-      verify = Encryption::decrypt(text)
-  
-      if(!verify)
-        Log.create(title: "Failed to verify update", message: text)
+      if settings.production?
+        verify = Encryption::decrypt(text)
     
-        return "Failed to verify character update. Character was not saved."
+        if(!verify)
+          Log.create(title: "Failed to verify update", message: text)
+      
+          return "Failed to verify character update. Character was not saved."
+        end
       end
       
+      # PARSE
       # Parse message
       json_text = JSON.parse(text)
       
@@ -47,14 +51,13 @@ module Treestats
         json_text = json_text.tap { |h| h.delete("key") }  
       end
       
-      # Updates
+      # Handle updates
 
+      # LOGS
       # Check in the update
-      Log.create(title: "POST", message: text)
+      Log.create(title: "/", message: text)
 
-      # Server Populations
-
-      # Save server and server population before processing the character
+      # PLAYER COUNTS
       server = json_text['server']
       server_pop = json_text['server_population']
 
@@ -63,132 +66,21 @@ module Treestats
 
       PlayerCount.create(server: server, count: server_pop)
       
-      # Characters
-
-      # Handle character create/update logic
+      # CHARACTER
       name = json_text['name']
           
-      # Pre-process "birth" field so it's stored as DateTime with GMT-5
+      # Convert "birth" field so it's stored as DateTime with GMT-5
       if(json_text.has_key?("birth"))
         json_text["birth"] = CharacterHelper::parse_birth(json_text["birth"])
       end
       
-      
-      character = Character.where(name: name, server: server)
+      character = Character.find_or_create_by(name: name, server: server)
+      character.update_attributes(json_text)
     
-      if(character.exists?)
-        record = character.first
-        
-        record.update_attributes(json_text)
-        record.touch
-      else
-        Character.create(json_text)
-      end
-
-      # Add the allegiance
-      Allegiance.find_or_create_by(server: json_text['server'], name: json_text['allegiance_name'])
-      
-      
-      # # Add any monarchs/patrons/vassals we don't already know about
+      # ALLEGIANCE
       allegiance_name = json_text['allegiance_name']
+      Allegiance.find_or_create_by(server: json_text['server'], name: allegiance_name)
       
-      # Monarch
-      if(json_text['monarch'])
-        monarch_name = json_text['monarch']['name']
-        
-        Character.find_or_create_by(name: monarch_name, server: server, allegiance_name: allegiance_name)
-      end
-
-      # Patron
-      if(json_text['patron'])
-        patron_name = json_text['patron']['name']
-        
-        patron = Character.where(name: patron_name, server: server)
-
-        # Patron record doesn't already exist
-        if(!patron.exists?)
-          patron_attributes = {
-            'name' => patron_name,
-            'server' => server,
-            'allegiance_name' => allegiance_name,
-            'vassals' => [{
-              'name' => name,
-              'race' => json_text['race'],
-              'rank' => json_text['rank'],
-              'title' => json_text['title'],
-              'gender' => json_text['gender']
-              }]
-          }
-          
-          # Add monarch if we have that information
-          if(json_text['monarch'])
-            patron_attributes.merge!({
-              'monarch' => {
-                'name' => json_text['monarch']['name'],
-                'race' => json_text['monarch']['race'],
-                'rank' => json_text['monarch']['rank'],
-                'title' => json_text['monarch']['title'],
-                'gender' => json_text['monarch']['gender']
-            }})
-          end
-
-          Character.create(patron_attributes)
-        else # Patron record does exist
-          record = patron.first
-
-          # See if the character isn't in the patron's vassals, add if so
-          if(record['vassals'])
-            if(!record.vassals.collect { |v| v['name'] }.include?(name))
-              record.add_to_set(vassals: { 'name' => name })
-            end
-          end
-          
-          record.touch
-        end
-      end
-
-      # Vassals
-      if(json_text['vassals'] && json_text['vassals'].length > 0)
-        json_text['vassals'].each do |vassal|
-          vassal_name = vassal['name']
-          
-          query = Character.where(name: vassal_name, server: server)
-
-          if(!query.exists?)
-            vassal_attributes = {
-              'name' => vassal_name,
-              'server' => server,
-              'allegiance_name' => allegiance_name
-            }
-
-            if(json_text['monarch'])
-              vassal_attributes.merge!({
-                'monarch' => {
-                  'name' => json_text['monarch']['name'],
-                  'race' => json_text['monarch']['race'],
-                  'rank' => json_text['monarch']['rank'],
-                  'title' => json_text['monarch']['title'],
-                  'gender' => json_text['monarch']['gender']
-              }})
-            end
-
-            if(json_text['patron'])
-              vassal_attributes.merge!({
-                'patron' => {
-                  'name' => json_text['patron']['name'],
-                  'race' => json_text['patron']['race'],
-                  'rank' => json_text['patron']['rank'],
-                  'title' => json_text['patron']['title'],
-                  'gender' => json_text['patron']['gender']
-              }})
-            end
-
-            Character.create(vassal_attributes)
-          end
-        end
-
-      end
-
       # RESPOND
       "Character was updated successfully."
     end
