@@ -16,13 +16,36 @@ var draw = function(selector, json, options) {
         .nodes(json.nodes)
         .links(json.links)
         .start();
+    
+    var zoomed = function () {
+      g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    }
+  
+    var zoom = d3.behavior.zoom()
+      .translate([0,0])
+      .scale(1)
+      .scaleExtent([.8, 2])
+      .on("zoom", zoomed);
+      
 
-    var link = svg.selectAll(".link")
+
+    svg.append("rect")
+      .attr("class", "overlay")
+      .attr("width", width)
+      .attr("height", height);
+      
+    var g = svg.append("g");
+    
+    svg.
+      call(zoom).
+      call(zoom.event);
+    
+    var link = g.selectAll(".link")
         .data(json.links)
       .enter().append("line")
         .attr("class", "link");
 
-    var node = svg.selectAll(".node")
+    var node = g.selectAll(".node")
         .data(json.nodes)
       .enter().append("g")
         .attr("class", "node")
