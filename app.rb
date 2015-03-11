@@ -97,7 +97,6 @@ module Treestats
     end
 
     get '/allegiances/:key' do |key|
-      puts key
       if(key.length == 2)
         @server, @name = key.split("-")
         @characters = Characters.where(server: server, allegiance_name: name).limit(50).asc(:name)
