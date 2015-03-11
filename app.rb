@@ -51,24 +51,22 @@ module Treestats
         json_text = json_text.tap { |h| h.delete("key") }  
       end
       
-      # Handle updates
-
+      # Extract information for later in this method
+      name = json_text['name']
+      server = json_text['server']  
+      server_pop = json_text['server_population']
+      allegiance_name = json_text['allegiance_name']
+      
       # LOGS
       # Check in the update
       Log.create(title: "/", message: text)
 
       # PLAYER COUNTS
-      server = json_text['server']
-      server_pop = json_text['server_population']
-
-      # Remove server_population from json_text
       json_text = json_text.tap { |h| h.delete('server_population')}
-
       PlayerCount.create(server: server, count: server_pop)
       
       # CHARACTER
-      name = json_text['name']
-          
+      
       # Convert "birth" field so it's stored as DateTime with GMT-5
       if(json_text.has_key?("birth"))
         json_text["birth"] = CharacterHelper::parse_birth(json_text["birth"])
@@ -78,10 +76,9 @@ module Treestats
       character.update_attributes(json_text)
     
       # ALLEGIANCE
-      allegiance_name = json_text['allegiance_name']
-      Allegiance.find_or_create_by(server: json_text['server'], name: allegiance_name)
+      Allegiance.find_or_create_by(server: server, name: allegiance_name)
       
-      # RESPOND
+      # RESPONSE
       "Character was updated successfully."
     end
 
