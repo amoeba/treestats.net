@@ -3,11 +3,10 @@
   %span No characters found.
 - else
   %h2.title= "#{@name} (#{@server})"
-
-  / %ul
-  /   - @characters.each do |c|
-  /     %li
-  /       %a{:href => "/#{c.server}/#{c.name}"}= c.name
+  
+  %span Showing all characters Treestats knows about. Scroll to zoom and drag to pan.
+  
+  #allegtree
         
 :css 
   .link {
@@ -38,7 +37,7 @@
 
   d3.json(request_url, function(error, json) {
     draw('#allegtree', json, server_name, allegiance_name, {
-      width: 600,
-      height: 600
+      width: 800,
+      height: 800
     });
   });

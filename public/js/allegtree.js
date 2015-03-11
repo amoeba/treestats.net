@@ -2,7 +2,7 @@ var draw = function(selector, json, options) {
   var width = options.width || 600,
       height = options.height || 600;
 
-  var svg = d3.select("#content").append("svg")
+  var svg = d3.select(selector).append("svg")
       .attr("width", width)
       .attr("height", height);
 
