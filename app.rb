@@ -106,12 +106,11 @@ module Treestats
       nodes = []
       links = []
       
-      require 'pp'
-      
       @characters.each_with_index do |c,i|
         # Add character as a node if it doesn't exist
         # Add links
           # Add characters from links as nodes
+          
         source_id = nodes.find_index { |n| n[:name] == c.name }
         
         if source_id.nil?
@@ -123,9 +122,7 @@ module Treestats
         linkages = [c.patron]
         linkages = linkages.concat(vassal_names) if vassal_names
         linkages = linkages.collect { |i| i.nil? ? nil : i["name"] }.reject { |i| i.nil? }
-        
-        pp linkages
-        
+
         linkages.each do |l|
           # Find id of source, create otherwise
           target_id = nodes.find_index { |n| n[:name] == l }
