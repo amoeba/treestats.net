@@ -8,8 +8,6 @@ var visitPreOrder = function(root, callback) {
   }
 }
 
-
-
 var draw = function(selector, json, server_name, player_name, options) {
   // Handle zooming
   var zoomed = function () {
