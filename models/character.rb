@@ -54,12 +54,14 @@ class Character
       patron.set(self.patron)
       
       vassals = patron.vassals
+      
       vassal_record = {
           'name' => self.name,
           'rank' => self.rank,
           'race' => self.race,
           'gender' => self.gender
       }
+      
       v_i = vassals && vassals.find_index { |v| v['name'] == self.name }
       
       if(v_i) # Detected
