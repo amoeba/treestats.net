@@ -97,10 +97,9 @@ module Treestats
     end
 
     get '/allegiances/:key' do |key|
-      if(key.length == 2)
-        @server, @name = key.split("-")
-        @characters = Characters.where(server: server, allegiance_name: name).limit(50).asc(:name)
-      end
+      @server, @name = key.split("-")
+      
+      @characters = Character.where(server: @server, allegiance_name: @name).limit(50).asc(:name)
       
       haml :allegiance  
     end
@@ -180,7 +179,7 @@ module Treestats
 
       # Tokenize sort field so we can pull the values out
       # This is either 1 or 3 in length
-      @tokens = params[:sort].split(".")
+      @tokens = params[:ranking].split(".")
       
       
       # Handle criteria
@@ -207,12 +206,24 @@ module Treestats
       end
       
       # Sort values
-      if(@params[:sort] == "birth")
-        @records.sort! { |a,b| a[:value] <=> b[:value] }
-      else
-        @records.sort! { |a,b| b[:value] <=> a[:value] }
-      end
       
+      if(params && params[:sort]) # Manual sorting
+        if(params[:sort] == "asc" || (params[:ranking] == "birth" && params[:sort] == "asc"))
+          @sort = "desc"
+          @records.sort! { |a,b| a[:value] <=> b[:value] }
+        else
+          @sort = "asc"
+          @records.sort! { |a,b| b[:value] <=> a[:value] }
+        end
+      else # Default sorting
+        if(params[:ranking] == "birth")
+          @sort = "desc"
+          @records.sort! { |a,b| a[:value] <=> b[:value] }
+        else
+          @sort = "asc"
+          @records.sort! { |a,b| b[:value] <=> a[:value] }
+        end
+      end
       
       haml :rankings
     end

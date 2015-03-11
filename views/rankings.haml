@@ -18,7 +18,9 @@
       %tr
         %th Name
         %th Server
-        %th= (@tokens.length == 1 ? @tokens : @tokens[1].split("_")).map(&:capitalize).join(" ")
+        %th
+          %a{:href => "/rankings?server=#{params[:server]}&ranking=#{params[:ranking]}&sort=#{@sort}"}
+            = (@tokens.length == 1 ? @tokens : @tokens[1].split("_")).map(&:capitalize).join(" ")
     %tbody
       - @records.each do |character|
         %tr
