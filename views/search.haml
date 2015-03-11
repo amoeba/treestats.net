@@ -6,10 +6,9 @@
         %li
           %a{:href => "/#{r.server}/#{r.name}"}= "#{r.name} (#{r.server})"
   - elsif params && params[:allegiance]
-    %span Not fully implemented yet.
     %ul
       - @records.to_a.each do |r|
         %li
-          = "#{r.name} (#{r.server})"
+          %a{:href => "/allegiances/#{r.server}-#{r.name}"}= "#{r.name} (#{r.server})"
 - else
   %span No records found.

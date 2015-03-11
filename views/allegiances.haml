@@ -3,8 +3,7 @@
 - if @allegiances.count == 0
   %span No allegiances found.
 - else
-  %span Not fully implemented yet.
   %ul
     - @allegiances.each do |a|
       %li
-        = "#{a.server} - #{a.name}"
+        %a{:href => "/allegiances/#{a.server}-#{a.name}"}= "#{a.name} (#{a.server})"
