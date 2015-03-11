@@ -4,8 +4,41 @@
 - else
   %h2.title= "#{@name} (#{@server})"
 
-  %ul
-    - @characters.each do |c|
-      %li
-        %a{:href => "/#{c.server}/#{c.name}"}= c.name
+  / %ul
+  /   - @characters.each do |c|
+  /     %li
+  /       %a{:href => "/#{c.server}/#{c.name}"}= c.name
         
+:css 
+  .link {
+    stroke: #CCC;
+    stroke-width: 1px;
+  }
+
+  .node text {
+    font: 10px sans-serif;
+    fill: white;
+  }
+  
+  .node circle {
+    stroke: white;
+    stroke-width: 2px;
+  }
+
+%script{:src => '/js/d3.min.js'}
+%script{:src => '/js/allegtree.js'}
+
+:javascript
+  var tokens = window.location.href.split("/"),
+    request_url = ["/", tokens[tokens.length - 2], "/", tokens[tokens.length - 1], ".json"].join("");
+
+  var tmp = tokens[tokens.length - 1].split("-");
+  var server_name = tmp[0],
+      allegiance_name = tmp[1];
+
+  d3.json(request_url, function(error, json) {
+    draw('#allegtree', json, server_name, allegiance_name, {
+      width: 600,
+      height: 600
+    });
+  });
