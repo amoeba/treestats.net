@@ -62,7 +62,6 @@ class Character
       }
       v_i = vassals && vassals.find_index { |v| v['name'] == self.name }
       
-      puts "v_i is #{v_i}"
       if(v_i) # Detected
         vassals[v_i] = vassal_record
       else
