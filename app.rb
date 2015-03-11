@@ -162,26 +162,6 @@ module Treestats
       haml :player_counts
     end
 
-    get '/other/:other/?' do |other|
-      criteria = {}
-      
-      # Add server if needed
-      if(params[:server] && params[:server] != 'All')
-        criteria['server'] = params[:server]
-      end
-      
-      # Sorting
-      if(params[:other] == "birth")
-        sort = { other => 1 }
-      else
-        sort = { other => -1 }
-      end
-      
-      @characters = Character.where(criteria).sort(sort)
-
-      haml :other
-    end
-
     get '/tree/:server/:name?' do |server, name|
       content_type :json
 
