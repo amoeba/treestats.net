@@ -81,10 +81,6 @@ td.logo {
   background-color: #000022;
 }
 
-#content > table {
-  width: 400px;
-}
-
 #footer
 {
   font-size: 85%;
@@ -444,6 +440,18 @@ span.overlaytext
 
 /* Listings */
 
+table.listing {
+  width: 600px;
+}
+
+table.listing thead tr {
+  border-bottom: 2px solid #AF7A30;
+}
+
+table.listing th, table.listing td {
+  padding: 3px;
+}
+
 table.listing th {
-  background-color: #222;
+  background-color: #392067;
 }
