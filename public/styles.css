@@ -107,7 +107,7 @@ span.block
 }
 
 span.title {
-  font-size: 85%;  
+  font-size: 85%;
 }
 
 table.char {
@@ -186,8 +186,8 @@ table.internal
 }
 
 table.internal,
-table.internal tr, 
-table.internal td, 
+table.internal tr,
+table.internal td,
 table.internal span
 {
   margin: 0;
@@ -337,7 +337,7 @@ span.last_updated_text {
   background-color: black;
 }
 
-#tree {
+#chain {
   color: white;
   font-size: 14px;
 }
@@ -373,12 +373,12 @@ span.overlaytext
   margin: 0 1.5em 3em 0;
 }
 
-.tabcontainer.tree {
+.tabcontainer.chain {
   width: 660px;
   height: 660px;
 }
 
-.tabcontainer.tree .box {
+.tabcontainer.chain .box {
   overflow: visible;
   height: 660px;
   max-height: 660px;

@@ -1,18 +1,18 @@
-#tree
+#chain
   %span.overlaytext You can scroll to zoom and drag to pan. Click on a character to navigate to their character page.
 
 %script{:src => '/js/d3.min.js'}
-%script{:src => '/js/tree.js'}
+%script{:src => '/js/chain.js'}
 
 :javascript
   var tokens = window.location.href.split("/"),
-      request_url = ["/tree/", tokens[tokens.length - 2], "/", tokens[tokens.length - 1]].join("");
+      request_url = ["/chain/", tokens[tokens.length - 2], "/", tokens[tokens.length - 1]].join("");
 
   var server_name = tokens.length == 5 ? tokens[tokens.length - 2] : null;
   var player_name = tokens.length == 5 ? decodeURIComponent(tokens[tokens.length - 1]) : null;
 
   d3.json(request_url, function(error, json) {
-    draw('#tree', json, server_name, player_name, {
+    draw('#chain', json, server_name, player_name, {
       width: 655,
       height: 640
     });
