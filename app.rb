@@ -73,7 +73,14 @@ module Treestats
       end
       
       character = Character.find_or_create_by(name: name, server: server)
-      character.update_attributes(json_text)
+      
+      # Assign attributes then touch
+      # We do this instead of just using update_attributes
+      # because I'd like to update timestamps even when the character
+      # update contains no new information.
+      
+      character.assign_attributes(json_text)
+      character.touch
     
       # ALLEGIANCE
       Allegiance.find_or_create_by(server: server, name: allegiance_name)
