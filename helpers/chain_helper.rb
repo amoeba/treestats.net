@@ -1,15 +1,15 @@
-class Tree
+class Chain
   def initialize(server, name)
     @server = server
     @name = name
   end
 
-  def get_tree
+  def get_chain
     highest_patron = find_highest_patron
     return "{}" if highest_patron.nil?
 
     tree = {'name' => highest_patron}
-    walk_tree(tree)
+    walk_chain(tree)
 
     tree
   end
@@ -45,7 +45,7 @@ class Tree
     highest_patron
   end
 
-  def walk_tree(current)
+  def walk_chain(current)
     character = Character.find_by(server: @server, name: current['name'])
     
     return if character.nil?
@@ -55,7 +55,7 @@ class Tree
 
       character['vassals'].each_with_index do |vassal, i|
         current['children'] << { 'name' => vassal['name'] }
-        walk_tree(current['children'][i])
+        walk_chain(current['children'][i])
       end
     end
   end
