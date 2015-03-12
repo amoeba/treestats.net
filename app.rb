@@ -79,7 +79,11 @@ module Treestats
       Allegiance.find_or_create_by(server: server, name: allegiance_name)
       
       # RESPONSE
-      "Character was updated successfully."
+      if(character.valid?)
+        return "Character was updated successfully."
+      else
+        return "Character update failed."
+      end
     end
 
     get "/download/?" do
