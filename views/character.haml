@@ -20,9 +20,9 @@
         = haml :_skills_pane
       .box.inactive
         = haml :_titles_pane
-        
+
     - if @character.properties
-      .tabcontainer    
+      .tabcontainer
         .tabbar
           .tab.active Augmentations
           .tab.inactive Ratings
@@ -32,38 +32,38 @@
         .box.inactive
           = haml :_ratings_pane
         .box.inactive
-          = haml :_other_pane  
-      .tabcontainer    
+          = haml :_other_pane
+      .tabcontainer
         .tabbar
           .tab.active Allegiance
         .box.active
           = haml :_allegiance_pane
     - else
-      .tabcontainer    
+      .tabcontainer
         .tabbar
           .tab.active Allegiance
           .tab.inactive Other
         .box.active
           = haml :_allegiance_pane
         .box.inactive
-          = haml :_other_pane  
-         
+          = haml :_other_pane
+
   - else
     = haml :_stub_pane
-        
-  .tabcontainer.tree
+
+  .tabcontainer.chain
     .tabbar
-      .tab.active Allegiance Tree
+      .tab.active Allegiance Chain
     .box.active
-      = haml :_tree_pane
-      
+      = haml :_chain_pane
+
   - if @character.properties
-    .tabcontainer    
+    .tabcontainer
       .tabbar
         .tab.active Unknown Properties
       .box.active
         = haml :_properties_pane
-          
+
 %script{:type => 'text/javascript', :src => '/js/tabs.js'}
 
 :javascript
@@ -71,17 +71,17 @@
 
   for(var i = 0; i < tabcontainers.length; i++) {
     var children = tabcontainers[i].childNodes;
-    
+
     for(var j = 0; j < children.length; j++) {
       if(has_class(children[j], "tabbar")) {
         var tabs = children[j].childNodes;
-        
+
         for(var k = 0; k < tabs.length; k++) {
           if(has_class(tabs[k], "tab")) {
             tabs[k].addEventListener("click", function() {
               activate(this);
             });
-            
+
           }
         }
       }

@@ -3,12 +3,12 @@
   %span No characters found.
 - else
   %h2.title= "#{@name} (#{@server})"
-  
+
   %span Showing all characters Treestats knows about. Scroll to zoom and drag to pan.
-  
+
   #allegtree
-        
-:css 
+
+:css
   .link {
     stroke: #CCC;
     stroke-width: 1px;
@@ -18,14 +18,14 @@
     font: 10px sans-serif;
     fill: white;
   }
-  
+
   .node circle {
     stroke: white;
     stroke-width: 2px;
   }
 
 %script{:src => '/js/d3.min.js'}
-%script{:src => '/js/allegtree.js'}
+%script{:src => '/js/tree.js'}
 
 :javascript
   var tokens = window.location.href.split("/"),
