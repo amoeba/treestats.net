@@ -6,7 +6,7 @@
 
   %span Showing all characters Treestats knows about. Scroll to zoom and drag to pan.
 
-  #allegtree
+  #tree
 
 :css
   .link {
@@ -36,7 +36,7 @@
       allegiance_name = tmp[1];
 
   d3.json(request_url, function(error, json) {
-    draw('#allegtree', json, server_name, allegiance_name, {
+    draw('#tree', json, server_name, allegiance_name, {
       width: 800,
       height: 800
     });
