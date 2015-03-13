@@ -13,11 +13,11 @@ describe "AppStory" do
     end
   end
   
-  describe "POST /" do
+  describe "POST / characters" do
     before do
       Character.all.destroy
     end
-          
+    
     it "reports update failure when the character isn't created" do
       post('/', '{}')
       last_response.body.must_equal "Character update failed."
@@ -42,7 +42,7 @@ describe "AppStory" do
     it "creates stub vassals" do
       post('/', '{"name":"patron", "server":"test","vassals":[{"name":"testvassal"}]}')
       last_response.body.must_equal "Character was updated successfully."
-            
+      
       Character.count.must_equal 2
     end
     
@@ -67,83 +67,31 @@ describe "AppStory" do
       Character.find_by(name: 'patron').allegiance_name.must_equal "cool allegiance"
       Character.find_by(name: 'vassal').allegiance_name.must_equal "cool allegiance"
     end
-    
-    it "fires the post-save monarch creation" do
-      c = Character.create({:name => "somechar", :server => 'someserver', :monarch => {"name" => "somemonarch"}})
-      
-      Character.count.must_equal 2
-      Character.find_by(name: "somechar", server: "someserver").wont_be :nil?
-      Character.find_by(name: "somemonarch", server: "someserver").wont_be :nil?
+  end  
+  
+  describe "POST / allegiances" do
+    before do
+      Character.all.destroy
+      Allegiance.all.destroy
     end
     
-    it "sets nil rank/race/gender when we don't specify them" do
-      c = Character.create({:name => "somechar", :server => 'someserver', :monarch => {"name" => "somemonarch"}})
+    it "doesn't create empty allegiances" do
+      post('/', '{"name":"testname", "server":"testserver"}')
+      
+      Allegiance.count.must_equal 0
+    end
 
-      c.monarch['rank'].must_equal nil
-      c.monarch['race'].must_equal nil
-      c.monarch['gender'].must_equal nil
+    it "creates allegiances" do
+      post('/', '{"name":"testname", "server":"testserver", "allegiance_name":"someallegiance"}')
+      
+      Allegiance.count.must_equal 1
     end
     
-    it "sets values for rank/race/gender when we secify them" do
-      c = Character.create({:name => "somechar", :server => 'someserver', :monarch => {"name" => "somemonarch", "rank" => 5, "race" => 2, "gender" => 1}})
-
-      c.monarch['rank'].must_equal 5
-      c.monarch['race'].must_equal 2
-      c.monarch['gender'].must_equal 1
-    end
-    
-    it "sets values for vassals rank/race/gender when we secify them" do
-      c = Character.create({
-        :name => "somechar", 
-        :server => 'someserver', 
-        :monarch => {"name" => "somemonarch", "rank" => 5, "race" => 2, "gender" => 1},
-        :vassals => [
-          {'name' => 'vassal', 'rank' => 2, 'race' => 3, 'gender' => 1}]})
-
-      c.monarch['rank'].must_equal 5
-      c.monarch['race'].must_equal 2
-      c.monarch['gender'].must_equal 1
+    it "doesn't create duplicate allegiances" do
+      post('/', '{"name":"testname", "server":"testserver", "allegiance_name":"someallegiance"}')
+      post('/', '{"name":"testname", "server":"testserver", "allegiance_name":"someallegiance"}')
       
-      v = Character.find_by(name: 'vassal')
-      
-      v.monarch['name'].must_equal 'somemonarch'
-      v.rank.must_equal 2
-    end
-    
-    it "pushes the current character as a vassal to the patron" do
-      c = Character.create({
-        :name => 'char',
-        :server => 'test',
-        :patron => { "name" => "patron" }
-        })
-      
-      p = Character.find_by(name: 'patron', server: 'test')
-      
-      p.vassals.must_be_kind_of Array
-      p.vassals.wont_be :nil?
-      p.vassals.detect { |v| v["name"]}.wont_be :nil?
-    end
-    
-    it "can add character as vassal to their patron when the patron already has a vassal" do
-      c = Character.create({
-        :name => "char",
-        :server => "test",
-        :patron => { "name" => "patron" }
-        })
-      
-      Character.create({
-        :name => "anotherchar",
-        :server => "test",
-        :patron => {"name" => "patron"}
-        })
-      
-      p = Character.find_by({
-        :name => "patron",
-        :server => "test"
-        })
-      
-      p.vassals.length.must_equal 2
-      p.vassals.collect { |v| v["name"] }.must_equal ["char", "anotherchar"]
+      Allegiance.count.must_equal 1
     end
   end
 end
