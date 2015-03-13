@@ -80,7 +80,7 @@ module Treestats
       # update contains no new information.
 
       character.assign_attributes(json_text)
-      character.touch
+      character.save
 
       # ALLEGIANCE
       Allegiance.find_or_create_by(server: server, name: allegiance_name)
