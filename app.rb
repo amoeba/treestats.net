@@ -81,6 +81,7 @@ module Treestats
 
       character.assign_attributes(json_text)
       character.save
+      character.touch
 
       # ALLEGIANCE
       Allegiance.find_or_create_by(server: server, name: allegiance_name)
