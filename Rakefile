@@ -15,7 +15,7 @@ task :deploy do
   puts branches
   
   puts ">> git filter-branch"
-  `git filter-branch --index-filter 'git rm --cached --ignore-unmatch helpers/encryption.rb' -f deploy`
+  `git filter-branch --index-filter 'git rm --cached --ignore-unmatch helpers/encryption_helper.rb' -f deploy`
   
   puts ">> git push --force origin deploy"
   `git push --force origin deploy:master`
