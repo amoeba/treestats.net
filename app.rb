@@ -107,11 +107,11 @@ module Treestats
 
       # RESPONSE
       if(character.valid?)
+        EmailHelper::send("[TreeStats] Character updated successfully.", "#{name} #{server}")
         return "Character was updated successfully."
-        EmailHelper::send_email("[TreeStats] Character updated successfully.", "#{name} #{server}")
       else
+        EmailHelper::send("[TreeStats] Character update failed!", "#{name} #{server}")
         return "Character update failed."
-        EmailHelper::send_email("[TreeStats] Character update failed!", "#{name} #{server}")
       end
     end
 
