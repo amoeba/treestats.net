@@ -3,6 +3,7 @@ require 'json'
 require 'mongoid'
 require 'json'
 require 'haml'
+require 'pony'
 
 # TODO Optimize queries using projections
 # egdb.users.find({age:18}, {name:1})
@@ -13,7 +14,25 @@ Dir["./models/*.rb"].each { |file| require file }
 module Treestats
   class App < Sinatra::Base
     configure do
+      # Mongoid
       Mongoid.load!("./config/mongoid.yml")
+      
+      # Pony/SendGrid
+      # Only on production
+      if settings.production?
+        Pony.options = {
+          :via => :smtp,
+          :via_options => {
+            :address => 'smtp.sendgrid.net',
+            :port => '587',
+            :domain => 'treestats.herokuapp.com',
+            :user_name => ENV['SENDGRID_USERNAME'],
+            :password => ENV['SENDGRID_PASSWORD'],
+            :authentication => :plain,
+            :enable_starttls_auto => true
+          }
+        }
+      end
     end
 
     not_found do
@@ -89,8 +108,10 @@ module Treestats
       # RESPONSE
       if(character.valid?)
         return "Character was updated successfully."
+        EmailHelper::send_email("[TreeStats] Character updated successfully.", "#{name} #{server}")
       else
         return "Character update failed."
+        EmailHelper::send_email("[TreeStats] Character update failed!", "#{name} #{server}")
       end
     end
 
