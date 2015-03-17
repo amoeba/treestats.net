@@ -8,7 +8,8 @@ gem 'haml'
 gem "mongoid", "~> 4.0.0"
 gem 'json'
 gem 'puma'
-gem 'pony'
+gem 'rest-client'
+gem 'dotenv'
 
 group :test do
   gem "rack-test"
