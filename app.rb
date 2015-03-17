@@ -93,10 +93,10 @@ module Treestats
 
       # RESPONSE
       if(character.valid?)
-        MailHelper::send("Character updated successfully.", "<a href=\"http://treestats.herokuapp.com/#{server}/#{name}\">#{name} (#{server})</a> was updated successfully!")
+        MailHelper::send("Character updated successfully: #{name} (#{server})", "<a href=\"http://treestats.herokuapp.com/#{server}/#{name}\">#{name} (#{server})</a> was updated successfully!")
         return "Character was updated successfully."
       else
-        MailHelper::send("Character update failed!", "#{name} #{server}")
+        MailHelper::send("Character update failed!", "<p>Raw Text<br/>#{text}</p> <p>JSON Text<br/>#{json_text}</p>")
         return "Character update failed."
       end
     end
