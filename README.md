@@ -9,23 +9,25 @@ A long time has passed since Treestats lived and I've decided to bring it back a
 
 ## What Treestats Does
 
-Treestats records ingame data from your characters using the [Decal](http://www.decaldev.com/) plugin, sends it to [the web app](http://treestats.net), which stores it in a web-accesible database for convenient browsing. The web interface is designed to be reminiscent of the old Treestats and also stay true to the design of Asheron's Call tiself because why not? Three main types of data are collected by the Decal plugin:
+Treestats records ingame data from your characters using the [Decal](http://www.decaldev.com/) plugin, sends it to [the web app](http://treestats.net), which stores it in a web-accessible database for convenient out-of-game browsing. The web interface is designed to be reminiscent of the old Treestats website and also to stay true to the design of Asheron's Call itself (because why not?). Three main types of data are collected by the Decal plugin:
 
 - Player metadata, attributes, vitals, and skills, etc.
 - Allegiance information (Monarchs, patrons, and vassals)
 - Server population counts
 
-A novel feature of the new Treestats, comapred to the original version, is that it uses [D3.js](http://d3js.org) to show allegiance trees and character chains (all vassals):
+A novel feature of the new Treestats, compared to the original version, is that it uses [D3.js](http://d3js.org) to show allegiance trees and character chains (all vassals):
 
-The entire allegiance tree, as it is known to Treestats:
 
-![Allegiance tree viewer](docs/tree.png)
-
-And a particular characters' chain (again, as it is known to Treestats):
+Here's a particular characters' chain (as it is known to Treestats):
 
 ![Allegiance chain](docs/chain.png)
 
-One limitation of Treestts is that it only knows about monarchs, patrons, and vassals of the characters that are directly uploaded (i.e. what is on your Allegiance pane). It won't know about the characters in between unless those players upload their characters using the plugin directly.
+And the entire allegiance tree, drawn as a force-directed graph (again, as it is known to Treestats):
+
+![Allegiance tree viewer](docs/tree.png)
+
+
+One limitation of Treestats is that it only knows about monarchs, patrons, and vassals of the characters that are directly uploaded (i.e. what is on your Allegiance pane). It won't know about the characters in between unless those players upload their characters using the plugin directly.
 
 ## Structure
 
