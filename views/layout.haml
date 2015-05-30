@@ -11,10 +11,11 @@
           %td{:colspan => 2}
             %table
               %tbody
-                %tr
-                  %td#header{:colspan => 2}
+                %tr#header
+                  %td#title
                     %h1
                       %a{:href => "/"} TreeStats
+                  %td#misc= haml :misc
                 %tr
                   %td#search
                     = haml :_search
@@ -31,3 +32,4 @@
             = yield
         %tr
           %td#footer.center{:colspan => 2} This website created with love by Kolth.
+          %td#footer.center{:colspan => 2} This website created with love by <a href="https://github.com/amoeba">Kolth</a>.

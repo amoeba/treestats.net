@@ -24,11 +24,12 @@ table, thead, tbody, tr, td {
 #header
 {
   height: 100px;
-  margin: 0;
-  padding: 0 0 0 15px;
   background-color: black;
   background-image: url('/images/bg_top.jpg');
   border-bottom: 2px solid #AF7A30;
+}
+
+#header td {
   vertical-align: middle;
 }
 
@@ -47,8 +48,27 @@ td.logo {
   width: 400px;
 }
 
+#title {
+  padding: 10px;
+}
+
+#misc {
+  padding: 10px;
+}
+
+#misc ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+#misc li {
+  height: 20px;
+  margin: .25em 0 0 1em;
+  font-size: 13px;
+}
+
 #search {
-  width: 75%;
   padding: 6px;
   background-color: black;
 }
@@ -58,10 +78,11 @@ td.logo {
 }
 
 #download {
-  width: 25%;
   padding: 6px;
   background-color: black;
 }
+
+
 
 #nav
 {
