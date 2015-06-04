@@ -7,9 +7,9 @@ var draw = function(selector, json, server_name, allegiance_name, options) {
       .attr("height", height);
 
   var force = d3.layout.force()
-      .gravity(.05)
-      .distance(100)
-      .charge(-200)
+      .gravity(.025)
+      .distance(75)
+      .charge(-50)
       .size([width, height]);
 
     force
