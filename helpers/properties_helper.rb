@@ -3,8 +3,12 @@ module PropertiesHelper
     # 352 is "DamageAbsorb", figure this out
     
   PROPERTIES = {
-    "192" => { :type => :other, :name => "Fishing Skill"},
-    "181" => { :type => :other, :name => "Chess Rank"},
+    "139" => { :type => :general, :name => "Player Level?"},
+    "199" => { :type => :general, :name => "Housing Purchase Date?"},
+    "192" => { :type => :general, :name => "Fishing Skill"},
+    "181" => { :type => :general, :name => "Chess Rank"},
+    "322" => { :type => :general, :name => "Unlocked Aetheria Slots"},
+    "390" => { :type => :general, :name => "Times Enlightened?"},
     
     "218" => { :type => :aug, :name => "Reinforcement of the Lugians"},
     "219" => { :type => :aug, :name => "Bleeargh's Fortitude" },
