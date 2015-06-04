@@ -50,6 +50,7 @@ module PropertiesHelper
     "326" => { :type => :aug, :name => "Jack of all Trades" },
     "328" => { :type => :aug, :name => "Infused Void Magic" },
     "294" => { :type => :aug, :name => "Infused Creature Magic" },
+    "295" => { :type => :aug, :name => "Infused Item Magic" },
     "296" => { :type => :aug, :name => "Infused Life Magic" },
     "297" => { :type => :aug, :name => "Infused War Magic" },
 
@@ -59,6 +60,7 @@ module PropertiesHelper
     "336" => { :type => :aura, :name => "Temperance"},
     "338" => { :type => :aura, :name => "Aetheric Vision"},
     "339" => { :type => :aura, :name => "Mana Flow"},
+    "340" => { :type => :aura, :name => "Mana Infusion"},
     "342" => { :type => :aura, :name => "Purity"},
     "343" => { :type => :aura, :name => "Crafstman"},
     "344" => { :type => :aura, :name => "Specialization"},
