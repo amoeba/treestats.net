@@ -368,6 +368,7 @@ span.last_updated_text {
   background-color: black;
   border: 2px solid #AF7A30;
 }
+
 span.overlaytext
 {
   margin: 5px;
@@ -400,7 +401,7 @@ span.overlaytext
 }
 
 .tabcontainer.chain {
-  width: 660px;
+  width: 1002px;
   height: 660px;
 }
 
