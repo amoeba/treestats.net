@@ -37,7 +37,7 @@ module PropertiesHelper
     "243" => { :type => :aug, :name => "Caustic Enhancement" },
     "244" => { :type => :aug, :name => "Fiery Enchancement" },
     "245" => { :type => :aug, :name => "Icy Enchancement" },
-    "236" => { :type => :aug, :name => "Storm's Enhancement" },
+    "246" => { :type => :aug, :name => "Storm's Enhancement" },
     
     "298" => { :type => :aug, :name => "Eye of the Remorseless"},
     "299" => { :type => :aug, :name => "Hand of the Remorseless"},
