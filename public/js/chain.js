@@ -36,7 +36,7 @@ var draw = function(selector, json, server_name, player_name, options) {
      height = options.height || 300;
 
   var cluster = d3.layout.cluster()
-    .size([width, height]);
+  .nodeSize([20, 20]);
     
   var nodes = cluster.nodes(json)
       links = cluster.links(nodes);
@@ -50,9 +50,6 @@ var draw = function(selector, json, server_name, player_name, options) {
 
   // Calculate virtual canvas size
   var fixedDepth = 150;
-  var virtualSize = [d3.max(rootDists) * fixedDepth, height];
-  
-  cluster.size(virtualSize);
 
   var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
@@ -60,7 +57,7 @@ var draw = function(selector, json, server_name, player_name, options) {
   var zoom = d3.behavior.zoom()
     .translate([0,0])
     .scale(1)
-    .scaleExtent([.8, 2])
+    .scaleExtent([.2, 1])
     .on("zoom", zoomed);
     
   var svg = d3.select(selector).append("svg")
