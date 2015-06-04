@@ -23,8 +23,8 @@ var draw = function(selector, json, server_name, allegiance_name, options) {
   
     var zoom = d3.behavior.zoom()
       .translate([0,0])
-      .scale(1)
-      .scaleExtent([.8, 2])
+      .scale(.8)
+      .scaleExtent([.2, 1])
       .on("zoom", zoomed);
       
 
