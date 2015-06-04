@@ -1,4 +1,4 @@
-var draw = function(selector, json, options) {
+var draw = function(selector, json, server_name, allegiance_name, options) {
   var width = options.width || 800,
       height = options.height || 800;
 
