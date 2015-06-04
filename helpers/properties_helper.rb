@@ -69,11 +69,9 @@ module PropertiesHelper
     "376" => { :type => :rating, :name => "Healing Boost" },
     "379" => { :type => :rating, :name => "Vitality" },
     
-    "281" => { :type => :society, :name => "Society"},
-    "282" => { :type => :society, :name => "Society1Status"},
-    "283" => { :type => :society, :name => "Society2Status"},
-    "284" => { :type => :society, :name => "Society3Status"},
-    "287" => { :type => :society, :name => "Ribbons"},
+    "287" => { :type => :society, :name => "Celestial Hand"},
+    "288" => { :type => :society, :name => "Eldrytch Web"},
+    "289" => { :type => :society, :name => "Radiant Blood"},
     
     "354" => { :type => :mastery, :name => "Melee"},
     "355" => { :type => :mastery, :name => "Ranged"},
