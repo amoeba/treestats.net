@@ -26,7 +26,7 @@ var draw = function(selector, json, server_name, player_name, options) {
     
     if(d == null) return;
     
-    var translate = [width/2-d.y,  height/2 - d.x];
+    var translate = [width/2 - d.y,  height/2 - d.x];
 
     svg.transition()
         .call(zoom.translate(translate).event);
