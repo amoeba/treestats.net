@@ -1,7 +1,8 @@
 %table.char
   %tbody
     %tr
-      %td.gold{:colspan => 4}= @character['allegiance_name']
+      %td.gold{:colspan => 4}
+        %a{:href => "/allegiances/#{@character['server']}-#{@character['allegiance_name']}"}= @character['allegiance_name']
     %tr.line
       %td{:colspan => 2}= "Followers: #{@character['followers']}"
       %td{:colspan => 2}= "Rank: #{@character['rank']}"
