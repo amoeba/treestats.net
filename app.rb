@@ -266,7 +266,7 @@ module Treestats
         {
           :server => char.server,
           :name => char.name,
-          :value => @tokens.length == 1 ? char[@tokens[0]] : char[@tokens[0]][@tokens[1]][@tokens[2]]
+          :value => @tokens.length == 1 ? @tokens[0] == "titles" ? char["titles"].length : char[@tokens[0]] : char[@tokens[0]][@tokens[1]][@tokens[2]]
         }
       end
 
@@ -284,6 +284,9 @@ module Treestats
         if(params[:ranking] == "birth")
           @sort = "desc"
           @records.sort! { |a,b| a[:value] <=> b[:value] }
+        elsif(params[:ranking] == "titles")
+          @sort = "asc"
+          @records.sort! { |a,b| b[:value] <=> a[:value] }
         else
           @sort = "asc"
           @records.sort! { |a,b| b[:value] <=> a[:value] }
