@@ -293,6 +293,19 @@ module Treestats
         end
       end
 
+      # Limit to the first 100 records
+      @records = @records[0..99] if @records.length > 100
+
+
+      # Add commas to fields where necessary
+      # This is done after limiting to 100 records
+
+      if(@tokens.length == 1)
+        if(@tokens[0] == "unassigned_xp" || @tokens[0] == "deaths")
+          @records = @records.map { |e| e.merge!({:value => add_commas(e[:value].to_s)})}
+        end
+      end
+
       haml :rankings
     end
 
