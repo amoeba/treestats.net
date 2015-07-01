@@ -67,8 +67,11 @@ module Treestats
       Log.create(title: "/", message: text)
 
       # PLAYER COUNTS
-      json_text = json_text.tap { |h| h.delete('server_population')}
-      PlayerCount.create(server: server, count: server_pop)
+      # Only save a PlayerCount if this message contains one
+      if(json_text.has_key?("server_population"))
+        json_text = json_text.tap { |h| h.delete('server_population')}
+        PlayerCount.create(server: server, count: server_pop)
+      end
 
       # CHARACTER
 
