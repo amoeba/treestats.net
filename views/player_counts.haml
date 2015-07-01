@@ -10,7 +10,11 @@
     background-color: black;
     border: 2px solid #AF7A30;
   }
-  
+
+  path {
+    fill: none;
+  }
+
   text {
     fill: white;
     font-weight: normal;
@@ -24,7 +28,7 @@
   .axis label {
     fill: #CCC;
   }
-  
+
   .x.axis .minor {
     stroke-opacity: 1;
   }
@@ -38,9 +42,9 @@
     fill: none;
     stroke: white;
   }
-  
 
-  
+
+
 :javascript
   d3.json("/player_counts.json", function(error, json) {
     popchart.add("#content", json);
