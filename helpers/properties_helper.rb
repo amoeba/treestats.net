@@ -1,7 +1,7 @@
 module PropertiesHelper
-      
+
     # 352 is "DamageAbsorb", figure this out
-    
+
   PROPERTIES = {
     "139" => { :type => :general, :name => "Player Level?"},
     "199" => { :type => :general, :name => "Housing Purchase Date?"},
@@ -9,7 +9,7 @@ module PropertiesHelper
     "181" => { :type => :general, :name => "Chess Rank"},
     "322" => { :type => :general, :name => "Aetheria Slots"},
     "390" => { :type => :general, :name => "Times Enlightened?"},
-    
+
     "218" => { :type => :aug, :name => "Reinforcement of the Lugians"},
     "219" => { :type => :aug, :name => "Bleeargh's Fortitude" },
     "220" => { :type => :aug, :name => "Oswald's Enhancement" },
@@ -38,7 +38,7 @@ module PropertiesHelper
     "244" => { :type => :aug, :name => "Fiery Enchancement" },
     "245" => { :type => :aug, :name => "Icy Enchancement" },
     "246" => { :type => :aug, :name => "Storm's Enhancement" },
-    
+
     "298" => { :type => :aug, :name => "Eye of the Remorseless"},
     "299" => { :type => :aug, :name => "Hand of the Remorseless"},
     "300" => { :type => :aug, :name => "Master of the Steel Circle"},
@@ -46,7 +46,7 @@ module PropertiesHelper
     "302" => { :type => :aug, :name => "Master of the Five Fold Path" },
     "309" => { :type => :aug, :name => "Frenzy of the Slayer"},
     "310" => { :type => :aug, :name => "Iron Skin of the Invincible" },
-    
+
     "326" => { :type => :aug, :name => "Jack of all Trades" },
     "328" => { :type => :aug, :name => "Infused Void Magic" },
     "294" => { :type => :aug, :name => "Infused Creature Magic" },
@@ -74,21 +74,21 @@ module PropertiesHelper
     "375" => { :type => :rating, :name => "Critical Damage Resistance" },
     "376" => { :type => :rating, :name => "Healing Boost" },
     "379" => { :type => :rating, :name => "Vitality" },
-    
+
     "287" => { :type => :society, :name => "Celestial Hand"},
     "288" => { :type => :society, :name => "Eldrytch Web"},
     "289" => { :type => :society, :name => "Radiant Blood"},
-    
+
     "354" => { :type => :mastery, :name => "Melee"},
     "355" => { :type => :mastery, :name => "Ranged"},
     "362" => { :type => :mastery, :name => "Summoning"},
-    
+
     "243" => { :type => :resist, :name => "Acid Resistance"},
     "244" => { :type => :resist, :name => "Fire Resistance"},
     "245" => { :type => :resist, :name => "Lightning Resistance"},
     "246" => { :type => :resist, :name => "Piercing Resistance"}
   }
-  
+
   MASTERY_NAMES = {
     '354' => {
         1 => "Unarmed",
@@ -110,23 +110,23 @@ module PropertiesHelper
       3 => "Naturalist"
     }
   }
-  
+
   def self.get_property_name(id)
     return PROPERTIES[id] ? PROPERTIES[id][:name] : id
   end
-  
+
   def self.is_type(id, type)
     return PROPERTIES[id] && PROPERTIES[id][:type] == type
   end
-  
+
   def self.is_known(id)
     return PROPERTIES[id]
   end
-  
+
   def self.get_mastery_name(type, id)
     return id if MASTERY_NAMES[type].nil?
     return id if MASTERY_NAMES[type][id].nil?
-    
+
     MASTERY_NAMES[type][id]
   end
 end
