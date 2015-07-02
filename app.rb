@@ -153,6 +153,12 @@ module Treestats
       end
     end
 
+    get '/account/:account_name' do
+      @characters = Character.where(account_name: params[:account_name]).all
+
+      haml :account
+    end
+
     get "/download/?" do
       haml :download
     end
