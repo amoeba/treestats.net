@@ -1,7 +1,11 @@
 - if @character.nil?
   %span Couldn't find the requested character.
 - else
-  %h2.title= "#{@character['name']} (#{@character['server']})"
+  %div.title
+    %h2= "#{@character['name']} (#{@character['server']})"
+    -if @character['account_name']
+      %span
+        %a{:href => "/account/#{@character['account_name']}"} View other characters
 
   .last_updated
     %span.last_updated_name Last Updated
