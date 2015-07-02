@@ -1,0 +1,12 @@
+%h2.title= "Account: #{params[:account_name]}"
+
+- if !@characters.any?
+  %span This account either doesn't exist.
+- else
+  %span
+    = "This account has #{@characters.count} associated character#{@characters.count > 1 ? "s" : ""}:"
+
+  %ul
+    - @characters.each do |c|
+      %li
+        %a{:href => "/#{c['server']}/#{c['name']}"}= "#{c['name']} (#{c['server']})"
