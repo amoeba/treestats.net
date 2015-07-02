@@ -2,17 +2,7 @@
 
 require_relative '../story_helper.rb'
 
-describe "AppStory" do
-  describe "GET /" do
-    before do
-      get '/'
-    end
-
-    it "responds successfully" do
-      last_response.status.must_equal 200
-    end
-  end
-
+describe "CharacterStory" do
   describe "POST / characters" do
     before do
       Character.all.destroy
@@ -67,31 +57,13 @@ describe "AppStory" do
       Character.find_by(name: 'patron').allegiance_name.must_equal "cool allegiance"
       Character.find_by(name: 'vassal').allegiance_name.must_equal "cool allegiance"
     end
-  end
 
-  describe "POST / allegiances" do
-    before do
-      Character.all.destroy
-      Allegiance.all.destroy
+    it "assigns an account name if it's sent" do
+      post('/', '{"name" : "Account Tester", "server":"test", "account_name" : "Tester\'s Chars"}')
     end
 
-    it "doesn't create empty allegiances" do
-      post('/', '{"name":"testname", "server":"testserver"}')
-
-      Allegiance.count.must_equal 0
-    end
-
-    it "creates allegiances" do
-      post('/', '{"name":"testname", "server":"testserver", "allegiance_name":"someallegiance"}')
-
-      Allegiance.count.must_equal 1
-    end
-
-    it "doesn't create duplicate allegiances" do
-      post('/', '{"name":"testname", "server":"testserver", "allegiance_name":"someallegiance"}')
-      post('/', '{"name":"testname", "server":"testserver", "allegiance_name":"someallegiance"}')
-
-      Allegiance.count.must_equal 1
+    it "doesn't assign an account name if it's not sent" do
+      post('/', '{"name" : "Account Tester", "server":"test", "account_name" : "Tester\'s Chars"}')
     end
   end
 end
