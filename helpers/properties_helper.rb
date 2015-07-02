@@ -7,7 +7,7 @@ module PropertiesHelper
     "199" => { :type => :general, :name => "Housing Purchase Date?"},
     "192" => { :type => :general, :name => "Fishing Skill"},
     "181" => { :type => :general, :name => "Chess Rank"},
-    "322" => { :type => :general, :name => "Unlocked Aetheria Slots"},
+    "322" => { :type => :general, :name => "Aetheria Slots"},
     "390" => { :type => :general, :name => "Times Enlightened?"},
     
     "218" => { :type => :aug, :name => "Reinforcement of the Lugians"},
