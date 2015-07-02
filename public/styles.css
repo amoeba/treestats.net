@@ -154,9 +154,15 @@ table.char tbody.skills td.skill_icon {
   padding: 0px 0px 0px 4px;
 }
 
-h2.title
+div.title {
+  margin-bottom: 1.5em;
+  height: 2em;
+}
+
+div.title h2
 {
-  margin: 0 0 21px 0;
+  display: inline;
+  margin: 0 0 2em 0;
   color: gold;
 }
 
