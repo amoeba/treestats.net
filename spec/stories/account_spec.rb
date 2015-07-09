@@ -3,7 +3,7 @@
 require_relative '../story_helper.rb'
 
 describe "AppStory" do
-  before  do
+  before do
     Account.all.destroy
   end
 
