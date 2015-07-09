@@ -11,13 +11,8 @@ require 'minitest/spec'
 # Load the app
 require_relative '../app'
 
-# Load helpers
-require_relative 'support/unit_helpers.rb'
-
 # Create a custom class inheriting from MiniTest::Spec for your unit tests
 class UnitTest < MiniTest::Spec
-  include UnitHelpers
-
   # Any test that ends with 'Unit|Spec|Model' is a `UnitTest`
   register_spec_type(/(Unit|Spec|Model)$/, self)
 
