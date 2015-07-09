@@ -5,7 +5,7 @@ require_relative '../story_helper.rb'
 describe "AppStory" do
   describe "GET /" do
     before do
-      get '/'
+      get('/')
     end
 
     it "responds successfully" do
