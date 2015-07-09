@@ -12,6 +12,6 @@ class StoryTest < UnitTest
   register_spec_type(/Story$/, self)
 
   def app
-    Treestats::App
+    App
   end
 end
