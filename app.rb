@@ -1,5 +1,3 @@
-require 'dotenv'
-Dotenv.load
 Dir["./helpers/*.rb"].each { |file| require file }
 Dir["./models/*.rb"].each { |file| require file }
 Dir["./routes/*.rb"].each { |file| require file }

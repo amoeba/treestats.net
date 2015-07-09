@@ -1,15 +1,13 @@
-require 'dotenv/tasks'
-
 task :default, :test
 
 
 desc "Run all tests"
-task :test => :dotenv do
+task :test do
   Dir['./spec/**/*_spec.rb'].each { |f| load f }
 end
 
 desc "Deploy to GitHub"
-task :deploy => :dotenv do
+task :deploy do
   puts ">> git branch deploy"
   `git branch deploy`
 
