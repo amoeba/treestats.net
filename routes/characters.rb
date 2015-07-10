@@ -13,8 +13,9 @@ class App < Sinatra::Application
 
   get '/:server/:name.json' do |s,n|
     @character = Character.find_by(server: s, name: n)
-    @character = @character.as_document.tap {|h| h.delete("_id")}.to_json
+    @character = @character.as_document.tap {|h| h.delete("_id")}
 
+    content_type 'application/json'
     JSON.pretty_generate(response)
   end
 end
