@@ -10,6 +10,7 @@ Dir["./routes/*.rb"].each { |file| require file }
 class App < Sinatra::Application
   configure do
     set :root, File.dirname(__FILE__)
+    set :show_exceptions, :after_handler
 
     # Mongoid
     Mongoid.load!("./config/mongoid.yml")
@@ -19,4 +20,6 @@ class App < Sinatra::Application
       config.access_token = ENV["ROLLBAR_ACCESS_TOKEN"]
     end
   end
+
+
 end
