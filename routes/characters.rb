@@ -4,4 +4,17 @@ class App < Sinatra::Application
 
     haml :characters
   end
+
+  get '/:server/:name/?' do |s,n|
+    @character = Character.find_by(server: s, name: n)
+
+    haml :character
+  end
+
+  get '/:server/:name.json' do |s,n|
+    @character = Character.find_by(server: s, name: n)
+    @character = @character.as_document.tap {|h| h.delete("_id")}.to_json
+
+    JSON.pretty_generate(response)
+  end
 end
