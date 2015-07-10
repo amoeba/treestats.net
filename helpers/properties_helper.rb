@@ -97,6 +97,7 @@ module PropertiesHelper
         4 => "Maces",
         6 => "Daggers",
         7 => "Staves",
+        9 => "Crossbows",
         11 => "Two-Handed"
       },
     '355' => {
