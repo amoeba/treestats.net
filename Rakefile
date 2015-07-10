@@ -1,4 +1,4 @@
-require 'dotenv/tasks'
+require 'dotenv/tasks' if ENV["RACK_ENV"] != "production"
 
 task :default => :test
 
