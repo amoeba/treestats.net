@@ -6,7 +6,12 @@ class App < Sinatra::Application
   end
 
   get '/:server/:name.json' do |s,n|
-    @character = Character.find_by(server: s, name: n)
+    begin
+      @character = Character.find_by(server: s, name: n)
+    rescue Mongoid::Errors::DocumentNotFound
+      not_found
+    end
+
     @character = @character.as_document.tap {|h| h.delete("_id")}
 
     content_type 'application/json'
@@ -14,7 +19,11 @@ class App < Sinatra::Application
   end
 
   get '/:server/:name/?' do |s,n|
-    @character = Character.find_by(server: s, name: n)
+    begin
+      @character = Character.find_by(server: s, name: n)
+    rescue Mongoid::Errors::DocumentNotFound
+      not_found
+    end
 
     haml :character
   end
