@@ -49,7 +49,7 @@ class App < Sinatra::Application
   get '/allegiances/:key' do |key|
     @server, @name = key.split("-")
 
-    @characters = Character.where(server: @server, allegiance_name: @name).limit(50).asc(:name)
+    @characters = Character.where(server: @server, allegiance_name: @name).limit(100).asc(:name)
 
     haml :allegiance
   end
