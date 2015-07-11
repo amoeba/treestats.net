@@ -1,5 +1,5 @@
-body
-{
+/* General Element Styles */
+body {
   padding: 0;
   margin: 0;
   height: 100%;
@@ -10,8 +10,7 @@ body
   font-family: 'Open Sans', Sans-serif;
 }
 
-table
-{
+table {
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
@@ -22,8 +21,7 @@ table, thead, tbody, tr, td {
   padding: 0;
 }
 
-#header
-{
+#header {
   height: 100px;
   background-color: black;
   background-image: url('/images/bg_top.jpg');
@@ -38,11 +36,14 @@ table, thead, tbody, tr, td {
   background: none;
 }
 
-#header h1
-{
+#header h1 {
   margin: 0;
   padding: 0;
   font-size: 55px;
+}
+
+h2.title {
+  margin: 0 0 0.5em 0;
 }
 
 td.logo {
@@ -83,10 +84,7 @@ td.logo {
   background-color: black;
 }
 
-
-
-#nav
-{
+#nav {
   width: 150px;
   min-width: 150px;
   margin: 0;
@@ -98,13 +96,11 @@ td.logo {
 }
 
 #content
-{
-  padding: 15px;
+  padding: 1em;
   background-color: #000022;
 }
 
-#footer
-{
+#footer {
   font-size: 85%;
 }
 
@@ -113,18 +109,15 @@ form {
   padding: 3px;
 }
 
-a
-{
+a {
   color: white;
 }
 
-a:visited
-{
+a:visited {
   color: white;
 }
 
-span.block
-{
+span.block {
   display: block;
 }
 
@@ -159,27 +152,23 @@ div.title {
   height: 2em;
 }
 
-div.title h2
-{
+div.title h2 {
   display: inline;
   margin: 0 0 2em 0;
   color: gold;
 }
 
-#header a
-{
+#header a {
   text-decoration: none;
   color: white;
 }
 
-#nav a
-{
+#nav a {
   text-decoration: none;
   color: #fff;
 }
 
-#nav h2
-{
+#nav h2 {
   margin: 0;
   padding: 3px;
   font-size: 14px;
@@ -187,8 +176,7 @@ div.title h2
   background: linear-gradient(to right, #0F3C3E, #0F3C3E, black);
 }
 
-#nav ul
-{
+#nav ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -198,16 +186,12 @@ div.title h2
   margin-bottom: 0.5em;
 }
 
-#nav ul li
-{
+#nav ul li {
   padding: 1px 3px;
   font-size: 14px;
 }
 
-
-
-table.internal
-{
+table.internal {
   width: 100%;
   border-spacing: 0;
   border-collapse: collapse;
@@ -216,8 +200,7 @@ table.internal
 table.internal,
 table.internal tr,
 table.internal td,
-table.internal span
-{
+table.internal span {
   margin: 0;
   padding: 0;
 }
@@ -226,8 +209,7 @@ table.xplum tr td {
   font-size: 85%;
 }
 
-tr.line
-{
+tr.line {
   border-bottom: 2px solid #AF7A30;
 }
 
@@ -235,8 +217,7 @@ tr.colnames td {
   background-color: #222;
 }
 
-td.level
-{
+td.level {
   width: 65px;
   border-left: 2px solid #AF7A30;
   font-size: 85%;
@@ -256,8 +237,7 @@ td.gold {
   color: gold;
 }
 
-td.center
-{
+td.center {
   text-align: center;
 }
 
@@ -265,13 +245,11 @@ td.left {
   text-align: left;
 }
 
-td.right
-{
+td.right {
   text-align: right;
 }
 
-td.vassal
-{
+td.vassal {
   font-size: 90%;
 }
 
@@ -289,8 +267,7 @@ td.attribs_base {
   width: 90px;
 }
 
-td.skill_icon
-{
+td.skill_icon {
   width: 10px;
 }
 
@@ -302,13 +279,11 @@ td.skill_base {
   width: 50px;
 }
 
-span.name
-{
+span.name {
   font-size: 110%;
 }
 
-span.level
-{
+span.level {
   font-size: 200%;
   color: #FFF27F;
   margin-top: 0;
@@ -318,15 +293,13 @@ table.skills tbody td.specialized, table.skills tbody td.trained {
   height: 20px;
 }
 
-td.specialized
-{
+td.specialized {
   width: 300px;
   background-color: purple;
   background: linear-gradient(to right, #392067, #392067, black);
  }
 
-td.trained
-{
+td.trained {
   with: 300px;
   background-color: green;
   background: linear-gradient(to right, #0F3C3E, #0F3C3E, black);
@@ -375,8 +348,7 @@ span.last_updated_text {
   border: 2px solid #AF7A30;
 }
 
-span.overlaytext
-{
+span.overlaytext {
   margin: 5px;
   font-size: 11px;
   color: #CCC;
