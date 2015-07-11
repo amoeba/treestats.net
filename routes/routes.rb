@@ -4,6 +4,7 @@ class App < Sinatra::Application
   end
 
   get '/' do
+    Rollbar.error("Some error")
     haml :index
   end
 
