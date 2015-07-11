@@ -3,8 +3,9 @@ class App < Sinatra::Application
     content_type :json
 
     @server, @name = key.split("-")
-
     @characters = Character.where(server: @server, allegiance_name: @name)
+
+    return "{}" if @characters.nil?
 
     nodes = []
     links = []
