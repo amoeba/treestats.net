@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.0.0'
+ruby '2.2.2'
 
 gem 'rake'
 gem 'sinatra'
@@ -9,6 +9,6 @@ gem 'json'
 gem 'puma'
 gem 'redis'
 gem 'sinatra-redis'
-gem 'rollbar', '~> 1.5.3'
-gem 'dotenv', :groups => [:development, :test]
+gem 'rollbar', '~> 1.5.3', :groups => [:production]
+gem 'dotenv', :groups => [:development]
 gem "rack-test", :groups => [:test]
