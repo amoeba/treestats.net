@@ -132,5 +132,19 @@
     %option{:value => 'birth'} Oldest Char
     %option{:value => 'deaths'} Most Deaths
     %option{:value => 'unassigned_xp'} Unassigned XP
-    %option{:value => 'titles'} Titles
   %input{:type => 'submit'}
+%h2 More Rankings
+
+%form{:action => '/rankings/titles', :method => 'get'}
+  %select{:name => 'server'}
+    %option{:value => "All"} All Servers
+    %option{:value => "Darktide"} Darktide
+    %option{:value => "Frostfell"} Frostfell
+    %option{:value => "Harvestgain"} Harvestgain
+    %option{:value => "Leafcull"} Leafcull
+    %option{:value => "Morningthaw"} Morningthaw
+    %option{:value => "Thistledown"} Thistledown
+    %option{:value => "Solclaim"} Solclaim
+    %option{:value => "WintersEbb"} WintersEbb
+  %input.textsubmit{:type => 'submit', :value => "Most Titles"}
+  
