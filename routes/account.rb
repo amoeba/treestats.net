@@ -1,10 +1,4 @@
 class App < Sinatra::Application
-  get '/account/:account_name' do
-    @characters = Character.where(account_name: params[:account_name]).all
-
-    haml :account
-  end
-  
   post '/account/create/?' do
     body = request.body.read
     fields = JSON.parse(body)
@@ -53,5 +47,11 @@ class App < Sinatra::Application
     else
       return "Login failed. Name/password not found."
     end
+  end
+
+  get '/account/:account_name/?' do
+    @characters = Character.where(account_name: params[:account_name]).all
+
+    haml :account
   end
 end
