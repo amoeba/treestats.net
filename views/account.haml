@@ -41,6 +41,9 @@
               %td.center.field= field[:value].call(character)
 
 %script{:type => "text/javascript", :src => "/js/tablesort.min.js"}
+%script{:type => "text/javascript", :src => "/js/tablesort.numeric.js"}
+%script{:type => "text/javascript", :src => "/js/tablesort.date.js"}
+%script{:type => "text/javascript", :src => "/js/tablesort.commasep.js"}
 
 :javascript
   new Tablesort(document.getElementById("listing"))
