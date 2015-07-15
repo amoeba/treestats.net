@@ -3,12 +3,20 @@
 - if @characters.count == 0
   %span No characters to display for this server.
 - else
-  %span
+  %p
     There
     = @characters.count > 1 ? "are" : "is"
     = "#{@characters.count} character#{@characters.count > 1 ? "s" : ""}"
-    uploaded from this server. Here's 100 of the most recently updated ones.
-  %ul
-    - @characters.each do |c|
-      %li
-        %a{:href => "/#{c['server']}/#{c['name']}"}= "#{c['name']} (#{c['server']})"
+    uploaded from this server.
+    - if @characters.count > 100
+      Here's 100 of the most recently updated ones.
+
+  %table.listing
+    %thead
+      %tr
+        %th Name
+    %tbody
+      - @characters.each do |character|
+        %tr
+          %td
+            %a{:href => "/#{character[:server]}/#{character[:name]}"}= character[:name]
