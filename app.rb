@@ -1,7 +1,3 @@
-Dir["./helpers/*.rb"].each { |file| require file }
-Dir["./models/*.rb"].each { |file| require file }
-Dir["./routes/*.rb"].each { |file| require file }
-
 Dotenv.load if settings.development?
 
 class App < Sinatra::Application
@@ -17,7 +13,9 @@ class App < Sinatra::Application
         config.access_token = ENV["ROLLBAR_ACCESS_TOKEN"]
       end
     end
-  end
-
-
+  end  
 end
+
+Dir["./helpers/*.rb"].each { |file| require file }
+Dir["./models/*.rb"].each { |file| require file }
+Dir["./routes/*.rb"].each { |file| require file }
