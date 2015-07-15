@@ -23,3 +23,7 @@
           %td= character[:rank]
           %td= character[:luminance_earned]
 
+%script{:type => "text/javascript", :src => "/js/tablesort.min.js"}
+
+:javascript
+  new Tablesort(document.getElementById("listing"))
