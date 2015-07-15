@@ -4,8 +4,22 @@
   %span This account either doesn't exist or doesn't have any characters associated with it.
 - else
   %p
+    = "This account has #{@characters.count} associated character#{@characters.count > 1 ? "s" : ""}."
+  %table.listing#listing
+    %thead
+      %tr
+        %th Name
+        %th Server
+        %th Level
+        %th Rank
+        %th Luminance Earned
+    %tbody
+      - @characters.each do |character|
+        %tr
+          %td
+            %a{:href => "/#{character[:server]}/#{character[:name]}"}= character[:name]
+          %td= character[:server]
+          %td= character[:level]
+          %td= character[:rank]
+          %td= character[:luminance_earned]
 
-  %ul
-    - @characters.each do |c|
-      %li
-        %a{:href => "/#{c['server']}/#{c['name']}"}= "#{c['name']} (#{c['server']})"
