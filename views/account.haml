@@ -3,8 +3,7 @@
 - if !@characters.any?
   %span This account either doesn't exist or doesn't have any characters associated with it.
 - else
-  %span
-    = "This account has #{@characters.count} associated character#{@characters.count > 1 ? "s" : ""}:"
+  %p
 
   %ul
     - @characters.each do |c|
