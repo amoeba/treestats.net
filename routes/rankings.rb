@@ -18,52 +18,65 @@ class App < Sinatra::Application
     criteria[:"#{@tokens[0]}".exists] = true
 
 
-    # Grab records
-    @characters = Character.where(criteria)
+  get '/rankings/?' do
+    not_found if(!params.has_key?("ranking"))
 
-    # Collect the records
-    @records = @characters.to_a.collect do |char|
-      {
-        :server => char.server,
+    limit = 100
+    sort = -1
+    @sort_text = "asc"
+    sort_by = params[:ranking] == "titles" ? "ti" : params[:ranking]
+
+    # Process ranking into tokens
+    @tokens = params[:ranking].split(".")
+    @server = params[:server]
+
+    # Filtering of records (value/server)
+    where_clause = { @tokens[0] => { "$exists" => true }}
+    where_clause['s'] = params[:server] if params[:server] != "All"
+
+
+    # Sorting of records (asc/desc)
+    if(params.has_key?('sort'))
+      if(params[:sort] == "asc")
+        sort = 1
+        @sort_text = "desc"
+      else
+        @sort_text = "asc"
+      end
+    end
+
+    # Reverse the sort for "birth" ranking
+    sort = sort * -1 if(@tokens[0] == "birth")
+    
+    # Prepare sort clause
+    sort_clause = { sort_by => sort }
+
+
+    # Run the query
+    @characters = Character.where(where_clause).sort(sort_clause).limit(limit)
+
+    # Map out just the values we need
+    @characters = @characters.to_a.collect do |char|
+      c = {
         :name => char.name,
-        :value => @tokens.length == 1 ? @tokens[0] == "titles" ? char["titles"].length : char[@tokens[0]] : char[@tokens[0]][@tokens[1]][@tokens[2]]
+        :server => char.server
       }
-    end
 
-    # Sort values
-
-    if(params && params[:sort]) # Manual sorting
-      if(params[:sort] == "asc" || (params[:ranking] == "birth" && params[:sort] == "asc"))
-        @sort = "desc"
-        @records.sort! { |a,b| a[:value] <=> b[:value] }
+      if(@tokens.length == 1)
+        if(@tokens[0] == "titles")
+          c[:value] = char["ti"].length
+        elsif(@tokens[0] == "birth")
+          c[:value] = char["birth"]
+        elsif(@tokens[0] == "unassigned_xp" || @tokens[0] == "deaths")
+          c[:value] = add_commas(char[@tokens[0]].to_s)
+        else
+          c[:value] = char[@tokens[0]]
+        end
       else
-        @sort = "asc"
-        @records.sort! { |a,b| b[:value] <=> a[:value] }
+        c[:value] = char[@tokens[0]][@tokens[1]][@tokens[2]]
       end
-    else # Default sorting
-      if(params[:ranking] == "birth")
-        @sort = "desc"
-        @records.sort! { |a,b| a[:value] <=> b[:value] }
-      elsif(params[:ranking] == "titles")
-        @sort = "asc"
-        @records.sort! { |a,b| b[:value] <=> a[:value] }
-      else
-        @sort = "asc"
-        @records.sort! { |a,b| b[:value] <=> a[:value] }
-      end
-    end
 
-    # Limit to the first 100 records
-    @records = @records[0..99] if @records.length > 100
-
-
-    # Add commas to fields where necessary
-    # This is done after limiting to 100 records
-
-    if(@tokens.length == 1)
-      if(@tokens[0] == "unassigned_xp" || @tokens[0] == "deaths")
-        @records = @records.map { |e| e.merge!({:value => add_commas(e[:value].to_s)})}
-      end
+      c
     end
 
     haml :rankings
