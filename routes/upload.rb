@@ -58,9 +58,9 @@ class App < Sinatra::Application
     character.save
     character.touch
 
-    # Increment character upload counter
-    redis.incr "uploads.daily.#{Time.now.utc.strftime("%Y%m%d")}"
-    puts redis.get "uploads.daily.#{Time.now.utc.strftime("%Y%m%d")}"
+    # Update statistics
+    redis.incr "uploads:daily:#{Time.now.utc.strftime("%Y%m%d")}"
+    redis.incr "uploads:monthly:#{Time.now.utc.strftime("%Y%m")}"
 
     # ALLEGIANCE
     Allegiance.find_or_create_by(server: server, name: allegiance_name)
