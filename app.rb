@@ -1,4 +1,3 @@
-Dotenv.load if ENV['RACK_ENV'] == "development"
 
 require 'rollbar'
 
@@ -6,6 +5,7 @@ Dir["./helpers/*.rb"].each { |file| require file }
 Dir["./models/*.rb"].each { |file| require file }
 Dir["./routes/*.rb"].each { |file| require file }
 
+Dotenv.load if settings.development?
 
 class App < Sinatra::Application
   configure do
