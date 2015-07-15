@@ -4,3 +4,7 @@ rvm:
 services: 
   - mongodb
   - redis-server
+before_install:
+  pip install codecov
+after_success:
+  codecov
