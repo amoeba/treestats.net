@@ -5,23 +5,40 @@
 - else
   %p
     = "This account has #{@characters.count} associated character#{@characters.count > 1 ? "s" : ""}."
-  %table.listing#listing
+  
+  %form.account-field-form
+    %table
+      %tr
+        %td 
+          %span
+            %b Show Fields:
+        %td
+          - AccountHelper::TABLE_FIELD_MAPPINGS.each do |field|
+            %label.account-field
+              %input{:type => "checkbox", :name => field[:name], :checked => params.has_key?(field[:name])}
+              = field[:label]
+              
+          %input{:type => "submit", :value => "Update Table"}
+
+  %table.account.listing#listing
     %thead
       %tr
         %th Name
         %th Server
         %th Level
-        %th Rank
-        %th Luminance Earned
+        - AccountHelper::TABLE_FIELD_MAPPINGS.each do |field|
+          - if(params.has_key?(field[:name]))
+            %th= field[:label]
     %tbody
       - @characters.each do |character|
         %tr
           %td
             %a{:href => "/#{character[:server]}/#{character[:name]}"}= character[:name]
-          %td= character[:server]
-          %td= character[:level]
-          %td= character[:rank]
-          %td= character[:luminance_earned]
+          %td.center= character[:server]
+          %td.center= character[:level]
+          - AccountHelper::TABLE_FIELD_MAPPINGS.each do |field|
+            - if(params.has_key?(field[:name]))
+              %td.center.field= field[:value].call(character)
 
 %script{:type => "text/javascript", :src => "/js/tablesort.min.js"}
 

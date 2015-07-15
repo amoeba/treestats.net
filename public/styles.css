@@ -451,6 +451,29 @@ table.listing th {
   background-color: #392067;
 }
 
+/* Account view */
+form.account-field-form {
+
+}
+
+table.account {
+  width: auto;
+}
+
+table.account td {
+  padding: 0 0.5em;
+}
+
+label.account-field {
+  margin: 1em;
+  width: 100px;
+}
+
+table.account td.field {
+  min-width: 100px;
+}
+
+
 /* Tablesort CSS 
    https://github.com/tristen/tablesort
 */

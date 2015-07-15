@@ -81,12 +81,12 @@ module PropertiesHelper
 
     "354" => { :type => :mastery, :name => "Melee"},
     "355" => { :type => :mastery, :name => "Ranged"},
-    "362" => { :type => :mastery, :name => "Summoning"},
+    "362" => { :type => :mastery, :name => "Summoning"}
 
-    "243" => { :type => :resist, :name => "Acid Resistance"},
-    "244" => { :type => :resist, :name => "Fire Resistance"},
-    "245" => { :type => :resist, :name => "Lightning Resistance"},
-    "246" => { :type => :resist, :name => "Piercing Resistance"}
+    # "243" => { :type => :resist, :name => "Acid Resistance"},
+    # "244" => { :type => :resist, :name => "Fire Resistance"},
+    # "245" => { :type => :resist, :name => "Lightning Resistance"},
+    # "246" => { :type => :resist, :name => "Piercing Resistance"}
   }
 
   MASTERY_NAMES = {
