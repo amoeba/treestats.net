@@ -170,7 +170,7 @@ div.title h2 {
   margin-bottom: 0.5em;
 }
 
-#nav ul li {
+#nav ul li, input.textsubmit {
   padding: 1px 3px;
   font-size: 14px;
 }
@@ -426,6 +426,12 @@ span.overlaytext {
   margin: 5px;
 }
 
+.textsubmit {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
 
 /* Listings */
 
