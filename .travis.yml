@@ -5,6 +5,6 @@ services:
   - mongodb
   - redis-server
 before_install:
-  - sudo pip install codecov
+  - pip install codecov
 after_success:
   - codecov
