@@ -1,22 +1,51 @@
 class App < Sinatra::Application
-  get '/rankings/?' do
-    criteria = {}
+  get '/rankings/titles/?' do
+    @server = params[:server] || "All"
 
-    # Tokenize sort field so we can pull the values out
-    # This is either 1 or 3 in length
-    @tokens = params[:ranking].split(".")
+    limit = 100
+    sort_order = -1
 
+    @sort_text = "asc"
 
-    # Handle criteria
-
-    # Add server if needed
-    if(params[:server] && params[:server] != 'All')
-      criteria[:server] = params[:server]
+    # Sorting of records (asc/desc)
+    if(params.has_key?('sort'))
+      if(params[:sort] == "asc")
+        sort_order = 1
+        @sort_text = "desc"
+      else
+        @sort_text = "asc"
+      end
     end
 
-    # Add criterion for non-nullness
-    criteria[:"#{@tokens[0]}".exists] = true
+    if(params[:server] && params[:server]  != "All")
+      match_clause = {
+        "$match" => { "ti" => { "$exists" => true },
+        "s" => params[:server]}
+      }
+    else
+      match_clause = {
+        "$match" => { "ti" => { "$exists" => true }}
+      }
+    end
 
+    @characters = Character.collection.aggregate(
+    match_clause,
+    {
+      "$project" => {
+        "n" => 1,
+        "s" => 1,
+        "num_titles" => { "$size" => "$ti" }
+      }
+    },
+    {
+      "$sort" => { "num_titles" => sort_order }
+    },
+    {
+      "$limit" => limit
+    })
+
+    haml :rankings_titles
+  end
 
   get '/rankings/?' do
     not_found if(!params.has_key?("ranking"))
