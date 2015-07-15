@@ -2,15 +2,15 @@
 
 %p
   %b Server:
-  = params[:server]
+  = @server
 %p
   %b Ranking:
   - if @tokens.length > 1
     = @tokens[1].split("_").map(&:capitalize).join(" ")
   - else
     = @tokens[0].split("_").map(&:capitalize).join(" ")
-      
-- if !@characters.exists?
+
+- if(@characters.length == 0)
   %span Couldn't find any characters for this ranking.
 - else
   %table.listing
@@ -19,13 +19,12 @@
         %th Name
         %th Server
         %th
-          %a{:href => "/rankings?server=#{params[:server]}&ranking=#{params[:ranking]}&sort=#{@sort}"}
+          %a{:href => "/rankings?server=#{params[:server]}&ranking=#{params[:ranking]}&sort=#{@sort_text}"}
             = (@tokens.length == 1 ? @tokens : @tokens[1].split("_")).map(&:capitalize).join(" ")
     %tbody
-      - @records.each do |character|
+      - @characters.each do |character|
         %tr
           %td
             %a{:href => "/#{character[:server]}/#{character[:name]}"}= character[:name]
           %td= character[:server]
           %td= character[:value]
-          
