@@ -38,17 +38,17 @@ module AccountHelper
     {  
       :name => "monarch", 
       :label => "Monarch", 
-      :value => Proc.new { |v| v[:monarch] ? v[:monarch][:name] : "No Monarch" }
+      :value => Proc.new { |v| v[:monarch] ? v[:monarch][:name] : "" }
     },
     {  
       :name => "patron",
       :label => "Patron", 
-      :value => Proc.new { |v| v[:patron] ? v[:patron][:name] : "No Patron" }
+      :value => Proc.new { |v| v[:patron] ? v[:patron][:name] : "" }
     },
     { 
       :name => "vassals", 
       :label => "Vassals", 
-      :value => Proc.new { |v| v[:vassals] ? v[:vassals].length : "No Vassals" }
+      :value => Proc.new { |v| v[:vassals] ? v[:vassals].length : "" }
     }
   ]
   
