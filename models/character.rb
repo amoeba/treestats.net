@@ -2,6 +2,18 @@ class Character
   include Mongoid::Document
   include Mongoid::Timestamps::Short
 
+  # serializable_hash
+  # Override default serializable_hash
+  #
+  # Gets normal serializable_hash and maps the
+  # aliased field names back to the full field names
+
+  def serializable_hash(options)
+    original_hash = super(options)
+    Hash[original_hash.map {|k, v| [self.aliased_fields.invert[k] || k , v] }]
+  end
+
+
   validates_presence_of :name
   validates_presence_of :server
 
@@ -88,7 +100,6 @@ class Character
     if self.vassals
       self.vassals.each do |v|
         vassal = Character.find_or_create_by(name: v['name'], server: self.server)
-
         vassal.set(v)
 
         vassal.set(patron: {
