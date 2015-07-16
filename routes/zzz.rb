@@ -1,4 +1,4 @@
-class App < Sinatra::Application
+class App
   get '/:server/:name.json' do |s,n|
     begin
       @character = Character.find_by(server: s, name: n)
@@ -18,5 +18,5 @@ class App < Sinatra::Application
     end
 
     haml :character
-  end  
+  end
 end

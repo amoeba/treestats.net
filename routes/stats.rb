@@ -1,4 +1,4 @@
-class App < Sinatra::Application
+class App
   get '/stats/uploads/daily' do
     value = redis.keys "uploads.daily.*"
 

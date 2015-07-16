@@ -1,4 +1,4 @@
-class App < Sinatra::Application
+class App
   get '/rankings/titles/?' do
     @server = params[:server] || "All"
 

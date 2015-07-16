@@ -1,4 +1,4 @@
-class App < Sinatra::Application
+class App
   not_found do
     haml :not_found
   end

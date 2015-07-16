@@ -1,4 +1,4 @@
-class App < Sinatra::Application
+class App
   get '/allegiances/:key.json' do |key|
     content_type :json
 

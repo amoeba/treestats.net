@@ -1,4 +1,4 @@
-class App < Sinatra::Application
+class App
   get '/logs/?' do
     @logs = Log.all.desc(:created_at).limit(100)
 
