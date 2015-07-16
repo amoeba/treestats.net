@@ -1,4 +1,4 @@
-class App < Sinatra::Application
+class App
   post '/' do
     text = request.body.read
 

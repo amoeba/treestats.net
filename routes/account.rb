@@ -1,4 +1,4 @@
-class App < Sinatra::Application
+class App
   post '/account/create/?' do
     body = request.body.read
     fields = JSON.parse(body)

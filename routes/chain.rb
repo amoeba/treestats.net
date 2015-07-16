@@ -1,4 +1,4 @@
-class App < Sinatra::Application
+class App
   get '/chain/:server/:name?' do |server, name|
     content_type :json
 

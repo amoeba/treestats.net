@@ -1,4 +1,4 @@
-class App < Sinatra::Application
+class App
   get '/search/?' do
     criteria = {}
 

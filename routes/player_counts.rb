@@ -1,4 +1,4 @@
-class App < Sinatra::Application
+class App
   get '/player_counts/?' do
     haml :player_counts
   end
