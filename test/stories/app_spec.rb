@@ -15,7 +15,7 @@ describe "AppStory" do
   
   describe "all routes are reachable" do
     it "can reach all routes" do
-      routes = ["/", "/allegiances", "/characters", "/Frostfell", "/rankings", "/rankings/titles"]
+      routes = ["/", "/allegiances", "/characters", "/Frostfell", "/rankings?server=All&ranking=a.strength.base", "/rankings/titles"]
       
       routes.each do |route|
         get(route)
