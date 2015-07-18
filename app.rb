@@ -106,6 +106,10 @@ post '/' do
   end
 end
 
+post '/message' do
+  return "Got your message!"
+end
+  
 post '/account/create/?' do
   body = request.body.read
   fields = JSON.parse(body)
