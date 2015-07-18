@@ -1,12 +1,4 @@
-require 'sinatra'
-require 'mongoid'
-require 'redis'
-require 'json'
-require 'haml'
-require 'rollbar' if settings.production
-
 # Dotenv
-require 'dotenv' if settings.development?
 Dotenv.load if settings.development?
 
 Dir["./helpers/*.rb"].each { |file| require file }
