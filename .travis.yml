@@ -8,3 +8,5 @@ before_install:
   - sudo pip install codecov
 after_success:
   - codecov
+notifications:
+  slack: treestats:225RNlqLgdQcnFmkgh2NrIim
