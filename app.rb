@@ -422,7 +422,7 @@ get "/servers/?" do
 end
 
 get '/stats/uploads/daily' do
-  value = redis.keys "uploads.daily.*"
+  value = redis.keys "uploads:daily:*"
 
   result = value.sort { |a,b| a <=> b }.map { |v| { :date => v.split(".")[2], :count => redis.get(v).to_i }}
 
@@ -430,7 +430,7 @@ get '/stats/uploads/daily' do
 end
 
 get '/stats/uploads/monthly' do
-  value = redis.keys "uploads.monthly.*"
+  value = redis.keys "uploads:monthly:*"
 
   result = value.sort { |a,b| a <=> b }.map { |v| { :date => v.split(".")[2], :count => redis.get(v).to_i }}
 
