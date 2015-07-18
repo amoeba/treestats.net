@@ -10,6 +10,6 @@ class StoryTest < UnitTest
   register_spec_type(/Story$/, self)
 
   def app
-    App
+    Sinatra::Application
   end
 end

@@ -1,6 +1,4 @@
 require 'bundler'
 
-Bundler.require(:default, ENV['RACK_ENV'])
-
 require './app'
-run App.new
+run Sinatra::Application
