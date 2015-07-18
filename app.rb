@@ -3,6 +3,7 @@ require 'mongoid'
 require 'redis'
 require 'json'
 require 'haml'
+require 'rollbar' if settings.production
 
 # Dotenv
 require 'dotenv' if settings.development?
