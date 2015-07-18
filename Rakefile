@@ -4,7 +4,7 @@ task default: :test
 
 desc 'Run all tests'
 task test: :dotenv do
-  Dir['./spec/**/*_spec.rb'].each { |f| load f }
+  Dir['./test/**/*_spec.rb'].each { |f| load f }
 end
 
 desc 'Deploy to GitHub'
