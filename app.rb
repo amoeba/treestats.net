@@ -54,6 +54,22 @@ post '/' do
     json_text = json_text.tap { |h| h.delete("key") }
   end
 
+  # Get the version number out and use it to let the user know to update
+  # their plugin
+  
+  version_number = json_text["version"]
+  
+  puts version_number
+  
+  version_message = nil
+  
+  if(version_number == 1)
+    version_message = "You're using an old version of TreeStats. " \
+    "The latest version provides bug fixes and adds TreeStats Accounts, " \
+    "which let you view all of your characters across accounts. " \
+    "Please go to treestats.net and get the latest version."
+  end
+  
   # Extract information for later in this method
   name = json_text['name']
   server = json_text['server']
@@ -98,12 +114,20 @@ post '/' do
   Allegiance.find_or_create_by(server: server, name: allegiance_name)
 
   # RESPONSE
+  response_text = ""
+  
   if(character.valid?)
-    return "Character was updated successfully."
+    response_text = "Character was updated successfully."
   else
     MailHelper::send("Character update failed!", "<p>Raw Text<br/>#{text}</p> <p>JSON Text<br/>#{json_text}</p>")
-    return "Character update failed."
+    response_text = "Character update failed."
   end
+  
+  # Add version_text to response text
+  response_text = [response_text, version_text].join(" ") if version_message
+  
+  # Return final response
+  response_text
 end
 
 post '/message' do
