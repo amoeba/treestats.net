@@ -63,7 +63,7 @@ post '/' do
   
   version_message = nil
   
-  if(version_number == 1)
+  if(version_number == "1") # Version num is a string (accepts 1.2, etc)
     version_message = "You're using an old version of TreeStats. " \
     "The latest version provides bug fixes and adds TreeStats Accounts, " \
     "which let you view all of your characters across accounts. " \
