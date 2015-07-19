@@ -124,7 +124,7 @@ post '/' do
   end
   
   # Add version_text to response text
-  response_text = [response_text, version_text].join(" ") if version_message
+  response_text = [response_text, version_message].join(" ") if version_message
   
   # Return final response
   response_text
