@@ -59,10 +59,12 @@ class Character
     if self.monarch
       monarch = Character.find_or_create_by(name: self.monarch['name'], server: self.server)
 
-      monarch_race = RaceHelper::get_race_name(self.monarch["race"].to_i)
-      monarch_gender = GenderHelper::get_gender_name(self.monarch["gender"].to_i)
+      monarch_info = self.monarch
       
-      monarch.set(race: monarch_race, gender: monarch_gender)
+      monarch_info["race"] = RaceHelper::get_race_name(monarch_info["race"].to_i)
+      monarch_info["gender"] = GenderHelper::get_gender_name(monarch_info["gender"].to_i)
+      
+      monarch.set(monarch_info)
       
       if self.allegiance_name
         monarch.set(allegiance_name: self.allegiance_name)
