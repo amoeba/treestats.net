@@ -57,18 +57,16 @@ post '/' do
   # Get the version number out and use it to let the user know to update
   # their plugin
   
-  version_number = json_text["version"]
+  # version_number = json_text["version"]
   
-  puts version_number
+  # version_message = nil
   
-  version_message = nil
-  
-  if(version_number == "1") # Version num is a string (accepts 1.2, etc)
-    version_message = "You're using an old version of TreeStats. " \
-    "The latest version provides bug fixes and adds TreeStats Accounts, " \
-    "which let you view all of your characters across accounts. " \
-    "Please go to treestats.net and get the latest version."
-  end
+  # if(version_number == "1") # Version num is a string (accepts 1.2, etc)
+  #   version_message = "You're using an old version of TreeStats. " \
+  #   "The latest version provides bug fixes and adds TreeStats Accounts, " \
+  #   "which let you view all of your characters across accounts. " \
+  #   "Please go to treestats.net and get the latest version."
+  # end
   
   # Extract information for later in this method
   name = json_text['name']
