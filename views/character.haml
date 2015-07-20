@@ -8,8 +8,7 @@
         %a{:href => "/account/#{@character['account_name']}"} View other characters
 
   .last_updated
-    %span.last_updated_name Last Updated
-    %span.last_updated_text= @character["updated_at"]
+    = "Last Updated #{relative_time(@character["updated_at"])}"
 
 
   - if @character.attribs
