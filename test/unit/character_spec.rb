@@ -83,8 +83,8 @@ describe 'Character', :unit do
         {'name' => 'vassal', 'rank' => 2, 'race' => 3, 'gender' => 1}]})
 
     c.monarch['rank'].must_equal 5
-    c.monarch['race'].must_equal 2
-    c.monarch['gender'].must_equal 1
+    c.monarch['race'].must_equal "Gharu'ndim"
+    c.monarch['gender'].must_equal "Male"
 
     v = Character.find_by(name: 'vassal')
 

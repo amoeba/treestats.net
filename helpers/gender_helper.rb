@@ -1,12 +1,12 @@
 module GenderHelper
   GENDERS = {
-    0  => "Male",
-    1  => "Female"
+    1  => "Male",
+    2  => "Female"
   }
   
   GENDER_ID = {
-    "Male" => 0,
-    "Female" => 1
+    "Male" => 1,
+    "Female" => 2
   }
   
   def self.get_gender_name(id)
