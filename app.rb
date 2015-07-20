@@ -59,7 +59,7 @@ post '/' do
   
   # version_number = json_text["version"]
   
-  # version_message = nil
+  version_message = nil
   
   # if(version_number == "1") # Version num is a string (accepts 1.2, etc)
   #   version_message = "You're using an old version of TreeStats. " \
