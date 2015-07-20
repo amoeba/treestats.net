@@ -305,23 +305,6 @@ div.last_updated {
   font-size: 80%;
 }
 
-span.last_updated_name {
-  display: inline;
-  margin: 0;
-  padding: 5px;
-  background-color: #c00;
-  color: #fff;
-  border: 1px solid #CCC;
-  font-weight: bold;
-}
-
-span.last_updated_text {
-  display: inline;
-  margin: 0;
-  padding: 5px;
-  background-color: black;
-}
-
 #chain {
   color: white;
   font-size: 14px;
