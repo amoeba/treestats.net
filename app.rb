@@ -155,7 +155,7 @@ post '/account/create/?' do
   #    Password: {length > 0}
 
   if(/^[a-zA-Z'\- ]+$/.match(fields["name"]) == nil)
-    return "Account name must only contain a-z, A-Z and '."
+    return "Account name must only contain a-z, A-Z, -, and '."
   end
 
   if(fields["password"].length < 1)
