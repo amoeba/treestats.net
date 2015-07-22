@@ -27,7 +27,7 @@ module AccountHelper
     {  
       :name => "rank", 
       :label => "Rank",
-      :value => Proc.new { |v| "#{RankHelper::get_rank_name(RaceHelper::get_race_id(v[:race]) + 1, GenderHelper::get_gender_id(v[:gender]) + 1, v[:rank])} (#{v[:rank]})" }
+      :value => Proc.new { |v| "#{RankHelper::get_rank_name(RaceHelper::get_race_id(v[:race]), GenderHelper::get_gender_id(v[:gender]), v[:rank])} (#{v[:rank]})" }
       # :value => Proc.new { |v| "#{RaceHelper::get_race_id(v[:race])} #{GenderHelper::get_gender_id(v[:gender])} #{v[:rank]}" }
     },
     {  
