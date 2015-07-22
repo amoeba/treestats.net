@@ -16,20 +16,20 @@ module RaceHelper
   }
   
   RACE_ID = {
-    "Aluvian" => 0,
-    "Gharundim" => 1,
-    "Gharu'ndim" => 1,
-    "Sho" => 2,
-    "Viamontian" => 3,
-    "Shadowbound" => 4,
-    "Gearknight" => 5,
-    "Tumerok" => 6,
-    "Lugian" => 7,
-    "Empyrean" => 8,
-    "Penumbraen" => 9,
-    "Undead" => 10,
-    "Olthoi" => 11,
-    "OlthoiAcid"  => 12
+    "Aluvian" => 1,
+    "Gharundim" => 2,
+    "Gharu'ndim" => 2,
+    "Sho" => 3,
+    "Viamontian" => 4,
+    "Shadowbound" => 5,
+    "Gearknight" => 6,
+    "Tumerok" => 7,
+    "Lugian" => 8,
+    "Empyrean" => 9,
+    "Penumbraen" => 10,
+    "Undead" => 11,
+    "Olthoi" => 12,
+    "OlthoiAcid"  => 13
   }
     
   def self.get_race_name(id)
