@@ -48,7 +48,7 @@ module AccountHelper
     { 
       :name => "vassals", 
       :label => "Vassals", 
-      :value => Proc.new { |v| v[:vassals] ? v[:vassals].length : "" }
+      :value => Proc.new { |v| v[:vassals] ? v[:vassals].length : "0" }
     }
   ]
   
