@@ -9,6 +9,4 @@ gem 'json'
 gem 'puma'
 gem 'redis'
 gem 'sinatra-redis'
-gem 'rollbar', '~> 1.5.3', :groups => [:production]
-gem 'dotenv', :groups => [:development]
 gem "rack-test", :groups => [:test]

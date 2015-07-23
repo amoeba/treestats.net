@@ -9,13 +9,6 @@ set :views, File.dirname(__FILE__) + "/views"
 configure do
   # Mongoid
   Mongoid.load!("./config/mongoid.yml")
-
-  # Rollbar
-  if settings.production?
-    Rollbar.configure do |config|
-      config.access_token = ENV["ROLLBAR_ACCESS_TOKEN"]
-    end
-  end
 end  
 
 not_found do
