@@ -434,6 +434,54 @@ table.listing th {
   background-color: #392067;
 }
 
+/* Dashboard */
+
+#dashboard {
+  width: 100%;
+}
+
+table.dashboard {
+  display: inline-table;
+  margin: 0 3em 1em 0;
+  width: 300px;
+  font-size: 90%;
+  border: 2px solid #AF7A30;
+}
+
+table.dashboard tbody, table.dashboard thead {
+  width: 300px;
+}
+
+table.dashboard thead tr.title {
+  background-color: #0F3C3E;
+  font-weight: bold;
+  padding: 1em 0px;
+  text-align: center;
+}
+
+table.dashboard th, table.dashboard tr.subtitle {
+  background-color: #392067;
+  font-weight: normal;
+}
+
+table.dashboard th, table.dashboard td {
+  padding: 3px;
+}
+
+table.dashboard-single {
+  border-width: 2px 2px 0px 2px;
+  border-style: solid;
+  border-color: #AF7A30;
+  font-size: 90%;
+}
+
+table.dashboard td {
+  padding: 2px;
+}
+
+dl.dashboard dd {
+  display: inline;
+}
 /* Account view */
 form.account-field-form {
 
@@ -495,4 +543,32 @@ table th.sort-down:hover:after {
 table th.sort-up:after {
   border-bottom: none;
   border-width: 4px 4px 0;
+}
+
+/* Dashboard Stat Charts CSS */
+
+.statchart {
+  background-color: black;
+}
+
+.statchart svg {
+  font-size: 80%;
+}
+
+.statchart .axis path,
+.statchart .axis line {
+  fill: none;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.statchart .axis text {
+  fill: #fff;
+  shape-rendering: crispEdges;
+}
+
+.statchart .line {  
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.5px;
 }

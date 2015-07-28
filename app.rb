@@ -13,6 +13,32 @@ not_found do
 end
 
 get '/' do
+  # Collect statistics for the dashboard
+  # Total characters being tracked
+  # Server counts
+  # Most titles
+  # Most deaths
+  
+  # General counts
+  @character_count = Character.count
+  @allegiance_count = Allegiance.count
+  
+  @server_counts = { "Darktide" => 5, "WintersEbb" => 10}
+  
+  %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb].each do |s|
+    @server_counts[s] = Character.where(server: s).count
+  end
+    
+  # Most titles
+  @most_titles = Character.collection.aggregate(
+    { "$match" => { "ti" => { "$exists" => true }} },
+    { "$project" => {"n" => 1, "s" => 1, "num_titles" => { "$size" => "$ti" } }},
+    { "$sort" => { "num_titles" => -1 } },
+    { "$limit" => 10 }
+  )
+  
+  @most_deaths = Character.desc(:deaths).limit(10)
+  
   haml :index
 end
 
@@ -288,6 +314,36 @@ get '/player_counts.json' do
 
   response
 end
+
+get '/rankings/titles.json' do
+  @server = params[:server] || "All"
+
+  limit = 10
+  sort_order = -1
+  match_clause = {
+    "$match" => { "ti" => { "$exists" => true }}
+  }
+
+
+  @characters = Character.collection.aggregate(
+  match_clause,
+  {
+    "$project" => {
+      "n" => 1,
+      "s" => 1,
+      "num_titles" => { "$size" => "$ti" }
+    }
+  },
+  {
+    "$sort" => { "num_titles" => sort_order }
+  },
+  {
+    "$limit" => limit
+  })
+
+  @characters.to_json
+end
+
 
 get '/rankings/titles/?' do
   @server = params[:server] || "All"
