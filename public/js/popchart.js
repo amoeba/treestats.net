@@ -6,10 +6,10 @@ popchart.add = function(selector, json)
 
   var data = json.map(function(d) {
     return {
-      'date' : parse(d.timestamp),
+      'date' : parse(d.c_at),
       'day'       : '',
-      'count' : d.count,
-      'server' : d.server
+      'count' : d.c,
+      'server' : d.s
     };
   });
 
