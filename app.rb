@@ -6,7 +6,7 @@ set :views, File.dirname(__FILE__) + "/views"
 configure do
   # Mongoid
   Mongoid.load!("./config/mongoid.yml")
-end  
+end
 
 not_found do
   haml :not_found
@@ -301,18 +301,18 @@ get '/player_counts.json' do
 
   response = {}
 
-  player_counts = PlayerCount.all.sort(server: 1, created_at: 1)
+  player_counts = PlayerCount.without(:_id).sort(server: 1, created_at: 1)
 
-  # Remove _id field and respond with json
-  if(player_counts.exists?)
-    response = player_counts.collect { |pc| {
-      :server => pc.server,
-      :count => pc.count,
-      :timestamp => pc.created_at
-    }}.to_json
-  end
+  # # Remove _id field and respond with json
+  # if(player_counts.exists?)
+  #   response = player_counts.collect { |pc| {
+  #     :server => pc.server,
+  #     :count => pc.count,
+  #     :timestamp => pc.created_at
+  #   }}.to_json
+  # end
 
-  response
+  player_counts.to_json
 end
 
 get '/rankings/titles.json' do
