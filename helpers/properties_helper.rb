@@ -38,7 +38,6 @@ module PropertiesHelper
     "244" => { :type => :aug, :name => "Fiery Enhancement" },
     "245" => { :type => :aug, :name => "Icy Enhancement" },
     "246" => { :type => :aug, :name => "Storm's Enhancement" },
-
     "298" => { :type => :aug, :name => "Eye of the Remorseless"},
     "299" => { :type => :aug, :name => "Hand of the Remorseless"},
     "300" => { :type => :aug, :name => "Master of the Steel Circle"},
@@ -46,8 +45,7 @@ module PropertiesHelper
     "302" => { :type => :aug, :name => "Master of the Five Fold Path" },
     "309" => { :type => :aug, :name => "Frenzy of the Slayer"},
     "310" => { :type => :aug, :name => "Iron Skin of the Invincible" },
-
-    "326" => { :type => :aug, :name => "Jack of all Trades" },
+    "326" => { :type => :aug, :name => "Jack of All Trades" },
     "328" => { :type => :aug, :name => "Infused Void Magic" },
     "294" => { :type => :aug, :name => "Infused Creature Magic" },
     "295" => { :type => :aug, :name => "Infused Item Magic" },
