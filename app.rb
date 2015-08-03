@@ -494,6 +494,9 @@ get '/stats/uploads/daily' do
 
   result = value.sort { |a,b| a <=> b }.map { |v| { :date => v.split(":")[2], :count => redis.get(v).to_i }}
 
+  # Trim last result
+  result = result[0..(result.size - 2)] if result.size > 1
+
   result.to_json
 end
 
