@@ -707,6 +707,54 @@ module AccountHelper
       :label => "World",
       :group => :auras,
       :value => Proc.new { |v| v[:properties]["365"]}
+    },
+    {  
+      :name => "370", 
+      :label => "Damage",
+      :group => :ratings,
+      :value => Proc.new { |v| v[:properties]["370"]}
+    },
+    {  
+      :name => "371", 
+      :label => "Damage Resistance",
+      :group => :ratings,
+      :value => Proc.new { |v| v[:properties]["371"]}
+    },
+    {  
+      :name => "372", 
+      :label => "Critical",
+      :group => :ratings,
+      :value => Proc.new { |v| v[:properties]["372"]}
+    },
+    {  
+      :name => "373", 
+      :label => "Critical Resistance",
+      :group => :ratings,
+      :value => Proc.new { |v| v[:properties]["373"]}
+    },
+    {  
+      :name => "374", 
+      :label => "Critical Damage",
+      :group => :ratings,
+      :value => Proc.new { |v| v[:properties]["374"]}
+    },
+    {  
+      :name => "375", 
+      :label => "Critical Damage Resistance",
+      :group => :ratings,
+      :value => Proc.new { |v| v[:properties]["375"]}
+    },
+    {  
+      :name => "376", 
+      :label => "Healing Boost",
+      :group => :ratings,
+      :value => Proc.new { |v| v[:properties]["376"]}
+    },
+    {  
+      :name => "379", 
+      :label => "Vitality",
+      :group => :ratings,
+      :value => Proc.new { |v| v[:properties]["379"]}
     }
   ]
 
