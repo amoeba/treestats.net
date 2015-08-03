@@ -495,13 +495,33 @@ table.account td {
   padding: 0.5em;
 }
 
-label.account-field {
-  margin: 1em;
-  width: 100px;
-}
-
 table.account td.field {
   min-width: 100px;
+}
+
+/* Account fields */
+form.account-fields {
+  margin-bottom: 1.5em;
+}
+
+table.account-fields {
+  width: auto;
+}
+
+table.account-fields th {
+  background-color: #0F3C3E;
+}
+
+table.account-fields thead tr {
+  border-bottom: #AF7A30 solid 2px;
+}
+table.account-fields td {
+  padding: 0.25em 0.25em;
+}
+
+table.account-fields td.group {
+  font-weight: bold;
+  background-color: #0F3C3E;
 }
 
 

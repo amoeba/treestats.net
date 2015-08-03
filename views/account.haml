@@ -6,39 +6,50 @@
   %p
     = "This account has #{@characters.count} associated character#{@characters.count > 1 ? "s" : ""}."
   
-  %form.account-field-form
-    %table
-      %tr
-        %td 
-          %span
-            %b Show Fields:
-        %td
-          - AccountHelper::TABLE_FIELD_MAPPINGS.each do |field|
-            %label.account-field
-              %input{:type => "checkbox", :name => field[:name], :checked => params.has_key?(field[:name])}
-              = field[:label]
-              
-          %input{:type => "submit", :value => "Update Table"}
+  %form.account-fields
+    %table.account-fields
+      %thead
+        %tr
+          %th General
+          %th Allegiance
+          %th Attributes
+          %th Skills
+          %th Augmentations
+          %th Auras
+      %tbody
+        %tr
+          - %w[general allegiance attributes skills augmentations auras].each do |group|
+            %td
+              %select{:multiple => "multiple", :name => "#{group}[]", :size => 10}
+                - AccountHelper::fields_for(group.to_sym).each do |field|
+                  - if(params[group] && params[group].include?(field[:name]))
+                    %option{:value => field[:name], :selected => true}= field[:label]
+                  - else
+                    %option{:value => field[:name]}= field[:label]
 
+    %input{:type => "submit", :value => "Update Table"}
+    %a{:href => "/account/#{params['account_name']}"} Reset Fields
+  
   %table.account.listing#listing
     %thead
       %tr
         %th Name
         %th Server
-        %th Level
-        - AccountHelper::TABLE_FIELD_MAPPINGS.each do |field|
-          - if(params.has_key?(field[:name]))
-            %th= field[:label]
+        - %w[general allegiance attributes skills augmentations auras].each do |group|
+          - if(params.has_key?(group))
+            - params[group].each do |name|
+              %th= AccountHelper::field_label(group, name)
     %tbody
       - @characters.each do |character|
         %tr
           %td
             %a{:href => "/#{character[:server]}/#{character[:name]}"}= character[:name]
           %td.center= character[:server]
-          %td.center= character[:level]
-          - AccountHelper::TABLE_FIELD_MAPPINGS.each do |field|
-            - if(params.has_key?(field[:name]))
-              %td.center.field= field[:value].call(character)
+          - %w[general allegiance attributes skills augmentations auras].each do |group|
+            - if(params.has_key?(group))
+              - params[group].each do |name|
+                - puts "calling proc for #{group}::#{name} on character #{character[:name]}"
+                %td= AccountHelper::field_value(group, name).call(character)
 
 %script{:type => "text/javascript", :src => "/js/tablesort.min.js"}
 %script{:type => "text/javascript", :src => "/js/tablesort.numeric.js"}
