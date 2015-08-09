@@ -9,7 +9,15 @@
     = "#{@characters.count} character#{@characters.count > 1 ? "s" : ""}"
     in the database. Here's 100 of the most recently updated ones.
 
-  %ul
-    - @characters.each do |c|
-      %li
-        %a{:href => "/#{c['server']}/#{c['name']}"}= "#{c['name']} (#{c['server']})"
+  %table.listing
+    %thead
+      %tr
+        %th Character
+        %th Server
+    %tbody
+      - @characters.each do |c|
+        %tr
+          %td
+            %a{:href => "/#{c['server']}/#{c['name']}"}= "#{c['name']}"
+            = CharacterHelper::tag_html(c)
+          %td= c['server']

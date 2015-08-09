@@ -525,7 +525,7 @@ table.account-fields td.group {
 }
 
 
-/* Tablesort CSS 
+/* Tablesort CSS
    https://github.com/tristen/tablesort
 */
 
@@ -587,8 +587,52 @@ table th.sort-up:after {
   shape-rendering: crispEdges;
 }
 
-.statchart .line {  
+.statchart .line {
   fill: none;
   stroke: #fff;
   stroke-width: 1.5px;
+}
+
+
+/* tags */
+div.tag {
+  display: inline-block;
+  height: 20px;
+}
+
+div.tag img {
+  width: 15px;
+  height: 15px;
+}
+
+span.tag-level, span.tag-attribute, span.tag-skill {
+  display: inline-block;
+  padding: 2px 4px;
+  font-family: monospace;
+  font-size: 80%;
+  text-align: center;
+}
+span.tag-level {
+  background-color: #0F3C3E;
+  color: white;
+}
+
+span.tag-attribute {
+  background-color: #392067;
+  color: white;
+}
+
+span.tag-skills {
+
+}
+
+span.tag-skill {
+  padding: 2px 0px;
+  vertical-align: middle;
+  height: 17px;
+  width: 17px;
+  background-repeat: no-repeat;
+  background-size: 15px 15px;
+  background-position: 50% 50%;
+  background-color: transparent;
 }

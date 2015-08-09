@@ -6,6 +6,7 @@
     -if @character['account_name']
       %span
         %a{:href => "/account/#{@character['account_name']}"} View other characters
+    = CharacterHelper::tag_html(@character)
 
   .last_updated
     = "Last Updated #{relative_time(@character["updated_at"])}"

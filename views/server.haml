@@ -20,3 +20,4 @@
         %tr
           %td
             %a{:href => "/#{character[:server]}/#{character[:name]}"}= character[:name]
+            = CharacterHelper::tag_html(character)

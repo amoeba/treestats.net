@@ -310,8 +310,6 @@ module RankHelper
     }
   }
 
- 
-  
   def self.get_rank_name(race, gender, rank)
     rank_name = nil
     
