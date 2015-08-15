@@ -25,17 +25,22 @@ class Chain
 
     # Return early if no patron
     return character.name if !character.patron
-    
+
     highest_patron = character.patron['name']
-    
+
     # Do the finding
     patron = Character.find_by(server: @server, name: highest_patron)
-    
+
     # Traverse upward toward the ultimate patron
+    limit = 200
+
     while patron
+      limit -= 1
       highest_patron = patron.name
 
-      if(patron.patron)
+      return highest_patron if limit <= 0
+
+      if patron.patron
         patron = Character.find_by(server: @server, name: patron.patron['name'])
       else
         return highest_patron
@@ -45,9 +50,9 @@ class Chain
     highest_patron
   end
 
-  def walk_chain(current)
+  def walk_chain(current, level = 0)
     character = Character.find_by(server: @server, name: current['name'])
-    
+
     return if character.nil?
 
     if(character['vassals'])
@@ -55,7 +60,7 @@ class Chain
 
       character['vassals'].each_with_index do |vassal, i|
         current['children'] << { 'name' => vassal['name'] }
-        walk_chain(current['children'][i])
+        walk_chain(current['children'][i], level + 1) unless level > 200
       end
     end
   end

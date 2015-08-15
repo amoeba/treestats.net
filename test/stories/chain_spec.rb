@@ -58,4 +58,21 @@ describe "ChainStory" do
     chain = Chain.new("test", "Barbados").get_chain
     chain.must_equal({"name"=>"Mr Adventure", "children"=>[{"name"=>"Pew the Mottled", "children"=>[{"name"=>"Barbados"}]}]})
   end
+
+  it "gracefully handles a circular patron reference" do
+    post('/', '{"name":"B", "server":"test", "patron":{"name":"A"}}')
+    post('/', '{"name":"A", "server":"test", "patron":{"name":"C"}}')
+    post('/', '{"name":"C", "server":"test", "patron":{"name":"B"}}')
+
+    get('/chain/test/B')
+    last_response.status.must_equal 200
+  end
+
+  it "gracefully handles a circular vassal reference" do
+    post('/', '{"name":"A", "server":"test", "vassals":[{"name":"B"}]}')
+    post('/', '{"name":"B", "server":"test", "vassals":[{"name":"A"}]}')
+
+    get('/chain/test/B')
+    last_response.status.must_equal 200
+  end
 end
