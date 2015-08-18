@@ -18,17 +18,17 @@ get '/' do
   # Server counts
   # Most titles
   # Most deaths
-  
+
   # General counts
   @character_count = Character.count
   @allegiance_count = Allegiance.count
-  
+
   @server_counts = { "Darktide" => 5, "WintersEbb" => 10}
-  
+
   %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb].each do |s|
     @server_counts[s] = Character.where(server: s).count
   end
-    
+
   # Most titles
   @most_titles = Character.collection.aggregate(
     { "$match" => { "ti" => { "$exists" => true }} },
@@ -36,9 +36,9 @@ get '/' do
     { "$sort" => { "num_titles" => -1 } },
     { "$limit" => 10 }
   )
-  
+
   @most_deaths = Character.desc(:deaths).limit(10)
-  
+
   haml :index
 end
 
@@ -72,18 +72,18 @@ post '/' do
 
   # Get the version number out and use it to let the user know to update
   # their plugin
-  
+
   # version_number = json_text["version"]
-  
+
   version_message = nil
-  
+
   # if(version_number == "1") # Version num is a string (accepts 1.2, etc)
   #   version_message = "You're using an old version of TreeStats. " \
   #   "The latest version provides bug fixes and adds TreeStats Accounts, " \
   #   "which let you view all of your characters across accounts. " \
   #   "Please go to treestats.net and get the latest version."
   # end
-  
+
   # Extract information for later in this method
   name = json_text['name']
   server = json_text['server']
@@ -129,17 +129,17 @@ post '/' do
 
   # RESPONSE
   response_text = ""
-  
+
   if(character.valid?)
     response_text = "Character was updated successfully."
   else
     MailHelper::send("Character update failed!", "<p>Raw Text<br/>#{text}</p> <p>JSON Text<br/>#{json_text}</p>")
     response_text = "Character update failed."
   end
-  
+
   # Add version_text to response text
   response_text = [response_text, version_message].join(" ") if version_message
-  
+
   # Return final response
   response_text
 end
@@ -147,7 +147,7 @@ end
 post '/message' do
   return "Got your message!"
 end
-  
+
 post '/account/create/?' do
   body = request.body.read
   fields = JSON.parse(body)
@@ -422,7 +422,7 @@ get '/rankings/?' do
 
   # Reverse the sort for "birth" ranking
   sort = sort * -1 if(@tokens[0] == "birth")
-  
+
   # Prepare sort clause
   sort_clause = { sort_by => sort }
 

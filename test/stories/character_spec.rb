@@ -61,35 +61,35 @@ describe "CharacterStory" do
     it "assigns an account name if it's sent" do
       post('/account/create', '{"name":"test", "password" : "test"}')
       post('/', '{"name" : "Account Tester", "server":"test", "account_name" : "test"}')
-      
+
       Character.find_by(name: "Account Tester").account_name.must_equal("test")
     end
 
     it "doesn't assign an account name if it's not sent" do
       post('/account/create', '{"name":"test", "password" : "test"}')
       post('/', '{"name" : "Account Tester", "server":"test"}')
-      
+
       Character.find_by(name: "Account Tester").account_name.must_equal nil
     end
-    
+
     it "sets patron race and gender correctly" do
       post('/', '{"name" : "patron", "server" : "test", "race" : "Aluvian", "gender" : "Male"}')
       Character.find_by(name: "patron")["name"].must_equal("patron")
-      
+
       post('/', '{"name":"vassal", "server":"test", "patron" : {"name":"patron", "server" : "test", "race" : "1", "gender" : "1"}}')
       Character.find_by(name: "patron")["race"].must_equal("Aluvian")
       Character.find_by(name: "patron")["gender"].must_equal("Male")
     end
-    
+
     it "sets vassal race and gender correctly" do
       post('/', '{"name" : "vassal", "server" : "test", "race" : "Aluvian", "gender" : "Male"}')
-      
+
       post('/', '{"name":"vassal", "server":"test", "patron" : {"name":"patron", "server" : "test", "race" : "1", "gender" : "1"}}')
-      
+
       Character.find_by(name: "vassal")["race"].must_equal("Aluvian")
       Character.find_by(name: "patron")["gender"].must_equal("Male")
     end
-    
+
     it "sets monarch race and gender correctly" do
       post('/', '{"name" : "player", "server" : "test", "race" : "Aluvian", "gender" : "Male", '\
         '"monarch":{"name":"monarch","race":4,"rank":8,"gender":2,"followers":1105},'\
@@ -101,7 +101,7 @@ describe "CharacterStory" do
 
       Character.find_by(name: "patron").gender.must_equal "Male"
       Character.find_by(name: "patron").race.must_equal "Gharu'ndim"
-      
+
       Character.find_by(name: "vassal_one").gender.must_equal "Male"
       Character.find_by(name: "vassal_one").race.must_equal "Aluvian"
     end
