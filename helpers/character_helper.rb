@@ -40,8 +40,6 @@ module CharacterHelper
 
     return_val = html_strings.join(" ")
 
-    puts return_val
-
     return_val
   end
 end
