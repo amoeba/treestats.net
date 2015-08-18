@@ -54,18 +54,18 @@ class Character
   after_save do |document|
     self_race = RaceHelper::get_race_name(self.race.to_i)
     self_gender = GenderHelper::get_gender_name(self.gender.to_i)
-    
+
     # Monarch
     if self.monarch
       monarch = Character.find_or_create_by(name: self.monarch['name'], server: self.server)
 
       monarch_info = self.monarch
-      
+
       monarch_info["race"] = RaceHelper::get_race_name(monarch_info["race"].to_i)
       monarch_info["gender"] = GenderHelper::get_gender_name(monarch_info["gender"].to_i)
-      
+
       monarch.set(monarch_info)
-      
+
       if self.allegiance_name
         monarch.set(allegiance_name: self.allegiance_name)
       end
@@ -74,14 +74,14 @@ class Character
     # Patron
     if self.patron
       patron = Character.find_or_create_by(name: self.patron['name'], server: self.server)
-      
+
       # Convert gender names to IDs
       # The `self` object has race and gender as names and not IDs
       # but race and gender are IDs everywhere else
-      
+
       patron_race = RaceHelper::get_race_name(self.patron["race"].to_i)
       patron_gender = GenderHelper::get_gender_name(self.patron["gender"].to_i)
-      
+
       patron.set(gender: patron_gender, race: patron_race)
 
       vassals = patron.vassals
@@ -108,7 +108,7 @@ class Character
         monarch_info = self.monarch
         monarch_info["race"] = RaceHelper::get_race_name(monarch_info["race"].to_i)
         monarch_info["gender"] = GenderHelper::get_gender_name(monarch_info["gender"].to_i)
-        
+
         patron.set(monarch: monarch_info)
       end
 
@@ -121,11 +121,11 @@ class Character
     if self.vassals
       self.vassals.each do |v|
         vassal = Character.find_or_create_by(name: v['name'], server: self.server)
-        
+
         vassal_info = v
         vassal_info["race"] = RaceHelper::get_race_name(v["race"].to_i)
         vassal_info["gender"] = GenderHelper::get_gender_name(v["gender"].to_i)
-        
+
         vassal.set(vassal_info)
 
         vassal.set(patron: {
@@ -139,7 +139,7 @@ class Character
           monarch_info = self.monarch
           monarch_info["race"] = RaceHelper::get_race_name(monarch_info["race"].to_i)
           monarch_info["gender"] = GenderHelper::get_gender_name(monarch_info["gender"].to_i)
-        
+
           vassal.set(monarch: monarch_info)
         end
 
