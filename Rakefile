@@ -1,9 +1,7 @@
-require 'dotenv/tasks' if ENV['RACK_ENV'] != 'production'
-
 task default: :test
 
 desc 'Run all tests'
-task test: :dotenv do
+task :test do
   Dir['./test/**/*_spec.rb'].each { |f| load f }
 end
 
