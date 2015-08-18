@@ -1,12 +1,9 @@
 language: ruby
+sudo: false
 rvm:
   - 2.2.2
-services: 
+services:
   - mongodb
   - redis-server
-before_install:
-  - sudo pip install codecov
-after_success:
-  - codecov
 notifications:
   slack: treestats:225RNlqLgdQcnFmkgh2NrIim
