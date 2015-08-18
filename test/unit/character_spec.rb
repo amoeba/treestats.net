@@ -62,16 +62,16 @@ describe 'Character', :unit do
     c = Character.create({:name => "somechar", :server => 'someserver', :monarch => {"name" => "somemonarch"}})
 
     c.monarch['rank'].must_equal nil
-    c.monarch['race'].must_equal nil
-    c.monarch['gender'].must_equal nil
+    c.monarch['race'].must_equal 0
+    c.monarch['gender'].must_equal 0
   end
 
   it "sets values for rank/race/gender when we secify them" do
     c = Character.create({:name => "somechar", :server => 'someserver', :monarch => {"name" => "somemonarch", "rank" => 5, "race" => 2, "gender" => 1}})
 
     c.monarch['rank'].must_equal 5
-    c.monarch['race'].must_equal 2
-    c.monarch['gender'].must_equal 1
+    c.monarch['race'].must_equal "Gharu'ndim"
+    c.monarch['gender'].must_equal "Male"
   end
 
   it "sets values for vassals rank/race/gender when we secify them" do
