@@ -17,15 +17,15 @@ var draw = function(selector, json, server_name, player_name, options) {
   // Zoom to player's node by name
   var zoomTo = function(name) {
     var d = null;
-    
+
     for(var i = 0; i < nodes.length; i++) {
       if(nodes[i].name == name) {
         d = nodes[i]
       }
     }
-    
+
     if(d == null) return;
-    
+
     var translate = [width/2 - d.y,  height/2 - d.x];
 
     svg.transition()
@@ -37,7 +37,7 @@ var draw = function(selector, json, server_name, player_name, options) {
 
   var cluster = d3.layout.cluster()
   .nodeSize([20, 20]);
-    
+
   var nodes = cluster.nodes(json)
       links = cluster.links(nodes);
 
@@ -59,18 +59,18 @@ var draw = function(selector, json, server_name, player_name, options) {
     .scale(1)
     .scaleExtent([.2, 1])
     .on("zoom", zoomed);
-    
+
   var svg = d3.select(selector).append("svg")
     .attr("width", width)
     .attr("height", height);
-  
+
   svg.append("rect")
     .attr("class", "overlay")
     .attr("width", width)
     .attr("height", height);
-    
+
   var g = svg.append("g");
-  
+
   svg.
     call(zoom).
     call(zoom.event);
@@ -111,7 +111,7 @@ var draw = function(selector, json, server_name, player_name, options) {
       .style("font-size", function(d) { return "10px" })
       .style("fill", function(d) { return d.name == player_name ? "gold" : "white" })
       .text(function(d) { return d.name; });
-    
+
   if(player_name) {
     zoomTo(player_name);
   }
