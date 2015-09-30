@@ -1,82 +1,13 @@
 %h2.title Welcome to TreeStats
 
-#dashboard
-  %table.dashboard
-    %thead 
-      %tr.title
-        %td{:colspan => 2} TreeStats Stats
-    %tbody
-      %tr.subtitle
-        %td{:colspan => 2} General Statistics
-      %tr
-        %td Tracked Characters
-        %td= add_commas(@character_count.to_s)
-      %tr
-        %td Tracked Allegiances  
-        %td= add_commas(@allegiance_count.to_s)
-      %tr.subtitle
-        %td{:colspan => 2} Characters By Server
-      - @server_counts.each do |s,c|
-        %tr
-          %td= s
-          %td= add_commas(c.to_s)
-          
-        
+%p Sorry for the downtime earlier. The database host upgraded software and I thought I had done enough to migrate my app. Some parts of the site aren't working so please stand by while I find some time to migrate to the new system.
 
-  - if @most_titles && @most_titles.count > 0
-    %table.dashboard    
-      %thead
-        %tr.title
-          %td{:colspan => 3} Most Titles
-        %tr
-          %th Name
-          %th Server
-          %th Titles
-      %tbody
-        - @most_titles.each do |character|
-          %tr
-            %td
-              %a{:href => "/#{character["s"]}/#{character["n"]}"}= character["n"]
-            %td= character["s"]
-            %td= add_commas(character["num_titles"].to_s)
-
-  - if @most_deaths && @most_deaths.count > 0
-    %table.dashboard    
-      %thead
-        %tr.title
-          %td{:colspan => 3} Most Deaths
-        %tr
-          %th Name
-          %th Server
-          %th Deaths
-      %tbody
-        - @most_deaths.each do |character|
-          %tr
-            %td
-              %a{:href => "/#{character["s"]}/#{character["n"]}"}= character["n"]
-            %td= character["s"]
-            %td= add_commas(character["deaths"].to_s)
-            
-  %table.dashboard
-    %thead
-      %tr.title
-        %td Daily Uploads
-    %tbody
-      %td#dailyuploads.dashboard.statchart
-        %script{:type => "text/javascript", :src => "/js/d3.min.js"}
-        %script{:type => "text/javascript", :src => "/js/statchart.js?v=1"}
-        :javascript
-          d3.json("/stats/uploads/daily", function(error, json) {
-            if (error) return console.warn(error);
-            statchart.add("#dailyuploads", json)
-          })
-    
 %h3 What is TreeStats?
 
 %p
-  TreeStats is a 
+  TreeStats is a
   %a{:href => "http://www.decaldev.com"} Decal
-  plugin for 
+  plugin for
   %a{:href => "http://turbine.com"} Turbine's
   %a{:href => "http://www.asheronscall.com/"} Asheron's Call
   = ". It uploads information about characters you log into with the plugin running, such as:"
@@ -86,7 +17,7 @@
   %li Attributes, skills, and titles
   %li Augmentations, ratings, and other miscellaneous information
 
-%p 
+%p
   Only the information your character knows about (itself, its monarch/patron/vassal names) will be uploaded. You won't get information about players your see while playing (aka it doesn't get information on the players you inspect or are near). For monarch/patron/vassals, only name, race, and rank are collected.
 
 %p
@@ -101,7 +32,7 @@
 
 %h3 What should I do now that I'm here?
 
-%p 
-  If you play AC and want your characters' information to be available offline and to the public, go 
+%p
+  If you play AC and want your characters' information to be available offline and to the public, go
   %a{:href => "/download"} download
   and install TreeStats.
