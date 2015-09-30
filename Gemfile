@@ -5,8 +5,8 @@ gem 'rake'
 gem "rack", "~> 1.6.2"
 gem 'sinatra'
 gem 'haml'
-gem "mongoid", "~> 4.0.0"
-gem "moped", "~> 2.0.5"
+gem "mongoid", "~> 5.0.0"
+gem "moped"
 gem "bson", "~> 3.0.4"
 gem "activesupport", "~> 4.2.2"
 gem 'json'
