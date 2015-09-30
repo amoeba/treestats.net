@@ -1,18 +1,18 @@
 development:
-  sessions:
+  clients:
     default:
       database: treestats-dev
       hosts:
         - localhost:27017
 
 test:
-  sessions:
+  clients:
     default:
       database: treestats-test
       hosts:
         - localhost:27017
 
 production:
-  sessions:
+  clients:
     default:
       uri: <%= ENV['MONGOLAB_URI'] %>
