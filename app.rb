@@ -4,7 +4,7 @@ Dir["./models/*.rb"].each { |file| require file }
 set :views, File.dirname(__FILE__) + "/views"
 
 configure do
-  Mongoid.load!("./config/mongoid.yml", ENV["RACK_ENV"])
+  Mongoid.load!("./config/mongoid.yml")
 end
 
 not_found do
