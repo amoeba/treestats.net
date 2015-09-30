@@ -29,12 +29,12 @@ get '/' do
   end
 
   # Most titles
-  @most_titles = Character.collection.aggregate(
-    { "$match" => { "ti" => { "$exists" => true }} },
-    { "$project" => {"n" => 1, "s" => 1, "num_titles" => { "$size" => "$ti" } }},
-    { "$sort" => { "num_titles" => -1 } },
-    { "$limit" => 10 }
-  )
+  # @most_titles = Character.collection.aggregate(
+  #   { "$match" => { "ti" => { "$exists" => true }} },
+  #   { "$project" => {"n" => 1, "s" => 1, "num_titles" => { "$size" => "$ti" } }},
+  #   { "$sort" => { "num_titles" => -1 } },
+  #   { "$limit" => 10 }
+  # )
 
   @most_deaths = Character.desc(:deaths).limit(10)
 
