@@ -298,20 +298,9 @@ end
 get '/player_counts.json' do
   content_type :json
 
-  response = {}
-
-  player_counts = PlayerCount.without(:_id).sort(server: 1, created_at: 1)
-
-  # # Remove _id field and respond with json
-  # if(player_counts.exists?)
-  #   response = player_counts.collect { |pc| {
-  #     :server => pc.server,
-  #     :count => pc.count,
-  #     :timestamp => pc.created_at
-  #   }}.to_json
-  # end
-
-  player_counts.to_json
+  # player_counts = PlayerCount.without(:_id).sort(server: 1, created_at: 1)
+  # player_counts.to_json
+  {}.to_json
 end
 
 get '/rankings/titles.json' do
