@@ -279,7 +279,7 @@ get '/chain/:server/:name?' do |server, name|
 end
 
 get '/characters/?' do
-  @characters = Character.all.limit(100).desc(:updated_at).where(:attribs.exists => true)
+  @characters = Character.where(:attribs.exists => true).desc(:updated_at).limit(100)
 
   haml :characters
 end
