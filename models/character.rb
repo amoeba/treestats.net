@@ -149,4 +149,6 @@ class Character
       end
     end
   end
+
+  index({server: 1, name: 1}, {unique: true})
 end
