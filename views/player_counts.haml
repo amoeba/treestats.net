@@ -1,51 +1,51 @@
 %h2.title Player Counts
 
-%p Player counts are currently disabled while I work on a solution that works.
+%p Note: Player counts are only showing the most recent counts.
 
--# %script{:src => '/js/d3.min.js'}
--# %script{:src => "/js/popchart.js?v=2"}
+%script{:src => '/js/d3.min.js'}
+%script{:src => "/js/popchart.js?v=2"}
 
--# :css
--#   svg {
--#     background-color: black;
--#     border: 2px solid #AF7A30;
--#   }
--#
--#   path {
--#     fill: none;
--#   }
--#
--#   text {
--#     fill: white;
--#     font-weight: normal;
--#     font-size: 10px;
--#   }
--#
--#   .x.axis line {
--#     stroke: white;
--#   }
--#
--#   .axis label {
--#     fill: #CCC;
--#   }
--#
--#   .x.axis .minor {
--#     stroke-opacity: 1;
--#   }
--#
--#   .x.axis path {
--#     fill: none;
--#     stroke: white;
--#   }
--#
--#   .y.axis line, .y.axis path {
--#     fill: none;
--#     stroke: white;
--#   }
+:css
+  svg {
+    background-color: black;
+    border: 2px solid #AF7A30;
+  }
+
+  path {
+    fill: none;
+  }
+
+  text {
+    fill: white;
+    font-weight: normal;
+    font-size: 10px;
+  }
+
+  .x.axis line {
+    stroke: white;
+  }
+
+  .axis label {
+    fill: #CCC;
+  }
+
+  .x.axis .minor {
+    stroke-opacity: 1;
+  }
+
+  .x.axis path {
+    fill: none;
+    stroke: white;
+  }
+
+  .y.axis line, .y.axis path {
+    fill: none;
+    stroke: white;
+  }
 
 
 
--# :javascript
-  -# d3.json("/player_counts.json", function(error, json) {
-  -#   popchart.add("#content", json);
-  -# });
+:javascript
+  d3.json("/player_counts.json", function(error, json) {
+    popchart.add("#content", json);
+  });
