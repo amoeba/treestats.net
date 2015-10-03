@@ -19,14 +19,14 @@ get '/' do
   # Most deaths
 
   # General counts
-  @character_count = Character.count
-  @allegiance_count = Allegiance.count
+  # @character_count = Character.count
+  # @allegiance_count = Allegiance.count
 
-  @server_counts = { "Darktide" => 5, "WintersEbb" => 10}
+  # @server_counts = { "Darktide" => 5, "WintersEbb" => 10}
 
-  %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb].each do |s|
-    @server_counts[s] = Character.where(server: s).count
-  end
+  # %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb].each do |s|
+  #   @server_counts[s] = Character.where(server: s).count
+  # end
 
   # Most titles
   # @most_titles = Character.collection.aggregate(
@@ -36,7 +36,7 @@ get '/' do
   #   { "$limit" => 10 }
   # )
 
-  @most_deaths = Character.desc(:deaths).limit(10)
+  # @most_deaths = Character.desc(:deaths).limit(10)
 
   haml :index
 end
@@ -88,10 +88,6 @@ post '/' do
   server = json_text['server']
   server_pop = json_text['server_population']
   allegiance_name = json_text['allegiance_name']
-
-  # LOGS
-  # Check in the update
-  Log.create(title: "/", message: text)
 
   # PLAYER COUNTS
   # Only save a PlayerCount if this message contains one
@@ -284,13 +280,6 @@ get '/characters/?' do
   haml :characters
 end
 
-get '/logs/?' do
-  @logs = Log.all.desc(:created_at).limit(100)
-
-  haml :logs
-end
-
-
 get '/player_counts/?' do
   haml :player_counts
 end
@@ -459,15 +448,13 @@ get '/search/?' do
       criteria[:name] = /#{Regexp.escape(params[:character])}/i
     end
 
-    puts criteria
     @records = Character.limit(50).asc(:name).where(criteria)
   elsif(params && params[:allegiance])
     if(params[:allegiance].length >= 0)
       criteria[:name] = /#{Regexp.escape(params[:allegiance])}/i
     end
 
-    puts criteria
-    @records = Allegiance.limit(50).asc(:server).where(criteria)
+    @records = Allegiance.where(criteria).asc(:server).limit(50)
   end
 
   haml :search
@@ -497,7 +484,7 @@ get '/stats/uploads/monthly' do
 end
 
 get '/:server/?' do |server|
-  @characters = Character.where(server: server).limit(100).desc(:updated_at).where(:attribs.exists => true)
+  @characters = Character.where(server: server).where(:attribs.exists => true).desc(:updated_at).limit(100)
 
   haml :server
 end
