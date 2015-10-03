@@ -287,9 +287,10 @@ end
 get '/player_counts.json' do
   content_type :json
 
-  # player_counts = PlayerCount.without(:_id).sort(server: 1, created_at: 1)
-  # player_counts.to_json
-  {}.to_json
+  # player_counts = PlayerCount.without(:_id).where({:created_at => { "$gt" => DateTime.strptime("20151001","%Y%m%d") }}).sort(server: 1, created_at: 1)
+  player_counts = PlayerCount.without(:_id).where({:created_at => { "$gt" => DateTime.now - 7 }}).sort(server: 1, created_at: 1)
+
+  player_counts.to_json
 end
 
 get '/rankings/titles.json' do
@@ -375,7 +376,7 @@ get '/rankings/?' do
 
   limit = 100
   sort = -1
-  @sort_text = "asc"
+  # @sort_text = "asc"
   sort_by = params[:ranking] == "titles" ? "ti" : params[:ranking]
 
   # Process ranking into tokens
