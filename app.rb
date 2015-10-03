@@ -276,7 +276,7 @@ end
 
 get '/characters/?' do
   @characters = Character.where(:attribs.exists => true).desc(:updated_at).limit(100)
-
+  
   haml :characters
 end
 
