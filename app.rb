@@ -7,6 +7,10 @@ configure do
   Mongoid.load!("./config/mongoid.yml")
 end
 
+configure :production do
+  require 'newrelic_rpm'
+end
+
 not_found do
   haml :not_found
 end
