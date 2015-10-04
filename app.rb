@@ -298,79 +298,88 @@ get '/player_counts.json' do
 end
 
 get '/rankings/titles.json' do
-  # @server = params[:server] || "All"
-  #
-  # limit = 10
-  # sort_order = -1
-  # match_clause = {
-  #   "$match" => { "ti" => { "$exists" => true }}
-  # }
-  #
-  #
-  # @characters = Character.collection.aggregate(
-  # match_clause,
-  # {
-  #   "$project" => {
-  #     "n" => 1,
-  #     "s" => 1,
-  #     "num_titles" => { "$size" => "$ti" }
-  #   }
-  # },
-  # {
-  #   "$sort" => { "num_titles" => sort_order }
-  # },
-  # {
-  #   "$limit" => limit
-  # })
-  #
-  # @characters.to_json
+  @server = params[:server] || "All"
+
+  limit = 10
+  sort_order = -1
+  match_clause = {
+    "$match" => { "ti" => { "$exists" => true }}
+  }
+
+  @characters = Character.collection.aggregate([
+    match_clause,
+    {
+      "$project" => {
+        "_id" => 0,
+        "n" => 1,
+        "s" => 1,
+        "num_titles" => { "$size" => "$ti" }
+      }
+    },
+    {
+      "$sort" => { "num_titles" => sort_order }
+    },
+    {
+      "$limit" => limit
+    }
+  ])
+
+  @characters.to_json
 end
 
 
 get '/rankings/titles/?' do
-  # @server = params[:server] || "All"
-  #
-  # limit = 100
-  # sort_order = -1
-  #
-  # @sort_text = "asc"
-  #
-  # # Sorting of records (asc/desc)
-  # if(params.has_key?('sort'))
-  #   if(params[:sort] == "asc")
-  #     sort_order = 1
-  #     @sort_text = "desc"
-  #   else
-  #     @sort_text = "asc"
-  #   end
-  # end
-  #
-  # if(params[:server] && params[:server]  != "All")
-  #   match_clause = {
-  #     "$match" => { "ti" => { "$exists" => true },
-  #     "s" => params[:server]}
-  #   }
-  # else
-  #   match_clause = {
-  #     "$match" => { "ti" => { "$exists" => true }}
-  #   }
-  # end
-  #
-  # @characters = Character.collection.aggregate(
-  # match_clause,
-  # {
-  #   "$project" => {
-  #     "n" => 1,
-  #     "s" => 1,
-  #     "num_titles" => { "$size" => "$ti" }
-  #   }
-  # },
-  # {
-  #   "$sort" => { "num_titles" => sort_order }
-  # },
-  # {
-  #   "$limit" => limit
-  # })
+  @server = params[:server] || "All"
+
+  limit = 100
+  sort_order = -1
+
+  @sort_text = "asc"
+
+  # Sorting of records (asc/desc)
+  if(params.has_key?('sort'))
+    if(params[:sort] == "asc")
+      sort_order = 1
+      @sort_text = "desc"
+    else
+      @sort_text = "asc"
+    end
+  end
+
+  if(params[:server] && params[:server]  != "All")
+    match_clause = {
+      "$match" => { "ti" => { "$exists" => true },
+      "s" => params[:server]}
+    }
+  else
+    match_clause = {
+      "$match" => { "ti" => { "$exists" => true }}
+    }
+  end
+
+  project_clause = {
+    "$project" => {
+      "_id" => 0,
+      "n" => 1,
+      "s" => 1,
+      "num_titles" => { "$size" => "$ti" }
+    }
+  }
+
+  sort_clause = {
+    "$sort" => { "num_titles" => sort_order }
+  }
+
+  limit_clause = {
+    "$limit" => limit
+  }
+
+  @characters = Character.collection.aggregate([
+    match_clause,
+    project_clause,
+    sort_clause,
+    limit_clause
+  ])
 
   haml :rankings_titles
 end
