@@ -14,3 +14,4 @@ gem 'puma'
 gem 'redis'
 gem 'sinatra-redis'
 gem "rack-test", :groups => [:test]
+gem 'newrelic_rpm'
