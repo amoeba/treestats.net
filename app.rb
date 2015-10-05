@@ -23,14 +23,14 @@ get '/' do
   # Most deaths
 
   # General counts
-  @character_count = Character.count
-  @allegiance_count = Allegiance.count
+  # @character_count = Character.count
+  # @allegiance_count = Allegiance.count
 
-  @server_counts = {}
-
-  %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb].each do |s|
-    @server_counts[s] = Character.where(server: s).count
-  end
+  # @server_counts = {}
+  #
+  # %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb].each do |s|
+  #   @server_counts[s] = Character.where(server: s).count
+  # end
 
   # Most titles
   # @most_titles = Character.collection.aggregate(
@@ -40,7 +40,7 @@ get '/' do
   #   { "$limit" => 10 }
   # )
 
-  @most_deaths = Character.desc(:deaths).limit(10)
+  # @most_deaths = Character.desc(:deaths).limit(10)
 
   haml :index
 end
