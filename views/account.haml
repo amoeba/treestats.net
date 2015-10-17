@@ -5,7 +5,7 @@
 - else
   %p
     = "This account has #{@characters.count} associated character#{@characters.count > 1 ? "s" : ""}."
-  
+
   %form.account-fields
     %table.account-fields
       %thead
@@ -30,7 +30,7 @@
 
     %input{:type => "submit", :value => "Update Table"}
     %a{:href => "/account/#{params['account_name']}"} Reset Fields
-  
+
   %table.account.listing#listing
     %thead
       %tr
@@ -49,7 +49,6 @@
           - %w[general allegiance attributes skills augmentations auras ratings].each do |group|
             - if(params.has_key?(group))
               - params[group].each do |name|
-                - puts "calling proc for #{group}::#{name} on character #{character[:name]}"
                 %td= AccountHelper::field_value(group, name).call(character)
 
 %script{:type => "text/javascript", :src => "/js/tablesort.min.js"}
