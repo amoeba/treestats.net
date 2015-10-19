@@ -4,14 +4,27 @@ ruby '2.2.3'
 gem 'rake'
 gem "rack"
 gem 'sinatra'
-gem 'haml'
+gem 'puma'
+
 gem "mongoid", "~> 5.0.0"
 gem "moped"
 gem "bson"
 gem "activesupport"
+
+gem 'haml'
 gem 'json'
-gem 'puma'
+
 gem 'redis'
 gem 'sinatra-redis'
-gem "rack-test", :groups => [:test]
-gem 'newrelic_rpm'
+gem 'clockwork'
+gem 'resque', "~>1.22.0"
+gem 'fog'
+
+group :production do
+  gem 'newrelic_rpm'  
+end
+
+group :test do
+  gem 'rspec'
+  gem 'rack-test'
+end

@@ -1,11 +1,22 @@
+require 'bundler/setup'
+Bundler.require(:default)
+
+require './app'
+require 'resque/tasks'
+
 task default: :test
 
-desc 'Run all tests'
+task "resque:setup" do
+  ENV['QUEUE'] = '*'
+end
+
+desc "Alias for resque:work (To run workers on Heroku)"
+task "jobs:work" => "resque:work"
+
 task :test do
   Dir['./test/**/*_spec.rb'].each { |f| load f }
 end
 
-desc 'Deploy to GitHub'
 task :deploy do
   puts '>> git branch deploy'
   `git branch deploy`
