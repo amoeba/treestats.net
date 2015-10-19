@@ -19,7 +19,7 @@ class GraphWorker
     if last_run.nil?
       records = self.get_records_after(nil)
     else
-      last_run_boyd = DateTime.new(last_run[0,4], last_run[4,2], last_run[7,2])
+      last_run_boyd = DateTime.new(last_run[0,4], last_run[4,2], last_run[6,2])
       records = self.get_records_after(last_run_boyd)
     end
 
