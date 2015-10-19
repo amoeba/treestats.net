@@ -11,7 +11,7 @@ class GraphWorker
     uri = URI.parse(redis_url)
     @redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
 
-    now = DateTime.now
+    now = DateTime.now.utc
     boyd = DateTime.new(now.year, now.month, now.day - 1)
 
     last_run = @redis.get(@key)
