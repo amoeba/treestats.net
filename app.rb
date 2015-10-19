@@ -1,10 +1,22 @@
+require 'bundler/setup'
+Bundler.require(:default)
+require 'sinatra/redis'
+
 Dir["./helpers/*.rb"].each { |file| require file }
 Dir["./models/*.rb"].each { |file| require file }
+Dir["./lib/*.rb"].each { |file| require file }
 
 set :views, File.dirname(__FILE__) + "/views"
 
 configure do
   Mongoid.load!("./config/mongoid.yml")
+
+  redis_url = ENV["REDISTOGO_URL"] || "redis://localhost:6379"
+  puts redis_url
+  uri = URI.parse(redis_url)
+
+  Resque.redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
+  set :redis, redis_url
 end
 
 configure :production do
@@ -14,6 +26,7 @@ end
 not_found do
   haml :not_found
 end
+
 
 get '/' do
   # Collect statistics for the dashboard
@@ -41,6 +54,8 @@ get '/' do
   # )
 
   # @most_deaths = Character.desc(:deaths).limit(10)
+
+  Resque.enqueue(GraphWorker)
 
   haml :index
 end
@@ -291,10 +306,21 @@ end
 get '/player_counts.json' do
   content_type :json
 
-  # player_counts = PlayerCount.without(:_id).where({:created_at => { "$gt" => DateTime.strptime("20151001","%Y%m%d") }}).sort(server: 1, created_at: 1)
-  player_counts = PlayerCount.without(:_id).where({:created_at => { "$gt" => DateTime.now - 7 }}).sort(server: 1, created_at: 1)
+  keys = redis.keys("pc:mean:*").sort
+  result = {}
 
-  player_counts.to_json
+  keys.each do |key|
+    tokens = key.split(":")
+    server = tokens[2]
+    date = tokens[3]
+
+    key = "pc:mean:#{server}:#{date}"
+
+    result[server] ||= {}
+    result[server][date] = redis.get(key)
+  end
+
+  result.to_json
 end
 
 get '/rankings/titles.json' do

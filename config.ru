@@ -1,8 +1,6 @@
-require 'bundler'
+require './app.rb'
+require 'resque/server'
 
-Bundler.require(:default, ENV["RACK_ENV"])
-
-require 'tilt/haml'
-require './app'
-
-run Sinatra::Application
+run Rack::URLMap.new \
+  "/"       => Sinatra::Application,
+  "/resque" => Resque::Server.new

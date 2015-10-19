@@ -1,130 +1,112 @@
-var popchart = popchart || {};
-
-popchart.add = function(selector, json)
+var popchart = function(selector, data)
 {
-  var parse = function(timestamp) { return new Date(timestamp); }
+  // Following code copied then adapted from http://bl.ocks.org/mbostock/3884955
 
-  var data = json.map(function(d) {
-    return {
-      'date' : parse(d.c_at),
-      'day'       : '',
-      'count' : d.c,
-      'server' : d.s
-    };
-  });
+  // Setup
+  var margin = {top: 20, right: 120, bottom: 30, left: 50},
+      width = 960 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
 
-  // Add in 'days' (%Y-%m-%d format)
-  for(var i = 0; i < data.length; i++) {
-    var t = data[i].date;
-
-    data[i].day = new Date(t.getFullYear(), t.getMonth(), t.getDate(), 12);
-  }
-
-  var servers = d3.set(data.map(function(d) { return d.server; })).values();
-  var unique_days = d3.set(data.map(function(d) { return d.day; })).values().map(function(d) { return new Date(d); });
-
-  var values = servers.map(function(s) {
-    var server_days = d3.set(data
-      .filter(function(d) { return d.server == s; })
-      .map(function(d) { return d.day; }))
-    .values()
-    .map(function(d) { return new Date(d); });
-
-    return {
-      'server' : s,
-      'values' : server_days.map(function(day) {
-        var counts = [];
-
-        for(var i= 0; i < data.length; i++) {
-          if(data[i].server == s && data[i].day.getTime() == day.getTime()) {
-            counts.push(data[i].count);
-          }
-        }
-
-        return {
-          'server' : s,
-          'day'  : day,
-          'mean' : d3.mean(counts)
-        }
-      })
-    }
-  });
-
-  var margin = { 'top' : 35, 'right' : 80, 'bottom' : 30, 'left' : 45 },
-      width = 600,
-      height = 400;
-
-  var xvals = unique_days;
-  var yvals = data.map(function(v) { return v.count; });
+  var parseDate = d3.time.format("%Y%m%d").parse;
+  var capitalize = function(s) { return s[0].toUpperCase() + s.slice(1); }
 
   var x = d3.time.scale()
-    .domain(d3.extent(xvals))
-    .range([0, width]);
+      .range([0, width]);
 
   var y = d3.scale.linear()
-    .domain([0, d3.max(yvals)])
-    .range([height, 0])
-    .nice();
+      .range([height, 0]);
 
-  var color = d3.scale.category10()
-    .domain(servers);
+  var color = d3.scale.category10();
 
   var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom")
-    .ticks(5);
+      .scale(x)
+      .orient("bottom");
 
   var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left");
+      .scale(y)
+      .orient("left");
+
+  var line = d3.svg.line()
+      .interpolate("linear")
+      .x(function(d) { return x(d.date); })
+      .y(function(d) { return y(d.count); });
 
   var svg = d3.select(selector).append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // Add x axis
-  svg.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0, " + height + ")")
-    .call(xAxis)
 
-  // Add y axis
+  // chart
+  color.domain(d3.keys(data))
+
+  var servers = color.domain().map(function(name) {
+    return {
+      name: name,
+      values: d3.keys(data[name]).map(function(date) {
+        return { date: parseDate(date), count: +data[name][date] };
+      })
+    };
+  });
+
+  xvals = []
+  yvals = []
+
+  servers.forEach(function(server) {
+    dates = server.values.map(function(data) {
+      return data.date
+    });
+
+    counts = server.values.map(function(data) {
+      return data.count
+    });
+
+    x_extent = d3.extent(dates)
+    y_max = d3.max(counts)
+
+    xvals.push(x_extent[0])
+    xvals.push(x_extent[1])
+
+    yvals.push(y_max)
+  });
+
+  x.domain(d3.extent(xvals));
+
+  y.domain([
+      0,
+      d3.max(yvals)
+  ]);
+
   svg.append("g")
-    .attr("class", "y axis")
-    .attr("transform", "translate(0,0)")
-    .call(yAxis)
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
     .append("text")
-      .attr("class", "label")
-      .text("Players")
-      .attr("text-anchor", "end")
-      .attr("transform", "translate(0,-15)");
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Players");
 
-  // Generators
-  var line = d3.svg.line()
-    .interpolate("linear")
-    .x(function(d) { return x(d.day); })
-    .y(function(d) { return y(d.mean); })
-
-  // Mean Line Layer
   var server = svg.selectAll(".server")
-    .data(values)
-      .enter().append("g")
-        .attr("class", "server");
+      .data(servers)
+    .enter().append("g")
+      .attr("class", "servers");
 
   server.append("path")
-    .attr("class", "line")
-    .attr("d", function(d) { return line(d.values); })
-    .style("stroke", function(d) { return color(d.server); })
-    .style("opacity", 1);
+      .attr("class", "line")
+      .attr("d", function(d) { return line(d.values); })
+      .style("stroke", function(d) { return color(d.name); });
 
   server.append("text")
-    .attr("class", "text")
-    .datum(function(d) { return { server: d.server, value: d.values[d.values.length - 1]}; })
-    .attr("transform", function(d) { return "translate(" + x(d.value.day) + "," + y(d.value.mean) + ")"; })
-    .attr("dx", function(d) { return 10 })
-    .attr("dy", function(d) { return ( 20 * (Math.random() - 0.5)); })
-    .text(function(d) { return d.server; })
-    .style("fill", function(d) { return color(d.server); });
+      .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
+      .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.count) + ")"; })
+      .attr("x", 3)
+      .attr("dy", ".35em")
+      .text(function(d) { return capitalize(d.name) + ": " + Math.round(d.value.count)});
 }
