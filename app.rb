@@ -56,8 +56,6 @@ get '/' do
 
   # @most_deaths = Character.desc(:deaths).limit(10)
 
-  Resque.enqueue(GraphWorker)
-
   haml :index
 end
 
