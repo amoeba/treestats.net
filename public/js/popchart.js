@@ -108,5 +108,6 @@ var popchart = function(selector, data)
       .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.count) + ")"; })
       .attr("x", 3)
       .attr("dy", ".35em")
-      .text(function(d) { return capitalize(d.name) + ": " + Math.round(d.value.count)});
+      .text(function(d) { return capitalize(d.name) + ": " + Math.round(d.value.count)})
+      .style("stroke", function(d) { return color(d.name); });
 }
