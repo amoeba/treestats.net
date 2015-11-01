@@ -11,7 +11,6 @@ set :views, File.dirname(__FILE__) + "/views"
 configure do
   Mongoid.load!("./config/mongoid.yml")
 
-  redis_url = ENV["REDISTOGO_URL"] || "redis://localhost:6379"
   redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
   puts redis_url
   uri = URI.parse(redis_url)
