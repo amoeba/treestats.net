@@ -7,7 +7,7 @@ class GraphWorker
   @key = "pc:mean:lastrun"
 
   def self.perform
-    redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
+    redis_url = ENV["REDIS_URL"]
     uri = URI.parse(redis_url)
     @redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
 
@@ -68,10 +68,5 @@ class GraphWorker
         @redis.set(key, mean)
       end
     end
-  end
-
-  def self.flush(str)
-    puts str
-    $stdout.flush
   end
 end
