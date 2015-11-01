@@ -11,15 +11,15 @@ class GraphWorker
     uri = URI.parse(redis_url)
     @redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
 
-    now = DateTime.now.utc
-    boyd = DateTime.new(now.year, now.month, now.day - 1)
+    now = Time.now.utc
+    boyd = now - 86400 # A day of seconds: 60 * 60 * 24
 
     last_run = @redis.get(@key)
 
     if last_run.nil?
       records = self.get_records_after(nil)
     else
-      last_run_boyd = DateTime.new(last_run[0,4].to_i, last_run[4,2].to_i, last_run[6,2].to_i)
+      last_run_boyd = Time.utc(last_run[0,4].to_i, last_run[4,2].to_i, last_run[6,2].to_i)
       records = self.get_records_after(last_run_boyd)
     end
 
