@@ -68,7 +68,7 @@ class Chain
     tree = { 'name' => start, 'children' => nil }
     cursors = [tree]
 
-    max_it = 500
+    max_it = 1000
 
     while max_it > 0 && cursors.length > 0
       if cursors.last.key?('children') && cursors.last['children'].nil?
