@@ -282,7 +282,7 @@ end
 get '/chain/:server/:name?' do |server, name|
   content_type :json
 
-  character = Character.find_by(server: server, name: name)
+  character = Character.only(:name, :server).find_by(server: server, name: name)
 
   return "{}" if character.nil?
 
