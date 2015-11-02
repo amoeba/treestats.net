@@ -1,6 +1,7 @@
 require 'bundler/setup'
 Bundler.require(:default)
 require 'sinatra/redis'
+require 'tilt/haml'
 
 Dir["./helpers/*.rb"].each { |file| require file }
 Dir["./models/*.rb"].each { |file| require file }
