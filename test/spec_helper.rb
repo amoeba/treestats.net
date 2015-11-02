@@ -10,6 +10,7 @@ require 'minitest/spec'
 
 # Load the app
 require_relative '../app'
+Mongo::Logger.logger.level = ::Logger::FATAL
 
 # Create a custom class inheriting from MiniTest::Spec for your unit tests
 class UnitTest < MiniTest::Spec
