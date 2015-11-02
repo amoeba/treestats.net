@@ -13,7 +13,6 @@ configure do
   Mongoid.load!("./config/mongoid.yml")
 
   redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
-  puts redis_url
   uri = URI.parse(redis_url)
 
   Resque.redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
