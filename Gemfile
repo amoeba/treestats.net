@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 ruby '2.2.3'
 
 gem 'rake'
+
 gem "rack"
 gem 'sinatra'
 gem 'puma'
@@ -18,13 +19,12 @@ gem 'redis'
 gem 'sinatra-redis'
 gem 'clockwork'
 gem 'resque', "~>1.22.0"
-gem 'fog'
 
 group :production do
-  gem 'newrelic_rpm'  
+  gem 'newrelic_rpm'
 end
 
-group :test do
-  gem 'rspec'
+group :development, :test do
+  gem 'minitest'
   gem 'rack-test'
 end
