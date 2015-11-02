@@ -124,5 +124,12 @@ describe "CharacterStory" do
       chain = JSON.parse(get('/chain/test/thepatron').body)
       assert_equal(chain, {"name"=> "thepatron", "children" => [ { "name" => "thevassal"}]})
     end
+
+    it "maintains patron-multi-vassal linkages after an update of the vassal" do
+      post('/', '{"name": "thepatron", "server": "test", "vassals": [{"name": "a", "server": "test"},{"name": "b", "server": "test"},{"name": "c", "server": "test"}]}')
+
+      chain = JSON.parse(get('/chain/test/thepatron').body)
+      assert_equal(chain, {"name"=>"thepatron", "children"=>[{"name"=>"a"}, {"name"=>"b"}, {"name"=>"c"}]})
+    end
   end
 end
