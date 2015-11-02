@@ -12,11 +12,11 @@ describe "AppStory" do
       last_response.status.must_equal 200
     end
   end
-  
+
   describe "all routes are reachable" do
     it "can reach all routes" do
-      routes = ["/", "/allegiances", "/characters", "/Frostfell", "/rankings?server=All&ranking=a.strength.base", "/rankings/titles"]
-      
+      routes = ["/", "/allegiances", "/characters", "/Frostfell", "/rankings/titles"]
+
       routes.each do |route|
         get(route)
         last_response.status.must_equal 200
