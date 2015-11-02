@@ -104,6 +104,15 @@ class Character
 
       patron.set(vassals: vassals)
 
+      # Remove any old patrons
+      patrons = Character.where(server: self.server, vassals: { "$elemMatch" =>  { 'name' => self.name} })
+
+      patrons.each do |p|
+        if p['name'] != self.patron['name'] then
+          p.set(vassals: p.vassals.select! { |v| self.name != v['name']})
+        end
+      end
+
       if self.monarch
         monarch_info = self.monarch
         monarch_info["race"] = RaceHelper::get_race_name(monarch_info["race"].to_i)
