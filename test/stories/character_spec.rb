@@ -105,5 +105,15 @@ describe "CharacterStory" do
       Character.find_by(name: "vassal_one").gender.must_equal "Male"
       Character.find_by(name: "vassal_one").race.must_equal "Aluvian"
     end
+
+    it "unsets a vassal from a patron when the vassal breaks then updates" do
+      post('/', '{"name": "thevassal", "server": "test", "patron": {"name": "thepatron", "server": "test"}}')
+      post('/', '{"name": "thepatron", "server": "test", "vassals": [{"name": "thevassal", "server": "test"}]}')
+      post('/', '{"name": "thevassal", "server": "test", "patron": {"name": "newpatron", "server": "test"}}')
+
+      chain = JSON.parse(get('/chain/test/thepatron').body)
+      assert_equal(chain, {"name"=> "thepatron"})
+    end
+
   end
 end
