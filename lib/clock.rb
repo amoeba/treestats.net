@@ -12,4 +12,4 @@ handler { |job|
   Resque.enqueue(job)
 }
 
-every 10.seconds, GraphWorker
+every 1.hour, GraphWorker
