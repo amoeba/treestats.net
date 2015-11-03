@@ -1,0 +1,5 @@
+# CHECKS file for Dokku
+# http://progrium.viewdocs.io/dokku/checks-examples.md/
+
+# Check that the root of the app is available
+/
