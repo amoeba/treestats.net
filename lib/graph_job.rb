@@ -2,12 +2,12 @@ require 'resque'
 require 'resque/errors'
 require 'redis'
 
-class GraphWorker
+class GraphJob
   @queue = :default
   @key = "pc:mean:lastrun"
 
   def self.perform
-    redis_url = ENV["REDIS_URL"]
+    redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
     uri = URI.parse(redis_url)
     @redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
 
