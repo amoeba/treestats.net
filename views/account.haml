@@ -51,10 +51,10 @@
               - params[group].each do |name|
                 %td= AccountHelper::field_value(group, name).call(character)
 
-%script{:type => "text/javascript", :src => "/js/tablesort.min.js"}
-%script{:type => "text/javascript", :src => "/js/tablesort.numeric.js"}
-%script{:type => "text/javascript", :src => "/js/tablesort.date.js"}
-%script{:type => "text/javascript", :src => "/js/tablesort.commasep.js"}
+%script{:type => "text/javascript", :src => javascript_path('tablesort.min')
+%script{:type => "text/javascript", :src => javascript_path('tablesort.numeric')
+%script{:type => "text/javascript", :src => javascript_path('tablesort.date')
+%script{:type => "text/javascript", :src => javascript_path('tablesort.commasep')
 
 :javascript
   new Tablesort(document.getElementById("listing"))

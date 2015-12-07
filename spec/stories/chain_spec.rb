@@ -7,7 +7,7 @@ describe "ChainStory" do
 
   it "can generate a simple chain" do
     Character.create({"name" => 'some patron', "server" => "test", "vassals" => [{"name" => "vassalA"}, {"name" => "vassalB"}, {"name" => "vassalC"}]})
-    Chain.new("test", "some patron").get_chain.must_equal({"name"=>"some patron", "children"=>[{"name"=>"vassalA"}, {"name"=>"vassalB"}, {"name"=>"vassalC"}]})
+    AllegianceChain.new("test", "some patron").get_chain.must_equal({"name"=>"some patron", "children"=>[{"name"=>"vassalA"}, {"name"=>"vassalB"}, {"name"=>"vassalC"}]})
   end
 
   it "connects distance relationships" do
@@ -25,7 +25,7 @@ describe "ChainStory" do
       "patron" => { "name" => "Pew the Mottled"}
       })
 
-    chain = Chain.new("testserver", "Barbados").get_chain
+    chain = AllegianceChain.new("testserver", "Barbados").get_chain
     chain.must_equal({"name"=>"Mr Adventure", "children"=>[{"name"=>"Pew the Mottled", "children"=>[{"name"=>"Barbados"}]}]})
   end
 
@@ -45,7 +45,7 @@ describe "ChainStory" do
         }]
       })
 
-    chain = Chain.new("testserver", "Barbados").get_chain
+    chain = AllegianceChain.new("testserver", "Barbados").get_chain
     chain.must_equal({"name"=>"Mr Adventure", "children"=>[{"name"=>"Pew the Mottled", "children"=>[{"name"=>"Barbados"}]}]})
   end
 
@@ -55,7 +55,7 @@ describe "ChainStory" do
 
     Character.count.must_equal 3
 
-    chain = Chain.new("test", "Barbados").get_chain
+    chain = AllegianceChain.new("test", "Barbados").get_chain
     chain.must_equal({"name"=>"Mr Adventure", "children"=>[{"name"=>"Pew the Mottled", "children"=>[{"name"=>"Barbados"}]}]})
   end
 
