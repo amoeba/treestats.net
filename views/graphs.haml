@@ -1,0 +1,99 @@
+%h2 Graphs
+
+%span These charts show statistics about the players that have been uploaded to TreeStats. These statistics do not necessarily represent the players on the servers.
+#chart
+
+%script{:src => javascript_path('d3.min')}
+%script{:src => javascript_path('barchart')}
+
+:css
+  div.chart {
+    float: left;
+    margin: 0px 10px 10px 0px;
+  }
+
+  .bar {
+    fill: #392067;
+    stroke: white;
+    shape-rendering: smoothEdges;
+  }
+
+  .axis path,
+  .axis line
+  .axis text {
+    fill: none;
+    stroke: #fff;
+    shape-rendering: smoothEdges;
+  }
+
+  .x.axis text {
+    fill: white;
+  }
+  .y.axis text {
+    fill: white;
+  }
+
+  .tooltip {
+    position: absolute;
+    padding: 0.2em;
+    color: white;
+    background: black;
+    border: 1px solid #CCC;
+    pointer-events: none;
+  }
+
+.chart
+  %h3 Attributes (at Creation)
+  #chart-builds
+
+  :javascript
+    d3.json('/stats/sum_of_builds', function(data) {
+      d3.select("#chart-builds")
+        .datum(data)
+        .call(barchart().width(300).height(400));
+    });
+
+
+
+.chart
+  %h3 Gender
+  #chart-genders
+
+  :javascript
+    d3.json('/stats/genders', function(data) {
+      d3.select("#chart-genders")
+        .datum(data)
+        .call(barchart().width(300).height(100));
+    });
+
+.chart
+  %h3 Race
+  #chart-races
+
+  :javascript
+    d3.json('/stats/races', function(data) {
+      d3.select("#chart-races")
+        .datum(data)
+        .call(barchart().width(300).height(300));
+    });
+.chart
+  %h3 Rank
+  #chart-ranks
+
+  :javascript
+    d3.json('/stats/ranks', function(data) {
+      d3.select("#chart-ranks")
+        .datum(data)
+        .call(barchart().width(300).height(300));
+    });
+
+.chart
+  %h3 Level
+  #chart-levels
+
+  :javascript
+    d3.json('/stats/levels', function(data) {
+      d3.select("#chart-levels")
+        .datum(data)
+        .call(barchart().width(300).height(300));
+    });

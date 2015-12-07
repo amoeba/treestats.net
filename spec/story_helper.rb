@@ -7,13 +7,13 @@ require 'rack/test'
 class StoryTest < UnitTest
   include Rack::Test::Methods
   include Sinatra::RedisHelper
-  
+
   register_spec_type(/Story$/, self)
 
   def app
-    Sinatra::Application
+    TreeStats
   end
-  
+
   def redis
     Sinatra::RedisHelper.redis
   end

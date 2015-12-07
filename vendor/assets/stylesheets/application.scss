@@ -24,7 +24,7 @@ table, thead, tbody, tr, td {
 #header {
   height: 100px;
   background-color: black;
-  background-image: url('/images/bg_top.jpg');
+  background-image: image-url('/images/bg_top.jpg');
   border-bottom: 2px solid #AF7A30;
 }
 
@@ -579,12 +579,12 @@ table th.sort-up:after {
 .statchart .axis line {
   fill: none;
   stroke: #fff;
-  shape-rendering: crispEdges;
+  shape-rendering: smoothEdges;
 }
 
 .statchart .axis text {
   fill: #fff;
-  shape-rendering: crispEdges;
+  shape-rendering: smoothEdges;
 }
 
 .statchart .line {

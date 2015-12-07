@@ -38,8 +38,17 @@
     stroke: white;
   }
 
-%script{:src => '/js/d3.min.js'}
-%script{:src => "/js/popchart.js?v=3"}
+  .label text {
+    font-weight: normal;
+    font-size: 10px;
+  }
+
+  .label rect {
+    stroke: white;
+  }
+
+%script{:src => javascript_path('d3.min')}
+%script{:src => javascript_path('popchart')}
 
 :javascript
   d3.json("/player_counts.json", function(error, data) {

@@ -8,7 +8,7 @@ describe "AppStory" do
   end
 
   it "successfully creates an account" do
-    post('/account/create', '{
+    post('/account/create/', '{
       "name" : "Account Test",
       "password" : "passw0rd"}')
 

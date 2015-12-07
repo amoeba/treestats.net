@@ -6,40 +6,39 @@ var draw = function(selector, json, server_name, allegiance_name, options) {
       .attr("width", width)
       .attr("height", height);
 
-  var force = d3.layout.force()
-      .gravity(.025)
-      .distance(75)
-      .charge(-50)
-      .size([width, height]);
+  var g = svg.append("g");
 
-    force
-        .nodes(json.nodes)
-        .links(json.links)
-        .start();
-    
+  var force = d3.layout.force()
+      .size([width, height])
+      .linkDistance(100)
+      .friction(0.8)
+      .charge(-500)
+      // .chargeDistance(100)
+      // .gravity(0.01)
+      // .theta(0.8)
+      .nodes(json.nodes)
+      .links(json.links)
+      .start();
+
     var zoomed = function () {
       g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
     }
-  
+
     var zoom = d3.behavior.zoom()
       .translate([0,0])
       .scale(.8)
-      .scaleExtent([.2, 1])
+      .scaleExtent([.2, 2])
       .on("zoom", zoomed);
-      
-
 
     svg.append("rect")
       .attr("class", "overlay")
       .attr("width", width)
       .attr("height", height);
-      
-    var g = svg.append("g");
-    
+
     svg.
       call(zoom).
       call(zoom.event);
-    
+
     var link = g.selectAll(".link")
         .data(json.links)
       .enter().append("line")
@@ -57,7 +56,7 @@ var draw = function(selector, json, server_name, allegiance_name, options) {
         .attr("dx", 12)
         .attr("dy", ".35em")
         .text(function(d) { return d.name });
-        
+
     node.append("a")
       .attr("xlink:href", function(d) { return ["/", server_name, "/", d.name].join(""); })
       .append("circle")
