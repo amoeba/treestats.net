@@ -1,11 +1,16 @@
 require 'bundler/setup'
 Bundler.require(:default)
 
+require 'sinatra/asset_pipeline/task'
 require './app'
 require 'resque/tasks'
 
 task default: :test
 
+# Sinatra Asset Pipeline
+Sinatra::AssetPipeline::Task.define! TreeStats
+
+# Resque
 task "resque:setup" do
   ENV['QUEUE'] = '*'
 end
@@ -13,10 +18,12 @@ end
 desc "Alias for resque:work (To run workers on Heroku)"
 task "jobs:work" => "resque:work"
 
+# Testing
 task :test do
-  Dir['./test/**/*_spec.rb'].each { |f| load f }
+  Dir['./spec/**/*_spec.rb'].each { |f| load f }
 end
 
+# Other
 task :deploy do
   puts '>> git branch deploy'
   `git branch deploy`

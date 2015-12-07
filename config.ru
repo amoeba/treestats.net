@@ -1,6 +1,3 @@
-require './app.rb'
-require 'resque/server'
+require_relative 'app.rb'
 
-run Rack::URLMap.new \
-  "/"       => Sinatra::Application,
-  "/resque" => Resque::Server.new
+run TreeStats

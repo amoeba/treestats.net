@@ -70,7 +70,7 @@ var popchart = function(selector, data)
 
     yvals.push(y_max)
   });
-
+  console.log(servers)
   x.domain(d3.extent(xvals));
 
   y.domain([
@@ -108,6 +108,73 @@ var popchart = function(selector, data)
       .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.count) + ")"; })
       .attr("x", 3)
       .attr("dy", ".35em")
+      .attr("class", "label")
       .text(function(d) { return capitalize(d.name) + ": " + Math.round(d.value.count)})
       .style("fill", function(d) { return color(d.name); });
+
+
+  // var label = server.append("g")
+  //   .attr("class", "label")
+  //   .datum(function(d) { return { name: d.name, value: d.values[d.values.length - 1]}; })
+  //   .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.count) + ")"; })
+
+  // label.append("rect")
+  //     .attr("width", 100)
+  //     .attr("height", 20)
+  //     .attr("y", -10)
+  //     .attr("fill", function(d) { return color(d.name); })
+
+  // label.append("text")
+  //   .attr("stroke", function(d) { return color(d.name); })
+  //   .text(function(d) { return capitalize(d.name); })
+
+  // Perform constrain relaxation on text labels
+  // https://www.safaribooksonline.com/blog/2014/03/11/solving-d3-label-placement-constraint-relaxing/
+
+  var labels = d3.selectAll(".label"),
+      alpha = 0.25,
+      spacing = 2,
+      maxcalls = 1000;
+
+  console.log(labels)
+  var relax = function() {
+    if(maxcalls <= 0) { console.log('hit max'); return; }
+    maxcalls -= 1;
+
+    var again = false; // Set to true to re-run relaxation
+
+    labels.each(function(d, i) {
+      if(i == 1 || i == 9) { return; }
+      var a = this,
+          da = d3.select(a),
+          y1 = da.attr("y");
+
+      labels.each(function(d, i) {
+        if(i == 1 || i == 9) { return; }
+
+        var b = this;
+
+        if(a == b) { return; }
+
+        var db = d3.select(b),
+            y2 = db.attr("y"),
+            delta = y1 - y2;
+
+        if (Math.abs(delta) > spacing) { return; }
+        console.log(delta)
+
+        again = true;
+
+
+        sign = delta > 0 ? 1 : -1;
+        adjust = sign * alpha;
+        da.attr("y",+ y1 + adjust);
+        db.attr("y",+ y2 - adjust);
+
+        if(again) { setTimeout(relax, 10); }
+      });
+    });
+  };
+
+  setTimeout(relax, 500);
 }

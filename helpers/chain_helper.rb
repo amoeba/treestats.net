@@ -1,4 +1,4 @@
-class Chain
+class AllegianceChain
   def initialize(server, name)
     @server = server
     @name = name
