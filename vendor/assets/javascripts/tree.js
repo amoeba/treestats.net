@@ -6,8 +6,6 @@ var draw = function(selector, json, server_name, allegiance_name, options) {
       .attr("width", width)
       .attr("height", height);
 
-  var g = svg.append("g");
-
   var force = d3.layout.force()
       .size([width, height])
       .linkDistance(100)
@@ -34,6 +32,8 @@ var draw = function(selector, json, server_name, allegiance_name, options) {
       .attr("class", "overlay")
       .attr("width", width)
       .attr("height", height);
+
+    var g = svg.append("g");
 
     svg.
       call(zoom).
