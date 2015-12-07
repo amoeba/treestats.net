@@ -6,7 +6,13 @@ module Sinatra
           app.get '/allegiances/:key.json' do |key|
             content_type :json
 
-            @server, @name = key.split("-")
+            # Extract server and allegiance names from the URL
+            # Use the globbed assignment *@name to grab the rest of the split
+            # parts which handles the case when an allegiance name has a
+            # dash in it.
+            @server, *@name = key.split("-")
+            @name = @name.join("-")
+            
             @characters = Character.where(server: @server, allegiance_name: @name)
 
             return "{}" if @characters.nil?
