@@ -77,7 +77,6 @@ module Sinatra
             redis.incr "uploads:daily:#{Time.now.utc.strftime("%Y%m%d")}"
             redis.incr "uploads:monthly:#{Time.now.utc.strftime("%Y%m")}"
 
-
             # ALLEGIANCE
             Allegiance.find_or_create_by(server: server, name: allegiance_name)
 
