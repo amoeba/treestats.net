@@ -84,6 +84,9 @@
       :javascript
         d3.json("/stats/uploads/monthly", function(error, json) {
           if (error) return console.warn(error);
+          if (json.length <= 2) { return; } // Do nothing
+          json = json.slice(0, json.length - 1)
+          console.log(json)
           statchart.add("#monthlyuploads", json, "%Y%m");
         })
 
