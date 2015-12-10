@@ -57,19 +57,34 @@
 -#             %td= character["s"]
 -#             %td= add_commas(character["deaths"].to_s)
 -#
--#   %table.dashboard
--#     %thead
--#       %tr.title
--#         %td Daily Uploads
--#     %tbody
--#       %td#dailyuploads.dashboard.statchart
--#         %script{:type => "text/javascript", :src => "/js/d3.min.js"}
--#         %script{:type => "text/javascript", :src => "/js/statchart.js?v=1"}
--#         :javascript
--#           d3.json("/stats/uploads/daily", function(error, json) {
--#             if (error) return console.warn(error);
--#             statchart.add("#dailyuploads", json)
--#           })
+
+%table.dashboard
+  %thead
+    %tr.title
+      %td Daily Uploads
+  %tbody
+    %td#dailyuploads.dashboard.statchart
+      %script{:type => "text/javascript", :src => javascript_path('d3.min.js')}
+      %script{:type => "text/javascript", :src => javascript_path('statchart.js')}
+      :javascript
+        d3.json("/stats/uploads/daily", function(error, json) {
+          if (error) return console.warn(error);
+          statchart.add("#dailyuploads", json)
+        })
+
+%table.dashboard
+  %thead
+    %tr.title
+      %td Monthly Uploads
+  %tbody
+    %td#monthlyuploads.dashboard.statchart
+      %script{:type => "text/javascript", :src => javascript_path('d3.min.js')}
+      %script{:type => "text/javascript", :src => javascript_path('statchart.js')}
+      :javascript
+        d3.json("/stats/uploads/monthly", function(error, json) {
+          if (error) return console.warn(error);
+          statchart.add("#monthlyuploads", json)
+        })
 
 %h3 What is TreeStats?
 
