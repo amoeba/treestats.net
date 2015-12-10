@@ -1,8 +1,8 @@
 var statchart = statchart || {};
 
-statchart.add = function(selector, json)
+statchart.add = function(selector, json, format)
 {
-  var parseDate = d3.time.format("%Y%m%d").parse;
+  var parseDate = d3.time.format(format).parse;
 
   var data = json.map(function(d) {
     return {
@@ -33,8 +33,8 @@ statchart.add = function(selector, json)
   var line = d3.svg.line()
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.count); });
-    
-    
+
+
   var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom")
