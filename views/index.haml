@@ -69,7 +69,8 @@
       :javascript
         d3.json("/stats/uploads/daily", function(error, json) {
           if (error) return console.warn(error);
-          statchart.add("#dailyuploads", json)
+          statchart.add("#dailyuploads", json, "%Y%m%d");
+
         })
 
 %table.dashboard
@@ -83,7 +84,7 @@
       :javascript
         d3.json("/stats/uploads/monthly", function(error, json) {
           if (error) return console.warn(error);
-          statchart.add("#monthlyuploads", json)
+          statchart.add("#monthlyuploads", json, "%Y%m");
         })
 
 %h3 What is TreeStats?
