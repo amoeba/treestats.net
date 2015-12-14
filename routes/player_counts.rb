@@ -40,6 +40,18 @@ module Sinatra
 
             result.to_json
           end
+
+          app.get '/player_counts-latest.json' do
+            result = []
+
+            servers = %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb]
+            servers.each do |server|
+              latest = PlayerCount.where(server: server).desc(:created_at).limit(1)
+              result << { 'server' => server, 'count' => latest.to_a.first['c'] }
+            end
+
+            result.to_json
+          end
         end
       end
     end
