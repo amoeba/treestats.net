@@ -47,7 +47,8 @@ module Sinatra
             servers = %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb]
             servers.each do |server|
               latest = PlayerCount.where(server: server).desc(:created_at).limit(1)
-              result << { 'server' => server, 'count' => latest.to_a.first['c'] }
+              first_result = latest.to_a.first
+              result << { 'server' => server, 'count' => first_result['c'], 'date' => first_result['c_at']}
             end
 
             result.to_json
