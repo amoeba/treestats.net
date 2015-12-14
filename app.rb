@@ -41,8 +41,8 @@ class TreeStats < Sinatra::Base
 
     # Mongoid
     Mongoid.load!("./config/mongoid.yml")
-    Mongoid.logger.level = Logger::INFO
-
+    Mongo::Logger.logger.level = ::Logger::INFO
+    
     # Redis
     redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
     uri = URI.parse(redis_url)
