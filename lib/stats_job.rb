@@ -8,8 +8,6 @@ class StatsJob
   @queue = :default
 
   def self.perform
-    puts "Stats job perform method"
-
     redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
     uri = URI.parse(redis_url)
     redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
