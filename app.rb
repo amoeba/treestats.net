@@ -36,6 +36,9 @@ class TreeStats < Sinatra::Base
 
 
   configure do
+    # Turn on logging
+    enable :logging
+    
     # Mongoid
     Mongoid.load!("./config/mongoid.yml")
 
