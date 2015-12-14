@@ -38,9 +38,10 @@ class TreeStats < Sinatra::Base
   configure do
     # Turn on logging
     enable :logging
-    
+
     # Mongoid
     Mongoid.load!("./config/mongoid.yml")
+    Mongoid.logger.level = Logger::INFO
 
     # Redis
     redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
