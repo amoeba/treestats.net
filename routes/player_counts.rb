@@ -42,6 +42,8 @@ module Sinatra
           end
 
           app.get '/player_counts-latest.json' do
+            content_type :json
+            
             result = []
 
             servers = %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb]
@@ -51,7 +53,7 @@ module Sinatra
               result << { 'server' => server, 'count' => first_result['c'], 'date' => first_result['c_at']}
             end
 
-            result.to_json
+            JSON.pretty_generate(result)
           end
         end
       end
