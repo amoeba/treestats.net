@@ -56,7 +56,7 @@
 -#               %a{:href => "/#{character["s"]}/#{character["n"]}"}= character["n"]
 -#             %td= character["s"]
 -#             %td= add_commas(character["deaths"].to_s)
--#
+
 
 %table.dashboard
   %thead
@@ -71,23 +71,6 @@
           if (error) return console.warn(error);
           statchart.add("#dailyuploads", json, "%Y%m%d");
 
-        })
-
--# %table.dashboard
--#   %thead
--#     %tr.title
--#       %td Monthly Uploads
--#   %tbody
--#     %td#monthlyuploads.dashboard.statchart
--#       %script{:type => "text/javascript", :src => javascript_path('d3.min.js')}
--#       %script{:type => "text/javascript", :src => javascript_path('statchart.js')}
--#       :javascript
--#         d3.json("/stats/uploads/monthly", function(error, json) {
--#           if (error) return console.warn(error);
--#           if (json.length <= 2) { return; } // Do nothing
--#           json = json.slice(0, json.length - 1)
--#           console.log(json)
--#           statchart.add("#monthlyuploads", json, "%Y%m");
         })
 
 
