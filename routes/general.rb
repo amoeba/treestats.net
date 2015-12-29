@@ -24,6 +24,10 @@ module Sinatra
 
             haml :characters
           end
+
+          app.get '/api/?' do
+            haml :api
+          end
         end
       end
     end

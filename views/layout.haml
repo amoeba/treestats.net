@@ -25,8 +25,14 @@
                   %td#search
                     = haml :_search
                   %td#download
-                    Download:
-                    %a{:href => "/download"} Latest Release
+                    %table
+                      %tr
+                        %td
+                          %a{:href => "/api"} API
+
+                        %td
+                          Download:
+                          %a{:href => "/download"} Latest Release
 
 
 
