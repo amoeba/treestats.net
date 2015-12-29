@@ -108,12 +108,6 @@ module AccountHelper
       :value => Proc.new { |v| v[:deaths] }
     },
     {  
-      :name => "birth", 
-      :label => "Birth",
-      :group => :general,
-      :value => Proc.new { |v| v[:birth] }
-    },
-    {  
       :name => "skill_credits", 
       :label => "Skill Credits",
       :group => :general,
