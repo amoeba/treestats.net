@@ -74,10 +74,17 @@
         })
 
 
+%h2 News
 
-%h3 What should I do now that I'm here?
+%div
+  %p
+    Update <code>2015-12-29 0500 UTC</code>:
+  %p
+    I've decided to start putting updates here on the front page instead if hiding them away in commit messages. Here are a few updates:
 
-%p
-  If you play AC and want your characters' information to be available offline and to the public, go
-  %a{:href => "/download"} download
-  and install TreeStats.
+    %ul
+      %li Added a subheader to the top of the website so Google shows something useful.
+      %li Extracted the introductory text from the front page into its own page: <a href="/about">http://treestats.net/about</a>.
+      %li Wrote up a small section on the pseudo-API for TreeStats at <a href="/api">http://treestats.net/api</a>.
+      %li Removed the monthly uploads chart from the front page and made the daily uploads chart wider.
+      %li Made the <a href="/player_counts-latest.json">latest player counts</a> API endpoint pretty-print its output.
