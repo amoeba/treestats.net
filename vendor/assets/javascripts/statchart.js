@@ -12,7 +12,7 @@ statchart.add = function(selector, json, format)
   });
 
   var margin = { 'top' : 15, 'right' : 25, 'bottom' : 25, 'left' : 45 },
-      width = 230,
+      width = 600,
       height = 150;
         var x = d3.time.scale()
     .range([0, width])
