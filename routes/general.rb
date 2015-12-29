@@ -28,6 +28,10 @@ module Sinatra
           app.get '/api/?' do
             haml :api
           end
+
+          app.get '/about/?' do
+            haml :about
+          end
         end
       end
     end
