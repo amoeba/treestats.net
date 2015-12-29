@@ -1,0 +1,128 @@
+%h2.title TreeStats API
+
+TreeStats has a minimal, JSON-based API. Below is a list of API endpoints -- please feel free to request more.
+
+%ul
+  %li
+    %a{:href => "#characters"} Characters
+  %li
+    %a{:href => "#player-counts"} Player Counts
+  %li
+    %a{:href => "#allegiance-chain"} Allegiance Chain
+  %li
+    %a{:href => "#allegiance-tree"} Allegiance Tree
+
+%h3
+  %a{:id => "characters", :href => "#characters"}= "#"
+  Characters
+
+To get detailed information about a specific character, just just append <code>'.json'</code> to the character's URL, e.g.,
+
+%pre
+  :preserve
+    Before: http://treestats.net/{server}/{character}
+    After:  http://treestats.net/{server}/{character}.json
+
+%h4 Example
+
+%h5 Input:
+
+http://treestats.net/WintersEbb/Kolthar%20al%20Magus.json
+
+%h5 Output:
+
+Note: Some values replaced with "..." to make the output shorter and more readable.
+
+%pre
+  :preserve
+    {
+      ...
+      "allegiance_name": "A group of normal humans",
+      "birth": "2001-01-28T03:53:22+00:00",
+      "created_at": "2015-03-04 19:10:12 +0000",
+      "deaths": 178,
+      "followers": 7,
+      "gender": "Male",
+      "level": 234,
+      "luminance_total": 1500000,
+      "luminance_earned": 6169,
+      ...
+    }
+
+
+%h3
+  %a{:id => "player-counts", :href => "#player-counts"}= "#"
+  Player Counts
+
+Two variants of this endpoint are available: The latest (per server) and all counts going back in time.
+
+%pre http://treestats.net/player_counts-latest.json
+%pre http://treestats.net/player_counts.json
+
+
+%h3
+  %a{:id => "allegiance-chain", :href => "#allegiance-chain"}= "#"
+  Allegiance Chain
+
+The Allegiance Chain is what backs the tree visualization on the character page. To get the chain view for a character, just insert <code>/chain/</code> into the middle of the URL and add a '<code>.json</code>', like:
+
+%pre
+  :preserve
+    Before: http://treestats.net/{server}/{character}
+    After:  http://treestats.net/chain/{server}/{character}.json
+
+
+%h4 Example
+
+%h5 Input:
+
+%pre http://treestats.net/chain/WintersEbb/Kolthar%20al%20Magus.json
+
+%h5 Output:
+
+The output comes in a form suitable for use in a <a href="http://d3js.org/">d3.js</a> chart and follows the form:
+
+%pre
+  :preserve
+    {
+      "name": "Highest Patron", # Highest patron TreeStats knows about
+      "children": [
+        {
+          "name": "A Vassal"
+          "children": [...]     # Recursive set of vassals for this vassal
+        },
+        {
+          "name": "Another Vassal".
+          "children": [...]     # Recursive set of vassals for this vassal
+        },
+        ... # and so on
+      ]
+    }
+
+
+%h3
+  %a{:id => "allegiance-tree", :href => "#allegiance-tree"}= "#"
+  Allegiance Tree
+
+Just append <code>'.json'</code> to an allegiance URL, e.g.,
+
+%pre http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans.json
+
+%h4 Example
+
+%h5 Input:
+
+%pre http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans.json
+
+%h5 Output:
+
+The output comes in a form suitable for use in a <a href="http://d3js.org/">d3.js</a> chart and follows the form:
+
+%pre
+  :preserve
+    {
+      "nodes": []
+      "links": []
+    }
+
+where the <code>nodes</code> part is structured as an array of characters that have names and group IDs and the <code>links</code> part is structured as an array of the form <code>[source, target, value]</code>
