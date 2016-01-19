@@ -99,7 +99,7 @@ class AllegianceChain
     end
 
     if max_it == 0
-      { 'name' => 'Loop found in tree. An invalid patron/vassal relationship exists in this tree so the tree was not generated.'}
+      { 'name' => "Characters per chain limit reached(#{max_it}). Is your chain larger than this? If not, you may have a loop." }
     else
       tree
     end
