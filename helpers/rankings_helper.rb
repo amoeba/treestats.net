@@ -457,7 +457,7 @@ module RankingsHelper
       :match => { "a" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "d" => 1 },
       :sort => { "d" => -1 },
-      :accessor => Proc.new { |v| v["d"] }
+      :accessor => Proc.new { |v| add_commas v["d"] }
     },
     :unassigned_xp => {
       :display => "Unassigned XP",
@@ -465,7 +465,7 @@ module RankingsHelper
       :match => { "a" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "u" => 1 },
       :sort => { "u" => -1 },
-      :accessor => Proc.new { |v| v["u"] }
+      :accessor => Proc.new { |v| add_commas v["u"] }
     },
     :total_xp => {
       :display => "Total XP",
@@ -473,7 +473,7 @@ module RankingsHelper
       :match => { "a" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "tx" => 1 },
       :sort => { "tx" => -1 },
-      :accessor => Proc.new { |v| v["tx"] }
+      :accessor => Proc.new { |v| add_commas v["tx"] }
     },
     :followers => {
       :display => "Followers",
@@ -481,7 +481,7 @@ module RankingsHelper
       :match => { "a" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "f" => 1 },
       :sort => { "f" => -1 },
-      :accessor => Proc.new { |v| v["f"] }
+      :accessor => Proc.new { |v| add_commas v["f"] }
     },
     :titles => {
       :display => "Titles",
