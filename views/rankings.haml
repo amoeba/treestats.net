@@ -1,30 +1,32 @@
-%h2.title Rankings
+%h2.title= "Ranking: #{@display_name}"
 
 %p
   %b Server:
   = @server
-%p
-  %b Ranking:
-  - if @tokens.length > 1
-    = @tokens[1].split("_").map(&:capitalize).join(" ")
-  - else
-    = @tokens[0].split("_").map(&:capitalize).join(" ")
 
-- if(@characters.length == 0)
-  %span Couldn't find any characters for this ranking.
-- else
-  %table.listing
-    %thead
+%p
+  Filter to server:
+  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Darktide"} Darktide
+  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Frostfell"} Frostfell
+  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Harvestgain"} Harvestgain
+  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Leafcull"} Leafcull
+  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Morningthaw"} Morningthaw
+  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Thistledown"} Thistledown
+  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Solclaim"} Solclaim
+  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Verdantine"} Verdantine
+  %a{:href => "/rankings?ranking=#{params['ranking']}&server=WintersEbb"} WintersEbb
+
+%table.listing
+  %thead
+    %tr
+      %th Name
+      %th Server
+      %th
+        %a{:href => @sort_url}= @display_name
+  %tbody
+    - @results.each do |result|
       %tr
-        %th Name
-        %th Server
-        %th
-          %a{:href => "/rankings?server=#{params[:server]}&ranking=#{params[:ranking]}&sort=#{@sort_text}"}
-            = (@tokens.length == 1 ? @tokens : @tokens[1].split("_")).map(&:capitalize).join(" ")
-    %tbody
-      - @characters.each do |character|
-        %tr
-          %td
-            %a{:href => "/#{character[:server]}/#{character[:name]}"}= character[:name]
-          %td= character[:server]
-          %td= character[:value]
+        %td
+          %a{:href => "/#{result['s']}/#{result['n']}"}= result['n']
+        %td= result['s']
+        %td= @accessor.call(result)
