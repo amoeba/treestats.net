@@ -1,0 +1,29 @@
+%h2.title Rankings
+
+%h3 Attributes
+
+%ul
+  - @rankings.select { |k,v| v[:group] == "Attributes"}.each do |r|
+    %li
+      %a{:href => "/rankings?ranking=#{r[0]}"}= r[1][:display]
+
+%h3 Vitals
+
+%ul
+  - @rankings.select { |k,v| v[:group] == "Vitals"}.each do |r|
+    %li
+      %a{:href => "/rankings?ranking=#{r[0]}"}= r[1][:display]
+
+%h3 Skills
+
+%ul
+  - @rankings.select { |k,v| v[:group] == "Skills"}.each do |r|
+    %li
+      %a{:href => "/rankings?ranking=#{r[0]}"}= r[1][:display]
+
+%h3 Other
+
+%ul
+  - @rankings.select { |k,v| v[:group] == "Other"}.each do |r|
+    %li
+      %a{:href => "/rankings?ranking=#{r[0]}"}= r[1][:display]

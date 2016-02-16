@@ -4,153 +4,40 @@ module Sinatra
       module Rankings
         def self.registered(app)
           app.get '/rankings/?' do
-            not_found("No ranking specified.") if(!params.has_key?("ranking"))
-
-            limit = 100
-            sort = -1
-            # @sort_text = "asc"
-            sort_by = params[:ranking] == "titles" ? "ti" : params[:ranking]
-
-            # Process ranking into tokens
-            @tokens = params[:ranking].split(".")
-            @server = params[:server]
-
-            # Filtering of records (value/server)
-            where_clause = { @tokens[0] => { "$exists" => true }}
-            where_clause['s'] = params[:server] if params[:server] != "All"
-
-
-            # Sorting of records (asc/desc)
-            if(params.has_key?('sort'))
-              if(params[:sort] == "asc")
-                sort = 1
-                @sort_text = "desc"
-              else
-                @sort_text = "asc"
-              end
-            end
-
-            # Reverse the sort for "birth" ranking
-            sort = sort * -1 if(@tokens[0] == "birth")
-
-            # Prepare sort clause
-            sort_clause = { sort_by => sort }
-
-
-            # Run the query
-            @characters = Character.where(where_clause).sort(sort_clause).limit(limit)
-
-            # Map out just the values we need
-            @characters = @characters.to_a.collect do |char|
-              c = {
-                :name => char.name,
-                :server => char.server
-              }
-
-              if(@tokens.length == 1)
-                if(@tokens[0] == "titles")
-                  c[:value] = char["ti"].length
-                elsif(@tokens[0] == "birth")
-                  c[:value] = char["birth"]
-                elsif(@tokens[0] == "unassigned_xp" || @tokens[0] == "deaths")
-                  c[:value] = add_commas(char[@tokens[0]].to_s)
-                else
-                  c[:value] = char[@tokens[0]]
-                end
-              else
-                c[:value] = char[@tokens[0]][@tokens[1]][@tokens[2]]
-              end
-
-              c
-            end
-
-            haml :rankings
-          end
-
-          app.get '/rankings/titles/?' do
-            @server = params[:server] || "All"
-
-            limit = 100
-            sort_order = -1
-
-            @sort_text = "asc"
-
-            # Sorting of records (asc/desc)
-            if(params.has_key?('sort'))
-              if(params[:sort] == "asc")
-                sort_order = 1
-                @sort_text = "desc"
-              else
-                @sort_text = "asc"
-              end
-            end
-
-            if(params[:server] && params[:server]  != "All")
-              match_clause = {
-                "$match" => { "ti" => { "$exists" => true },
-                "s" => params[:server]}
-              }
+            # Show the listing of rankings if no ranking is provided
+            if !params.has_key?("ranking")
+              @rankings = RankingsHelper::RANKINGS
+              haml :rankings_index
             else
-              match_clause = {
-                "$match" => { "ti" => { "$exists" => true }}
-              }
+              ranking = params["ranking"].to_sym
+
+              # Check if the ranking exists
+              not_found("Ranking '#{ranking.to_s}' does not exist.") if !RankingsHelper::RANKINGS.has_key?(ranking)
+
+              # Set view variables
+              @key = RankingsHelper::RANKINGS[ranking][:sort].keys.first
+              @display_name = RankingsHelper::RANKINGS[ranking][:display]
+              @server = params.has_key?("server") ? params["server"] : "All Servers"
+              @accessor = RankingsHelper::RANKINGS[ranking][:accessor]
+              @sort_url = "/rankings"
+
+              # Handle server and sort (and any other that I might add later?)
+              param_keys = params.keys
+              query_params = [ "ranking=#{ranking}" ]
+              query_params << "server=#{params['server']}" if params.has_key?("server")
+
+              if !params.has_key?("sort") || (params.has_key?("sort") && params["sort"] != "reverse")
+                query_params << "sort=reverse"
+              end
+
+              @sort_url += "?#{query_params.join('&')}" if query_params.length > 0
+
+              # Get and perform the aggregation
+              agg_params = RankingsHelper.generate_aggregation_args(ranking, params)
+              @results = Character.collection.aggregate(agg_params)
+
+              haml :rankings
             end
-
-            project_clause = {
-              "$project" => {
-                "_id" => 0,
-                "n" => 1,
-                "s" => 1,
-                "num_titles" => { "$size" => "$ti" }
-              }
-            }
-
-            sort_clause = {
-              "$sort" => { "num_titles" => sort_order }
-            }
-
-            limit_clause = {
-              "$limit" => limit
-            }
-
-            @characters = Character.collection.aggregate([
-              match_clause,
-              project_clause,
-              sort_clause,
-              limit_clause
-            ])
-
-            haml :rankings_titles
-          end
-
-          app.get '/rankings/titles.json' do
-            @server = params[:server] || "All"
-
-            limit = 10
-            sort_order = -1
-            match_clause = {
-              "$match" => { "ti" => { "$exists" => true }}
-            }
-
-            @characters = Character.collection.aggregate([
-              match_clause,
-              {
-                "$project" => {
-                  "_id" => 0,
-                  "n" => 1,
-                  "s" => 1,
-                  "num_titles" => { "$size" => "$ti" }
-                }
-              },
-              {
-                "$sort" => { "num_titles" => sort_order }
-              },
-              {
-                "$limit" => limit
-              }
-            ])
-
-            @characters.to_json
           end
         end
       end
