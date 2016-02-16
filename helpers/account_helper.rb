@@ -21,13 +21,13 @@ module AccountHelper
       :name => "unassigned_xp",
       :label => "Unassigned XP",
       :group => :general,
-      :value => Proc.new { |v| add_commas(v[:unassigned_xp].to_s) }
+      :value => Proc.new { |v| add_commas(v[:unassigned_xp]) }
     },
     {
       :name => "luminance_earned",
       :label => "Luminance",
       :group => :general,
-      :value => Proc.new { |v| add_commas(v[:luminance_earned].to_s) }
+      :value => Proc.new { |v| add_commas(v[:luminance_earned]) }
     },
     {
       :name => "current_title",
