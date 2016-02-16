@@ -48,15 +48,31 @@
     %option{:value => "Solclaim"} Solclaim
     %option{:value => "WintersEbb"} WintersEbb
   %select{:name => 'ranking'}
-    %option{:value => 'a.strength.base'} Strength
-    %option{:value => 'a.endurance.base'} Endurance
-    %option{:value => 'a.coordination.base'} Coordination
-    %option{:value => 'a.quickness.base'} Quickness
-    %option{:value => 'a.focus.base'} Focus
-    %option{:value => 'a.self.base'} Self
-    %option{:value => 'vi.health.base'} Health
-    %option{:value => 'vi.stamina.base'} Stamina
-    %option{:value => 'vi.mana.base'} Mana
+    %option{:value => 'strength'} Strength
+    %option{:value => 'endurance'} Endurance
+    %option{:value => 'coordination'} Coordination
+    %option{:value => 'quickness'} Quickness
+    %option{:value => 'focus'} Focus
+    %option{:value => 'self'} Self
+  %input{:type => 'submit'}
+
+%h2 Vital Rankings
+
+%form{:action => '/rankings', :method => 'get'}
+  %select{:name => 'server'}
+    %option{:value => "All"} All Servers
+    %option{:value => "Darktide"} Darktide
+    %option{:value => "Frostfell"} Frostfell
+    %option{:value => "Harvestgain"} Harvestgain
+    %option{:value => "Leafcull"} Leafcull
+    %option{:value => "Morningthaw"} Morningthaw
+    %option{:value => "Thistledown"} Thistledown
+    %option{:value => "Solclaim"} Solclaim
+    %option{:value => "WintersEbb"} WintersEbb
+  %select{:name => 'ranking'}
+    %option{:value => 'health'} Health
+    %option{:value => 'stamina'} Stamina
+    %option{:value => 'mana'} Mana
   %input{:type => 'submit'}
 
 %h2 Skill Rankings
@@ -73,44 +89,44 @@
     %option{:value => "Solclaim"} Solclaim
     %option{:value => "WintersEbb"} WintersEbb
   %select{:name => 'ranking'}
-    %option{:value => 'sk.alchemy.base'} Alchemy
-    %option{:value => 'sk.arcane_lore.base'} Arcane Lore
-    %option{:value => 'sk.armor_tinkering.base'} Armor Tinkering
-    %option{:value => 'sk.assess_creature.base'} Assess Creature
-    %option{:value => 'sk.assess_person.base'} Assess Person
-    %option{:value => 'sk.cooking.base'} Cooking
-    %option{:value => 'sk.creature_enchantment.base'} Creature Enchantment
-    %option{:value => 'sk.deception.base'} Deception
-    %option{:value => 'sk.dirty_fighting.base'} Dirty Fighting
-    %option{:value => 'sk.dual_wield.base'} Dual Wield
-    %option{:value => 'sk.fletching.base'} Fletching
-    %option{:value => 'sk.finesse_weapons.base'} Finesse Weapons
-    %option{:value => 'sk.healing.base'} Healing
-    %option{:value => 'sk.heavy_weapons.base'} Heavy Weapons
-    %option{:value => 'sk.item_enchantment.base'} Item Enchantment
-    %option{:value => 'sk.item_tinkering.base'} Item Tinkering
-    %option{:value => 'sk.jump.base'} Jump
-    %option{:value => 'sk.leadership.base'} Leadership
-    %option{:value => 'sk.life_magic.base'} Life Magic
-    %option{:value => 'sk.light_weapons.base'} Light Weapons
-    %option{:value => 'sk.lockpick.base'} Lockpick
-    %option{:value => 'sk.loyalty.base'} Loyalty
-    %option{:value => 'sk.magic_defense.base'} Magic Defense
-    %option{:value => 'sk.magic_item_tinkering.base'} Magic Item Tinkering
-    %option{:value => 'sk.mana_conversion.base'} Mana Conversion
-    %option{:value => 'sk.melee_defense.base'} Melee Defense
-    %option{:value => 'sk.missile_defense.base'} Missile Defense
-    %option{:value => 'sk.missile_weapons.base'} Missile Weapons
-    %option{:value => 'sk.recklessness.base'} Recklessness
-    %option{:value => 'sk.run.base'} Run
-    %option{:value => 'sk.salvaging.base'} Salvaging
-    %option{:value => 'sk.shield.base'} Shield
-    %option{:value => 'sk.sneak_attack.base'} Sneak Attack
-    %option{:value => 'sk.two_handed_combat.base'} Two Handed Combat
-    %option{:value => 'sk.void_magic.base'} Void Magic
-    %option{:value => 'sk.war_magic.base'} War Magic
-    %option{:value => 'sk.weapon_tinkering.base'} Weapon Tinkering
-    %option{:value => 'sk.summoning.base'} Summoning
+    %option{:value => 'alchemy'} Alchemy
+    %option{:value => 'arcane_lore'} Arcane Lore
+    %option{:value => 'armor_tinkering'} Armor Tinkering
+    %option{:value => 'assess_creature'} Assess Creature
+    %option{:value => 'assess_person'} Assess Person
+    %option{:value => 'cooking'} Cooking
+    %option{:value => 'creature_enchantment'} Creature Enchantment
+    %option{:value => 'deception'} Deception
+    %option{:value => 'dirty_fighting'} Dirty Fighting
+    %option{:value => 'dual_wield'} Dual Wield
+    %option{:value => 'fletching'} Fletching
+    %option{:value => 'finesse_weapons'} Finesse Weapons
+    %option{:value => 'healing'} Healing
+    %option{:value => 'heavy_weapons'} Heavy Weapons
+    %option{:value => 'item_enchantment'} Item Enchantment
+    %option{:value => 'item_tinkering'} Item Tinkering
+    %option{:value => 'jump'} Jump
+    %option{:value => 'leadership'} Leadership
+    %option{:value => 'life_magic'} Life Magic
+    %option{:value => 'light_weapons'} Light Weapons
+    %option{:value => 'lockpick'} Lockpick
+    %option{:value => 'loyalty'} Loyalty
+    %option{:value => 'magic_defense'} Magic Defense
+    %option{:value => 'magic_item_tinkering'} Magic Item Tinkering
+    %option{:value => 'mana_conversion'} Mana Conversion
+    %option{:value => 'melee_defense'} Melee Defense
+    %option{:value => 'missile_defense'} Missile Defense
+    %option{:value => 'missile_weapons'} Missile Weapons
+    %option{:value => 'recklessness'} Recklessness
+    %option{:value => 'run'} Run
+    %option{:value => 'salvaging'} Salvaging
+    %option{:value => 'shield'} Shield
+    %option{:value => 'sneak_attack'} Sneak Attack
+    %option{:value => 'two_handed_combat'} Two Handed Combat
+    %option{:value => 'summoning'} Summoning
+    %option{:value => 'void_magic'} Void Magic
+    %option{:value => 'war_magic'} War Magic
+    %option{:value => 'weapon_tinkering'} Weapon Tinkering
   %input{:type => 'submit'}
 
 
@@ -131,20 +147,8 @@
   %select{:name => 'ranking'}
     %option{:value => 'birth'} Oldest Char
     %option{:value => 'deaths'} Most Deaths
+    %option{:value => 'followers'} Followers
     %option{:value => 'unassigned_xp'} Unassigned XP
+    %option{:value => 'total_xp'} Total XP
+    %option{:value => 'titles'} Titles
   %input{:type => 'submit'}
-
-%h2 More Rankings
-
-%form{:action => '/rankings/titles', :method => 'get'}
-  %select{:name => 'server'}
-    %option{:value => "All"} All Servers
-    %option{:value => "Darktide"} Darktide
-    %option{:value => "Frostfell"} Frostfell
-    %option{:value => "Harvestgain"} Harvestgain
-    %option{:value => "Leafcull"} Leafcull
-    %option{:value => "Morningthaw"} Morningthaw
-    %option{:value => "Thistledown"} Thistledown
-    %option{:value => "Solclaim"} Solclaim
-    %option{:value => "WintersEbb"} WintersEbb
-  %input.textsubmit{:type => 'submit', :value => "Most Titles"}
