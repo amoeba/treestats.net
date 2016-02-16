@@ -4,18 +4,19 @@ module StatsHelper
       result = Character.collection.aggregate([
         {
           "$match" => {
-            "a" => { "$exists" => true}
+            "a" => { "$exists" => true},
+            "r" => { "$nin" => [ "Olthoi Spitter", "Olthoi Soldier" ] }
           }
         },
         {
           "$group" => {
             "_id" => {
-              "strength" => "$a.strength.base",
-              "endurance" => "$a.endurance.base",
-              "coordination" => "$a.coordination.base",
-              "quickness" => "$a.quickness.base",
-              "focus" => "$a.focus.base",
-              "self" => "$a.self.base"
+              "strength" => "$a.strength.creation",
+              "endurance" => "$a.endurance.creation",
+              "coordination" => "$a.coordination.creation",
+              "quickness" => "$a.quickness.creation",
+              "focus" => "$a.focus.creation",
+              "self" => "$a.self.creation"
             },
             "count" => { "$sum" => 1}
           }
@@ -38,6 +39,12 @@ module StatsHelper
 
     def self.sum_of_attributes
       result = Character.collection.aggregate([
+        {
+          "$match" => {
+            "a" => { "$exists" => true},
+            "r" => { "$nin" => [ "Olthoi Spitter", "Olthoi Soldier" ] }
+          }
+        },
         {
           "$group" => {
             "_id" => nil,
