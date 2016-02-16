@@ -10,7 +10,6 @@ module Sinatra
 
             # Trim last result
             result = result[0..(result.size - 2)] if result.size > 1
-
             result.to_json
           end
 
@@ -18,28 +17,33 @@ module Sinatra
             value = redis.keys "uploads:monthly:*"
 
             result = value.sort { |a,b| a <=> b }.map { |v| { :date => v.split(":")[2], :count => redis.get(v).to_i }}
-
             result.to_json
           end
 
           app.get '/stats/attributes' do
-            redis.get("stats:attributes")
+            value = StatsHelper::CharacterStats.sum_of_attributes
+            value.to_json
           end
 
           app.get '/stats/genders' do
-            redis.get("stats:genders")
+            value = StatsHelper::CharacterStats.count_of_genders
+            value.to_json
           end
 
           app.get '/stats/ranks' do
-            redis.get("stats:ranks")
+            value = StatsHelper::CharacterStats.count_of_ranks
+            value.to_json
           end
 
           app.get '/stats/levels' do
-            redis.get("stats:levels")
+            # redis.get("stats:levels")
+            value = StatsHelper::CharacterStats.count_of_levels
+            value.to_json
           end
 
           app.get '/stats/races' do
-            redis.get("stats:races")
+            value = StatsHelper::CharacterStats.count_of_races
+            value.to_json
           end
 
           app.get '/stats/sum_of_builds' do
