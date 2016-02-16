@@ -1,7 +1,7 @@
 # Helpers for the app
 
 def add_commas(string)
-  string.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
+  string.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
 end
 
 def nice_date(time)
