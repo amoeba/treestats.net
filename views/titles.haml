@@ -1,0 +1,6 @@
+%h2.title Titles
+
+%ul
+  - @titles.each do |i,title|
+    %li
+      %a{:href => "/title/#{title}"}= title
