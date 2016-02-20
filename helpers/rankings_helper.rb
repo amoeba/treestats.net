@@ -490,6 +490,14 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "titles" => { "$size" => "$ti" } },
       :sort => { "titles" => -1 },
       :accessor => Proc.new { |v| v["titles"] }
+    },
+    :times_enlightened => {
+      :display => "Times Enlightened",
+      :group => "Other",
+      :match => { "pr.390" => { "$gt" => 0 } },
+      :project => { "_id" => 0, "n" => 1, "s" => 1, "pr" => { "390" => 1 } },
+      :sort => { "pr.390" => -1 },
+      :accessor => Proc.new { |v| v["pr"]["390"] }
     }
   }
 end
