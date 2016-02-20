@@ -33,5 +33,10 @@ describe "AppStory" do
       get('/Frostfell')
       last_response.status.must_equal 200
     end
+
+    it "can reach the titles listing" do
+      get("/titles")
+      last_response.status.must_equal 200
+    end
   end
 end

@@ -1,0 +1,20 @@
+%h2.title= "Characters with title: #{@title_name}"
+
+
+- if @characters and @characters.length >= 100
+  %p= "Note: Only the first 100 characters are being shown out of a total of #{@characters.length} that have this title."
+
+- if @characters and @characters.length == 0
+  %p= "No characters with this title were found."
+- else
+  %table.listing
+    %thead
+      %tr
+        %th Name
+        %th Server
+    %tbody
+      - @characters.each do |character|
+        %tr
+          %td
+            %a{:href => "/#{character['s']}/#{character['n']}"}= character['n']
+          %td= character['s']

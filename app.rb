@@ -21,7 +21,7 @@ class TreeStats < Sinatra::Base
   # to other parts of our application like routes
   register Sinatra::Redis
 
-  # Routes
+  # Routes (alpha order)
   register Sinatra::TreeStats::Routing::Accounts
   register Sinatra::TreeStats::Routing::Allegiances
   register Sinatra::TreeStats::Routing::Chain
@@ -30,7 +30,9 @@ class TreeStats < Sinatra::Base
   register Sinatra::TreeStats::Routing::Rankings
   register Sinatra::TreeStats::Routing::Search
   register Sinatra::TreeStats::Routing::Stats
+  register Sinatra::TreeStats::Routing::Titles
   register Sinatra::TreeStats::Routing::Upload
+
   # Load server route last because it has catch-alls
   register Sinatra::TreeStats::Routing::Server
 
@@ -42,7 +44,7 @@ class TreeStats < Sinatra::Base
     # Mongoid
     Mongoid.load!("./config/mongoid.yml")
     Mongo::Logger.logger.level = ::Logger::INFO
-    
+
     # Redis
     redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
     uri = URI.parse(redis_url)
