@@ -7,9 +7,11 @@
         %tr
           %td
             - if title == TitleHelper::get_title_name(@character.current_title)
-              %span.current_title= title
+              %span.current_title.title_list_item
+                %a{:href => "/title/#{title}"}= title
             - else
-              %span= title
+              %span.title_list_item
+                %a{:href => "/title/#{title}"}= title
     - else
       %tr
         %td No titles.
