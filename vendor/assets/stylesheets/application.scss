@@ -331,8 +331,12 @@ span.overlaytext {
   margin-right: 1em;
 }
 
-.current_title {
+.current_title a {
   color: #00FF00;
+}
+
+.title_list_item a {
+  text-decoration: none;
 }
 
 /* Tab functionality */
