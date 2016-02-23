@@ -5,7 +5,7 @@ module Sinatra
         def self.registered(app)
           app.get '/titles/?' do
             @titles = TitleHelper::TITLES
-            @titles = @titles.select { |i,t| i > 0 }
+            @titles = @titles.select { |i,t| i > 0 }.sort_by { |i,t| t }
 
             not_found("No titles found.") if @titles.length < 1
 
