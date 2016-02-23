@@ -17,7 +17,9 @@
       .tabbar
         .tab.active Attributes
         .tab.inactive Skills
-        .tab.inactive Titles
+        .tab.inactive
+          Titles
+          = @character.titles.nil? ? "" : "(#{@character.titles.length})"
       .box.active
         = haml :_attributes_pane
       .box.inactive
