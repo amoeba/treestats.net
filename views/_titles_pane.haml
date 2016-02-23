@@ -1,8 +1,5 @@
 %table.char
   %tbody
-    -unless @character.titles.nil?
-      %tr
-        %td.specialized= "Title count: #{@character.titles.length}"
     %tr.colnames
       %td Name
     - if @character.current_title && @character.titles
