@@ -36,7 +36,7 @@ var draw = function(selector, json, server_name, player_name, options) {
      height = options.height || 300;
 
   var cluster = d3.layout.cluster()
-  .nodeSize([20, 20]);
+    .nodeSize([20, 20]);
 
   var nodes = cluster.nodes(json)
       links = cluster.links(nodes);
