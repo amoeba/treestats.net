@@ -9,7 +9,17 @@ module CharacterHelper
   }
 
   def self.parse_birth(birth)
-    DateTime.strptime("#{birth} EST", "%m/%d/%Y %H:%M:%S %p %Z")
+    parsed = nil
+
+    begin
+      parsed = DateTime.strptime("#{birth} EST", "%m/%d/%Y %H:%M:%S %p %Z")
+    rescue ArgumentError
+      puts "ArgumentError caught trying to parse #{birth} EST as a DateTime."
+      puts "Error was #{$!}"
+      raise
+    end
+
+    parsed
   end
 
   def self.tag_html(character)
