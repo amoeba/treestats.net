@@ -36,7 +36,7 @@ var draw = function(selector, json, server_name, player_name, options) {
      height = options.height || 300;
 
   var cluster = d3.layout.cluster()
-  .nodeSize([20, 20]);
+    .nodeSize([20, 20]);
 
   var nodes = cluster.nodes(json)
       links = cluster.links(nodes);
@@ -57,7 +57,7 @@ var draw = function(selector, json, server_name, player_name, options) {
   var zoom = d3.behavior.zoom()
     .translate([0,0])
     .scale(1)
-    .scaleExtent([.2, 1])
+    .scaleExtent([.05, 1])
     .on("zoom", zoomed);
 
   var svg = d3.select(selector).append("svg")
