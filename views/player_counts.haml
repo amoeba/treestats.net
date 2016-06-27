@@ -51,6 +51,4 @@
 %script{:src => javascript_path('popchart')}
 
 :javascript
-  d3.json("/player_counts.json", function(error, data) {
-    popchart("#content", data);
-  });
+  popchart("#content", "/player_counts.json");

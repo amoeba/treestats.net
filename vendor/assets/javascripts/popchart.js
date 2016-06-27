@@ -1,4 +1,4 @@
-var popchart = function(selector, data)
+var popchart = function(selector, data_url)
 {
   // Following code copied then adapted from http://bl.ocks.org/mbostock/3884955
 
@@ -38,143 +38,123 @@ var popchart = function(selector, data)
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-  // chart
-  color.domain(d3.keys(data))
+  d3.json(data_url, function(error, data) {
+    // chart
+    color.domain(d3.keys(data))
 
-  var servers = color.domain().map(function(name) {
-    return {
-      name: name,
-      values: d3.keys(data[name]).map(function(date) {
-        return { date: parseDate(date), count: +data[name][date] };
-      })
-    };
-  });
-
-  xvals = []
-  yvals = []
-
-  servers.forEach(function(server) {
-    dates = server.values.map(function(data) {
-      return data.date
+    var servers = color.domain().map(function(name) {
+      return {
+        name: name,
+        values: d3.keys(data[name]).map(function(date) {
+          return { date: parseDate(date), count: +data[name][date] };
+        })
+      };
     });
 
-    counts = server.values.map(function(data) {
-      return data.count
+    xvals = []
+    yvals = []
+
+    servers.forEach(function(server) {
+      dates = server.values.map(function(data) {
+        return data.date
+      });
+
+      counts = server.values.map(function(data) {
+        return data.count
+      });
+
+      x_extent = d3.extent(dates)
+      y_max = d3.max(counts)
+
+      xvals.push(x_extent[0])
+      xvals.push(x_extent[1])
+
+      yvals.push(y_max)
     });
 
-    x_extent = d3.extent(dates)
-    y_max = d3.max(counts)
+    x.domain(d3.extent(xvals));
+    y.domain([0, d3.max(yvals)]);
 
-    xvals.push(x_extent[0])
-    xvals.push(x_extent[1])
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
 
-    yvals.push(y_max)
-  });
-  console.log(servers)
-  x.domain(d3.extent(xvals));
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+      .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Players");
 
-  y.domain([
-      0,
-      d3.max(yvals)
-  ]);
+    var server = svg.selectAll(".server")
+        .data(servers)
+      .enter().append("g")
+        .attr("class", "servers");
 
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+    server.append("path")
+        .attr("class", "line")
+        .attr("d", function(d) { return line(d.values); })
+        .style("stroke", function(d) { return color(d.name); });
 
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Players");
+    server.append("text")
+        .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
+        .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.count) + ")"; })
+        .attr("x", 3)
+        .attr("dy", ".35em")
+        .attr("class", "label")
+        .text(function(d) { return capitalize(d.name) + ": " + Math.round(d.value.count)})
+        .style("fill", function(d) { return color(d.name); });
 
-  var server = svg.selectAll(".server")
-      .data(servers)
-    .enter().append("g")
-      .attr("class", "servers");
+    // Perform constrain relaxation on text labels
+    // https://www.safaribooksonline.com/blog/2014/03/11/solving-d3-label-placement-constraint-relaxing/
 
-  server.append("path")
-      .attr("class", "line")
-      .attr("d", function(d) { return line(d.values); })
-      .style("stroke", function(d) { return color(d.name); });
+    var labels = d3.selectAll(".label"),
+        alpha = 0.25,
+        spacing = 2,
+        maxcalls = 1000;
 
-  server.append("text")
-      .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
-      .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.count) + ")"; })
-      .attr("x", 3)
-      .attr("dy", ".35em")
-      .attr("class", "label")
-      .text(function(d) { return capitalize(d.name) + ": " + Math.round(d.value.count)})
-      .style("fill", function(d) { return color(d.name); });
+    var relax = function() {
+      if(maxcalls <= 0) { return; }
+      maxcalls -= 1;
 
-
-  // var label = server.append("g")
-  //   .attr("class", "label")
-  //   .datum(function(d) { return { name: d.name, value: d.values[d.values.length - 1]}; })
-  //   .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.count) + ")"; })
-
-  // label.append("rect")
-  //     .attr("width", 100)
-  //     .attr("height", 20)
-  //     .attr("y", -10)
-  //     .attr("fill", function(d) { return color(d.name); })
-
-  // label.append("text")
-  //   .attr("stroke", function(d) { return color(d.name); })
-  //   .text(function(d) { return capitalize(d.name); })
-
-  // Perform constrain relaxation on text labels
-  // https://www.safaribooksonline.com/blog/2014/03/11/solving-d3-label-placement-constraint-relaxing/
-
-  var labels = d3.selectAll(".label"),
-      alpha = 0.25,
-      spacing = 2,
-      maxcalls = 1000;
-
-  console.log(labels)
-  var relax = function() {
-    if(maxcalls <= 0) { console.log('hit max'); return; }
-    maxcalls -= 1;
-
-    var again = false; // Set to true to re-run relaxation
-
-    labels.each(function(d, i) {
-      if(i == 1 || i == 9) { return; }
-      var a = this,
-          da = d3.select(a),
-          y1 = da.attr("y");
+      var again = false; // Set to true to re-run relaxation
 
       labels.each(function(d, i) {
         if(i == 1 || i == 9) { return; }
+        var a = this,
+            da = d3.select(a),
+            y1 = da.attr("y");
 
-        var b = this;
+        labels.each(function(d, i) {
+          if(i == 1 || i == 9) { return; }
 
-        if(a == b) { return; }
+          var b = this;
 
-        var db = d3.select(b),
-            y2 = db.attr("y"),
-            delta = y1 - y2;
+          if(a == b) { return; }
 
-        if (Math.abs(delta) > spacing) { return; }
-        console.log(delta)
+          var db = d3.select(b),
+              y2 = db.attr("y"),
+              delta = y1 - y2;
 
-        again = true;
+          if (Math.abs(delta) > spacing) { return; }
+
+          again = true;
 
 
-        sign = delta > 0 ? 1 : -1;
-        adjust = sign * alpha;
-        da.attr("y",+ y1 + adjust);
-        db.attr("y",+ y2 - adjust);
+          sign = delta > 0 ? 1 : -1;
+          adjust = sign * alpha;
+          da.attr("y",+ y1 + adjust);
+          db.attr("y",+ y2 - adjust);
 
-        if(again) { setTimeout(relax, 10); }
+          if(again) { setTimeout(relax, 10); }
+        });
       });
-    });
-  };
+    };
 
-  setTimeout(relax, 500);
+    setTimeout(relax, 500);
+  });
 }
