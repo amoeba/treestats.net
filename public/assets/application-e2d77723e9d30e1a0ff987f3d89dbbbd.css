@@ -33,7 +33,7 @@ table, thead, tbody, tr, td {
 #header h1 {
   margin: 0;
   padding: 0;
-  font-size: 55px; }
+  font-size: 40px; }
 
 h2.title {
   margin: 0 0 0.5em 0; }
@@ -264,8 +264,11 @@ span.overlaytext {
   float: left;
   margin-right: 1em; }
 
-.current_title {
+.current_title a {
   color: #00FF00; }
+
+.title_list_item a {
+  text-decoration: none; }
 
 /* Tab functionality */
 .tabcontainer {
