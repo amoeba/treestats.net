@@ -4,7 +4,7 @@ require 'redis'
 
 class GraphJob
   @queue = :default
-  @key = "pc:mean:lastrun"
+  @key = "pc:max:lastrun"
 
   def self.perform
     redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
@@ -25,8 +25,8 @@ class GraphJob
 
     return if records.count == 0
 
-    means = self.calculate_daily_means(records)
-    self.set_keys(means)
+    counts = self.collect_counts(records)
+    self.set_keys(counts)
 
     @redis.set(@key, boyd.strftime("%Y%m%d"))
   end
@@ -42,7 +42,7 @@ class GraphJob
   end
 
 
-  def self.calculate_daily_means(records)
+  def self.collect_counts(records)
     result = {}
 
     records.each do |r|
@@ -61,11 +61,11 @@ class GraphJob
   def self.set_keys(result)
     result.each do |server,_|
       result[server].each do |date,_|
-        key = "pc:mean:#{server}:#{date}"
+        key = "pc:max:#{server}:#{date}"
         counts = result[server][date]
-        mean = counts.inject { |sum,el| sum + el }.to_f / counts.size
+        value = counts.max
 
-        @redis.set(key, mean)
+        @redis.set(key, value)
       end
     end
   end
