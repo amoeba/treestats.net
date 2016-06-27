@@ -13,7 +13,7 @@ module Sinatra
             content_type :json
 
             # Query for the historical data
-            keys = redis.keys("pc:mean:*").sort
+            keys = redis.keys("pc:max:*").sort
             result = {}
 
             keys.each do |key|
@@ -21,7 +21,7 @@ module Sinatra
               server = tokens[2]
               date = tokens[3]
 
-              key = "pc:mean:#{server}:#{date}"
+              key = "pc:max:#{server}:#{date}"
 
               result[server] ||= {}
               result[server][date] = redis.get(key)
