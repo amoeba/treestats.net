@@ -27,8 +27,4 @@ end
 group :development, :test do
   gem 'minitest'
   gem 'rack-test'
-  gem 'guard'
-  gem 'guard-puma'
-  gem 'guard-minitest'
-  gem 'guard-rake'
 end
