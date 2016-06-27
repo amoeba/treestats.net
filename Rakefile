@@ -24,21 +24,21 @@ task :test do
 end
 
 # Other
-task :deploy do
-  puts '>> git branch deploy'
-  `git branch deploy`
+task :github do
+  puts '>> git branch github'
+  `git branch github`
 
   branches = `git branch -v`
   puts branches
 
   puts '>> git filter-branch'
-  `git filter-branch --index-filter 'git rm --cached --ignore-unmatch helpers/encryption_helper.rb' -f deploy`
+  `git filter-branch --index-filter 'git rm --cached --ignore-unmatch helpers/encryption_helper.rb' -f github`
 
-  puts '>> git push --force github deploy'
-  `git push --force github deploy:master`
+  puts '>> git push --force github github'
+  `git push --force github github:master`
 
-  puts '>> git branch -D deploy'
-  `git branch -D deploy`
+  puts '>> git branch -D github'
+  `git branch -D github`
 
   branches = `git branch -v`
   puts branches
