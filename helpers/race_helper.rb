@@ -14,7 +14,7 @@ module RaceHelper
     12 => "Olthoi",
     13 => "OlthoiAcid"
   }
-  
+
   RACE_ID = {
     "Aluvian" => 1,
     "Gharundim" => 2,
@@ -31,11 +31,11 @@ module RaceHelper
     "Olthoi" => 12,
     "OlthoiAcid"  => 13
   }
-    
+
   def self.get_race_name(id)
     RACES[id] ? RACES[id] : id
   end
-  
+
   def self.get_race_id(name)
     RACE_ID[name] ? RACE_ID[name] : name
   end

@@ -62,12 +62,6 @@ module Sinatra
               json_text["birth"] = CharacterHelper::parse_birth(json_text["birth"])
             end
 
-            # Log extra debug info if birth ends up being nil
-            if json_text["birth"].nil?
-              puts "Failed to parse birth field with the following JSON..."
-              puts json_text
-            end
-
             character = Character.find_or_create_by(name: name, server: server)
 
             # Assign attributes then touch
