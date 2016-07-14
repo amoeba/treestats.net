@@ -57,9 +57,9 @@ class Character
   # Skip callbacks when a stub
   skip_callback(:save, :after, :update_other_characters, if: -> { self.stub? })
 
-  after_save :update_other_characters
+  after_save :update_related_characters
 
-  def update_other_characters
+  def update_related_characters
     update_monarch if self.monarch # if statement goes here?
     update_patron if self.patron # if statement goes here?
     update_vassals if self.vassals # if statement goes here?
