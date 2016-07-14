@@ -60,8 +60,6 @@ class Character
   after_save :update_other_characters
 
   def update_other_characters
-    puts "after_save callback update_other_characters run on #{self['name']}"
-
     update_monarch if self.monarch # if statement goes here?
     update_patron if self.patron # if statement goes here?
     update_vassals if self.vassals # if statement goes here?
@@ -69,7 +67,6 @@ class Character
   end
 
   def update_monarch
-    puts "update_monarch called to find or create #{self.monarch['name']}"
     monarch = Character.find_or_create_by(name: self.monarch['name'], server: self.server)
 
     monarch_info = self.monarch
@@ -81,8 +78,6 @@ class Character
   end
 
   def update_patron
-    puts "update patron called to find or create #{self.patron['name']}"
-
     if self.patron
       patron = Character.find_or_create_by(name: self.patron['name'], server: self.server)
 
@@ -153,8 +148,6 @@ class Character
 
   def update_vassals
     self.vassals.each do |v|
-      puts "processing after_save callback on #{v['name']}"
-
       vassal = Character.find_or_create_by(name: v['name'], server: self.server)
 
       vassal_info = v
