@@ -20,7 +20,7 @@ task "jobs:work" => "resque:work"
 
 # Testing
 task :test do
-  Dir['./spec/**/*_spec.rb'].each { |f| load f }
+  Dir['./test/**/*spec.rb'].each { |f| load f }
 end
 
 # Other

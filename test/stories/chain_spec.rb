@@ -1,4 +1,4 @@
-# spec/stories/tree_spec
+require_relative '../story_helper.rb'
 
 describe "ChainStory" do
   before do

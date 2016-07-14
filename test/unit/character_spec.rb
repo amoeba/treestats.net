@@ -1,5 +1,3 @@
-# spec/unit/character.rb
-
 require_relative '../spec_helper'
 
 describe 'Character', :unit do

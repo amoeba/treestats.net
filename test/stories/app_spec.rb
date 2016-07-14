@@ -1,5 +1,3 @@
-# spec/stories/app_spec.rb
-
 require_relative '../story_helper.rb'
 
 describe "AppStory" do
