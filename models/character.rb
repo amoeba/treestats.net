@@ -85,9 +85,8 @@ class Character
       # The `self` object has race and gender as names and not IDs
       # but race and gender are IDs everywhere else
 
-      patron_race = RaceHelper::get_race_name(self.patron["race"].to_i + 1)
-      patron_gender = GenderHelper::get_gender_name(self.patron["gender"].to_i + 1)
-
+      patron_race = RaceHelper::get_race_name(self.patron["race"])
+      patron_gender = GenderHelper::get_gender_name(self.patron["gender"])
       patron.set(gender: patron_gender, race: patron_race)
 
       vassals = patron.vassals
@@ -121,8 +120,6 @@ class Character
 
       if self.monarch
         monarch_info = self.monarch
-        monarch_info["race"] = RaceHelper::get_race_name(monarch_info["race"].to_i + 1)
-        monarch_info["gender"] = GenderHelper::get_gender_name(monarch_info["gender"].to_i + 1)
 
         patron.set(monarch: monarch_info)
       end
@@ -151,10 +148,10 @@ class Character
       vassal = Character.find_or_create_by(name: v['name'], server: self.server)
 
       vassal_info = v
-      vassal_info["race"] = RaceHelper::get_race_name(v["race"].to_i + 1)
-      vassal_info["gender"] = GenderHelper::get_gender_name(v["gender"].to_i + 1)
 
       vassal.set(vassal_info)
+        vassal_info["race"] = RaceHelper::get_race_name(v["race"])
+        vassal_info["gender"] = GenderHelper::get_gender_name(v["gender"])
 
       vassal.set(patron: {
         'name' => self.name,
@@ -165,8 +162,6 @@ class Character
 
       if self.monarch
         monarch_info = self.monarch
-        monarch_info["race"] = RaceHelper::get_race_name(monarch_info["race"].to_i + 1)
-        monarch_info["gender"] = GenderHelper::get_gender_name(monarch_info["gender"].to_i+ 1)
 
         vassal.set(monarch: monarch_info)
       end

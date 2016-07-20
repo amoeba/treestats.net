@@ -33,6 +33,8 @@ module RaceHelper
   }
 
   def self.get_race_name(id)
+    id = id.to_i
+    
     RACES[id] ? RACES[id] : id
   end
 
