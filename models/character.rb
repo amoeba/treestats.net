@@ -13,7 +13,7 @@ class Character
     Hash[original_hash.map {|k, v| [self.aliased_fields.invert[k] || k , v] }]
   end
 
-  def stub
+  def stub?
     self.attribs.nil?
   end
 
@@ -60,13 +60,15 @@ class Character
   after_save :update_related_characters
 
   def update_related_characters
-    update_monarch if self.monarch # if statement goes here?
-    update_patron if self.patron # if statement goes here?
-    update_vassals if self.vassals # if statement goes here?
-    update_allegiance_name if self.allegiance_name # TODO?
+    update_monarch
+    update_patron
+    update_vassals
+    update_allegiance
   end
 
   def update_monarch
+    return if self.monarch.nil?
+
     monarch = Character.find_or_create_by(name: self.monarch['name'], server: self.server)
 
     monarch_info = self.monarch
@@ -74,16 +76,12 @@ class Character
     monarch_info["gender"] = GenderHelper::get_gender_name(monarch_info["gender"])
     monarch.set(monarch_info)
 
-    # TODO, update all chars in this monarchy to have the new name?
+    monarch.set(allegiance_name: self.allegiance_name)
   end
 
   def update_patron
     if self.patron
       patron = Character.find_or_create_by(name: self.patron['name'], server: self.server)
-
-      # Convert gender names to IDs
-      # The `self` object has race and gender as names and not IDs
-      # but race and gender are IDs everywhere else
 
       patron_race = RaceHelper::get_race_name(self.patron["race"])
       patron_gender = GenderHelper::get_gender_name(self.patron["gender"])
@@ -113,68 +111,67 @@ class Character
       patrons = Character.where(server: self.server, vassals: { "$elemMatch" =>  { 'name' => self.name} })
 
       patrons.each do |p|
-        if p['name'] != self.patron['name'] then
-          p.set(vassals: p.vassals.select! { |v| self.name != v['name']})
-        end
+        continue if p['name'] == self.patron['name']
+
+        p.set(vassals: p.vassals.select! { |v| self.name != v['name']})
       end
 
-      if self.monarch
-        monarch_info = self.monarch
-
-        patron.set(monarch: monarch_info)
-      end
-
-      if self.allegiance_name
-        patron.set(allegiance_name: self.allegiance_name)
-      end
+      patron.set(allegiance_name: self.allegiance_name)
     else
-      # # Remove this character as a vassal from any characters
-      # # Find all characters who have this character as a vassal
-      # patrons = Character.where(server: self.server, vassals: { "$elemMatch" =>  { 'name' => self.name} })
-      #
-      # # Run through each patron, if any
-      # patrons.each do |p|
-      #   # Skip if the current character is not a vassal
-      #   continue if not p.vassals.detect { |v| self.name == v['name'] }
-      #
-      #   # Remove the character as a vassal and update the patron
-      #   p.set(vassals: p.vassals.select! { |v| self.name != v['name']})
-      # end
+      # Remove this character as a vassal from any characters
+      # Find all characters who have this character as a vassal
+      patrons = Character.where(server: self.server, vassals: { "$elemMatch" =>  { 'name' => self.name} })
+
+      patrons.each do |p|
+        # Skip if the current character is not a vassal
+        continue if p.vassals.length == 0 or not p.vassals.detect { |v| self.name == v['name'] }
+
+        # Remove the character as a vassal and update the patron
+        p.set(vassals: p.vassals.select! { |v| self.name != v['name']})
+      end
     end
   end
 
   def update_vassals
-    self.vassals.each do |v|
-      vassal = Character.find_or_create_by(name: v['name'], server: self.server)
+    if self.vassals
+      self.vassals.each do |v|
+        vassal = Character.find_or_create_by(name: v['name'], server: self.server)
 
-      vassal_info = v
-
-      vassal.set(vassal_info)
+        vassal_info = v
         vassal_info["race"] = RaceHelper::get_race_name(v["race"])
         vassal_info["gender"] = GenderHelper::get_gender_name(v["gender"])
+        vassal.set(vassal_info)
 
-      vassal.set(patron: {
-        'name' => self.name,
-        'rank' => self.rank,
-        'race' => self.race,
-        'gender' => self.gender
+        # Update vassal's patron info
+        vassal.set(patron: {
+          'name' => self.name,
+          'rank' => self.rank,
+          'race' => RaceHelper::get_race_id(self.race),
+          'gender' => GenderHelper::get_gender_id(self.gender)
         })
 
-      if self.monarch
-        monarch_info = self.monarch
+        if self.monarch
+          vassal.set(monarch: self.monarch)
+        end
 
-        vassal.set(monarch: monarch_info)
+        if self.allegiance_name
+          vassal.set(allegiance_name: self.allegiance_name)
+        end
       end
+    else
+      # If there are no vassals, remove this char as the patron of any
+      # vassals that say so
+      vassals = Character.where(server: self.server, patron: self.name)
 
-      if self.allegiance_name
-        vassal.set(allegiance_name: self.allegiance_name)
+      vassals.each do |vassal|
+        vassal.set(patron: nil)
       end
     end
   end
 
-  def update_allegiance_name
-    # monarch.set(allegiance_name: self.allegiance_name)
-    # TODO Patron
-    # TODO Vassals
+  def update_allegiance
+    return if self.allegiance_name.nil?
+
+    Allegiance.find_or_create_by(server: self.server, name: self.allegiance_name)
   end
 end
