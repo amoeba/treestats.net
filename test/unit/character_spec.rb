@@ -128,4 +128,51 @@ describe 'Character', :unit do
     middle.vassals.length.must_equal 1
     middle.vassals.first["name"].must_equal "Barbados"
   end
+
+
+  it "removes a patron-vassal link when the vassal breaks" do
+    Character.create(name: "patron", server: "test")
+    Character.create({
+      "name" => "vassal",
+      "server" => "test",
+      "patron" => {
+        "name" => "patron"
+       }
+    })
+
+    patron = Character.find_by(name: "patron", server: "test")
+    assert_includes patron.vassals.map { |v| v["name"]}, "vassal"
+
+    Character.create({
+      "name" => "vassal",
+      "server" => "test",
+      "attribs" => {}
+    })
+
+    patron = Character.find_by(name: "patron", server: "test")
+    patron.vassals.length.must_equal 0
+  end
+
+  it "removes the char of outdated vassals" do
+    Character.create({
+      "name" => "patron",
+      "server" => "test",
+      "attribs" => {},
+      "vassals" => [{
+        "name" => "vassal",
+        "gender" => "1",
+        "race" => "1",
+        "rank" => "1"
+       }]
+    })
+
+    Character.where(name: "patron", server: "test").count.must_equal 1
+    Character.where(name: "vassal", server: "test").count.must_equal 1
+
+    vassal = Character.find_by(name: "vassal", server: "test")
+    vassal.patron['name'].must_equal "patron"
+
+    patron = Character.find_by(name: "patron", server: "test")
+    patron.vassals[0]['name'].must_equal 'vassal'
+  end
 end
