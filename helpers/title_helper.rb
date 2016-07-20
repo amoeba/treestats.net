@@ -879,8 +879,7 @@ module TitleHelper
   }
 
   def self.sorted_titles(ids)
-    titles = ids.collect { |i| self.get_title_name(i) }
-    titles.sort
+    ids.collect { |i| self.get_title_name(i) }.sort
   end
 
   def self.get_title_name(id)
