@@ -130,18 +130,7 @@ describe "CharacterStory" do
       }')
 
       chain = JSON.parse(get('/chain/test/patron').body)
-      assert_equal(chain, {"name"=>"thepatron", "children"=>[{"name"=>"a"}, {"name"=>"b"}, {"name"=>"c"}]})
-    end
-
-    it "removes a character as a vassal of its old patron when the character breaks" do
-      post('/', '{"name": "patron", "server": "test", "attribs": {}, "vassals": [{"name": "vassal", "server": "test"}]}')
-      post('/', '{"name": "vassal", "server": "test", "attribs": {}, "patron": {"name": "patron", "server": "test"}}')
-
-      # Assert the link
-      assert_equal 2, 3
-
-      # Assert the break
-      assert_equal 1, 2
+      assert_equal(chain, {"name"=>"patron", "children"=>[{"name"=>"a"}, {"name"=>"b"}, {"name"=>"c"}]})
     end
   end
 end

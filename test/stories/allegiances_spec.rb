@@ -14,14 +14,14 @@ describe "AllegianceStory" do
     end
 
     it "creates allegiances" do
-      post('/', '{"name":"testname", "server":"testserver", "allegiance_name":"someallegiance"}')
+      post('/', '{"name":"testname", "server":"testserver", "attribs": {}, "allegiance_name": "someallegiance"}')
 
       Allegiance.count.must_equal 1
     end
 
     it "doesn't create duplicate allegiances" do
-      post('/', '{"name":"testname", "server":"testserver", "allegiance_name":"someallegiance"}')
-      post('/', '{"name":"testname", "server":"testserver", "allegiance_name":"someallegiance"}')
+      post('/', '{"name":"testname", "server":"testserver", "attribs": {}, "allegiance_name":"someallegiance"}')
+      post('/', '{"name":"testname", "server":"testserver", "attribs": {}, "allegiance_name":"someallegiance"}')
 
       Allegiance.count.must_equal 1
     end
