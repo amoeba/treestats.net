@@ -77,18 +77,11 @@ module Sinatra
             redis.incr "uploads:daily:#{Time.now.utc.strftime("%Y%m%d")}"
             redis.incr "uploads:monthly:#{Time.now.utc.strftime("%Y%m")}"
 
-            # ALLEGIANCE
-            Allegiance.find_or_create_by(server: server, name: allegiance_name)
+            # # ALLEGIANCE
+            # Allegiance.find_or_create_by(server: server, name: allegiance_name)
 
             # RESPONSE
-            response_text = ""
-
-            if(character.valid?)
-              response_text = "Character was updated successfully."
-            else
-              MailHelper::send("Character update failed!", "<p>Raw Text<br/>#{text}</p> <p>JSON Text<br/>#{json_text}</p>")
-              response_text = "Character update failed."
-            end
+            response_text = character.valid? ? "Character was updated successfully." : "Character update failed."
 
             # Add version_text to response text
             response_text = [response_text, version_message].join(" ") if version_message
