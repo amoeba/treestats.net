@@ -14,7 +14,7 @@ class TreeStats < Sinatra::Base
 
   # helpers Sinatra::TreeStats::Helpers
 
-  set :assets_precompile, %w(*.js *.scss *.css *.png)
+  set :assets_precompile, %w(*.js *.scss *.css *.png *.jpg)
   register Sinatra::AssetPipeline
 
   # Explicitly register Sinatra::Redis so the method `redis` is available
