@@ -16,7 +16,6 @@ module CharacterHelper
     rescue ArgumentError
       puts "ArgumentError caught trying to parse '#{birth} EST' as a DateTime."
       puts "Error was #{$!}"
-      raise
     end
 
     parsed
