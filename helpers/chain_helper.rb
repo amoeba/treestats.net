@@ -15,7 +15,7 @@ class AllegianceChain
     highest_patron = nil
 
     # Find the character
-    character = Character.find_by(server: @server, name: @name)
+    character = Character.find_by(server: @server, name: @name, archived: false)
 
     # Return early if we're done
     return nil if character.nil?
@@ -26,7 +26,7 @@ class AllegianceChain
     highest_patron = character.patron['name']
 
     # Do the finding
-    patron = Character.find_by(server: @server, name: highest_patron)
+    patron = Character.find_by(server: @server, name: highest_patron, archived: false)
 
     # Traverse upward toward the ultimate patron
     limit = 200
@@ -39,7 +39,7 @@ class AllegianceChain
       return highest_patron if limit <= 0
 
       if patron.patron
-        patron = Character.find_by(server: @server, name: patron.patron['name'])
+        patron = Character.find_by(server: @server, name: patron.patron['name'], archived: false)
       else
         return highest_patron
       end
@@ -49,7 +49,7 @@ class AllegianceChain
   end
 
   def walk_chain(current, level = 0)
-    character = Character.find_by(server: @server, name: current['name'])
+    character = Character.find_by(server: @server, name: current['name'], archived: false)
 
     return if character.nil?
     return unless character['vassals']
@@ -72,7 +72,7 @@ class AllegianceChain
 
     while max_it > 0 && cursors.length > 0
       if cursors.last.key?('children') && cursors.last['children'].nil?
-        record = Character.find_by(server: @server, name: cursors.last['name'])
+        record = Character.find_by(server: @server, name: cursors.last['name'], archived: false)
 
         if record['vassals'].nil? || record['vassals'].length == 0
           cursors.last.reject! { |k, v| k == 'children' }
