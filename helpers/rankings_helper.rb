@@ -40,7 +40,8 @@ module RankingsHelper
   # for global settings and per-ranking settings
 
   MATCH = {
-    "r" => { "$nin" => [ "Olthoi Spitter", "Olthoi Soldier" ] }
+    "r" => { "$nin" => [ "Olthoi Spitter", "Olthoi Soldier" ] },
+    "ar" => false
   }
 
   PROJECT = {

@@ -76,8 +76,13 @@ module Sinatra
             # update contains no new information.
 
             character.assign_attributes(json_text)
+
+            # Removed archived flag
+            character[:archived] = false if character[:archived]
+
             character.save
             character.touch
+
 
             # Update statistics
             redis.incr "uploads:daily:#{Time.now.utc.strftime("%Y%m%d")}"

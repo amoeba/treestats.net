@@ -17,6 +17,8 @@ module Sinatra
                 criteria[:name] = /#{Regexp.escape(params[:character])}/i
               end
 
+              criteria[:archived] = false
+
               @records = Character.limit(50).asc(:name).where(criteria)
             elsif(params && params[:allegiance])
               if(params[:allegiance].length >= 0)
