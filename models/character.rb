@@ -51,7 +51,7 @@ class Character
 
   field :acc, as: :account_name,      type: String
 
-  field :ar,  as: :archived,          type: Boolean
+  field :ar,  as: :archived,          type: Boolean, default: -> { false }
 
   after_save do |document|
     self_race = RaceHelper::get_race_name(self.race.to_i)

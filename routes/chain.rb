@@ -6,7 +6,9 @@ module Sinatra
           app.get '/chain/:server/:name?' do |server, name|
             content_type :json
 
-            character = Character.only(:name, :server).find_by(server: server, name: name)
+            character = Character.only(:name, :server).find_by(server: server,
+                                                               name: name,
+                                                               archived: false)
 
             return "{}" if character.nil?
 

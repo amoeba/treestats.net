@@ -4,7 +4,9 @@ module Sinatra
       module Server
         def self.registered(app)
           app.get '/:server/?' do |server|
-            @characters = Character.where(server: server).where(:attribs.exists => true).desc(:updated_at).limit(100)
+            @characters = Character.where(server: server, archived: false)
+                                   .where(:attribs.exists => true)
+                                   .desc(:updated_at).limit(100)
 
             haml :server
           end

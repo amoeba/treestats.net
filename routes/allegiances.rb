@@ -12,8 +12,10 @@ module Sinatra
             # dash in it.
             @server, *@name = key.split("-")
             @name = @name.join("-")
-            
-            @characters = Character.where(server: @server, allegiance_name: @name)
+
+            @characters = Character.where(server: @server,
+                                          allegiance_name: @name,
+                                          archived: false)
 
             return "{}" if @characters.nil?
 
@@ -60,7 +62,9 @@ module Sinatra
           app.get '/allegiances/:key' do |key|
             @server, @name = key.split("-")
 
-            @characters = Character.where(server: @server, allegiance_name: @name).limit(100).asc(:name)
+            @characters = Character.where(server: @server,
+                                          allegiance_name: @name,
+                                          archived: false).limit(100).asc(:name)
 
             haml :allegiance
           end
