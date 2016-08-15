@@ -25,7 +25,7 @@ module Sinatra
             @characters.each_with_index do |c,i|
               # Add character as a node if it doesn't exist
               # Add links
-                # Add characters from links as nodes
+              # Add characters from links as nodes
 
               source_id = nodes.find_index { |n| n[:name] == c.name }
 
