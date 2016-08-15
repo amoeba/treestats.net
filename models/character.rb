@@ -49,7 +49,9 @@ class Character
   field :tc,  as: :current_title,     type: Integer
   field :ti,  as: :titles,            type: Array
 
-  field :acc,  as: :account_name,      type: String
+  field :acc, as: :account_name,      type: String
+
+  field :ar,  as: :archived,          type: Boolean
 
   after_save do |document|
     self_race = RaceHelper::get_race_name(self.race.to_i)
