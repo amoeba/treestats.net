@@ -63,7 +63,7 @@ module Sinatra
             end
 
             # Log extra debug info if birth ends up being nil
-            if json_text["birth"].nil?
+            if json_text["birth"].nil? && ENV['RACK_ENV'] != 'test'
               puts "Failed to parse birth field with the following JSON..."
               puts json_text
             end
@@ -97,7 +97,11 @@ module Sinatra
             if(character.valid?)
               response_text = "Character was updated successfully."
             else
-              MailHelper::send("Character update failed!", "<p>Raw Text<br/>#{text}</p> <p>JSON Text<br/>#{json_text}</p>")
+              if ENV['RACK_ENV'] != 'test'
+                puts 'Character updated failed...'
+                puts json_text
+              end
+
               response_text = "Character update failed."
             end
 
