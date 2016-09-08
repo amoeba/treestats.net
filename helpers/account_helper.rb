@@ -306,6 +306,12 @@ module AccountHelper
       :value => Proc.new { |v| v[:skills]["magic_item_tinkering"]["base"] }
     },
     {
+      :name => "skills_item_tinkering",
+      :label => "Item Tinkering",
+      :group => :skills,
+      :value => Proc.new { |v| v[:skills]["item_tinkering"]["base"] }
+    },
+    {
       :name => "skills_mana_conversion",
       :label => "Mana Conversion",
       :group => :skills,
