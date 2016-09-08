@@ -258,6 +258,12 @@ module AccountHelper
       :value => Proc.new { |v| v[:skills]["item_enchantment"]["base"] }
     },
     {
+      :name => "skills_item_tinkering",
+      :label => "Item Tinkering",
+      :group => :skills,
+      :value => Proc.new { |v| v[:skills]["item_tinkering"]["base"] }
+    },
+    {
       :name => "skills_jump",
       :label => "Jump",
       :group => :skills,
@@ -304,12 +310,6 @@ module AccountHelper
       :label => "Magic Item Tinkering",
       :group => :skills,
       :value => Proc.new { |v| v[:skills]["magic_item_tinkering"]["base"] }
-    },
-    {
-      :name => "skills_item_tinkering",
-      :label => "Item Tinkering",
-      :group => :skills,
-      :value => Proc.new { |v| v[:skills]["item_tinkering"]["base"] }
     },
     {
       :name => "skills_mana_conversion",
