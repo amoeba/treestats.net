@@ -2,6 +2,8 @@
 
 # TreeStats
 
+[![Join the chat at https://gitter.im/treestats/Lobby](https://badges.gitter.im/treestats/Lobby.svg)](https://gitter.im/treestats/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 TreeStats is an offline player tracking program for [Asheron's Call](http://www.asheronscall.com/) (AC). AC was one of the earliest popular [MMORPG](http://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game) titles and was released in 1999. One of the defining characteristics of AC was its Allegiance system, which allowed players to swear fealty to other players, affording the involved players concrete (e.g. experience and rank for patrons) and social benefits (e.g. items, advice for the vassal) which added greatly to the immersive nature of the game.
 
 As vassals gained experience points for themselves, a portion of that experience was passed up to the patron. Players soon manipulated and gamed the system to form efficient experience passup chains and out of this came the original versions of TreeStats, written by [Akilla](http://www.akilla.net/).
