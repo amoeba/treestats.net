@@ -4,6 +4,12 @@ module Sinatra
       module General
         def self.registered(app)
           app.get '/' do
+            @latest = Character.where(:attribs.exists => true,
+                                      :archived => false)
+                                      .desc(:updated_at)
+                                      .limit(10)
+                                      .only(:name, :server)
+            #@level
             haml :index
           end
 
