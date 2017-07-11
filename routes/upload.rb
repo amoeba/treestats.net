@@ -5,6 +5,7 @@ module Sinatra
         def self.registered(app)
           app.post '/' do
             text = request.body.read
+            puts text
             return if text.length <= 0
 
             # VERIFY
