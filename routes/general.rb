@@ -8,7 +8,7 @@ module Sinatra
                                       :archived => false)
                                       .desc(:updated_at)
                                       .limit(10)
-                                      .only(:name, :server)
+                                      .only(:name, :server, :level)
             haml :index
           end
 
