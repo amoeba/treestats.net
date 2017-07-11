@@ -22,7 +22,7 @@ module Sinatra
             # PARSE
             # Parse message
             json_text = JSON.parse(text)
-
+            print(json_text)
             # Remove verification key if it exists
             if (json_text.has_key?("key"))
               json_text = json_text.tap { |h| h.delete("key") }
