@@ -3,7 +3,6 @@ module PropertiesHelper
     # 352 is "DamageAbsorb", figure this out
 
   PROPERTIES = {
-    "139" => { :type => :general, :name => "Player Level?"},
     "199" => { :type => :general, :name => "Housing Purchase Date?"},
     "192" => { :type => :general, :name => "Fishing Skill"},
     "181" => { :type => :general, :name => "Chess Rank"},
