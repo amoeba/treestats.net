@@ -10,7 +10,7 @@
       %th Name
       %th Server
   %tbody
-    - @latest.each do |c|
+    - @latest.each do |character|
       %tr
         %td
           %a{:href => "/#{character["s"]}/#{character["n"]}"}= character["n"]
