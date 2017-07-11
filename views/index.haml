@@ -2,6 +2,20 @@
 
 %p Since a few <a href="http://phatac.com/">PhatAC</a> servers have started up, I've decided to put <a href="http://treestats.net">treestats.net</a> back up.
 
+%table.dashboard
+  %thead
+    %tr.title
+      %td{:colspan => 2} Most Titles
+    %tr
+      %th Name
+      %th Server
+  %tbody
+    - @latest.each do |c|
+      %tr
+        %td
+          %a{:href => "/#{character["s"]}/#{character["n"]}"}= character["n"]
+        %td= character["s"]
+
 %h2 News
 
 %div
