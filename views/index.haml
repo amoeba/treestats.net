@@ -5,16 +5,18 @@
 %table.dashboard
   %thead
     %tr.title
-      %td{:colspan => 2} Most Titles
+      %td{:colspan => 3} Most Titles
     %tr
-      %th Name
       %th Server
+      %th Name
+      %th Level
   %tbody
     - @latest.each do |character|
       %tr
+        %td= character["s"]
         %td
           %a{:href => "/#{character["s"]}/#{character["n"]}"}= character["n"]
-        %td= character["s"]
+        %td= character["level"]
 
 %h2 News
 
