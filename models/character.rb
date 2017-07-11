@@ -126,14 +126,6 @@ class Character
       if self.allegiance_name
         patron.set(allegiance_name: self.allegiance_name)
       end
-    else
-      # Unset patron
-      self.unset(:patron)
-
-      # Removal character as vassal of patron
-      # patron = Character.find_or_create_by(name: self.patron['name'], server: self.server)
-
-
     end
 
     # Vassals
