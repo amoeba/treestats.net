@@ -1,7 +1,7 @@
 %span Players
 %form{:action => '/search', :method => 'get'}
   %select{:name => 'server', :value => params[:server]}
-    - ["All Servers", "Megaduck", "Ducktide", "YewTide", "Darktide", "Frostfell", "Harvestgain", "Leafcull", "Morningthaw", "Thistledown", "Solclaim", "Verdantine", "WintersEbb"].each do |s|
+    - ["All Servers", "Megaduck", "Ducktide", "YewThaw", "YewTide", "Darktide", "Frostfell", "Harvestgain", "Leafcull", "Morningthaw", "Thistledown", "Solclaim", "Verdantine", "WintersEbb"].each do |s|
       - if params[:server] && params[:server] == s
         %option{:value => s, :selected => true}= s
       - else
@@ -13,7 +13,7 @@
 %span Allegiances
 %form{:action => '/search', :method => 'get'}
   %select{:name => 'server', :value => params[:server]}
-    - ["All Servers", "Megaduck", "Ducktide", "YewTide", "Darktide", "Frostfell", "Harvestgain", "Leafcull", "Morningthaw", "Thistledown", "Solclaim", "Verdantine", "WintersEbb"].each do |s|
+    - ["All Servers", "Megaduck", "Ducktide", "YewThaw", "YewTide", "Darktide", "Frostfell", "Harvestgain", "Leafcull", "Morningthaw", "Thistledown", "Solclaim", "Verdantine", "WintersEbb"].each do |s|
       - if params[:server] && params[:server] == s
         %option{:value => s, :selected => true}= s
       - else
