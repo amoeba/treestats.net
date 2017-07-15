@@ -35,7 +35,7 @@ module Sinatra
 
             result = []
 
-            servers = %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb Megaduck Ducktide YewTide]
+            servers = %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb Megaduck Ducktide YewThaw YewTide]
             servers.each do |server|
               latest = PlayerCount.where(server: server).desc(:created_at).limit(1)
               first_result = latest.to_a.first
