@@ -111,10 +111,6 @@ module Sinatra
             # Return final response
             response_text
           end
-
-          app.post '/message' do
-            return "Got your message!"
-          end
         end
       end
     end
