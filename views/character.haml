@@ -63,13 +63,6 @@
     .box.active
       = haml :_chain_pane
 
-  - if @character.properties
-    .tabcontainer
-      .tabbar
-        .tab.active Unknown Properties
-      .box.active
-        = haml :_properties_pane
-
 %script{:type => 'text/javascript', :src => javascript_path('tabs')}
 
 :javascript
