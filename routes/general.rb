@@ -28,7 +28,8 @@ module Sinatra
             @characters = Character.where(:attribs.exists => true,
                                           :archived => false)
                                    .desc(:updated_at)
-                                   .limit(100).only(:name, :server)
+                                   .limit(100)
+                                   .only(:name, :server)
 
             haml :characters
           end
