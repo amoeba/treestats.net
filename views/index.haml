@@ -2,21 +2,61 @@
 
 %p Since a few <a href="http://phatac.com/">PhatAC</a> servers have started up, I've decided to put <a href="http://treestats.net">treestats.net</a> back up.
 
-%table.dashboard
+%table.dashboard.dashboard-narrow
   %thead
     %tr.title
-      %td{:colspan => 3} Latest Updates
+      %td{:colspan => 2} Megaduck
     %tr
-      %th Server
       %th Name
       %th Level
   %tbody
-    - @latest.each do |character|
+    - @megaduck.each do |character|
       %tr
-        %td= character["s"]
         %td
-          %a{:href => "/#{character["s"]}/#{character["n"]}"}= character["n"]
-        %td= character["level"]
+          %a{:href => "/#{character["server"]}/#{character["name"]}"}="#{character["name"]}"
+        %td= "#{character["level"]}"
+
+%table.dashboard.dashboard-narrow
+  %thead
+    %tr.title
+      %td{:colspan => 2} Ducktide
+    %tr
+      %th Name
+      %th Level
+  %tbody
+    - @ducktide.each do |character|
+      %tr
+        %td
+          %a{:href => "/#{character["server"]}/#{character["name"]}"}="#{character["name"]}"
+        %td= "#{character["level"]}"
+
+%table.dashboard.dashboard-narrow
+  %thead
+    %tr.title
+      %td{:colspan => 2} YewThaw
+    %tr
+      %th Name
+      %th Level
+  %tbody
+    - @yewthaw.each do |character|
+      %tr
+        %td
+          %a{:href => "/#{character["server"]}/#{character["name"]}"}="#{character["name"]}"
+        %td= "#{character["level"]}"
+
+%table.dashboard.dashboard-narrow
+  %thead
+    %tr.title
+      %td{:colspan => 2} YewTide
+    %tr
+      %th Name
+      %th Level
+  %tbody
+    - @yewtide.each do |character|
+      %tr
+        %td
+          %a{:href => "/#{character["server"]}/#{character["name"]}"}="#{character["name"]}"
+        %td= "#{character["level"]}"
 
 %h2 News
 
