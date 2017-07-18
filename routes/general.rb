@@ -9,6 +9,12 @@ module Sinatra
                                       .desc(:updated_at)
                                       .limit(10)
                                       .only(:name, :server, :level)
+            # Server leaderboards
+            @megaduck = Character.where(:attribs.exists => true, :archived => false, :server => "Megaduck").desc(:level).limit(10).only(:name, :server, :level)
+            @ducktide = Character.where(:attribs.exists => true, :archived => false, :server => "Ducktide").desc(:level).limit(10).only(:name, :server, :level)
+            @yewthaw = Character.where(:attribs.exists => true, :archived => false, :server => "YewThaw").desc(:level).limit(10).only(:name, :server, :level)
+            @yewtide = Character.where(:attribs.exists => true, :archived => false, :server => "YewTide").desc(:level).limit(10).only(:name, :server, :level)
+
             haml :index
           end
 
