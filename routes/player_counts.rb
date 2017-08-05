@@ -51,10 +51,7 @@ module Sinatra
 
             result = []
 
-            # servers = %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb Megaduck Ducktide YewThaw YewTide]
-            servers = AppHelper.servers
-            puts servers
-            servers.each do |server|
+            AppHelper.servers.each do |server|
               latest = PlayerCount.where(server: server)
                                   .desc(:created_at)
                                   .limit(1)
@@ -63,6 +60,7 @@ module Sinatra
               next if latest.count == 0
 
               first_result = latest.to_a.first
+              
               result << { 
                 'server' => server, 
                 'count' => first_result['c'], 
