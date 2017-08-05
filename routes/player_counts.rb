@@ -50,11 +50,24 @@ module Sinatra
 
             result = []
 
-            servers = %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb Megaduck Ducktide YewThaw YewTide]
+            # servers = %w[Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb Megaduck Ducktide YewThaw YewTide]
+            servers = AppHelper.servers
+            puts servers
             servers.each do |server|
-              latest = PlayerCount.where(server: server).desc(:created_at).limit(1)
+              latest = PlayerCount.where(server: server)
+                                  .desc(:created_at)
+                                  .limit(1)
+
+              # Move on if no player counts were recorded
+              next if latest.count == 0
+
               first_result = latest.to_a.first
-              result << { 'server' => server, 'count' => first_result['c'], 'date' => first_result['c_at']}
+              result << { 
+                'server' => server, 
+                'count' => first_result['c'], 
+                'date' => first_result['c_at'],
+                'age' => relative_time(first_result['c_at'])
+              }
             end
 
             JSON.pretty_generate(result)

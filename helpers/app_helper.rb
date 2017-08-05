@@ -71,3 +71,11 @@ def relative_time(time)
     else ((a+180000)/(60*60*24*7)).to_i.to_s+' weeks ago'
   end
 end
+
+module AppHelper
+  @servers = %w{Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb Megaduck Ducktide YewThaw YewTide}
+
+  def self.servers
+    @servers
+  end
+end
