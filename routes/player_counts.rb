@@ -12,22 +12,37 @@ module Sinatra
           app.get '/player_counts.json' do
             content_type :json
 
-            # Query for the historical data
-            keys = redis.keys("pc:max:*").sort
-            result = {}
+            # Get max counts by date & server
+            result = PlayerCount.collection.aggregate([
+              { 
+                "$group" => {
+                  "_id" => {
+                    "s" => "$s",
+                    "date" => {
+                      "$dateToString" => {
+                        "format" => "%Y%m%d",
+                        "date" => "$c_at"
+                      }
+                    }
+                  },
+                  "max" => { "$max" => "$c" }
+                }
+              },
+              "$sort" => { "_id.date" => 1}
+            ])
 
-            keys.each do |key|
-              tokens = key.split(":")
-              server = tokens[2]
-              date = tokens[3]
+            # Restructure result for better JSON shape
+            pops = {}
 
-              key = "pc:max:#{server}:#{date}"
-
-              result[server] ||= {}
-              result[server][date] = redis.get(key)
+            result.each do |r|
+              pops[r["_id"]["s"]] ||= []
+              pops[r["_id"]["s"]] << { 
+                :date => r["_id"]["date"],
+                :count => r["max"] 
+              }
             end
 
-            result.to_json
+            pops.to_json
           end
 
           app.get '/player_counts-latest.json' do
