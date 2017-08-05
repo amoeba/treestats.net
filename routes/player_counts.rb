@@ -13,6 +13,7 @@ module Sinatra
             content_type :json
 
             # Get max counts by date & server
+            # TODO: Filter to only allowed servers
             result = PlayerCount.collection.aggregate([
               { 
                 "$group" => {
