@@ -39,37 +39,34 @@ var popchart = function(selector, data_url)
 
 
   d3.json(data_url, function(error, data) {
-    // chart
     color.domain(d3.keys(data))
 
+    // Re-structure and parse values
     var servers = color.domain().map(function(name) {
       return {
         name: name,
-        values: d3.keys(data[name]).map(function(date) {
-          return { date: parseDate(date), count: +data[name][date] };
+        values: data[name].map(function(count) {
+          return { date: parseDate(count.date), count: +count.count };
         })
       };
     });
 
-    xvals = []
-    yvals = []
+    // Find the min and max values for the scales
+    // TODO: Consider a more efficient way to do this
+    var xvals = [],
+        yvals = [];
 
     servers.forEach(function(server) {
-      dates = server.values.map(function(data) {
+      var dates = server.values.map(function(data) {
         return data.date
       });
 
-      counts = server.values.map(function(data) {
+      var counts = server.values.map(function(data) {
         return data.count
       });
-
-      x_extent = d3.extent(dates)
-      y_max = d3.max(counts)
-
-      xvals.push(x_extent[0])
-      xvals.push(x_extent[1])
-
-      yvals.push(y_max)
+      
+      xvals = xvals.concat(dates);
+      yvals = yvals.concat(counts);    
     });
 
     x.domain(d3.extent(xvals));
@@ -155,6 +152,6 @@ var popchart = function(selector, data_url)
       });
     };
 
-    setTimeout(relax, 500);
+    setTimeout(relax, 1000);
   });
 }
