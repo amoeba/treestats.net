@@ -15,6 +15,16 @@ module Sinatra
             # Get max counts by date & server
             # TODO: Filter to only allowed servers
             result = PlayerCount.collection.aggregate([
+              {
+                "$match" => {
+                  "c_at" => {
+                    "$gte" => Date.today - 120
+                  },
+                  "s" => {
+                    "$in" => AppHelper.servers
+                  }
+                }
+              },
               { 
                 "$group" => {
                   "_id" => {
@@ -29,7 +39,9 @@ module Sinatra
                   "max" => { "$max" => "$c" }
                 }
               },
-              "$sort" => { "_id.date" => 1}
+              "$sort" => { 
+                "_id.date" => 1 
+              }
             ])
 
             # Restructure result for better JSON shape
