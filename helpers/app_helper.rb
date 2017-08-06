@@ -73,9 +73,10 @@ def relative_time(time)
 end
 
 module AppHelper
-  @servers = %w{Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb Megaduck Ducktide YewThaw YewTide}
+  @legacy_servers = %w{Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb}
+  @new_servers = %w{Megaduck Ducktide YewThaw YewTide}
 
   def self.servers
-    @servers
+    @new_servers
   end
 end

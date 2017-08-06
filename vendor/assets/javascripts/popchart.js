@@ -70,7 +70,7 @@ var popchart = function(selector, data_url)
     });
 
     x.domain(d3.extent(xvals));
-    y.domain([0, d3.max(yvals)]);
+    y.domain([0, d3.max(yvals) * 1.25]);
 
     svg.append("g")
         .attr("class", "x axis")
