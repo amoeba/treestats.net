@@ -3,7 +3,7 @@
 - if !@characters.any?
   %span There are no characters to display.
 - else
-  %span
+  %p
     There
     = @characters.count > 1 ? "are" : "is"
     = "#{@characters.count} character#{@characters.count > 1 ? "s" : ""}"
