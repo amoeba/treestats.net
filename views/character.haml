@@ -9,8 +9,7 @@
     -# = CharacterHelper::tag_html(@character)
 
   .last_updated
-    = "Last Updated #{relative_time(@character["updated_at"])}"
-
+    = "Last updated #{relative_time(@character["updated_at"])} via <a href='https://github.com/amoeba/treestats/releases'>Decal</a>"
 
   - if @character.attribs
     .tabcontainer
