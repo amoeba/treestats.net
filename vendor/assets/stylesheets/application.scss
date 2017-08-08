@@ -135,11 +135,6 @@ table.char tbody.skills td.skill_icon {
   padding: 0px 0px 0px 4px;
 }
 
-div.title {
-  margin-bottom: 1.5em;
-  height: 2em;
-}
-
 div.title h2 {
   display: inline;
   margin: 0 0 2em 0;
@@ -302,11 +297,15 @@ span.creation {
 }
 
 div.last_updated {
-  display: block;
-  width: 100%;
   margin: 0 0 1.5em 0;
   padding: 0;
   font-size: 80%;
+}
+
+div.last_updated,
+div.last_updated a,
+div.last_updated a:visited {
+  color: #CCC;
 }
 
 #chain {
