@@ -8,6 +8,25 @@ describe "CharacterStory" do
       Character.all.destroy
     end
 
+    # chain scenarios involving mutating another character
+    #
+    # monarch
+    # creates a monarch stub if needed
+    # updates monarch stub's information (race/gender)
+    # updates monarch information if needed
+    #
+    # patron
+    # creates a patron stub if needed
+    # updates patron stub's information (race/gender)
+    # sets the current char as a vassal on the patron
+    #
+    # vassals
+    # creates vassal stubs if needed
+    # updates vassal stub's (race/gender)
+    # unsets the character as a patron of each vassal the database
+    # has the current char
+    # 
+
     it "reports update failure when the character isn't created" do
       post('/', '{}')
       last_response.body.must_equal "Character update failed."
