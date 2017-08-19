@@ -102,7 +102,11 @@ module Sinatra
                 puts json_text
               end
 
-              response_text = "Character update failed."
+              if name == ""
+                response_text = "Level 1 characters can't be uploaded with PhatAC currently. Sorry!"
+              else
+                response_text = "Character update failed."
+              end
             end
 
             # Add version_text to response text
