@@ -12,6 +12,12 @@ describe "CharacterStory" do
       post('/', '{}')
       last_response.body.must_equal "Character update failed."
     end
+    
+    it "reports that levels 1 can't be uploaded with phatac temporarily" do
+      post('/', '{"name":"", "server": "myserver"}')
+      last_response.body.must_equal "Level 1 characters can't be uploaded with PhatAC currently. Sorry!"
+    end
+    
 
     it "creates simple characters successfully" do
       Character.count.must_equal 0
