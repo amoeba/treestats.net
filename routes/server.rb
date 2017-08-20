@@ -30,7 +30,6 @@ module Sinatra
 
             haml :character
           end
-
         end
       end
     end
