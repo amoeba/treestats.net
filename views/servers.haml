@@ -1,5 +1,6 @@
 %h2.title Servers
 
+%h3 PhatAC
 %ul
   %li
     %a{:href => "/Megaduck/"} Megaduck
@@ -9,6 +10,9 @@
     %a{:href => "/YewThaw/"} YewThaw
   %li
     %a{:href => "/YewTide/"} YewTide
+
+%h3 Retail
+%ul
   %li
     %a{:href => "/Darktide/"} Darktide
   %li
@@ -27,3 +31,12 @@
     %a{:href => "/Verdantine/"} Verdantine
   %li
     %a{:href => "/WintersEbb/"} WintersEbb
+
+- if @other_servers.length > 0
+  %h3 Other servers
+  %ul
+    - @other_servers.each do |server|
+      %li
+        %a{:href => "/#{server}"}= server
+ 
+ 
