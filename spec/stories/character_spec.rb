@@ -14,17 +14,23 @@ describe "CharacterStory" do
     # creates a monarch stub if needed
     # updates monarch stub's information (race/gender)
     # updates monarch information if needed
+    # [do nothing if the monarch isn't set]
     #
     # patron
     # creates a patron stub if needed
     # updates patron stub's information (race/gender)
     # sets the current char as a vassal on the patron
+    # [if patron is not set]
+    # remove player from patron's vassals
     #
     # vassals
-    # creates vassal stubs if needed
+    # creates vassal stub(s) if needed
     # updates vassal stub's (race/gender)
-    # unsets the character as a patron of each vassal the database
-    # has the current char
+    # 
+    # does a difference between what vassals were sent
+    # and what vassals are stored
+    # updates ones that are still included
+    # updates patron field on ones that are not
     # 
 
     it "reports update failure when the character isn't created" do
