@@ -76,6 +76,10 @@ module AppHelper
   @legacy_servers = %w{Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb}
   @new_servers = %w{Megaduck Ducktide YewThaw YewTide}
 
+  def self.all_servers
+    @legacy_servers + @new_servers
+  end
+  
   def self.servers
     @new_servers
   end

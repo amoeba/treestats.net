@@ -27,6 +27,8 @@ module Sinatra
           end
 
           app.get "/servers/?" do
+            @other_servers = Character.where(server: { '$nin' => AppHelper.all_servers}).distinct(:server)
+            
             haml :servers
           end
 
