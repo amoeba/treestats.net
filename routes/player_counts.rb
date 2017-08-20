@@ -12,6 +12,12 @@ module Sinatra
           app.get '/player_counts.json' do
             content_type :json
 
+            if params[:servers] && params[:servers] == "retail"
+              servers = AppHelper.retail_servers
+            else
+              servers = AppHelper.servers
+            end
+
             # Get max counts by date & server
             # TODO: Filter to only allowed servers
             result = PlayerCount.collection.aggregate([
@@ -21,7 +27,7 @@ module Sinatra
                     "$gte" => Date.today - 120
                   },
                   "s" => {
-                    "$in" => AppHelper.servers
+                    "$in" => servers
                   }
                 }
               },
