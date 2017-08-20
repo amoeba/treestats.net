@@ -80,6 +80,10 @@ module AppHelper
     @legacy_servers + @new_servers
   end
   
+  def self.retail_servers
+    @legacy_servers
+  end
+
   def self.servers
     @new_servers
   end

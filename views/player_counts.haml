@@ -4,6 +4,12 @@
 %p
   %a{:href => "/player_counts-latest.json"} Latest player counts (JSON)
 
+%p
+  Switch:
+  %a{:href => "/player_counts?servers=private"} Private
+  |
+  %a{:href => "/player_counts?servers=retail"} Retail
+
 :css
   svg {
     background-color: black;
@@ -54,5 +60,9 @@
 %script{:src => javascript_path('d3.min')}
 %script{:src => javascript_path('popchart')}
 
-:javascript
-  popchart("#content", "/player_counts.json");
+- if params[:servers]
+  :javascript
+    popchart("#content", "/player_counts.json?servers=#{params[:servers]}");
+- else
+  :javascript
+    popchart("#content", "/player_counts.json");
