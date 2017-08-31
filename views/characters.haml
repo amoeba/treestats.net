@@ -19,4 +19,5 @@
         %tr
           %td
             %a{:href => "/#{c['server']}/#{c['name']}"}= "#{c['name']}"
-          %td= c['server']
+          %td
+            %a{:href => "/#{c['server']}"}= c['server']
