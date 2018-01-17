@@ -5,16 +5,17 @@
     %tr.title
       %td Monthly Uploads
   %tbody
-    %td#monthlyuploads.dashboard.statchart
-      %script{:type => "text/javascript", :src => javascript_path('d3.min.js')}
-      %script{:type => "text/javascript", :src => javascript_path('statchart.js')}
-      :javascript
-        d3.json("/stats/uploads/monthly", function(error, json) {
-          if (error) return;
-          if (json.length <= 2) return;
-          json = json.slice(0, json.length - 1);
-          statchart.add("#monthlyuploads", json, "%Y%m");
-        });
+    %tr
+      %td#monthlyuploads.dashboard.statchart
+        %script{:type => "text/javascript", :src => javascript_path('d3.min.js')}
+        %script{:type => "text/javascript", :src => javascript_path('statchart.js')}
+        :javascript
+          d3.json("/stats/uploads/monthly", function(error, json) {
+            if (error) return;
+            if (json.length <= 2) return;
+            json = json.slice(0, json.length - 1);
+            statchart.add("#monthlyuploads", json, "%Y%m");
+          });
 
 %h2 News
 
