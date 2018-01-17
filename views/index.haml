@@ -8,8 +8,8 @@
       %th Character
       %th Updated
   %tbody
-    %tr
-      - @latest.each do |c|
+    - @latest.each do |c|
+      %tr
         %td
           %a{:href => "/#{c.server}/#{c.name}"}= "#{c.name} (#{c.server})"
         %td= relative_time(c.updated_at)
