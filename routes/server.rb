@@ -6,6 +6,7 @@ module Sinatra
           app.get '/:server/?' do |server|
             @characters = Character.where(server: server, archived: false)
                                    .desc(:updated_at).limit(100)
+                                   .only(:name, :server)
 
             haml :server
           end
