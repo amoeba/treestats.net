@@ -14,6 +14,20 @@
           %a{:href => "/#{c.server}/#{c.name}"}= "#{c.name} (#{c.server})"
         %td= relative_time(c.updated_at)
 
+%table.dashboard.dashboard-wide
+  %thead
+    %tr.title
+      %td{:colspan => 2} Character Counts
+    %tr
+      %th Server
+      %th # Characters
+  %tbody
+    - @servers.each do |s|
+      %tr
+        %td
+          %a{:href => "/#{s["_id"]}"}= "#{s["_id"] }"
+        %td= s["count"]
+
 %h2 News
 
 %div
