@@ -1,14 +1,40 @@
 module Sinatra
   module TreeStats
     module Routing
-      module General
+      module General        
         def self.registered(app)
           app.get '/' do
-            @latest = Character.where(:attribs.exists => true,
+            @latest = Character.where(:attribs.exists => false,
                                       :archived => false)
                                       .desc(:updated_at)
                                       .limit(10)
                                       .only(:name, :server, :updated_at)
+
+            @servers = Character.collection.aggregate([
+              { 
+                "$match" => { 
+                  "s" => { 
+                    "$nin" => AppHelper.retail_servers 
+                  }
+                }
+              },
+              { 
+                "$group" => {
+                  "_id" => "$s",
+                  "count" => { "$sum" => 1 }
+                }
+              },
+              { 
+                "$sort" => {
+                  "count" => -1
+                }
+              },
+              {
+                "$limit": 10
+              }
+            ])
+
+            puts AppHelper.servers
 
             haml :index
           end
