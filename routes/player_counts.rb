@@ -67,27 +67,77 @@ module Sinatra
           app.get '/player_counts-latest.json' do
             content_type :json
 
-            result = []
-
-            AppHelper.servers.each do |server|
-              latest = PlayerCount.where(server: server)
-                                  .desc(:created_at)
-                                  .limit(1)
-
-              # Move on if no player counts were recorded
-              next if latest.count == 0
-
-              first_result = latest.to_a.first
-              
-              result << { 
-                'server' => server, 
-                'count' => first_result['c'], 
-                'date' => first_result['c_at'],
-                'age' => relative_time(first_result['c_at'])
+            latest_counts = PlayerCount.collection.aggregate([
+              {
+                "$match" => {
+                  "s" => {
+                    "$in" => AppHelper.servers
+                  }
+                }
+              },
+              { 
+                "$sort" => { 
+                  "c_at" => 1 
+                  } 
+                },
+              {
+                "$group" =>
+                  {
+                    "_id" => "$s",
+                    "c" => { 
+                      "$last" => "$c"
+                    },
+                    "c_at" => {
+                      "$last" => "$c_at"
+                    }
+                  }
+              },
+              {
+                "$sort" => {
+                  "_id" => 1
+                }
+              },
+              {
+                "$project" => {
+                  "_id": 0,
+                  "server": "$_id",
+                  "count": "$c",
+                  "date": "$c_at"
+                }
               }
+            ])
+         
+            latest_counts = latest_counts.to_a
+            latest_counts.each_with_index do |item,i|
+              latest_counts[i]["age"] = relative_time(item["date"])
             end
 
-            JSON.pretty_generate(result)
+            latest_counts.each do |k,v|
+              puts k
+              puts v
+            end
+
+            result = []
+
+            # AppHelper.servers.each do |server|
+            #   latest = PlayerCount.where(server: server)
+            #                       .desc(:created_at)
+            #                       .limit(1)
+
+            #   # Move on if no player counts were recorded
+            #   next if latest.count == 0
+
+            #   first_result = latest.to_a.first
+              
+            #   result << { 
+            #     'server' => server, 
+            #     'count' => first_result['c'], 
+            #     'date' => first_result['c_at'],
+            #     'age' => relative_time(first_result['c_at'])
+            #   }
+            # end
+
+            JSON.pretty_generate(latest_counts)
           end
         end
       end
