@@ -84,6 +84,6 @@ module AppHelper
   end
 
   def self.servers
-    @legacy_servers
+    Character.distinct(:s)
   end
 end
