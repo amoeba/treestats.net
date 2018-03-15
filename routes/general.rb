@@ -4,8 +4,7 @@ module Sinatra
       module General        
         def self.registered(app)
           app.get '/' do
-            @latest = Character.where(:attribs.exists => false,
-                                      :archived => false)
+            @latest = Character.where(:archived => false)
                                       .desc(:updated_at)
                                       .limit(10)
                                       .only(:name, :server, :updated_at)
