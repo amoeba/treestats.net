@@ -112,31 +112,6 @@ module Sinatra
               latest_counts[i]["age"] = relative_time(item["date"])
             end
 
-            latest_counts.each do |k,v|
-              puts k
-              puts v
-            end
-
-            result = []
-
-            # AppHelper.servers.each do |server|
-            #   latest = PlayerCount.where(server: server)
-            #                       .desc(:created_at)
-            #                       .limit(1)
-
-            #   # Move on if no player counts were recorded
-            #   next if latest.count == 0
-
-            #   first_result = latest.to_a.first
-              
-            #   result << { 
-            #     'server' => server, 
-            #     'count' => first_result['c'], 
-            #     'date' => first_result['c_at'],
-            #     'age' => relative_time(first_result['c_at'])
-            #   }
-            # end
-
             JSON.pretty_generate(latest_counts)
           end
         end

@@ -33,8 +33,6 @@ module Sinatra
               }
             ])
 
-            puts AppHelper.servers
-
             haml :index
           end
 
