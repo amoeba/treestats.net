@@ -72,7 +72,12 @@ class AllegianceChain
 
     while max_it > 0 && cursors.length > 0
       if cursors.last.key?('children') && cursors.last['children'].nil?
-        record = Character.find_by(server: @server, name: cursors.last['name'], archived: false)
+        begin
+          record = Character.find_by(server: @server, name: cursors.last['name'], archived: false)
+        rescue Mongoid::Errors::DocumentNotFound
+          next_record = nil
+        end
+
 
         if record['vassals'].nil? || record['vassals'].length == 0
           cursors.last.reject! { |k, v| k == 'children' }
