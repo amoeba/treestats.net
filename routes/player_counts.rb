@@ -69,41 +69,29 @@ module Sinatra
 
             latest_counts = PlayerCount.collection.aggregate([
               {
-                "$match" => {
-                  "s" => {
-                    "$in" => AppHelper.servers
-                  }
-                }
-              },
-              { 
-                "$sort" => { 
-                  "c_at" => 1 
-                  } 
-                },
-              {
                 "$group" =>
                   {
                     "_id" => "$s",
-                    "c" => { 
+                    "count" => {
                       "$last" => "$c"
                     },
-                    "c_at" => {
+                    "created_at" => {
                       "$last" => "$c_at"
                     }
                   }
               },
               {
-                "$sort" => {
-                  "_id" => 1
-                }
-              },
-              {
                 "$project" => {
                   "_id": 0,
                   "server": "$_id",
-                  "count": "$c",
-                  "date": "$c_at"
+                  "count": "$count",
+                  "date": "$created_at"
                 }
+              },
+              { 
+                "$sort" => {
+                  "c_at" => 1
+                } 
               }
             ])
          
