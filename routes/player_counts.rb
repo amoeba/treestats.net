@@ -67,40 +67,16 @@ module Sinatra
           app.get '/player_counts-latest.json' do
             content_type :json
 
-            latest_counts = PlayerCount.collection.aggregate([
-              {
-                "$group" =>
-                  {
-                    "_id" => "$s",
-                    "count" => {
-                      "$last" => "$c"
-                    },
-                    "created_at" => {
-                      "$last" => "$c_at"
-                    }
-                  }
-              },
-              {
-                "$project" => {
-                  "_id": 0,
-                  "server": "$_id",
-                  "count": "$count",
-                  "date": "$created_at"
-                }
-              },
-              {
-                "$sort" => {
-                  "c_at" => 1
-                }
-              }
-            ])
+            if !redis.exists("latest-counts")
+              puts "PLAYER_COUNTS_LATEST-SETEX"
+              result = latest_player_counts
+              redis.setex("latest-counts", 60, result)
 
-            latest_counts = latest_counts.to_a
-            latest_counts.each_with_index do |item,i|
-              latest_counts[i]["age"] = relative_time(item["date"])
+              return result
+            else
+              puts "PLAYER_COUNTS_LATEST-CACHED"
+              return redis.get("latest-counts")
             end
-
-            JSON.pretty_generate(latest_counts)
           end
 
           app.get '/player_counts/:server.json' do |server|
@@ -111,20 +87,6 @@ module Sinatra
 
             cleaned_count = count.serializable_hash({}).tap { |h| h.delete("id") }.tap { |h| h['age'] = relative_time(h["created_at"]) }
             JSON.pretty_generate(cleaned_count)
-          end
-
-          app.get '/player_counts-cached.json' do
-            content_type :json
-
-            if !redis.exists("latest-counts")
-              result = latest_player_counts
-              redis.setex("latest-counts", 60, result)
-
-              return result
-            else
-              puts "Returning cached version"
-              return redis.get("latest-counts")
-            end
           end
         end
       end
