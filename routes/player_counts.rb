@@ -102,6 +102,16 @@ module Sinatra
 
             JSON.pretty_generate(latest_counts)
           end
+
+          app.get '/player_counts/:server/?' do |server|
+            content_type :json
+
+            count = PlayerCount.where(s: server).desc(:c_at).limit(1).first
+            not_found if count.nil?
+
+            cleaned_count = count.serializable_hash({}).tap { |h| h.delete("id") }.tap { |h| h['age'] = relative_time(h["created_at"]) }
+            JSON.pretty_generate(cleaned_count)
+          end
         end
       end
     end
