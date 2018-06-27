@@ -13,12 +13,12 @@ module Sinatra
             content_type :json
 
             redis_key = "player-counts"
-            
+
             if !redis.exists(redis_key)
               puts "PLAYER_COUNTS-SETEX"
               result = player_counts
               puts result
-              redis.setex(redis_key, 60, result)
+              redis.setex(redis_key, 300, result)
 
               return result
             else
