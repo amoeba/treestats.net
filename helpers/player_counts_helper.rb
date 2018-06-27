@@ -1,3 +1,52 @@
+def player_counts
+  servers = AppHelper.servers
+
+  # Get max counts by date & server
+  # TODO: Filter to only allowed servers
+  result = PlayerCount.collection.aggregate([
+    {
+      "$match" => {
+        "c_at" => {
+          "$gte" => Date.today - 120
+        },
+        "s" => {
+          "$in" => servers
+        }
+      }
+    },
+    {
+      "$group" => {
+        "_id" => {
+          "s" => "$s",
+          "date" => {
+            "$dateToString" => {
+              "format" => "%Y%m%d",
+              "date" => "$c_at"
+            }
+          }
+        },
+        "max" => { "$max" => "$c" }
+      }
+    },
+    "$sort" => {
+      "_id.date" => 1
+    }
+  ])
+
+  # Restructure result for better JSON shape
+  pops = {}
+
+  result.each do |r|
+    pops[r["_id"]["s"]] ||= []
+    pops[r["_id"]["s"]] << {
+      :date => r["_id"]["date"],
+      :count => r["max"]
+    }
+  end
+
+  pops.to_json
+end
+
 def latest_player_counts
   latest_counts = PlayerCount.collection.aggregate([
     {
