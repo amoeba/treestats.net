@@ -31,7 +31,7 @@ module Sinatra
                   }
                 }
               },
-              { 
+              {
                 "$group" => {
                   "_id" => {
                     "s" => "$s",
@@ -45,8 +45,8 @@ module Sinatra
                   "max" => { "$max" => "$c" }
                 }
               },
-              "$sort" => { 
-                "_id.date" => 1 
+              "$sort" => {
+                "_id.date" => 1
               }
             ])
 
@@ -55,9 +55,9 @@ module Sinatra
 
             result.each do |r|
               pops[r["_id"]["s"]] ||= []
-              pops[r["_id"]["s"]] << { 
+              pops[r["_id"]["s"]] << {
                 :date => r["_id"]["date"],
-                :count => r["max"] 
+                :count => r["max"]
               }
             end
 
@@ -88,13 +88,13 @@ module Sinatra
                   "date": "$created_at"
                 }
               },
-              { 
+              {
                 "$sort" => {
                   "c_at" => 1
-                } 
+                }
               }
             ])
-         
+
             latest_counts = latest_counts.to_a
             latest_counts.each_with_index do |item,i|
               latest_counts[i]["age"] = relative_time(item["date"])
