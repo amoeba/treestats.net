@@ -112,6 +112,20 @@ module Sinatra
             cleaned_count = count.serializable_hash({}).tap { |h| h.delete("id") }.tap { |h| h['age'] = relative_time(h["created_at"]) }
             JSON.pretty_generate(cleaned_count)
           end
+
+          app.get '/player_counts-cached.json' do
+            content_type :json
+
+            if !redis.exists("latest-counts")
+              result = latest_player_counts
+              redis.setex("latest-counts", 60, result)
+
+              return result
+            else
+              puts "Returning cached version"
+              return redis.get("latest-counts")
+            end
+          end
         end
       end
     end
