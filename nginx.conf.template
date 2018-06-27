@@ -1,8 +1,3 @@
-proxy_cache_path /var/lib/nginx/cache levels=1:2 keys_zone=backcache:8m max_size=50m;
-proxy_cache_key "$scheme$proxy_host$uri$is_args$args";
-proxy_cache_valid 200 302 1m;
-proxy_cache_valid 404 1m;
-
 server {
   listen      [::]:80;
   listen      80;
@@ -21,12 +16,5 @@ server {
     proxy_set_header X-Forwarded-Port \$server_port;
     proxy_set_header X-Request-Start \$msec;
   }
-
-  location /player_counts-latest.json {
-    proxy_cache backcache;
-    proxy_cache_bypass $http_cache_control;
-    add_header X-Proxy-Cache $upstream_cache_status;
-  }
-
   include $DOKKU_ROOT/$APP/nginx.conf.d/*.conf;
 }
