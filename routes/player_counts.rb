@@ -103,7 +103,7 @@ module Sinatra
             JSON.pretty_generate(latest_counts)
           end
 
-          app.get '/player_counts/:server/?' do |server|
+          app.get '/player_counts/:server.json' do |server|
             content_type :json
 
             count = PlayerCount.where(s: server).desc(:c_at).limit(1).first
