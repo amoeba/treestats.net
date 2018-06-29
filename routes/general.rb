@@ -4,6 +4,8 @@ module Sinatra
       module General        
         def self.registered(app)
           app.get '/' do
+            return "TreeStats is currently in upload-only mode due to a system failure. It doesn't look like any data was lost at this point but I'm currently traveling. Uploads to TreeStats.net via the plugin will continue to work. I'll be back on July 5th, 2018 and will bring the full site up then. Sorry for the inconvenience!"
+            
             @latest = Character.where(:archived => false)
                                       .desc(:updated_at)
                                       .limit(10)
@@ -40,9 +42,9 @@ module Sinatra
             haml :download
           end
 
-          app.get '/graphs/?' do
-            haml :graphs
-          end
+          # app.get '/graphs/?' do
+          #   haml :graphs
+          # end
 
           app.get "/servers/?" do
             @other_servers = Character.where(server: { '$nin' => AppHelper.all_servers}).distinct(:server)
