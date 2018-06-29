@@ -5,6 +5,8 @@ module Sinatra
         def self.registered(app)
           app.get '/chain/:server/:name?' do |server, name|
             content_type :json
+            
+            return { :nodes => [ { :name => "Chains are temporarily disabled."}]}.to_json
 
             character = Character.only(:name, :server).find_by(server: server,
                                                                name: name,

@@ -13,6 +13,8 @@ module Sinatra
           end
 
           app.get '/title/:title' do |title_name|
+            return "Titles are temporarily disabled."
+            
             titles = TitleHelper::TITLES
             title = titles.select { |i,title| title == title_name }
 
