@@ -22,19 +22,19 @@ class TreeStats < Sinatra::Base
   register Sinatra::Redis
 
   # Routes (alpha order)
-  # register Sinatra::TreeStats::Routing::Accounts
-  # register Sinatra::TreeStats::Routing::Allegiances
-  # register Sinatra::TreeStats::Routing::Chain
+  register Sinatra::TreeStats::Routing::Accounts
+  register Sinatra::TreeStats::Routing::Allegiances
+  register Sinatra::TreeStats::Routing::Chain
   register Sinatra::TreeStats::Routing::General
-  # register Sinatra::TreeStats::Routing::PlayerCounts
-  # register Sinatra::TreeStats::Routing::Rankings
-  # register Sinatra::TreeStats::Routing::Search
-  # register Sinatra::TreeStats::Routing::Stats
-  # register Sinatra::TreeStats::Routing::Titles
+  register Sinatra::TreeStats::Routing::PlayerCounts
+  register Sinatra::TreeStats::Routing::Rankings
+  register Sinatra::TreeStats::Routing::Search
+  register Sinatra::TreeStats::Routing::Stats
+  register Sinatra::TreeStats::Routing::Titles
   register Sinatra::TreeStats::Routing::Upload
 
   # Load server route last because it has catch-alls
-  # register Sinatra::TreeStats::Routing::Server
+  register Sinatra::TreeStats::Routing::Server
 
 
   configure do

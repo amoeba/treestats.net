@@ -32,6 +32,17 @@
 
 %div
   %p
+    %p Update <code>2018-07-09 0730 UTC</code>
+    %h3 Outage postmortem
+    %p
+      First off, my apologies for the instability and the downtime of the website. Looking at my logs, TreeStats was being hammered by bots and, since I was on vacation, I wasn't able to keep ahead of them without a real Internet connection. I've since come back from vacation and took the opportunity to do a system-wide upgrade on the VM running TreeStats and brought the site back up in full.
+    %p
+      After bringing the site back up, I found out that the most recent update to TreeStats was about three days ago. I am still investigating whether this was a fault with the site or if the playrs on the private servrs that usually submit data just weren't submitting.
+    %p
+      I fully expect the bots to come back at some point so expect some of the more intensive services like allegiance chains and rankings to be disabled at times until I implemented proper caching for those. I've laid the groundwork for a caching infrastructure that may solve all of these problems so I hope there will be minimal distruption to services.
+
+%div
+  %p
     %p Update <code>2018-06-27 2100 UTC</code>
     %h3 Recent instability and downtime
     %p
