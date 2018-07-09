@@ -98,7 +98,7 @@ module Sinatra
               response_text = "Character was updated successfully."
             else
               status 400
-              
+
               if ENV['RACK_ENV'] != 'test'
                 puts 'Character updated failed...'
                 puts json_text

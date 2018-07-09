@@ -32,6 +32,13 @@
 
 %div
   %p
+    %p Update <code>2018-07-09 0830 UTC</code>
+    %h3 Update on character upload issues
+    %p
+      I did a bit of debugging and determined the issue with uploading new characters was due to a minor change I made in my DNS settings that was causing the interacting in an odd with with .NET's HTTP library. The end result was that a completely malformed response body was being sent back to the plugin and no characters were being uploaded. I have reverted the change and, as far as I can tell, everything is back to normal. Sorry for the outage.
+
+%div
+  %p
     %p Update <code>2018-07-09 0730 UTC</code>
     %h3 Outage postmortem
     %p
