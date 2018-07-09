@@ -15,14 +15,11 @@ module Sinatra
             redis_key = "player-counts"
 
             if !redis.exists(redis_key)
-              puts "PLAYER_COUNTS-SETEX"
               result = player_counts
-              puts result
               redis.setex(redis_key, 300, result)
 
               return result
             else
-              puts "PLAYER_COUNTS-CACHED"
               return redis.get(redis_key)
             end
           end
@@ -31,13 +28,11 @@ module Sinatra
             content_type :json
 
             if !redis.exists("latest-counts")
-              puts "PLAYER_COUNTS_LATEST-SETEX"
               result = latest_player_counts
               redis.setex("latest-counts", 300, result)
 
               return result
             else
-              puts "PLAYER_COUNTS_LATEST-CACHED"
               return redis.get("latest-counts")
             end
           end
