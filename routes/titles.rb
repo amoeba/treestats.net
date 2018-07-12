@@ -12,11 +12,8 @@ module Sinatra
             haml :titles
           end
 
-          app.get '/title/:title' do |title_name|
-            return "Titles are temporarily disabled."
-            
-            titles = TitleHelper::TITLES
-            title = titles.select { |i,title| title == title_name }
+          app.get '/title/:title' do |title_name|            
+            title = TitleHelper::TITLES.select { |i,title| title == title_name }
 
             not_found("Title #{title} not found.") if title.length == 0
 
