@@ -50,7 +50,6 @@ server {
     root {{ $.DOKKU_LIB_ROOT }}/data/nginx-vhosts/dokku-errors;
     internal;
   }
-{{ end }}
 }
 {{ else if eq $scheme "https"}}
 server {
