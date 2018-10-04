@@ -19,6 +19,7 @@ gem 'resque', '~>1.22.0'
 gem 'sinatra-asset-pipeline'
 gem 'sass'
 gem 'uglifier'
+gem 'puma_worker_killer'
 
 group :production do
   gem 'newrelic_rpm'

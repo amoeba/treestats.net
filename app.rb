@@ -5,6 +5,8 @@ require 'sinatra/base'
 require 'sinatra/asset_pipeline'
 require 'sinatra/redis'
 
+PumaWorkerKiller.enable_rolling_restart
+
 %w[models routes lib helpers].each do |d|
   Dir["./#{d}/*.rb"].each { |file| require file }
 end

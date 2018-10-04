@@ -22,6 +22,7 @@ GEM
     coffee-script-source (1.10.0)
     connection_pool (2.2.0)
     execjs (2.7.0)
+    get_process_mem (0.2.2)
     haml (4.0.7)
       tilt
     hike (1.2.3)
@@ -44,6 +45,9 @@ GEM
     optionable (0.2.0)
     origin (2.2.0)
     puma (3.4.0)
+    puma_worker_killer (0.1.0)
+      get_process_mem (~> 0.2)
+      puma (>= 2.7, < 4)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
@@ -108,6 +112,7 @@ DEPENDENCIES
   moped
   newrelic_rpm
   puma
+  puma_worker_killer
   rack
   rack-test
   rake
@@ -123,4 +128,4 @@ RUBY VERSION
    ruby 2.2.3p173
 
 BUNDLED WITH
-   1.12.5
+   1.16.5
