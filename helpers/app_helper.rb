@@ -74,6 +74,7 @@ end
 
 module AppHelper
   @legacy_servers = %w{Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb}
+  @gdle_servers = %w{Reefcull Hightide}
 
   def self.all_servers
     @legacy_servers
@@ -84,6 +85,6 @@ module AppHelper
   end
 
   def self.servers
-    Character.distinct(:s)
+    @gdle_servers
   end
 end
