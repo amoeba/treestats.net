@@ -1,25 +1,29 @@
 source 'https://rubygems.org'
-ruby '2.2.3'
+ruby '2.5.1'
 
 gem 'rake'
+gem 'json'
 gem 'rack'
 gem 'sinatra'
 gem 'puma'
-gem 'mongoid', '~> 5.0.0'
+gem 'puma_worker_killer'
+
+gem 'mongoid'
 gem 'bson_ext'
 gem 'moped'
 gem 'bson'
-gem 'activesupport'
-gem 'haml'
-gem 'json'
 gem 'redis'
 gem 'sinatra-redis'
+
 gem 'clockwork'
-gem 'resque', '~>1.22.0'
-gem 'sinatra-asset-pipeline'
-gem 'sass'
-gem 'uglifier'
-gem 'puma_worker_killer'
+gem 'resque'
+
+gem "sprockets"
+gem "sprockets-helpers"
+gem "sprockets-sass"
+gem 'haml'
+gem "sass"
+gem "uglifier"
 
 group :production do
   gem 'newrelic_rpm'

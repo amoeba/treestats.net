@@ -148,4 +148,3 @@ function barchart() {
 
   return chart;
 }
-;

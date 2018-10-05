@@ -7,53 +7,70 @@ body {
   background-color: #111;
   color: #fff;
   font-size: 14px;
-  font-family: 'Open Sans', Sans-serif; }
+  font-family: 'Open Sans', Sans-serif;
+}
 
 table {
   width: 100%;
   border-collapse: collapse;
-  border-spacing: 0; }
+  border-spacing: 0;
+}
 
 table, thead, tbody, tr, td {
   margin: 0;
-  padding: 0; }
+  padding: 0;
+}
 
 #header {
   height: 100px;
   background-color: black;
-  background-image: url("/assets/bg_top-28327c9887509179270ef38b3841c1b4.jpg");
-  border-bottom: 2px solid #AF7A30; }
+  background-image: image-url('bg_top.jpg');
+  border-bottom: 2px solid #AF7A30;
+}
 
 #header td {
-  vertical-align: middle; }
+  vertical-align: middle;
+}
 
 #header table {
-  background: none; }
+  background: none;
+}
 
 #header h1 {
   margin: 0;
   padding: 0;
-  font-size: 40px; }
+  font-size: 40px;
+}
 
 h2.title {
-  margin: 0 0 0.5em 0; }
+  margin: 0 0 0.5em 0;
+}
 
 td.logo {
-  width: 400px; }
+  width: 400px;
+}
 
 #title {
-  padding: 10px; }
+  padding: 10px;
+}
 
 #search {
   padding: 6px;
-  background-color: black; }
+  background-color: black;
+}
 
 #search form {
-  display: inline; }
+  display: inline;
+}
 
 #download {
   padding: 6px;
-  background-color: black; }
+  background-color: black;
+}
+
+#download-link {
+  color: gold
+}
 
 #nav {
   width: 150px;
@@ -63,232 +80,292 @@ td.logo {
   background-color: #000;
   color: #fff;
   border-top: 2px solid #AF7A30;
-  border-right: 2px solid #AF7A30; }
+  border-right: 2px solid #AF7A30;
+}
 
 #content {
   padding: 1em;
-  background-color: #000022; }
+  background-color: #000022;
+}
 
 #footer {
-  font-size: 85%; }
+  font-size: 85%;
+}
 
 form {
   margin: 0;
-  padding: 3px; }
+  padding: 3px;
+}
 
 a {
-  color: white; }
+  color: white;
+}
 
 a:visited {
-  color: white; }
+  color: white;
+}
 
 span.block {
-  display: block; }
+  display: block;
+}
 
 span.title {
-  font-size: 85%; }
+  font-size: 85%;
+}
 
 table.char {
   width: 100%;
-  font-size: 13px; }
+  font-size: 13px;
+}
 
 td {
-  vertical-align: top; }
+  vertical-align: top;
+}
 
 table.char tbody td {
-  padding: 2px 4px 2px 4px; }
+  padding: 2px 4px 2px 4px;
+}
+
 
 table.char table.internal tbody td {
-  padding: 0; }
+  padding: 0;
+}
 
 table.char tbody.skills td.skill_icon {
-  padding: 0px 0px 0px 4px; }
-
-div.title {
-  margin-bottom: 1.5em;
-  height: 2em; }
+  padding: 0px 0px 0px 4px;
+}
 
 div.title h2 {
   display: inline;
   margin: 0 0 2em 0;
-  color: gold; }
+  color: gold;
+}
 
 #header a {
   text-decoration: none;
-  color: white; }
+  color: white;
+}
 
 #nav a {
   text-decoration: none;
-  color: #fff; }
+  color: #fff;
+}
 
 #nav h2 {
   margin: 0;
   padding: 3px;
   font-size: 14px;
   background-color: #0F3C3E;
-  background: linear-gradient(to right, #0F3C3E, #0F3C3E, black); }
+  background: linear-gradient(to right, #0F3C3E, #0F3C3E, black);
+}
 
 #nav ul {
   list-style-type: none;
   margin: 0;
-  padding: 0; }
+  padding: 0;
+}
 
 #nav ul, #nav form {
-  margin-bottom: 0.5em; }
+  margin-bottom: 0.5em;
+}
 
 #nav ul li, input.textsubmit {
   padding: 1px 3px;
-  font-size: 14px; }
+  font-size: 14px;
+}
 
 table.internal {
   width: 100%;
   border-spacing: 0;
-  border-collapse: collapse; }
+  border-collapse: collapse;
+}
 
 table.internal,
 table.internal tr,
 table.internal td,
 table.internal span {
   margin: 0;
-  padding: 0; }
+  padding: 0;
+}
 
 table.xplum tr td {
-  font-size: 85%; }
+  font-size: 85%;
+}
 
 tr.line {
-  border-bottom: 2px solid #AF7A30; }
+  border-bottom: 2px solid #AF7A30;
+}
 
 tr.colnames td {
-  background-color: #222; }
+  background-color: #222;
+}
 
 td.level {
   width: 65px;
   border-left: 2px solid #AF7A30;
-  font-size: 85%; }
+  font-size: 85%;
+}
 
 td.headerleft {
   background-color: #004000;
-  background-color: rgba(0, 100, 0, 0.4); }
+  background-color: rgba(0, 100, 0, 0.4);
+}
 
 td.headerright {
   background-color: #000040;
-  background-color: rgba(0, 0, 100, 0.4); }
+  background-color: rgba(0, 0, 100, 0.4);
+}
 
 td.gold {
-  color: gold; }
+  color: gold;
+}
 
 td.center {
-  text-align: center; }
+  text-align: center;
+}
 
 td.left {
-  text-align: left; }
+  text-align: left;
+}
 
 td.right {
-  text-align: right; }
+  text-align: right;
+}
 
 td.vassal {
-  font-size: 90%; }
+  font-size: 90%;
+}
 
 td.skill_icon,
 td.skill_name,
 td.skill_base {
-  padding: 0px; }
+  padding: 0px;
+}
 
 td.attribs_name {
-  width: 150px; }
+  width: 150px;
+}
 
 td.attribs_base {
-  width: 90px; }
+  width: 90px;
+}
 
 td.skill_icon {
-  width: 10px; }
+  width: 10px;
+}
 
 td.skill_name {
-  width: 100px; }
+  width: 100px;
+}
 
 td.skill_base {
-  width: 50px; }
+  width: 50px;
+}
 
 span.name {
-  font-size: 110%; }
+  font-size: 110%;
+}
 
 span.level {
   font-size: 200%;
   color: #FFF27F;
-  margin-top: 0; }
+  margin-top: 0;
+}
 
 table.skills tbody td.specialized, table.skills tbody td.trained {
-  height: 20px; }
+  height: 20px;
+}
 
 td.specialized {
   width: 300px;
   background-color: purple;
-  background: linear-gradient(to right, #392067, #392067, black); }
+  background: linear-gradient(to right, #392067, #392067, black);
+ }
 
 td.trained {
   with: 300px;
   background-color: green;
-  background: linear-gradient(to right, #0F3C3E, #0F3C3E, black); }
+  background: linear-gradient(to right, #0F3C3E, #0F3C3E, black);
+}
 
 tbody.attributes span.title, tbody.skills span.title {
-  margin-bottom: 1em; }
+  margin-bottom: 1em;
+}
 
 span.creation {
-  color: #CCC; }
+  color: #CCC;
+}
 
 div.last_updated {
-  display: block;
-  width: 100%;
   margin: 0 0 1.5em 0;
   padding: 0;
-  font-size: 80%; }
+  font-size: 80%;
+}
+
+div.last_updated,
+div.last_updated a,
+div.last_updated a:visited {
+  color: #CCC;
+}
 
 #chain {
   color: white;
-  font-size: 14px; }
+  font-size: 14px;
+}
 
 #tree svg {
   background-color: black;
-  border: 2px solid #AF7A30; }
+  border: 2px solid #AF7A30;
+}
 
 span.overlaytext {
   margin: 5px;
   font-size: 11px;
-  color: #CCC; }
+  color: #CCC;
+}
 
 .overlay {
   fill: none;
-  pointer-events: all; }
+  pointer-events: all;
+}
 
 .servergraph {
   float: left;
-  margin-right: 1em; }
+  margin-right: 1em;
+}
 
 .current_title a {
-  color: #00FF00; }
+  color: #00FF00;
+}
 
 .title_list_item a {
-  text-decoration: none; }
+  text-decoration: none;
+}
 
 /* Tab functionality */
+
 .tabcontainer {
   display: block;
   float: left;
   width: 320px;
   height: 400px;
-  margin: 0 1.5em 3em 0; }
+  margin: 0 1.5em 3em 0;
+}
 
 .tabcontainer.chain {
   width: 1002px;
-  height: 660px; }
+  height: 660px;
+}
 
 .tabcontainer.chain .box {
   overflow: visible;
   height: 660px;
-  max-height: 660px; }
+  max-height: 660px;
+}
 
 .tabbar {
-  height: 30px; }
+  height: 30px;
+}
 
 .box {
   background-color: black;
@@ -296,7 +373,8 @@ span.overlaytext {
   border: 2px solid #AF7A30;
   max-height: 400px;
   overflow-x: hidden;
-  overflow-y: auto; }
+  overflow-y: auto;
+}
 
 .tab {
   float: left;
@@ -307,7 +385,8 @@ span.overlaytext {
   font-weight: bold;
   color: white;
   text-align: center;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 .tab.active {
   border-top: 2px solid #AF7A30;
@@ -315,195 +394,252 @@ span.overlaytext {
   border-left: 2px solid #AF7A30;
   border-bottom: none;
   background-color: #004000;
-  background-color: rgba(0, 100, 0, 0.4); }
+  background-color: rgba(0, 100, 0, 0.4);
+}
 
 .tab.inactive {
   border-top: 2px solid #000022;
   border-right: 2px solid #000022;
-  border-left: 2px solid #000022; }
+  border-left: 2px solid #000022;
+}
 
 .box.active {
-  display: block; }
+  display: block;
+}
 
 .box.inactive {
-  display: none; }
+  display: none;
+}
 
 .box > span {
   font-size: 85%;
-  margin: 5px; }
+  margin: 5px;
+}
 
 .textsubmit {
   background: none;
   border: none;
   color: white;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 /* Listings */
+
 table.listing {
-  width: 600px; }
+  width: 600px;
+}
 
 table.listing thead tr {
-  border-bottom: 2px solid #AF7A30; }
+  border-bottom: 2px solid #AF7A30;
+}
 
 table.listing th, table.listing td {
-  padding: 3px; }
+  padding: 3px;
+}
 
 table.listing th {
-  background-color: #392067; }
+  background-color: #392067;
+}
 
 /* Dashboard */
+
 #dashboard {
-  width: 100%; }
+  width: 100%;
+}
 
 table.dashboard {
   display: inline-table;
   margin: 0 3em 1em 0;
   width: 300px;
   font-size: 90%;
-  border: 2px solid #AF7A30; }
+  border: 2px solid #AF7A30;
+}
+
+table.dashboard-narrow {
+  width: 250px;
+}
+
+table.dashboard-wide {
+  width: 350px;
+}
 
 table.dashboard tbody, table.dashboard thead {
-  width: 300px; }
+  width: 300px;
+}
 
 table.dashboard thead tr.title {
   background-color: #0F3C3E;
   font-weight: bold;
   padding: 1em 0px;
-  text-align: center; }
+  text-align: center;
+}
 
 table.dashboard th, table.dashboard tr.subtitle {
   background-color: #392067;
-  font-weight: normal; }
+  font-weight: normal;
+}
 
 table.dashboard th, table.dashboard td {
-  padding: 3px; }
+  padding: 3px;
+}
 
 table.dashboard-single {
   border-width: 2px 2px 0px 2px;
   border-style: solid;
   border-color: #AF7A30;
-  font-size: 90%; }
+  font-size: 90%;
+}
 
 table.dashboard td {
-  padding: 2px; }
+  padding: 2px;
+}
 
 dl.dashboard dd {
-  display: inline; }
-
+  display: inline;
+}
 /* Account view */
+form.account-field-form {
+
+}
+
 table.account {
-  width: auto; }
+  width: auto;
+}
 
 table.account td {
-  padding: 0.5em; }
+  padding: 0.5em;
+}
 
 table.account td.field {
-  min-width: 100px; }
+  min-width: 100px;
+}
 
 /* Account fields */
 form.account-fields {
-  margin-bottom: 1.5em; }
+  margin-bottom: 1.5em;
+}
 
 table.account-fields {
-  width: auto; }
+  width: auto;
+}
 
 table.account-fields th {
-  background-color: #0F3C3E; }
+  background-color: #0F3C3E;
+}
 
 table.account-fields thead tr {
-  border-bottom: #AF7A30 solid 2px; }
-
+  border-bottom: #AF7A30 solid 2px;
+}
 table.account-fields td {
-  padding: 0.25em 0.25em; }
+  padding: 0.25em 0.25em;
+}
 
 table.account-fields td.group {
   font-weight: bold;
-  background-color: #0F3C3E; }
+  background-color: #0F3C3E;
+}
+
 
 /* Tablesort CSS
    https://github.com/tristen/tablesort
 */
-th.sort-header::-moz-selection {
-  background: transparent; }
 
-th.sort-header::selection {
-  background: transparent; }
-
+th.sort-header::-moz-selection { background:transparent; }
+th.sort-header::selection      { background:transparent; }
 th.sort-header {
-  cursor: pointer; }
+  cursor:pointer;
+}
 
 th.sort-header::-moz-selection,
 th.sort-header::selection {
-  background: transparent; }
-
+  background:transparent;
+}
 table th.sort-header:after {
-  content: '';
+  content:'';
   float: right;
   margin-top: 7px;
   border-width: 0 4px 4px;
   border-style: solid;
   border-color: #404040 transparent;
   visibility: hidden;
-  color: white; }
+  color: white;
+}
 
 table th.sort-header:hover:after {
-  visibility: visible; }
-
+  visibility: visible;
+}
 table th.sort-up:after,
 table th.sort-down:after,
 table th.sort-down:hover:after {
   visibility: visible;
-  opacity: 0.4; }
+  opacity: 0.4;
+}
 
 table th.sort-up:after {
   border-bottom: none;
-  border-width: 4px 4px 0; }
+  border-width: 4px 4px 0;
+}
 
 /* Dashboard Stat Charts CSS */
+
 .statchart {
-  background-color: black; }
+  background-color: black;
+}
 
 .statchart svg {
-  font-size: 80%; }
+  font-size: 80%;
+}
 
 .statchart .axis path,
 .statchart .axis line {
   fill: none;
   stroke: #fff;
-  shape-rendering: smoothEdges; }
+  shape-rendering: smoothEdges;
+}
 
 .statchart .axis text {
   fill: #fff;
-  shape-rendering: smoothEdges; }
+  shape-rendering: smoothEdges;
+}
 
 .statchart .line {
   fill: none;
   stroke: #fff;
-  stroke-width: 1.5px; }
+  stroke-width: 1.5px;
+}
+
 
 /* tags */
 div.tag {
   display: inline-block;
-  height: 20px; }
+  height: 20px;
+}
 
 div.tag img {
   width: 15px;
-  height: 15px; }
+  height: 15px;
+}
 
 span.tag-level, span.tag-attribute, span.tag-skill {
   display: inline-block;
   padding: 2px 4px;
   font-family: monospace;
   font-size: 80%;
-  text-align: center; }
-
+  text-align: center;
+}
 span.tag-level {
   background-color: #0F3C3E;
-  color: white; }
+  color: white;
+}
 
 span.tag-attribute {
   background-color: #392067;
-  color: white; }
+  color: white;
+}
+
+span.tag-skills {
+
+}
 
 span.tag-skill {
   padding: 2px 0px;
@@ -513,4 +649,5 @@ span.tag-skill {
   background-repeat: no-repeat;
   background-size: 15px 15px;
   background-position: 50% 50%;
-  background-color: transparent; }
+  background-color: transparent;
+}

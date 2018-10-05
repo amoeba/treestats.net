@@ -1,3 +1,9 @@
-require_relative 'app.rb'
+require "./app"
 
-run TreeStats
+map TreeStats.assets_prefix do
+  run TreeStats.sprockets
+end
+
+map "/" do
+  run TreeStats
+end

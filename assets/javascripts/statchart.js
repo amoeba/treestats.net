@@ -73,4 +73,3 @@ statchart.add = function(selector, json, format)
     .attr("d", line);
 
 }
-;

@@ -71,4 +71,3 @@ var draw = function(selector, json, server_name, allegiance_name, options) {
       node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   });
 }
-;

@@ -82,4 +82,3 @@ var has_class = function(ele, class_name) {
     return (' ' + ele.className + ' ').indexOf(' ' + class_name + ' ') > -1
   }
 }
-;
