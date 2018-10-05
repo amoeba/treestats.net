@@ -1,14 +1,10 @@
 require 'bundler/setup'
 Bundler.require(:default)
 
-require 'sinatra/asset_pipeline/task'
 require './app'
 require 'resque/tasks'
 
 task default: :test
-
-# Sinatra Asset Pipeline
-Sinatra::AssetPipeline::Task.define! TreeStats
 
 # Resque
 task "resque:setup" do
