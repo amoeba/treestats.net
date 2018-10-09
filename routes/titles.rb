@@ -13,8 +13,6 @@ module Sinatra
           end
 
           app.get '/title/:title' do |title_name|            
-            return "Titles are temporarily disabled to abnormally high load."
-
             title = TitleHelper::TITLES.select { |i,title| title == title_name }
 
             not_found("Title #{title} not found.") if title.length == 0
