@@ -1,13 +1,27 @@
 !!!
 %html{:lang => 'en'}
   %head
-    %title TreeStats
-    %link{:rel => "stylesheet", :href => stylesheet_path("application") }
-    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
+    %title TreeStats: Player tracking for Asheron's Call
+    
     %meta{:name => "Title", :content => "TreeStats: Player tracking for Asheron's Call"}
     %meta{:name => "Description", :content => "TreeStats records ingame data from your characters using a Decal plugin and stores it for convenient out-of-game browsing. TreeStats lets you view your characters and allegiance chains and also provides rankings and tracks server population counts."}
     %meta{:name => "Image", :content => "http://treestats.net/treestats-meta-image.png"}
     %meta{:name => "URL", :content => "http://treestats.net"}
+
+    %meta{:property => "og:type" :content => "website"}
+    %meta{:property => "og:url" :content => "http://treestats.net"}
+    %meta{:property => "og:title" :content => "TreeStats: Player tracking for Asheron's Call"}
+    %meta{:property => "og:description" :content => "TreeStats records ingame data from your characters using a Decal plugin and stores it for convenient out-of-game browsing. TreeStats lets you view your characters and allegiance chains and also provides rankings and tracks server population counts."}
+    %meta{:property => "og:image" :content => "http://treestats.net/treestats-meta-image.png"}
+
+    %meta{:property => "twitter:card" :content => "summary_large_image"}
+    %meta{:property => "twitter:url" :content => "http://treestats.net"}
+    %meta{:property => "twitter:title" :content => "TreeStats: Player tracking for Asheron's Call"}
+    %meta{:property => "twitter:description" :content => "TreeStats records ingame data from your characters using a Decal plugin and stores it for convenient out-of-game browsing. TreeStats lets you view your characters and allegiance chains and also provides rankings and tracks server population counts."}
+    %meta{:property => "twitter:image" :content => "http://treestats.net/treestats-meta-image.png"}
+
+    %link{:rel => "stylesheet", :href => stylesheet_path("application") }
+    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
   %body
     %table
       %tbody
