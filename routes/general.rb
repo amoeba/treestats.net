@@ -4,10 +4,9 @@ module Sinatra
       module General        
         def self.registered(app)
           app.get '/' do
-            @latest = Character.where(:archived => false)
-                                      .desc(:updated_at)
-                                      .limit(10)
-                                      .only(:name, :server, :updated_at)
+            @latest = Character.desc(:updated_at)
+                               .limit(10)
+                               .only(:name, :server, :updated_at)
 
             @servers = Character.collection.aggregate([
               { 
@@ -41,7 +40,7 @@ module Sinatra
           end
 
           app.get "/servers/?" do
-            @other_servers = Character.where(server: { '$nin' => AppHelper.all_servers}).distinct(:server)
+            @other_servers = Character.where(server: { '$nin' => AppHelper.retail_servers}).distinct(:server)
 
             # Filter out some servers
             @other_servers = @other_servers.reject { |n| n.downcase.include? "pea" or n.downcase.include? "phat"}
@@ -50,8 +49,7 @@ module Sinatra
           end
 
           app.get '/characters/?' do
-            @characters = Character.where(:attribs.exists => true,
-                                          :archived => false)
+            @characters = Character.where(:attribs.exists => true)
                                    .desc(:updated_at)
                                    .limit(100)
                                    .only(:name, :server)

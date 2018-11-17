@@ -7,11 +7,17 @@ class Character
   #
   # Gets normal serializable_hash and maps the
   # aliased field names back to the full field names
-
   def serializable_hash(options)
     original_hash = super(options)
     Hash[original_hash.map {|k, v| [self.aliased_fields.invert[k] || k , v] }]
   end
+
+  default_scope -> { where({
+    'ar' => false, 
+    'l' => { '$not' => {'$gt' => 275 }},
+    'n' => { '$regex' => /^[^\+]+/}
+  })}
+
 
 
   validates_presence_of :name

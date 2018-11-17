@@ -54,8 +54,8 @@ module Sinatra
           end
 
           app.get '/account/:account_name/?' do
-            @characters = Character.where(account_name: params[:account_name],
-                                          archived: false).all
+            @characters = Character.where(account_name: params[:account_name])
+                                    .all
 
             haml :account
           end

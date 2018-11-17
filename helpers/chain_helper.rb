@@ -15,10 +15,11 @@ class AllegianceChain
     highest_patron = nil
 
     # Find the character
-    character = Character.find_by(server: @server, name: @name, archived: false)
-
-    # Return early if we're done
-    return nil if character.nil?
+    begin
+      character = Character.find_by(server: @server, name: @name)
+    rescue Mongoid::Errors::DocumentNotFound
+      return nil
+    end
 
     # Return early if no patron
     return character.name if !character.patron
@@ -26,7 +27,7 @@ class AllegianceChain
     highest_patron = character.patron['name']
 
     # Do the finding
-    patron = Character.find_by(server: @server, name: highest_patron, archived: false)
+    patron = Character.find_by(server: @server, name: highest_patron)
 
     # Traverse upward toward the ultimate patron
     limit = 200
@@ -39,7 +40,7 @@ class AllegianceChain
       return highest_patron if limit <= 0
 
       if patron.patron
-        patron = Character.find_by(server: @server, name: patron.patron['name'], archived: false)
+        patron = Character.find_by(server: @server, name: patron.patron['name'])
       else
         return highest_patron
       end
@@ -49,7 +50,7 @@ class AllegianceChain
   end
 
   def walk_chain(current, level = 0)
-    character = Character.find_by(server: @server, name: current['name'], archived: false)
+    character = Character.find_by(server: @server, name: current['name'])
 
     return if character.nil?
     return unless character['vassals']
@@ -73,7 +74,7 @@ class AllegianceChain
     while max_it > 0 && cursors.length > 0
       if cursors.last.key?('children') && cursors.last['children'].nil?
         begin
-          record = Character.find_by(server: @server, name: cursors.last['name'], archived: false)
+          record = Character.find_by(server: @server, name: cursors.last['name'])
         rescue Mongoid::Errors::DocumentNotFound
           next_record = nil
         end

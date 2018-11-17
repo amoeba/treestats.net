@@ -77,7 +77,7 @@ module AppHelper
   @gdle_servers = %w{Reefcull Hightide}
 
   def self.all_servers
-    @legacy_servers
+    @legacy_servers + @gdle_servers
   end
   
   def self.retail_servers

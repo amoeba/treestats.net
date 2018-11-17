@@ -19,8 +19,7 @@ module Sinatra
 
             title_id = title.first[0]
             @title_name = title.first[1]
-            @characters = Character.where(:titles.in => [title_id],
-                                          :archived => false)
+            @characters = Character.where(:titles.in => [title_id])
                                    .sort(s: 1, n: 1)
                                    .limit(100)
 
