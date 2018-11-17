@@ -9,7 +9,7 @@
     - @character['skills'].select { |key,value| value['training'] == "Specialized"}.sort.each do |skill|
       %tr
         %td.skill_icon
-          %img{:src => image_path("/skills/#{skill[1]["name"]}.png")}
+          %img{:src => image_path("skills/#{skill[1]["name"]}.png")}
         %td.skill_name= skill[1]["name"].split("_").map(&:capitalize).join(" ")
         %td.skill_base.right= skill[1]["base"]
     %tr
@@ -17,6 +17,6 @@
     - @character['skills'].select { |key,value| value['training'] == "Trained"}.sort.each do |skill|
       %tr
         %td.skill_icon
-          %img{:src => image_path("/skills/#{skill[1]["name"]}.png")}
+          %img{:src => image_path("skills/#{skill[1]["name"]}.png")}
         %td.skill_name= skill[1]["name"].split("_").map(&:capitalize).join(" ")
         %td.skill_base.right= skill[1]["base"]
