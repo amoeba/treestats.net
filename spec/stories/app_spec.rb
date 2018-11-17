@@ -14,6 +14,10 @@ describe "AppStory" do
   end
 
   describe "some routes are reachable" do
+    before do
+      Character.create({ "name" => 'some patron', "server" => "Frostfell"})
+    end
+    
     it "can reach the index" do
       get('/')
       last_response.status.must_equal 200

@@ -8,7 +8,7 @@ describe 'Character', :unit do
   end
 
   it "doesn't have to have a name" do
-    Character.create.name.must_equal nil
+    assert_nil Character.create.name
   end
 
   it 'can have a name' do
