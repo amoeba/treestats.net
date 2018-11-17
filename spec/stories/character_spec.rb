@@ -100,7 +100,7 @@ describe "CharacterStory" do
       post('/account/create', '{"name":"test", "password" : "test"}')
       post('/', '{"name" : "Account Tester", "server":"test"}')
 
-      Character.find_by(name: "Account Tester").account_name.must_equal nil
+      assert_nil Character.find_by(name: "Account Tester").account_name
     end
 
     it "sets patron race and gender correctly" do
