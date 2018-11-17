@@ -4,7 +4,7 @@ module Sinatra
       module Server
         def self.registered(app)
           app.get '/:server/?' do |server|
-            @characters = Character.where(server: server, archived: false)
+            @characters = Character.where(server: server)
                                    .desc(:updated_at).limit(100)
                                    .only(:name, :server)
 

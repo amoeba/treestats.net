@@ -14,8 +14,7 @@ module Sinatra
             @name = @name.join("-")
 
             @characters = Character.where(server: @server,
-                                          allegiance_name: @name,
-                                          archived: false)
+                                          allegiance_name: @name)
 
             return "{}" if @characters.nil?
 
@@ -63,8 +62,8 @@ module Sinatra
             @server, @name = key.split("-")
 
             @characters = Character.where(server: @server,
-                                          allegiance_name: @name,
-                                          archived: false).limit(100).asc(:name)
+                                          allegiance_name: @name)
+                                    .limit(100).asc(:name)
 
             haml :allegiance
           end
