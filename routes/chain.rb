@@ -6,10 +6,13 @@ module Sinatra
           app.get '/chain/:server/:name?' do |server, name|
             content_type :json
 
-            character = Character.only(:name, :server)
-                                 .find_by(server: server, name: name)
-
-            return "{}" if character.nil?
+            begin
+              character = Character.unscoped
+                                   .only(:name, :server)
+                                   .find_by(server: server, name: name)
+            rescue Mongoid::Errors::DocumentNotFound
+              not_found
+            end
 
             AllegianceChain.new(server, name).get_chain.to_json
           end
