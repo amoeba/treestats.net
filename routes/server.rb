@@ -15,7 +15,7 @@ module Sinatra
 
           app.get '/:server/:name.json' do |s,n|
             begin
-              @character = Character.find_by(server: s, name: n)
+              @character = Character.unscoped.find_by(server: s, name: n)
             rescue Mongoid::Errors::DocumentNotFound
               not_found
             end
@@ -26,7 +26,7 @@ module Sinatra
 
           app.get '/:server/:name/?' do |s,n|
             begin
-              @character = Character.find_by(server: s, name: n)
+              @character = Character.unscoped.find_by(server: s, name: n)
             rescue Mongoid::Errors::DocumentNotFound
               not_found
             end
