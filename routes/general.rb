@@ -78,7 +78,7 @@ module Sinatra
           end
 
           app.get "/servers/?" do
-            @other_servers = Character.in(server: AppHelper.servers)
+            @other_servers = AppHelper.servers
 
             haml :servers
           end
