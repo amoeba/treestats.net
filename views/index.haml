@@ -1,46 +1,44 @@
 %h2.title Welcome to TreeStats!
 
-%table.dashboard.dashboard-wide
+%table.dashboard
   %thead
-    %tr.title
-      %td{:colspan => 3} Players Online
     %tr
-      %th Server
-      %th Count
-      %th Updated
+      %th Population
+      %th{:colspan => 1}
+        Server
+      %th.gold= "(Total: #{@latest_counts.map { |p| p[:count]}.sum})"
+  %tbody
     - @latest_counts.to_a.each do |pop|
       %tr
+        %td= pop[:count]
         %td
           %a{:href => "/#{pop[:server]}"}= "#{pop[:server]}"
-          %td= pop[:count]
-          %td= relative_time(pop[:date])
+        %td= "as of #{relative_time(pop[:date])}"
 
-%table.dashboard.dashboard-wide
+%table.dashboard
   %thead
-    %tr.title
-      %td{:colspan => 2} Uploaded Characters
     %tr
+      %th Total Uploaded
       %th Server
-      %th Characters
   %tbody
     - @servers.each do |s|
       %tr
+        %td= s["count"]
         %td
           %a{:href => "/#{s["_id"]}"}= "#{s["_id"] }"
-        %td= s["count"]
 
-%table.dashboard.dashboard-wide
+%table.dashboard
   %thead
-    %tr.title
-      %td{:colspan => 2} Latest Uploads
     %tr
-      %th Character
-      %th Updated
+      %th Latest Uploads
+      %th{:colspan => 2} Server
   %tbody
     - @latest.each do |c|
       %tr
         %td
-          %a{:href => "/#{c.server}/#{c.name}"}= "#{c.name} (#{c.server})"
+          %a{:href => "/#{c.server}/#{c.name}"}= "#{c.name}"
+        %td
+          %a{:href => "/#{c.server}"}= c.server
         %td= relative_time(c.updated_at)
 
 %h2 News
