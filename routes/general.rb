@@ -78,7 +78,7 @@ module Sinatra
           end
 
           app.get "/servers/?" do
-            @other_servers = Character.where(server: { '$in' => AppHelper.servers})
+            # @other_servers = Character.where(server: { '$in' => AppHelper.servers})
 
             haml :servers
           end
