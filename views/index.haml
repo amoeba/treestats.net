@@ -13,7 +13,7 @@
         %td
           %a{:href => "/#{pop[:server]}"}= "#{pop[:server]}"
           %td= pop[:count]
-          %td= "#{relative_time(pop[:date])} #{pop[:date].to_i} #{(Time.now - pop[:date]).to_i}"
+          %td= relative_time(pop[:date])
 
 %table.dashboard.dashboard-wide
   %thead
@@ -28,7 +28,7 @@
         %td
           %a{:href => "/#{s["_id"]}"}= "#{s["_id"] }"
         %td= s["count"]
-          
+
 %table.dashboard.dashboard-wide
   %thead
     %tr.title
