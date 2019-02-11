@@ -451,56 +451,28 @@ table.dashboard {
   margin: 0 3em 1em 0;
   width: 300px;
   font-size: 90%;
-  border: 2px solid #AF7A30;
 }
 
-table.dashboard-narrow {
-  width: 250px;
-}
-
-table.dashboard-wide {
-  width: 350px;
-}
-
-table.dashboard tbody, table.dashboard thead {
-  width: 300px;
-}
-
-table.dashboard thead tr.title {
-  background-color: #0F3C3E;
-  font-weight: bold;
-  padding: 1em 0px;
-  text-align: center;
-}
-
-table.dashboard th, table.dashboard tr.subtitle {
-  background-color: #392067;
-  font-weight: normal;
+table.dashboard a {
+  color: #f1f7cb;
 }
 
 table.dashboard th, table.dashboard td {
-  padding: 3px;
+  padding: 5px 3px;
+  text-align: left;
 }
 
-table.dashboard-single {
-  border-width: 2px 2px 0px 2px;
-  border-style: solid;
-  border-color: #AF7A30;
-  font-size: 90%;
+table.dashboard thead th {
+  border-bottom: 2px solid #89682B;
 }
 
-table.dashboard td {
-  padding: 2px;
+.dashboard th:first-child,
+.dashboard td:first-child,
+.gold {
+  color: gold;
 }
 
-dl.dashboard dd {
-  display: inline;
-}
 /* Account view */
-form.account-field-form {
-
-}
-
 table.account {
   width: auto;
 }
