@@ -4,6 +4,44 @@ module Sinatra
       module General        
         def self.registered(app)
           app.get '/' do
+            @latest_counts = PlayerCount.collection.aggregate([
+              {
+                "$match" => {
+                  # "c_at" => {
+                  #   "$gte" => Date.today - 30
+                  # },
+                  "s" => {
+                    "$in" => AppHelper.servers
+                  }
+                }
+              },
+              {
+                "$group" =>
+                  {
+                    "_id" => "$s",
+                    "count" => {
+                      "$last" => "$c"
+                    },
+                    "created_at" => {
+                      "$last" => "$c_at"
+                    }
+                  }
+              },
+              {
+                "$project" => {
+                  "_id": 0,
+                  "server": "$_id",
+                  "count": "$count",
+                  "date": "$created_at"
+                }
+              },
+              {
+                "$sort" => {
+                  "c_at" => 1
+                }
+              }
+            ])
+
             @latest = Character.desc(:updated_at)
                                .limit(10)
                                .only(:name, :server, :updated_at)

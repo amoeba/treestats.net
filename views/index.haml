@@ -3,16 +3,17 @@
 %table.dashboard.dashboard-wide
   %thead
     %tr.title
-      %td{:colspan => 2} Latest Uploads
+      %td{:colspan => 3} Players Online
     %tr
-      %th Character
+      %th Server
+      %th Count
       %th Updated
-  %tbody
-    - @latest.each do |c|
+    - @latest_counts.to_a.each do |pop|
       %tr
         %td
-          %a{:href => "/#{c.server}/#{c.name}"}= "#{c.name} (#{c.server})"
-        %td= relative_time(c.updated_at)
+          %a{:href => "/#{pop[:server]}"}= "#{pop[:server]}"
+          %td= pop[:count]
+          %td= "#{relative_time(pop[:date])} #{pop[:date].to_i} #{(Time.now - pop[:date]).to_i}"
 
 %table.dashboard.dashboard-wide
   %thead
@@ -27,6 +28,20 @@
         %td
           %a{:href => "/#{s["_id"]}"}= "#{s["_id"] }"
         %td= s["count"]
+          
+%table.dashboard.dashboard-wide
+  %thead
+    %tr.title
+      %td{:colspan => 2} Latest Uploads
+    %tr
+      %th Character
+      %th Updated
+  %tbody
+    - @latest.each do |c|
+      %tr
+        %td
+          %a{:href => "/#{c.server}/#{c.name}"}= "#{c.name} (#{c.server})"
+        %td= relative_time(c.updated_at)
 
 %h2 News
 
