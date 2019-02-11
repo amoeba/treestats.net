@@ -78,10 +78,7 @@ module Sinatra
           end
 
           app.get "/servers/?" do
-            @other_servers = Character.where(server: { '$nin' => AppHelper.retail_servers}).distinct(:server)
-
-            # Filter out some servers
-            @other_servers = @other_servers.reject { |n| n.downcase.include? "pea" or n.downcase.include? "phat"}
+            @other_servers = Character.where(server: { '$in' => AppHelper.servers})
 
             haml :servers
           end
