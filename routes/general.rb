@@ -37,7 +37,7 @@ module Sinatra
               },
               {
                 "$sort" => {
-                  "c_at" => 1
+                  "s" => 1
                 }
               }
             ])
