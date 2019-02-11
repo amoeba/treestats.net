@@ -50,7 +50,7 @@ module Sinatra
               { 
                 "$match" => { 
                   "s" => { 
-                    "$nin" => AppHelper.retail_servers 
+                    "$nin" => AppHelper.servers 
                   }
                 }
               },
