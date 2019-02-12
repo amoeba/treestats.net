@@ -15,8 +15,10 @@
     %thead
       %tr
         %th Name
+        %th Updated
     %tbody
       - @characters.each do |character|
         %tr
           %td
             %a{:href => "/#{character[:server]}/#{character[:name]}"}= character[:name]
+          %td= relative_time(character[:updated_at])
