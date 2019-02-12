@@ -6,7 +6,7 @@ module Sinatra
           app.get '/:server/?' do |server|
             @characters = Character.where(server: server)
                                    .desc(:updated_at).limit(100)
-                                   .only(:name, :server)
+                                   .only(:name, :server, :updated_at)
 
             not_found if @characters.count <= 0
 
