@@ -5,6 +5,7 @@ gem 'rake'
 gem 'json'
 gem 'rack'
 gem 'sinatra'
+gem "sinatra-cross_origin", "~> 0.3.1"
 gem 'puma'
 gem 'puma_worker_killer'
 
@@ -24,6 +25,7 @@ gem "sprockets-sass"
 gem 'haml'
 gem "sass"
 gem "uglifier"
+
 
 group :production do
   gem 'newrelic_rpm'

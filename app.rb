@@ -2,6 +2,7 @@ require 'bundler/setup'
 Bundler.require(:default)
 
 require 'sinatra/redis'
+require 'sinatra/cross_origin'
 
 PumaWorkerKiller.enable_rolling_restart
 
@@ -34,6 +35,9 @@ class TreeStats < Sinatra::Base
   register Sinatra::TreeStats::Routing::Titles
   register Sinatra::TreeStats::Routing::Upload
 
+  # CORS
+  register Sinatra::CrossOrigin
+
   # Load server route last because it has catch-alls
   register Sinatra::TreeStats::Routing::Server
 
@@ -64,6 +68,9 @@ class TreeStats < Sinatra::Base
       config.digest      = digest_assets
       config.public_path = public_folder
     end
+
+    # CORS
+    enable :cross_origin
   end
 
   helpers do
