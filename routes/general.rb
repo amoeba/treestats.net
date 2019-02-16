@@ -37,7 +37,7 @@ module Sinatra
               },
               {
                 "$sort" => {
-                  "s" => 1
+                  "server" => 1
                 }
               }
             ])
