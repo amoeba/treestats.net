@@ -52,7 +52,7 @@ def latest_player_counts
     {
       "$match" => {
         "s" => {
-          "$in" => servers
+          "$in" => AppHelper.servers
         }
       }
     },
