@@ -50,6 +50,13 @@ end
 def latest_player_counts
   latest_counts = PlayerCount.collection.aggregate([
     {
+      "$match" => {
+        "s" => {
+          "$in" => servers
+        }
+      }
+    },
+    {
       "$group" =>
         {
           "_id" => "$s",
