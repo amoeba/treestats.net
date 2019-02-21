@@ -41,6 +41,7 @@ module RankingsHelper
 
   MATCH = {
     "r" => { "$nin" => [ "Olthoi Spitter", "Olthoi Soldier" ] },
+    "s" => { "$in" => AppHelper.all_servers },
     "ar" => false,
     'l' => { '$not' => {'$gt' => 275 }},
     "n" => { "$regex" => /^[^\+]+/ }
