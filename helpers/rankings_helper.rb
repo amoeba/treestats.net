@@ -510,6 +510,14 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "l" => 1 },
       :sort => { "l" => -1 },
       :accessor => Proc.new { |v| v["l"] }
+    },
+    :rank => {
+      :display => "Rank",
+      :group => "Other",
+      :match => { "rn" => { "$exists" => true } },
+      :project => { "_id" => 0, "n" => 1, "s" => 1, "rn" => 1 },
+      :sort => { "rn" => -1 },
+      :accessor => Proc.new { |v| v["rn"] }
     }
   }
 end
