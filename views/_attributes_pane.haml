@@ -53,9 +53,9 @@
               %td.internal
                 %span Skill Credits Available:
               %td.internal.right
-                %span= add_commas(@character['skill_credits'])
+                %span= AppHelper.add_commas(@character['skill_credits'])
             %tr
               %td.internal
                 %span Unassigned Experience:
               %td.internal.right
-                %span= add_commas(@character['unassigned_xp'])
+                %span= AppHelper.add_commas(@character['unassigned_xp'])

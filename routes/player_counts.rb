@@ -43,7 +43,7 @@ module Sinatra
             count = PlayerCount.where(s: server).desc(:c_at).limit(1).first
             not_found if count.nil?
 
-            cleaned_count = count.serializable_hash({}).tap { |h| h.delete("id") }.tap { |h| h['age'] = relative_time(h["created_at"]) }
+            cleaned_count = count.serializable_hash({}).tap { |h| h.delete("id") }.tap { |h| h['age'] = AppHelper.relative_time(h["created_at"]) }
             JSON.pretty_generate(cleaned_count)
           end
         end
