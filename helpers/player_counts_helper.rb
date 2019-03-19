@@ -78,7 +78,7 @@ def latest_player_counts
 
   latest_counts = latest_counts.to_a
   latest_counts.each_with_index do |item,i|
-    latest_counts[i]["age"] = relative_time(item["date"])
+    latest_counts[i]["age"] = AppHelper.relative_time(item["date"])
   end
 
   JSON.pretty_generate(latest_counts)

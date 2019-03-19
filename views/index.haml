@@ -13,7 +13,7 @@
         %td= pop[:count]
         %td
           %a{:href => "/#{pop[:server]}"}= "#{pop[:server]}"
-        %td= "as of #{relative_time(pop[:date])}"
+        %td= "as of #{AppHelper.relative_time(pop[:date])}"
 
 %table.dashboard
   %thead
@@ -39,7 +39,7 @@
           %a{:href => "/#{c.server}/#{c.name}"}= "#{c.name}"
         %td
           %a{:href => "/#{c.server}"}= c.server
-        %td= relative_time(c.updated_at)
+        %td= AppHelper.relative_time(c.updated_at)
 
 %h2 News
 

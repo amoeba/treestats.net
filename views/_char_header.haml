@@ -18,12 +18,12 @@
                 %td.left
                   %span Luminance:
                 %td.right
-                  %span= "#{add_commas(@character['luminance_earned'].to_s)} / #{add_commas(@character['luminance_total'].to_s)}"
+                  %span= "#{AppHelper.add_commas(@character['luminance_earned'].to_s)} / #{AppHelper.add_commas(@character['luminance_total'].to_s)}"
             %tr
               %td.left
                 %span Total Experience (XP):
               %td.right
-                %span= add_commas(@character['total_xp'].to_s)
+                %span= AppHelper.add_commas(@character['total_xp'].to_s)
       %td.headerright.center.level
         %span.block Character
         %span.block Level
