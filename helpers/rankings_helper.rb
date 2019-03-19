@@ -1,8 +1,10 @@
 # rankings_helper.rb
 #
 # Helper module for the /rankings/:ranking route.
+require_relative "./app_helper"
 
 module RankingsHelper
+  extend AppHelper
   def self.generate_aggregation_args(name, params)
     # Convert name to symbol first if we happened to pass in a String instead
     name = name.to_sym if name.is_a? String
