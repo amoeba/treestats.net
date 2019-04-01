@@ -23,6 +23,13 @@ module Sinatra
             # Parse message
             json_text = JSON.parse(text)
 
+            # Disallow uploads from retail servers
+            if AppHelper.retail_servers.include?(json_text['server'])
+              status = 403
+              puts "Upload of characters from retail servers blocked: #{json_text}"
+              return "Not allowed."
+            end
+
             # Remove verification key if it exists
             if (json_text.has_key?("key"))
               json_text = json_text.tap { |h| h.delete("key") }
