@@ -7,19 +7,10 @@
 %p
   Filter to server:
   %a{:href => "/rankings?ranking=#{params['ranking']}&server=All"} All
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Darktide"} Darktide
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Frostfell"} Frostfell
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Harvestgain"} Harvestgain
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Leafcull"} Leafcull
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Morningthaw"} Morningthaw
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Thistledown"} Thistledown
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Solclaim"} Solclaim
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Verdantine"} Verdantine
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=WintersEbb"} WintersEbb
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Reefcull"} Reefcull
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Hightide"} Hightide
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Harvestbud"} Harvestbud
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=Seedsow"} Seedsow
+  - AppHelper.retail_servers.each do |server|
+    %a{:href => "/rankings?ranking=#{params['ranking']}&server=#{server}"}= server
+  - AppHelper.servers.each do |server|
+    %a{:href => "/rankings?ranking=#{params['ranking']}&server=#{server}"}= server
 
 %table.listing
   %thead

@@ -15,50 +15,23 @@
 %h2 Servers
 
 %ul
-  %li
-    %a{:href => "/Darktide/"} Darktide
-  %li
-    %a{:href => "/Frostfell/"} Frostfell
-  %li
-    %a{:href => "/Harvestgain/"} Harvestgain
-  %li
-    %a{:href => "/Leafcull"} Leafcull
-  %li
-    %a{:href => "/Morningthaw/"} Morningthaw
-  %li
-    %a{:href => "/Thistledown/"} Thistledown
-  %li
-    %a{:href => "/Solclaim/"} Solclaim
-  %li
-    %a{:href => "/Verdantine/"} Verdantine
-  %li
-    %a{:href => "/WintersEbb/"} WintersEbb
-  %li
-    %a{:href => "/Reefcull/"} Reefcull
-  %li
-    %a{:href => "/Hightide/"} Hightide
-  %li
-    %a{:href => "/Harvestbud/"} Harvestbud
-  %li
-    %a{:href => "/Seedsow/"} Seedsow
+  - AppHelper.retail_servers.each do |server|
+    %li
+      %a{:href => "/#{server}"}= server
+
+  - AppHelper.servers.each do |server|
+    %li
+      %a{:href => "/#{server}"}= server
 
 %h2 Attribute Rankings
 
 %form{:action => '/rankings', :method => 'get'}
   %select{:name => 'server'}
     %option{:value => "All"} All Servers
-    %option{:value => "Darktide"} Darktide
-    %option{:value => "Frostfell"} Frostfell
-    %option{:value => "Harvestgain"} Harvestgain
-    %option{:value => "Leafcull"} Leafcull
-    %option{:value => "Morningthaw"} Morningthaw
-    %option{:value => "Thistledown"} Thistledown
-    %option{:value => "Solclaim"} Solclaim
-    %option{:value => "WintersEbb"} WintersEbb
-    %option{:value => "Reefcull"} Reefcull
-    %option{:value => "Hightide"} Hightide
-    %option{:value => "Harvestbud"} Harvestbud
-    %option{:value => "Seedsow"} Seedsow
+    - AppHelper.retail_servers.each do |server|
+      %option{:value => server}= server
+    - AppHelper.servers.each do |server|
+      %option{:value => server}= server
   %select{:name => 'ranking'}
     %option{:value => 'strength'} Strength
     %option{:value => 'endurance'} Endurance
@@ -73,18 +46,10 @@
 %form{:action => '/rankings', :method => 'get'}
   %select{:name => 'server'}
     %option{:value => "All"} All Servers
-    %option{:value => "Darktide"} Darktide
-    %option{:value => "Frostfell"} Frostfell
-    %option{:value => "Harvestgain"} Harvestgain
-    %option{:value => "Leafcull"} Leafcull
-    %option{:value => "Morningthaw"} Morningthaw
-    %option{:value => "Thistledown"} Thistledown
-    %option{:value => "Solclaim"} Solclaim
-    %option{:value => "WintersEbb"} WintersEbb
-    %option{:value => "Reefcull"} Reefcull
-    %option{:value => "Hightide"} Hightide
-    %option{:value => "Harvestbud"} Harvestbud
-    %option{:value => "Seedsow"} Seedsow
+    - AppHelper.retail_servers.each do |server|
+      %option{:value => server}= server
+    - AppHelper.servers.each do |server|
+      %option{:value => server}= server
   %select{:name => 'ranking'}
     %option{:value => 'health'} Health
     %option{:value => 'stamina'} Stamina
@@ -96,19 +61,10 @@
 %form{:action => '/rankings', :method => 'get'}
   %select{:name => 'server'}
     %option{:value => "All"} All Servers
-    %option{:value => "Darktide"} Darktide
-    %option{:value => "Frostfell"} Frostfell
-    %option{:value => "Harvestgain"} Harvestgain
-    %option{:value => "Leafcull"} Leafcull
-    %option{:value => "Morningthaw"} Morningthaw
-    %option{:value => "Thistledown"} Thistledown
-    %option{:value => "Solclaim"} Solclaim
-    %option{:value => "Verdantine"} Verdantine
-    %option{:value => "WintersEbb"} WintersEbb
-    %option{:value => "Reefcull"} Reefcull
-    %option{:value => "Hightide"} Hightide
-    %option{:value => "Harvestbud"} Harvestbud
-    %option{:value => "Seedsow"} Seedsow
+    - AppHelper.retail_servers.each do |server|
+      %option{:value => server}= server
+    - AppHelper.servers.each do |server|
+      %option{:value => server}= server
   %select{:name => 'ranking'}
     %option{:value => 'alchemy'} Alchemy
     %option{:value => 'arcane_lore'} Arcane Lore
@@ -155,18 +111,10 @@
 %form{:action => '/rankings', :method => 'get'}
   %select{:name => 'server'}
     %option{:value => "All"} All Servers
-    %option{:value => "Darktide"} Darktide
-    %option{:value => "Frostfell"} Frostfell
-    %option{:value => "Harvestgain"} Harvestgain
-    %option{:value => "Leafcull"} Leafcull
-    %option{:value => "Morningthaw"} Morningthaw
-    %option{:value => "Thistledown"} Thistledown
-    %option{:value => "Solclaim"} Solclaim
-    %option{:value => "WintersEbb"} WintersEbb
-    %option{:value => "Reefcull"} Reefcull
-    %option{:value => "Hightide"} Hightide
-    %option{:value => "Harvestbud"} Harvestbud
-    %option{:value => "Seedsow"} Seedsow
+    - AppHelper.retail_servers.each do |server|
+      %option{:value => server}= server
+    - AppHelper.servers.each do |server|
+      %option{:value => server}= server
   %select{:name => 'ranking'}
     %option{:value => 'level'} Level
     %option{:value => 'birth'} Oldest Char
