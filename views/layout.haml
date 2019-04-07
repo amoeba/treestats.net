@@ -32,8 +32,9 @@
               %tbody
                 %tr#header
                   %td#title{:colspan => 2}
-                    %h1
-                      %a{:href => "/"} TreeStats
+                    %div
+                      %a{:href => "/"}
+                        %img{:src => image_path("tree.png"), :height => "48", :alt => "TreeStats.net logo"}
                     %span
                       Player tracking for
                       %a{:href => "http://www.turbine.com/"} Turbine's
