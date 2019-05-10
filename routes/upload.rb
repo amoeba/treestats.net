@@ -81,15 +81,26 @@ module Sinatra
             # We do this instead of just using update_attributes
             # because I'd like to update timestamps even when the character
             # update contains no new information.
-
             character.assign_attributes(json_text)
 
             # Removed archived flag
             character[:archived] = false if character[:archived]
 
+            # Remove monarch, patron, vassal if necessary
+            if !json_text["monarch"]
+              character.monarch = nil
+            end
+
+            if !json_text["patron"]
+              character.patron = nil
+            end
+
+            if !json_text["vassals"]
+              character.vassals = nil
+            end
+
             character.save
             character.touch
-
 
             # Update statistics
             redis.incr "uploads:daily:#{Time.now.utc.strftime("%Y%m%d")}"
