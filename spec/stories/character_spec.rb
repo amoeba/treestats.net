@@ -162,5 +162,26 @@ describe "CharacterStory" do
       chain = JSON.parse(get('/chain/test/thepatron').body)
       assert_equal(chain, {"name"=>"thepatron", "children"=>[{"name"=>"a"}, {"name"=>"b"}, {"name"=>"c"}]})
     end
+
+    it "removes monarch when an update comes in without one" do
+      post('/', '{"name": "some char", "server": "test", "monarch": {"name": "some monarch"}}')
+      Character.find_by(name: "some char").monarch["name"].must_equal "some monarch"
+      post('/', '{"name": "some char", "server": "test"}')
+      Character.find_by(name: "some char").monarch.must_be_nil
+    end
+
+    it "removes patron when an update comes in without one" do
+      post('/', '{"name": "some char", "server": "test", "patron": {"name": "some patron"}}')
+      Character.find_by(name: "some char").patron["name"].must_equal "some patron"
+      post('/', '{"name": "some char", "server": "test"}')
+      Character.find_by(name: "some char").patron.must_be_nil
+    end
+
+    it "removes vassals when an update comes in without one" do
+      post('/', '{"name": "some char", "server": "test", "vassals": [{"name": "vassal one"}]}')
+      Character.find_by(name: "some char").vassals[0]["name"].must_equal "vassal one"
+      post('/', '{"name": "some char", "server": "test"}')
+      Character.find_by(name: "some char").vassals.must_be_nil
+    end
   end
 end
