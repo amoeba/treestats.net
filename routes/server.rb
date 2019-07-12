@@ -8,8 +8,6 @@ module Sinatra
                                    .desc(:updated_at).limit(100)
                                    .only(:name, :server, :updated_at)
 
-            not_found if @characters.count <= 0
-
             haml :server
           end
 
