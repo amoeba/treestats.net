@@ -1,10 +1,11 @@
 # Helpers for the app
 module AppHelper
   @legacy_servers = %w{Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb}
-  @gdle_servers = %w{Reefcull Hightide Harvestbud Seedsow RelicDawn Darkside Reaptide Coldeve}
+  @gdle_servers = %w{Reefcull Hightide Harvestbud Seedsow RelicDawn Darkside Reaptide}
+  @ace_servers = %w{Coldeve New\ Horizons Drunkenfell Inflicted}
 
   def self.all_servers
-    @legacy_servers + @gdle_servers
+    @legacy_servers + @gdle_servers + @ace_servers
   end
 
   def self.retail_servers
@@ -12,7 +13,7 @@ module AppHelper
   end
 
   def self.servers
-    @gdle_servers
+    @gdle_servers + @ace_servers
   end
 
   def self.add_commas(string)
