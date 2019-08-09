@@ -25,6 +25,10 @@ chmod 600 "$SSH_PATH/deploy_key.pub"
 eval "$(ssh-agent -s)"
 ssh-add "$SSH_PATH/deploy_key"
 
+# Set up StrictHostKeyChecking
+touch "$SSH_HOME/config"
+echo "Host github.com\n    StrictHostKeyChecking no" > "$SSH_HOME/config"
+
 # Do the deploy
 printf -- "Filtering..."
 git branch "$BRANCH" && \
