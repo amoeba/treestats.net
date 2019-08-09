@@ -9,5 +9,8 @@ LABEL "repository"="hhttps://github.com/amoeba/filter-branch-action"
 LABEL "homepage"="http://github.com/actions"
 LABEL "maintainer"="Bryce Mecum <brycemecum@gmail.com>"
 
+RUN apt-get update && \
+  apt-get install git
+  
 ADD entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
