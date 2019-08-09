@@ -10,7 +10,7 @@ LABEL "homepage"="http://github.com/actions"
 LABEL "maintainer"="Bryce Mecum <brycemecum@gmail.com>"
 
 RUN apt-get update && \
-  apt-get install git
-  
+  apt-get install -y git
+
 ADD entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
