@@ -5,7 +5,7 @@ gem 'rake'
 gem 'json'
 gem 'rack'
 gem 'sinatra'
-gem "sinatra-cross_origin", "~> 0.3.1"
+gem "sinatra-cross_origin", "~> 0.4.0"
 gem 'puma'
 gem 'puma_worker_killer'
 
