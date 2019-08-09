@@ -10,7 +10,8 @@ GEM
       tzinfo (~> 1.1)
     bson (4.5.0)
     bson_ext (1.5.1)
-    clockwork (2.0.3)
+    clockwork (2.0.4)
+      activesupport
       tzinfo
     concurrent-ruby (1.1.5)
     execjs (2.7.0)
