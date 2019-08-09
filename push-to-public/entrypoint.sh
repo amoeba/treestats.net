@@ -27,7 +27,8 @@ ssh-add "$SSH_PATH/deploy_key"
 
 # Set up StrictHostKeyChecking
 touch "$SSH_HOME/config"
-echo "Host github.com\n    StrictHostKeyChecking no" > "$SSH_HOME/config"
+echo "github.com" > "$SSH_HOME/config"
+echo "    StrictHostKeyChecking no" >> "$SSH_HOME/config"
 
 # Do the deploy
 printf -- "Filtering..."
