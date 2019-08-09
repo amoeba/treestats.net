@@ -10,14 +10,15 @@ GEM
       tzinfo (~> 1.1)
     bson (4.5.0)
     bson_ext (1.5.1)
-    clockwork (2.0.3)
+    clockwork (2.0.4)
+      activesupport
       tzinfo
     concurrent-ruby (1.1.5)
     execjs (2.7.0)
     ffi (1.11.1)
     get_process_mem (0.2.4)
       ffi (~> 1.0)
-    haml (5.1.1)
+    haml (5.1.2)
       temple (>= 0.8.0)
       tilt
     i18n (1.6.0)
@@ -35,7 +36,7 @@ GEM
     mustermann (1.0.3)
     newrelic_rpm (6.5.0.357)
     nio4r (2.4.0)
-    puma (4.0.1)
+    puma (4.1.0)
       nio4r (~> 2.0)
     puma_worker_killer (0.1.1)
       get_process_mem (~> 0.2)
@@ -45,7 +46,7 @@ GEM
       rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
-    rake (12.3.2)
+    rake (12.3.3)
     rb-fsevent (0.10.3)
     rb-inotify (0.10.0)
       ffi (~> 1.0)
