@@ -22,10 +22,10 @@ module Sinatra
           app.get '/player_counts-latest.json' do
             content_type :json
 
-            if !redis.exists("latest-counts")
+            if !redis.exists("latest-player-counts")
               return []
             else
-              return redis.get("latest-counts")
+              return redis.get("latest-player-counts")
             end
           end
 
