@@ -19,7 +19,5 @@ class QueryCacheJob
     # Cache queries
     redis.set("dashboard-latest-counts", Marshal.dump(QueryHelper.dashboard_latest_counts))
     redis.set("dashboard-total-uploaded", Marshal.dump(QueryHelper.dashboard_total_uploaded))
-    redis.set("player-counts", Marshal.dump(PlayerCountsHelper.player_counts))
-    redis.set("latest-player-counts", Marshal.dump(PlayerCountsHelper.latest_player_counts))
   end
 end
