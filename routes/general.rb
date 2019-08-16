@@ -12,7 +12,7 @@ module Sinatra
             end   
 
             # Total Uploaded
-            if !redis.exists("dashboard_total_uploaded")
+            if !redis.exists("dashboard-total-uploaded")
               @total_uploaded = []
             else
               @total_uploaded = Marshal.restore(redis.get("dashboard-total-uploaded"))
