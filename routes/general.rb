@@ -4,71 +4,30 @@ module Sinatra
       module General        
         def self.registered(app)
           app.get '/' do
-            @latest_counts = PlayerCount.collection.aggregate([
-              {
-                "$match" => {
-                  # "c_at" => {
-                  #   "$gte" => Date.today - 30
-                  # },
-                  "s" => {
-                    "$in" => AppHelper.servers
-                  }
-                }
-              },
-              {
-                "$group" =>
-                  {
-                    "_id" => "$s",
-                    "count" => {
-                      "$last" => "$c"
-                    },
-                    "created_at" => {
-                      "$last" => "$c_at"
-                    }
-                  }
-              },
-              {
-                "$project" => {
-                  "_id": 0,
-                  "server": "$_id",
-                  "count": "$count",
-                  "date": "$created_at"
-                }
-              },
-              {
-                "$sort" => {
-                  "server" => 1
-                }
-              }
-            ])
+            # Latest counts
+            redis_key = "dashboard-latest-counts"
 
+            if !redis.exists(redis_key)
+              @latest_counts = QueryHelper.dashboard_latest_counts 
+              redis.setex(redis_key, 300, Marshal.dump(@latest_counts))
+            else
+              @latest_counts = Marshal.restore(redis.get(redis_key))
+            end   
+
+            # Latest uploads
             @latest = Character.desc(:updated_at)
                                .limit(10)
                                .only(:name, :server, :updated_at)
 
-            @servers = Character.collection.aggregate([
-              { 
-                "$match" => { 
-                  "s" => { 
-                    "$in" => AppHelper.servers 
-                  }
-                }
-              },
-              { 
-                "$group" => {
-                  "_id" => "$s",
-                  "count" => { "$sum" => 1 }
-                }
-              },
-              { 
-                "$sort" => {
-                  "count" => -1
-                }
-              },
-              {
-                "$limit": 10
-              }
-            ])
+            # Total Uploaded
+            redis_key = "dashboard_total_uploaded"
+
+            if !redis.exists(redis_key)
+              @total_uploaded = QueryHelper.dashboard_total_uploaded 
+              redis.setex(redis_key, 600, Marshal.dump(@total_uploaded))
+            else
+              @total_uploaded = Marshal.restore(redis.get(redis_key))
+            end   
 
             haml :index
           end
