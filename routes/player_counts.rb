@@ -23,7 +23,7 @@ module Sinatra
             content_type :json
 
             if !redis.exists("latest-counts")
-              return latest_player_counts
+              return []
             else
               return redis.get("latest-counts")
             end
