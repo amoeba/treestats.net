@@ -6,14 +6,14 @@ module Sinatra
           app.get '/' do
             # Latest counts
             if !redis.exists("dashboard-latest-counts")
-              @latest_counts = QueryHelper.dashboard_latest_counts 
+              @latest_counts = []
             else
               @latest_counts = Marshal.restore(redis.get("dashboard-latest-counts"))
             end   
 
             # Total Uploaded
             if !redis.exists("dashboard_total_uploaded")
-              @total_uploaded = QueryHelper.dashboard_total_uploaded 
+              @total_uploaded = []
             else
               @total_uploaded = Marshal.restore(redis.get("dashboard-total-uploaded"))
             end   
