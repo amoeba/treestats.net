@@ -5,29 +5,23 @@ module Sinatra
         def self.registered(app)
           app.get '/' do
             # Latest counts
-            redis_key = "dashboard-latest-counts"
-
-            if !redis.exists(redis_key)
+            if !redis.exists("dashboard-latest-counts")
               @latest_counts = QueryHelper.dashboard_latest_counts 
-              redis.setex(redis_key, 300, Marshal.dump(@latest_counts))
             else
-              @latest_counts = Marshal.restore(redis.get(redis_key))
+              @latest_counts = Marshal.restore(redis.get("dashboard-latest-counts"))
+            end   
+
+            # Total Uploaded
+            if !redis.exists("dashboard_total_uploaded")
+              @total_uploaded = QueryHelper.dashboard_total_uploaded 
+            else
+              @total_uploaded = Marshal.restore(redis.get("dashboard-total-uploaded"))
             end   
 
             # Latest uploads
             @latest = Character.desc(:updated_at)
-                               .limit(10)
-                               .only(:name, :server, :updated_at)
-
-            # Total Uploaded
-            redis_key = "dashboard_total_uploaded"
-
-            if !redis.exists(redis_key)
-              @total_uploaded = QueryHelper.dashboard_total_uploaded 
-              redis.setex(redis_key, 600, Marshal.dump(@total_uploaded))
-            else
-              @total_uploaded = Marshal.restore(redis.get(redis_key))
-            end   
+              .limit(10)
+              .only(:name, :server, :updated_at)
 
             haml :index
           end

@@ -12,15 +12,10 @@ module Sinatra
           app.get '/player_counts.json' do
             content_type :json
 
-            redis_key = "player-counts"
-
-            if !redis.exists(redis_key)
-              result = player_counts
-              redis.setex(redis_key, 300, result)
-
-              return result
+            if !redis.exists("player-counts")
+              return player_counts
             else
-              return redis.get(redis_key)
+              return redis.get("player-counts")
             end
           end
 
@@ -28,10 +23,7 @@ module Sinatra
             content_type :json
 
             if !redis.exists("latest-counts")
-              result = latest_player_counts
-              redis.setex("latest-counts", 300, result)
-
-              return result
+              return latest_player_counts
             else
               return redis.get("latest-counts")
             end
