@@ -76,7 +76,7 @@ def latest_player_counts
     }
   ])
 
-  latest_counts = latest_counts.to_a
+  latest_counts = latest_counts.to_a.sort_by { |s| s["server"] }
   latest_counts.each_with_index do |item,i|
     latest_counts[i]["age"] = AppHelper.relative_time(item["date"])
   end
