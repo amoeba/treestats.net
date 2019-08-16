@@ -37,7 +37,8 @@ module Sinatra
           end
 
           app.get '/characters/?' do
-            @characters = Character.desc(:updated_at)
+            @characters = Character.unscoped
+                                   .desc(:updated_at)
                                    .limit(100)
                                    .only(:name, :server)
 
