@@ -34,7 +34,7 @@ GEM
     moped (1.5.3)
     multi_json (1.13.1)
     mustermann (1.0.3)
-    newrelic_rpm (6.5.0.357)
+    newrelic_rpm (6.6.0.358)
     nio4r (2.4.0)
     puma (4.1.0)
       nio4r (~> 2.0)
