@@ -25,7 +25,7 @@ GEM
     i18n (1.7.0)
       concurrent-ruby (~> 1.0)
     json (2.2.0)
-    minitest (5.12.2)
+    minitest (5.13.0)
     mongo (2.10.2)
       bson (>= 4.4.2, < 5.0.0)
     mongoid (7.0.5)
