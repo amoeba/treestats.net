@@ -6,16 +6,37 @@ module Sinatra
       module PlayerCounts
         def self.registered(app)
           app.get '/player_counts/?' do
+            @servers = AppHelper.servers
+
+            # Add in ?servers filter to API call if present
+            @player_counts_url = "/player_counts.json"
+
+            if params[:servers]
+              @player_counts_url += "?servers=#{params[:servers]}"
+            end
+
             haml :player_counts
           end
 
           app.get '/player_counts.json' do
             content_type :json
 
-            redis_key = "player-counts"
+            # Server-specific logic
+            servers = if params[:servers] && params[:servers].length > 0
+              params[:servers].split(",")
+            else
+              nil
+            end
+
+            if servers
+              redis_key = "player-counts-#{servers}"
+            else
+              redis_key = "player-counts"
+            end
+
 
             if !redis.exists(redis_key)
-              result = player_counts
+              result = player_counts(servers)
               redis.setex(redis_key, 300, result)
 
               return result
