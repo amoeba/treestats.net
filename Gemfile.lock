@@ -14,6 +14,7 @@ GEM
     clockwork (2.0.4)
       activesupport
       tzinfo
+    coderay (1.1.2)
     concurrent-ruby (1.1.5)
     execjs (2.7.0)
     ffi (1.11.1)
@@ -25,6 +26,7 @@ GEM
     i18n (1.7.0)
       concurrent-ruby (~> 1.0)
     json (2.2.0)
+    method_source (0.9.2)
     minitest (5.12.2)
     mongo (2.10.2)
       bson (>= 4.4.2, < 5.0.0)
@@ -37,6 +39,9 @@ GEM
     mustermann (1.0.3)
     newrelic_rpm (6.7.0.359)
     nio4r (2.5.2)
+    pry (0.12.2)
+      coderay (~> 1.1.0)
+      method_source (~> 0.9.0)
     puma (4.2.1)
       nio4r (~> 2.0)
     puma_worker_killer (0.1.1)
@@ -105,6 +110,7 @@ DEPENDENCIES
   mongoid
   moped
   newrelic_rpm
+  pry
   puma
   puma_worker_killer
   rack
