@@ -1,5 +1,5 @@
-def player_counts
-  servers = AppHelper.servers
+def player_counts(servers = nil)
+  filter_to = servers || AppHelper.servers
 
   # Get max counts by date & server
   # TODO: Filter to only allowed servers
@@ -10,7 +10,7 @@ def player_counts
           "$gte" => Date.today - 120
         },
         "s" => {
-          "$in" => servers
+          "$in" => filter_to
         }
       }
     },

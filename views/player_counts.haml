@@ -1,6 +1,11 @@
 %h2.title Player Counts
 
-%p Maximum number of players seen by day and server
+%p The graph below shows the maximum number of players seen by day and server.
+%p
+  Servers:
+  - @servers.each do |server|
+    %span
+      %a{:href => "/player_counts?servers=#{server}"}= server
 %p
   %a{:href => "/player_counts-latest.json"} Latest player counts (JSON)
 
@@ -54,9 +59,5 @@
 %script{:src => javascript_path('d3.min')}
 %script{:src => javascript_path('popchart')}
 
-- if params[:servers]
-  :javascript
-    popchart("#content", "/player_counts.json?servers=#{params[:servers]}");
-- else
-  :javascript
-    popchart("#content", "/player_counts.json");
+:javascript
+  popchart("#content", "#{@player_counts_url}");
