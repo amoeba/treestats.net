@@ -64,9 +64,9 @@ var popchart = function(selector, data_url)
       var counts = server.values.map(function(data) {
         return data.count
       });
-      
+
       xvals = xvals.concat(dates);
-      yvals = yvals.concat(counts);    
+      yvals = yvals.concat(counts);
     });
 
     x.domain(d3.extent(xvals));
