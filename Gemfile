@@ -27,6 +27,10 @@ gem "sass"
 gem "uglifier"
 
 
+group :development do
+  gem 'pry'
+end
+
 group :production do
   gem 'newrelic_rpm'
 end
