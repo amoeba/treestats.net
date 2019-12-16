@@ -9,7 +9,7 @@ GEM
       minitest (~> 5.1)
       tzinfo (~> 1.1)
       zeitwerk (~> 2.1, >= 2.1.8)
-    bson (4.5.0)
+    bson (4.7.0)
     bson_ext (1.5.1)
     clockwork (2.0.4)
       activesupport
