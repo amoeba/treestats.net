@@ -37,7 +37,7 @@ GEM
     moped (1.5.3)
     multi_json (1.14.1)
     mustermann (1.0.3)
-    newrelic_rpm (6.7.0.359)
+    newrelic_rpm (6.8.0.360)
     nio4r (2.5.2)
     pry (0.12.2)
       coderay (~> 1.1.0)
