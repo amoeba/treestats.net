@@ -1,5 +1,5 @@
 def player_counts(servers = nil)
-  filter_to = servers.split("+") || AppHelper.servers
+  filter_to = servers.split(",") || AppHelper.servers
 
   # Get max counts by date & server
   # TODO: Filter to only allowed servers
