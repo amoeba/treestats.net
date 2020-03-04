@@ -23,17 +23,16 @@ module Sinatra
 
             # Server-specific logic
             servers = if params[:servers] && params[:servers].length > 0
-              params[:servers].split(",")
+              params[:servers].split(",").sort!
             else
               nil
             end
 
             if servers
-              redis_key = "player-counts-#{servers}"
+              redis_key = "player-counts-#{servers.join("-")}"
             else
               redis_key = "player-counts"
             end
-
 
             if !redis.exists(redis_key)
               result = player_counts(servers)
