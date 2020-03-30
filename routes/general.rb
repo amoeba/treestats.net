@@ -7,7 +7,7 @@ module Sinatra
             # Total uploads
             @total_uploads = redis
               .keys("uploads:daily:*")
-              .collect { |k| redis.get(k) }
+              .collect { |k| redis.get(k).to_i }
               .reduce(:+)
 
             # Latest counts
