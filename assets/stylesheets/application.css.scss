@@ -42,7 +42,13 @@ table, thead, tbody, tr, td {
 }
 
 h2.title {
-  margin: 0 0 0.5em 0;
+  margin: 0 0 0 0;
+}
+
+h3.subtitle {
+  font-size: 75%;
+  font-weight: normal;
+  margin: 0 0 0.5rem 0;
 }
 
 td.logo {
