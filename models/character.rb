@@ -59,7 +59,7 @@ class Character
 
   field :ar,  as: :archived,          type: Boolean, default: -> { false }
 
-  field :q, as: :quests, type: Hash
+  field :q,   as: :quests,            type: Array
 
   after_save do |document|
     self_race = RaceHelper::get_race_name(self.race.to_i)
