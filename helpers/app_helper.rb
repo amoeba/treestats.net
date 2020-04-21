@@ -1,7 +1,7 @@
 # Helpers for the app
 module AppHelper
   @legacy_servers = %w{Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb}
-  @gdle_servers = %w{Reefcull Hightide Harvestbud}
+  @gdle_servers = %w{Reefcull Hightide Harvestbud Riptide}
   @ace_servers = %w{Coldeve PotatoAC Levistras Drunkenfell Shadowgain Ragnarok Winterthaw}
 
   def self.all_servers
