@@ -1,11 +1,11 @@
 source 'https://rubygems.org'
-ruby '2.6.3'
+ruby '2.6.6'
 
 gem 'rake'
 gem 'json'
 gem 'rack'
 gem 'sinatra'
-gem "sinatra-cross_origin", "~> 0.3.1"
+gem "sinatra-cross_origin"
 gem 'puma'
 gem 'puma_worker_killer'
 

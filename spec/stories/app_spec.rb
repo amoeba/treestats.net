@@ -9,7 +9,7 @@ describe "AppStory" do
     end
 
     it "responds successfully" do
-      last_response.status.must_equal 200
+      assert_equal last_response.status, 200
     end
   end
 
@@ -17,30 +17,30 @@ describe "AppStory" do
     before do
       Character.create({ "name" => 'some patron', "server" => "Frostfell"})
     end
-    
+
     it "can reach the index" do
       get('/')
-      last_response.status.must_equal 200
+      assert_equal last_response.status, 200
     end
 
     it "can reach the the allegiances listing" do
       get('/allegiances')
-      last_response.status.must_equal 200
+      assert_equal last_response.status, 200
     end
 
     it "can reach the characters listing" do
       get('/characters')
-      last_response.status.must_equal 200
+      assert_equal last_response.status, 200
     end
 
     it "can reach the listing for Frostfell" do
       get('/Frostfell')
-      last_response.status.must_equal 200
+      assert_equal last_response.status, 200
     end
 
     it "can reach the titles listing" do
       get("/titles")
-      last_response.status.must_equal 200
+      assert_equal last_response.status, 200
     end
   end
 end
