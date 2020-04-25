@@ -11,11 +11,11 @@ describe 'Character', :unit do
     a = Account.create
     a.name = "test"
     a.password = "test"
-    a.valid?.must_equal false
+    assert !a.valid?
   end
 
   it "is invalid without a username and password" do
     a = Account.create
-    a.valid?.must_equal false
+    assert !a.valid?
   end
 end

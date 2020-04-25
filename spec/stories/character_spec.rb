@@ -26,74 +26,74 @@ describe "CharacterStory" do
     # vassals
     # creates vassal stub(s) if needed
     # updates vassal stub's (race/gender)
-    # 
+    #
     # does a difference between what vassals were sent
     # and what vassals are stored
     # updates ones that are still included
     # updates patron field on ones that are not
-    # 
+    #
 
     it "reports update failure when the character isn't created" do
       post('/', '{}')
-      last_response.body.must_equal "Character update failed."
+      assert_equal last_response.body, "Character update failed."
     end
-    
+
     it "reports that levels 1 can't be uploaded with phatac temporarily" do
       post('/', '{"name":"", "server": "myserver"}')
-      last_response.body.must_equal "Level 1 characters can't be uploaded with PhatAC currently. Sorry!"
+      assert_equal last_response.body, "Level 1 characters can't be uploaded with PhatAC currently. Sorry!"
     end
-    
+
 
     it "creates simple characters successfully" do
-      Character.count.must_equal 0
+      assert_equal Character.count, 0
 
       post('/', '{"name":"test", "server":"test"}')
 
-      Character.count.must_equal 1
+      assert_equal Character.count, 1
 
       post('/', '{"name":"test2", "server":"test"}')
-      last_response.body.must_equal "Character was updated successfully."
+      assert_equal last_response.body, "Character was updated successfully."
 
       post('/', '{"name":"test3", "server":"test"}')
-      last_response.body.must_equal "Character was updated successfully."
+      assert_equal last_response.body, "Character was updated successfully."
 
-      Character.count.must_equal 3
+      assert_equal Character.count, 3
     end
 
     it "creates stub vassals" do
       post('/', '{"name":"patron", "server":"test","vassals":[{"name":"testvassal"}]}')
-      last_response.body.must_equal "Character was updated successfully."
+      assert_equal last_response.body, "Character was updated successfully."
 
-      Character.count.must_equal 2
+      assert_equal Character.count, 2
     end
 
     it "creates stub vassals with patron set correctly" do
       post('/', '{"name":"patron", "server":"test","vassals":[{"name":"vassal"}]}')
-      last_response.body.must_equal "Character was updated successfully."
+      assert_equal last_response.body, "Character was updated successfully."
 
-      Character.find_by(name: 'vassal').patron['name'].must_equal "patron"
+      assert_equal Character.find_by(name: 'vassal').patron['name'], "patron"
     end
 
     it "assigns monarch correctly" do
       post('/', '{"name":"patron", "server":"test","monarch":{"name":"monarch"},"vassals":[{"name":"vassal"}]}')
-      last_response.body.must_equal "Character was updated successfully."
+      assert_equal last_response.body, "Character was updated successfully."
 
-      Character.find_by(name: 'vassal').monarch['name'].must_equal "monarch"
+      assert_equal Character.find_by(name: 'vassal').monarch['name'], "monarch"
     end
 
     it "assigns allegiance_name to all characters" do
       post('/', '{"name":"patron", "server":"test", "allegiance_name":"cool allegiance","monarch":{"name":"monarch"},"vassals":[{"name":"vassal"}]}')
 
-      Character.find_by(name: 'monarch').allegiance_name.must_equal "cool allegiance"
-      Character.find_by(name: 'patron').allegiance_name.must_equal "cool allegiance"
-      Character.find_by(name: 'vassal').allegiance_name.must_equal "cool allegiance"
+      assert_equal Character.find_by(name: 'monarch').allegiance_name, "cool allegiance"
+      assert_equal Character.find_by(name: 'patron').allegiance_name, "cool allegiance"
+      assert_equal Character.find_by(name: 'vassal').allegiance_name, "cool allegiance"
     end
 
     it "assigns an account name if it's sent" do
       post('/account/create', '{"name":"test", "password" : "test"}')
       post('/', '{"name" : "Account Tester", "server":"test", "account_name" : "test"}')
 
-      Character.find_by(name: "Account Tester").account_name.must_equal("test")
+      assert_equal Character.find_by(name: "Account Tester").account_name,("test")
     end
 
     it "doesn't assign an account name if it's not sent" do
@@ -105,11 +105,11 @@ describe "CharacterStory" do
 
     it "sets patron race and gender correctly" do
       post('/', '{"name" : "patron", "server" : "test", "race" : "Aluvian", "gender" : "Male"}')
-      Character.find_by(name: "patron")["name"].must_equal("patron")
+      assert_equal Character.find_by(name: "patron")["name"],("patron")
 
       post('/', '{"name":"vassal", "server":"test", "patron" : {"name":"patron", "server" : "test", "race" : "1", "gender" : "1"}}')
-      Character.find_by(name: "patron")["race"].must_equal("Aluvian")
-      Character.find_by(name: "patron")["gender"].must_equal("Male")
+      assert_equal Character.find_by(name: "patron")["race"],("Aluvian")
+      assert_equal Character.find_by(name: "patron")["gender"],("Male")
     end
 
     it "sets vassal race and gender correctly" do
@@ -117,8 +117,8 @@ describe "CharacterStory" do
 
       post('/', '{"name":"vassal", "server":"test", "patron" : {"name":"patron", "server" : "test", "race" : "1", "gender" : "1"}}')
 
-      Character.find_by(name: "vassal")["race"].must_equal("Aluvian")
-      Character.find_by(name: "patron")["gender"].must_equal("Male")
+      assert_equal Character.find_by(name: "vassal")["race"],("Aluvian")
+      assert_equal Character.find_by(name: "patron")["gender"],("Male")
     end
 
     it "sets monarch race and gender correctly" do
@@ -127,14 +127,14 @@ describe "CharacterStory" do
         '"patron":{"name":"patron","race":2,"rank":2,"gender":1},'\
         '"vassals":[{"name":"vassal_one", "server":"test", "race":1, "gender":1}]}')
 
-      Character.find_by(name: "monarch").gender.must_equal "Female"
-      Character.find_by(name: "monarch").race.must_equal "Viamontian"
+      assert_equal Character.find_by(name: "monarch").gender, "Female"
+      assert_equal Character.find_by(name: "monarch").race, "Viamontian"
 
-      Character.find_by(name: "patron").gender.must_equal "Male"
-      Character.find_by(name: "patron").race.must_equal "Gharu'ndim"
+      assert_equal Character.find_by(name: "patron").gender, "Male"
+      assert_equal Character.find_by(name: "patron").race, "Gharu'ndim"
 
-      Character.find_by(name: "vassal_one").gender.must_equal "Male"
-      Character.find_by(name: "vassal_one").race.must_equal "Aluvian"
+      assert_equal Character.find_by(name: "vassal_one").gender, "Male"
+      assert_equal Character.find_by(name: "vassal_one").race, "Aluvian"
     end
 
     it "unsets a vassal from a patron when the vassal breaks then updates" do
@@ -165,23 +165,23 @@ describe "CharacterStory" do
 
     it "removes monarch when an update comes in without one" do
       post('/', '{"name": "some char", "server": "test", "monarch": {"name": "some monarch"}}')
-      Character.find_by(name: "some char").monarch["name"].must_equal "some monarch"
+      assert_equal Character.find_by(name: "some char").monarch["name"], "some monarch"
       post('/', '{"name": "some char", "server": "test"}')
-      Character.find_by(name: "some char").monarch.must_be_nil
+      assert_nil Character.find_by(name: "some char").monarch
     end
 
     it "removes patron when an update comes in without one" do
       post('/', '{"name": "some char", "server": "test", "patron": {"name": "some patron"}}')
-      Character.find_by(name: "some char").patron["name"].must_equal "some patron"
+      assert_equal Character.find_by(name: "some char").patron["name"], "some patron"
       post('/', '{"name": "some char", "server": "test"}')
-      Character.find_by(name: "some char").patron.must_be_nil
+      assert_nil Character.find_by(name: "some char").patron
     end
 
     it "removes vassals when an update comes in without one" do
       post('/', '{"name": "some char", "server": "test", "vassals": [{"name": "vassal one"}]}')
-      Character.find_by(name: "some char").vassals[0]["name"].must_equal "vassal one"
+      assert_equal Character.find_by(name: "some char").vassals[0]["name"], "vassal one"
       post('/', '{"name": "some char", "server": "test"}')
-      Character.find_by(name: "some char").vassals.must_be_nil
+      assert_nil Character.find_by(name: "some char").vassals
     end
   end
 end

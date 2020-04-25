@@ -12,20 +12,20 @@ describe "AllegianceStory" do
     it "doesn't create empty allegiances" do
       post('/', '{"name":"testname", "server":"testserver"}')
 
-      Allegiance.count.must_equal 0
+      assert_equal Allegiance.count, 0
     end
 
     it "creates allegiances" do
       post('/', '{"name":"testname", "server":"testserver", "allegiance_name":"someallegiance"}')
 
-      Allegiance.count.must_equal 1
+      assert_equal Allegiance.count, 1
     end
 
     it "doesn't create duplicate allegiances" do
       post('/', '{"name":"testname", "server":"testserver", "allegiance_name":"someallegiance"}')
       post('/', '{"name":"testname", "server":"testserver", "allegiance_name":"someallegiance"}')
 
-      Allegiance.count.must_equal 1
+      assert_equal Allegiance.count, 1
     end
   end
 end

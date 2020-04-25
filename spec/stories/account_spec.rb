@@ -12,7 +12,7 @@ describe "AppStory" do
       "name" : "Account Test",
       "password" : "passw0rd"}')
 
-    last_response.body.must_equal("Account successfully created.")
+    assert_equal last_response.body, "Account successfully created."
   end
 
   it "a duplicate account won't be created" do
@@ -24,7 +24,7 @@ describe "AppStory" do
       "name" : "Account Test",
       "password" : "passw0rd"}')
 
-    last_response.body.must_equal("Account with this name already exists.")
+    assert_equal last_response.body, "Account with this name already exists."
   end
 
   it "successfully logs in" do
@@ -36,7 +36,7 @@ describe "AppStory" do
       "name" : "Account Test",
       "password" : "passw0rd"}')
 
-    last_response.body.must_equal("You are now logged in.")
+    assert_equal last_response.body, "You are now logged in."
   end
 
   it "fails to log in if we supply the wrong credentials" do
@@ -48,7 +48,7 @@ describe "AppStory" do
       "name" : "Account Test",
       "password" : "passw0rdd"}')
 
-    last_response.body.must_equal("Login failed. Name/password not found.")
+    assert_equal last_response.body, "Login failed. Name/password not found."
   end
 
 end

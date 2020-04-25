@@ -13,13 +13,13 @@ describe 'Character', :unit do
 
   it 'can have a name' do
     c = Character.create(name: 'TestChar')
-    c.name.must_equal 'TestChar'
+    assert_equal c.name, 'TestChar'
   end
 
   it 'must have a name and server' do
-    Character.create.must_be :invalid?
-    Character.create(name: "somename").must_be :invalid?
-    Character.create(server: "someserver").must_be :invalid?
-    Character.create(name: "somename", server: "someserver").must_be :valid?
+    assert Character.create.invalid?
+    assert Character.create(name: "somename").invalid?
+    assert Character.create(server: "someserver").invalid?
+    assert Character.create(name: "somename", server: "someserver").valid?
   end
 end
