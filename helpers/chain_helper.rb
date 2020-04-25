@@ -68,24 +68,25 @@ class AllegianceChain
   def walk_chain_it(start)
     tree = { 'name' => start, 'children' => nil }
     cursors = [tree]
+    seen = {} # Hash of names to avoid cycles
 
-    max_it = 200
+    max_it = 10000
 
     while max_it > 0 && cursors.length > 0
       if cursors.last.key?('children') && cursors.last['children'].nil?
         begin
+          seen[cursors.last['name']] = :seen
+
           record = Character.unscoped.find_by(server: @server, name: cursors.last['name'])
+
+          if record['vassals'].nil? || record['vassals'].length == 0
+            cursors.last.reject! { |k, v| k == 'children' }
+          else
+            cursors.last['children'] = record['vassals'].filter{ |v| !seen[v['name']] }.map { |v| { 'name' => v['name'], 'children' => nil } }
+          end
         rescue Mongoid::Errors::DocumentNotFound
           next_record = nil
         end
-
-
-        if record['vassals'].nil? || record['vassals'].length == 0
-          cursors.last.reject! { |k, v| k == 'children' }
-        else
-          cursors.last['children'] = record['vassals'].map { |v| { 'name' => v['name'], 'children' => nil } }
-        end
-
       end
 
       if cursors.last['children']
