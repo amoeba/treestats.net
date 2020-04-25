@@ -69,7 +69,7 @@ class AllegianceChain
     tree = { 'name' => start, 'children' => nil }
     cursors = [tree]
 
-    max_it = 10000
+    max_it = 200
 
     while max_it > 0 && cursors.length > 0
       if cursors.last.key?('children') && cursors.last['children'].nil?
