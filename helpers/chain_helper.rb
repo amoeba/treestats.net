@@ -82,7 +82,10 @@ class AllegianceChain
           if record['vassals'].nil? || record['vassals'].length == 0
             cursors.last.reject! { |k, v| k == 'children' }
           else
-            cursors.last['children'] = record['vassals'].filter{ |v| !seen[v['name']] }.map { |v| { 'name' => v['name'], 'children' => nil } }
+            cursors.last['children'] = record['vassals']
+              .filter { |v| !seen[v['name']] }
+              .sort_by { |v| v['name'] }
+              .map { |v| { 'name' => v['name'], 'children' => nil } }
           end
         rescue Mongoid::Errors::DocumentNotFound
           next_record = nil
