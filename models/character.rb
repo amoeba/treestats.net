@@ -56,6 +56,7 @@ class Character
   field :ti,  as: :titles,            type: Array
 
   field :acc, as: :account_name,      type: String
+  field :ip,  as: :ip_address,        type: String,
 
   field :ar,  as: :archived,          type: Boolean, default: -> { false }
 
