@@ -5,7 +5,7 @@ module ServerHelper
     {
       name: "Reefcull",
       type: "GDLE",
-      description: "PvE. End-of-Retail.",
+      description: "PvE. Retail experience.",
       address: "reefcull.connect-to-server.online:9000",
       website: "http://reefcull.connect-to-server.online",
       discord: "https://discord.gg/Rh3UVRs"
@@ -13,7 +13,7 @@ module ServerHelper
     {
       name: "Hightide",
       type: "GDLE",
-      description: "PvP. End-of-Retail.",
+      description: "PvP. Retail experience.",
       address: "hightide.connect-to-server.online:9000",
       website: "http://hightide.connect-to-server.online",
       discord: "https://discord.gg/Rh3UVRs"
@@ -21,7 +21,7 @@ module ServerHelper
     {
       name: "Harvestbud",
       type: "GDLE",
-      description: "PvE. End-of-Retail. Max. 3 accounts.",
+      description: "PvE. Retail experience. Max. 3 accounts.",
       address: "harvestbud.connect-to-server.online:9000",
       website: "http://harvestbud.connect-to-server.online",
       discord: "https://discord.gg/Rh3UVRs"
@@ -37,7 +37,7 @@ module ServerHelper
     {
       name: "Coldeve",
       type: "ACE",
-      description: "PvE. End-of-Retail.",
+      description: "PvE. Retail experience.",
       address: "play.coldeve.online:9000",
       discord: "https://discord.gg/aXtZB4"
     },
@@ -51,13 +51,14 @@ module ServerHelper
     {
       name: "LeafDawn",
       type: "ACE",
+      description: "PvE. Retail experience with light focus on custom content."
       address: "leafdawn.hopto.org:9000",
       discord: "https://discord.gg/mNzpGX"
     },
     {
       name: "Levistras",
       type: "ACE",
-      description: "PvE. End-of-retail. Max. 2 accounts. No botting.",
+      description: "PvE. Retail experience. Max. 2 accounts. No botting.",
       address: "levistras.servequake.com:9000",
       discord: "https://discord.gg/mWytZA"
     },
