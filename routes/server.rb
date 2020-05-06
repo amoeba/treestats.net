@@ -3,6 +3,31 @@ module Sinatra
     module Routing
       module Server
         def self.registered(app)
+          app.get "/servers/?" do
+            request.accept.each do |type|
+              case type.to_s
+              when 'application/json'
+                redis_key = "server-counts-with-json"
+
+                if !redis.exists(redis_key)
+                  result = ServerHelper.servers_with_counts.to_json
+                  redis.setex(redis_key, 300, result)
+
+                  halt result
+                else
+                  halt redis.get(redis_key)
+                end
+
+                halt
+              when 'text/html'
+                @other_servers = ServerHelper.servers
+                halt haml :servers
+              end
+            end
+
+            error 406
+          end
+
           app.get '/:server/?' do |server|
             @characters = Character.where(server: server)
                                    .desc(:updated_at).limit(100)

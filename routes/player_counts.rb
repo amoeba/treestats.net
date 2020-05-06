@@ -6,7 +6,7 @@ module Sinatra
       module PlayerCounts
         def self.registered(app)
           app.get '/player_counts/?' do
-            @servers = AppHelper.servers
+            @servers = ServerHelper.servers
 
             # Add in ?servers filter to API call if present
             @player_counts_url = "/player_counts.json"

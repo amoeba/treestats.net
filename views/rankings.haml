@@ -7,9 +7,9 @@
 %p
   Filter to server:
   %a{:href => "/rankings?ranking=#{params['ranking']}&server=All"} All
-  - AppHelper.retail_servers.each do |server|
+  - ServerHelper.retail_servers.each do |server|
     %a{:href => "/rankings?ranking=#{params['ranking']}&server=#{server}"}= server
-  - AppHelper.servers.each do |server|
+  - ServerHelper.servers.each do |server|
     %a{:href => "/rankings?ranking=#{params['ranking']}&server=#{server}"}= server
 
 %table.listing

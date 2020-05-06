@@ -36,12 +36,6 @@ module Sinatra
             haml :download
           end
 
-          app.get "/servers/?" do
-            @other_servers = AppHelper.servers
-
-            haml :servers
-          end
-
           app.get '/characters/?' do
             @characters = Character.unscoped
                                    .desc(:updated_at)

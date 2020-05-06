@@ -22,10 +22,9 @@
     %a{:href => "/WintersEbb/"} WintersEbb
 
 - if @other_servers.length > 0
-  %h3 Other servers
+  %h3 Private Servers
   %ul
     - @other_servers.each do |server|
       %li
         %a{:href => "/#{server}"}= server
- 
- 
+
