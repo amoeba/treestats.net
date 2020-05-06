@@ -5,7 +5,7 @@ module QueryHelper
       {
         "$match" => {
           "s" => {
-            "$in" => AppHelper.servers
+            "$in" => ServerHelper.servers
           }
         }
       },
@@ -39,20 +39,20 @@ module QueryHelper
 
   def self.dashboard_total_uploaded
     Character.collection.aggregate([
-      { 
-        "$match" => { 
-          "s" => { 
-            "$in" => AppHelper.servers 
+      {
+        "$match" => {
+          "s" => {
+            "$in" => ServerHelper.servers
           }
         }
       },
-      { 
+      {
         "$group" => {
           "_id" => "$s",
           "count" => { "$sum" => 1 }
         }
       },
-      { 
+      {
         "$sort" => {
           "count" => -1
         }

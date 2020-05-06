@@ -4,6 +4,8 @@ TreeStats has a minimal, JSON-based API. Below is a list of API endpoints -- ple
 
 %ul
   %li
+    %a{:href => "#servers"} Servers
+  %li
     %a{:href => "#characters"} Characters
   %li
     %a{:href => "#player-counts"} Player Counts
@@ -13,10 +15,38 @@ TreeStats has a minimal, JSON-based API. Below is a list of API endpoints -- ple
     %a{:href => "#allegiance-tree"} Allegiance Tree
 
 %h3
+  %a{:id => "servers", :href => "#servers"}= "#"
+  Servers
+
+To get detailed information about each server registered with TreeStats, send a request to
+
+%pre
+  :preserve
+    https://treestats.net/servers
+
+with an Accept header of "application/json" and you'll get back a JSON response structured %like:
+
+%pre
+  :preserve
+    [
+      {
+        "name": "Reefcull",
+        "type": "GDLE",
+        "description": "PvE. End-of-Retail.",
+        "address": "reefcull.connect-to-server.online:9000",
+        "website": "http://reefcull.connect-to-server.online",
+        "discord": "https://discord.gg/Rh3UVRs",
+        "players": {
+          "count": 415,
+          "updated_at": "2020-04-25T08:18:04.224Z"
+        }
+      },
+
+%h3
   %a{:id => "characters", :href => "#characters"}= "#"
   Characters
 
-To get detailed information about a specific character, just just append <code>'.json'</code> to the character's URL, e.g.,
+To get detailed information about a specific character, just append <code>'.json'</code> to the character's URL, e.g.,
 
 %pre
   :preserve

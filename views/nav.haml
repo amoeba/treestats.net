@@ -12,14 +12,17 @@
   %li
     %a{:href => "/titles"} Titles
 
-%h2 Servers
+%h2 Retail Servers
 
 %ul
-  - AppHelper.retail_servers.each do |server|
+  - ServerHelper.retail_servers.each do |server|
     %li
       %a{:href => "/#{server}"}= server
 
-  - AppHelper.servers.each do |server|
+%h2 Private Servers
+
+%ul
+  - ServerHelper.servers.each do |server|
     %li
       %a{:href => "/#{server}"}= server
 
@@ -28,9 +31,9 @@
 %form{:action => '/rankings', :method => 'get'}
   %select{:name => 'server'}
     %option{:value => "All"} All Servers
-    - AppHelper.retail_servers.each do |server|
+    - ServerHelper.retail_servers.each do |server|
       %option{:value => server}= server
-    - AppHelper.servers.each do |server|
+    - ServerHelper.servers.each do |server|
       %option{:value => server}= server
   %select{:name => 'ranking'}
     %option{:value => 'strength'} Strength
@@ -46,9 +49,9 @@
 %form{:action => '/rankings', :method => 'get'}
   %select{:name => 'server'}
     %option{:value => "All"} All Servers
-    - AppHelper.retail_servers.each do |server|
+    - ServerHelper.retail_servers.each do |server|
       %option{:value => server}= server
-    - AppHelper.servers.each do |server|
+    - ServerHelper.servers.each do |server|
       %option{:value => server}= server
   %select{:name => 'ranking'}
     %option{:value => 'health'} Health
@@ -61,9 +64,9 @@
 %form{:action => '/rankings', :method => 'get'}
   %select{:name => 'server'}
     %option{:value => "All"} All Servers
-    - AppHelper.retail_servers.each do |server|
+    - ServerHelper.retail_servers.each do |server|
       %option{:value => server}= server
-    - AppHelper.servers.each do |server|
+    - ServerHelper.servers.each do |server|
       %option{:value => server}= server
   %select{:name => 'ranking'}
     %option{:value => 'alchemy'} Alchemy
@@ -111,9 +114,9 @@
 %form{:action => '/rankings', :method => 'get'}
   %select{:name => 'server'}
     %option{:value => "All"} All Servers
-    - AppHelper.retail_servers.each do |server|
+    - ServerHelper.retail_servers.each do |server|
       %option{:value => server}= server
-    - AppHelper.servers.each do |server|
+    - ServerHelper.servers.each do |server|
       %option{:value => server}= server
   %select{:name => 'ranking'}
     %option{:value => 'level'} Level
