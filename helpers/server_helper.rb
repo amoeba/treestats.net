@@ -98,7 +98,8 @@ module ServerHelper
 
       server[:players] = {
         count: count[:count],
-        updated_at: count[:date]
+        updated_at: count[:date],
+        age: AppHelper.relative_time(count[:date])
       }
     end
 
