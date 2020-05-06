@@ -51,7 +51,7 @@ module ServerHelper
     {
       name: "LeafDawn",
       type: "ACE",
-      description: "PvE. Retail experience with light focus on custom content."
+      description: "PvE. Retail experience with light focus on custom content.",
       address: "leafdawn.hopto.org:9000",
       discord: "https://discord.gg/mNzpGX"
     },
