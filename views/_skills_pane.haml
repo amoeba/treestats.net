@@ -5,7 +5,10 @@
         = haml :_char_header
   %tbody.skills
     %tr
-      %td.specialized{:colspan => 3} Specialized Skills
+      %td.specialized{:colspan => 2} Specialized Skills
+      %td.right
+        %abbr{:title => "Base. Does not include augmentations or auras."}
+          ?
     - @character['skills'].select { |key,value| value['training'] == "Specialized"}.sort.each do |skill|
       %tr
         %td.skill_icon
@@ -13,7 +16,10 @@
         %td.skill_name= skill[1]["name"].split("_").map(&:capitalize).join(" ")
         %td.skill_base.right= skill[1]["base"]
     %tr
-      %td.trained{:colspan => 3} Trained Skills
+      %td.trained{:colspan => 2} Trained Skills
+      %td.right
+        %abbr{:title => "Base. Does not include augmentations or auras."}
+          ?
     - @character['skills'].select { |key,value| value['training'] == "Trained"}.sort.each do |skill|
       %tr
         %td.skill_icon
