@@ -1,6 +1,6 @@
 %h2.title Servers
 
-%h3 Retail
+%h3 Retail Servers
 %ul
   %li
     %a{:href => "/Darktide/"} Darktide
@@ -21,10 +21,24 @@
   %li
     %a{:href => "/WintersEbb/"} WintersEbb
 
-- if @other_servers.length > 0
+- if @servers.length > 0
   %h3 Private Servers
-  %ul
-    - @other_servers.each do |server|
-      %li
-        %a{:href => "/#{server}"}= server
+  %table.listing
+    %thead
+      %tr
+        %th Name
+        %th Type
+        %th Description
+        %th Info
+    %tbody
+      - @servers.each do |server|
+        %tr
+          %td
+            %a{:href => "/#{server[:name]}"}= server[:name]
+          %td= server[:type]
+          %td= server[:description]
+          %td{:style => "max-width: 400px; white-space: wrap; overflow: hidden; text-overflow: ellipsis;"}
+            Connect: #{server[:address]}<br>
+            Website: <a href="#{server[:website]}">#{server[:website]}</a><br />
+            Discord: <a href="#{server[:discord]}">#{server[:discord]}</a>
 
