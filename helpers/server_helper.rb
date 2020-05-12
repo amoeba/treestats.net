@@ -87,6 +87,10 @@ module ServerHelper
     @servers.map { |s| s[:name] }
   end
 
+  def self.server_details
+    @servers
+  end
+
   # @servers, enhanced with player counts
   def self.servers_with_counts
     servers = @servers

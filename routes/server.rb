@@ -20,7 +20,7 @@ module Sinatra
 
                 halt
               when 'text/html'
-                @other_servers = ServerHelper.servers
+                @servers = ServerHelper.server_details
                 halt haml :servers
               end
             end
