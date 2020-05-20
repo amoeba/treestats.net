@@ -70,6 +70,13 @@ module ServerHelper
       discord: "https://discord.gg/R6dXBP"
     },
     {
+      name: "RisingSun",
+      type: "ACE",
+      description: "PvE. Retail experience.",
+      address: "risingsun.hopto.org:9000",
+      discord: "https://discord.gg/XCXH8R8"
+    },
+    {
       name: "Winterthaw",
       type: "ACE",
       description: "PvE. Convenience changes and custom content.",
