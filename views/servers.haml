@@ -29,6 +29,7 @@
         %th Name
         %th Type
         %th Description
+        %th Connect
         %th Info
     %tbody
       - @servers.each do |server|
@@ -37,8 +38,10 @@
             %a{:href => "/#{server[:name]}"}= server[:name]
           %td= server[:type]
           %td= server[:description]
-          %td{:style => "max-width: 400px; white-space: wrap; overflow: hidden; text-overflow: ellipsis;"}
-            Connect: #{server[:address]}<br>
-            Website: <a href="#{server[:website]}">#{server[:website]}</a><br />
-            Discord: <a href="#{server[:discord]}">#{server[:discord]}</a>
+          %td= server[:address]
+          %td
+            - if server[:website]
+              %a{:href => server[:website]} Website
+            - if server[:discord]
+              %a{:href => server[:discord]} Discord
 
