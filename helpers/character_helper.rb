@@ -11,11 +11,20 @@ module CharacterHelper
   def self.parse_birth(birth)
     parsed = nil
 
+    # Try our first format
     begin
       parsed = DateTime.strptime("#{birth} EST", "%m/%d/%Y %H:%M:%S %p %Z")
     rescue ArgumentError
-      puts "ArgumentError caught trying to parse '#{birth} EST' as a DateTime."
-      puts "Error was #{$!}"
+      puts "ArgumentError caught trying to parse '#{birth} EST' as a DateTime with format %m/%d/%Y %H:%M:%S %p %Z"
+      puts "Error was `#{$!}`"
+    end
+
+    # Try our second one
+    begin
+      parsed = DateTime.strptime("#{birth} EST", "%m/%d/%Y %H:%M:%S %Z")
+    rescue ArgumentError
+      puts "ArgumentError caught trying to parse '#{birth} EST' as a DateTime with format %m/%d/%Y %H:%M:%S %Z"
+      puts "Error was `#{$!}`"
     end
 
     parsed
