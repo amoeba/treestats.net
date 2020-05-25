@@ -20,11 +20,13 @@ module CharacterHelper
     end
 
     # Try our second one
-    begin
-      parsed = DateTime.strptime("#{birth} EST", "%m/%d/%Y %H:%M:%S %Z")
-    rescue ArgumentError
-      puts "ArgumentError caught trying to parse '#{birth} EST' as a DateTime with format %m/%d/%Y %H:%M:%S %Z"
-      puts "Error was `#{$!}`"
+    if parsed.nil?
+      begin
+        parsed = DateTime.strptime("#{birth} EST", "%m/%d/%Y %H:%M:%S %Z")
+      rescue ArgumentError
+        puts "ArgumentError caught trying to parse '#{birth} EST' as a DateTime with format %m/%d/%Y %H:%M:%S %Z"
+        puts "Error was `#{$!}`"
+      end
     end
 
     parsed
