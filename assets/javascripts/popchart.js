@@ -37,8 +37,18 @@ var popchart = function(selector, data_url)
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+  // Loading indicator
+  svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", height / 2)
+    .attr("class", "removeme")
+    .style("font-size", "100%")
+    .text("Loading...")
 
-  d3.json(data_url, function(error, data) {
+  d3.json(data_url, function (error, data) {
+    // Remove loading text
+    svg.select(".removeme").remove();
+
     color.domain(d3.keys(data))
 
     // Re-structure and parse values
