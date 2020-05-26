@@ -115,53 +115,5 @@ var popchart = function(selector, data_url)
         .attr("class", "label")
         .text(function(d) { return capitalize(d.name) + ": " + Math.round(d.value.count)})
         .style("fill", function(d) { return color(d.name); });
-
-    // Perform constrain relaxation on text labels
-    // https://www.safaribooksonline.com/blog/2014/03/11/solving-d3-label-placement-constraint-relaxing/
-
-    var labels = d3.selectAll(".label"),
-        alpha = 0.25,
-        spacing = 2,
-        maxcalls = 1000;
-
-    var relax = function() {
-      if(maxcalls <= 0) { return; }
-      maxcalls -= 1;
-
-      var again = false; // Set to true to re-run relaxation
-
-      labels.each(function(d, i) {
-        if(i == 1 || i == 9) { return; }
-        var a = this,
-            da = d3.select(a),
-            y1 = da.attr("y");
-
-        labels.each(function(d, i) {
-          if(i == 1 || i == 9) { return; }
-
-          var b = this;
-
-          if(a == b) { return; }
-
-          var db = d3.select(b),
-              y2 = db.attr("y"),
-              delta = y1 - y2;
-
-          if (Math.abs(delta) > spacing) { return; }
-
-          again = true;
-
-
-          sign = delta > 0 ? 1 : -1;
-          adjust = sign * alpha;
-          da.attr("y",+ y1 + adjust);
-          db.attr("y",+ y2 - adjust);
-
-          if(again) { setTimeout(relax, 10); }
-        });
-      });
-    };
-
-    setTimeout(relax, 1000);
   });
 }
