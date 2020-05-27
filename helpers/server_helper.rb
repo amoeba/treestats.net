@@ -63,6 +63,13 @@ module ServerHelper
       discord: "https://discord.gg/mWytZA"
     },
     {
+      name: "PotatoAC",
+      type: "ACE",
+      description: "PvP. Custom experience: 1.5-3xp w/ emphasis on custom content.",
+      address: "potato.ac:9000",
+      discord: "https://discord.gg/R6dXBP"
+    },
+    {
       name: "RisingSun",
       type: "ACE",
       description: "PvE. Retail experience.",
