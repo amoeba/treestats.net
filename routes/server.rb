@@ -9,7 +9,7 @@ module Sinatra
               when 'application/json'
                 redis_key = "server-counts-with-json"
 
-                if !redis.exists(redis_key)
+                if !redis.exists?(redis_key)
                   result = ServerHelper.servers_with_counts.to_json
                   redis.setex(redis_key, 300, result)
 
