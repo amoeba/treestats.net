@@ -455,7 +455,8 @@ table.listing th {
 table.dashboard {
   display: inline-table;
   margin: 0 3em 1em 0;
-  width: 300px;
+  min-width: 300px;
+  max-width: 330px;
   font-size: 90%;
 }
 
