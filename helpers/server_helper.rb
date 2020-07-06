@@ -56,6 +56,13 @@ module ServerHelper
       discord: "https://discord.gg/mNzpGX"
     },
     {
+      name: "Living Auberean",
+      type: "ACE",
+      description: "PvE. Retail experience with convenience changes. Max. 3 accounts.",
+      address: "63.226.232.178:9000",
+      discord: "https://discord.gg/wjUbrjE"
+    },
+    {
       name: "Levistras",
       type: "ACE",
       description: "PvE. Retail experience. Max. 2 accounts. No botting.",
