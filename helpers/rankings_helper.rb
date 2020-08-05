@@ -452,7 +452,7 @@ module RankingsHelper
     :birth => {
       :display => "Birth",
       :group => "Other",
-      :match => { "a" => { "$exists" => true } },
+      :match => { "a" => { "$exists" => true }, "b" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "b" => 1 },
       :sort => { "b" => 1 },
       :accessor => Proc.new { |v| v["b"] }
