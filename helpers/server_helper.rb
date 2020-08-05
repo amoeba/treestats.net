@@ -90,6 +90,13 @@ module ServerHelper
       address: "23.20.74.30:9000",
       website: "https://docs.google.com/spreadsheets/d/1dToIsC8l6dvJqrTloLftiUp40QSqxpNJAiPKnq8cTH4",
       discord: "https://discord.gg/mNzpGX"
+    },
+    {
+      name: "Disciples of BaelZharon",
+      type: "GDLE",
+      description: "PvP. Early 2000's experience, 1x XP.",
+      address: "redking.ddns.net:9050",
+      discord: "https://discord.gg/qvEMCD"
     }
   ]
 
