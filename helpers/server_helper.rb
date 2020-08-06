@@ -97,6 +97,12 @@ module ServerHelper
       description: "PvP. Early 2000's experience, 1x XP.",
       address: "redking.ddns.net:9050",
       discord: "https://discord.gg/qvEMCD"
+    },
+    {
+      name: "Gloomfell",
+      type: "ACE",
+      description: "PvE. Increased difficulty server. Max. 2 accounts. Custom content.",
+      address: "3.19.16.15:9000"
     }
   ]
 
