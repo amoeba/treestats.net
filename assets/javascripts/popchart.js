@@ -15,7 +15,7 @@ var popchart = function (selector, data_url) {
   var y = d3.scale.linear()
     .range([height, 0]);
 
-  var color = d3.scale.category10();
+  var color = d3.scale.category20();
 
   var xAxis = d3.svg.axis()
     .scale(x)
