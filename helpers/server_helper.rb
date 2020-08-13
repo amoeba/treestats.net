@@ -103,6 +103,13 @@ module ServerHelper
       type: "ACE",
       description: "PvE. Increased difficulty server. Max. 2 accounts. Custom content.",
       address: "3.19.16.15:9000"
+    },
+    {
+      name: "Thistlecrown",
+      type: "ACE",
+      description: "PvE. Retail experience with convenience changes..",
+      address: "thistlecrown.ddns.net:9000",
+      discord: "https://discord.gg/4JDxss"
     }
   ]
 
