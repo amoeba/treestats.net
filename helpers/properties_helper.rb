@@ -51,10 +51,10 @@ module PropertiesHelper
     "296" => { :type => :aug, :name => "Infused Life Magic" },
     "297" => { :type => :aug, :name => "Infused War Magic" },
 
-    "333" => { :type => :aura, :name => "Valor"},
+    "333" => { :type => :aura, :name => "Valor / Destruction"},
     "334" => { :type => :aura, :name => "Protection"},
-    "335" => { :type => :aura, :name => "Glory"},
-    "336" => { :type => :aura, :name => "Temperance"},
+    "335" => { :type => :aura, :name => "Glory / Retribution"},
+    "336" => { :type => :aura, :name => "Temperance / Hardening"},
     "338" => { :type => :aura, :name => "Aetheric Vision"},
     "339" => { :type => :aura, :name => "Mana Flow"},
     "340" => { :type => :aura, :name => "Mana Infusion"},
