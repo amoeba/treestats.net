@@ -36,7 +36,6 @@ module Sinatra
           end
 
           app.get '/stats/levels' do
-            # redis.get("stats:levels")
             value = StatsHelper::CharacterStats.count_of_levels
             value.to_json
           end

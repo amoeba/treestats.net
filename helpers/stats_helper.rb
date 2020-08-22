@@ -72,6 +72,11 @@ module StatsHelper
       values = []
       doc = result.first
 
+      if doc.nil?
+        puts "doc was null"
+        return values
+      end
+
       doc.keys.each do |key|
         values << { 'x' => key, 'y' => doc[key]}
       end
