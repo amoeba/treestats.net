@@ -49,6 +49,10 @@ module Sinatra
             haml :api
           end
 
+          app.get '/graphs' do
+            haml :graphs
+          end
+
           app.get '/about/?' do
             haml :about
           end

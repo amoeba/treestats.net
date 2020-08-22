@@ -8,23 +8,16 @@ class StatsJob
   @queue = :default
 
   def self.perform
+    puts "StatsJob.perform"
+
     redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
     uri = URI.parse(redis_url)
     redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
 
-    attributes = StatsHelper::CharacterStats.sum_of_attributes
-    redis.set('stats:attributes', attributes.to_json)
-
-    races = StatsHelper::CharacterStats.count_of_races
-    redis.set('stats:races', races.to_json)
-
-    genders = StatsHelper::CharacterStats.count_of_genders
-    redis.set('stats:genders', genders.to_json)
-
-    ranks = StatsHelper::CharacterStats.count_of_ranks
-    redis.set('stats:ranks', ranks.to_json)
-
-    levels = StatsHelper::CharacterStats.count_of_levels
-    redis.set('stats:levels', levels.to_json)
+    redis.set('stats:attributes', StatsHelper::CharacterStats.sum_of_attributes.to_json)
+    redis.set('stats:races', StatsHelper::CharacterStats.count_of_races.to_json)
+    redis.set('stats:genders', StatsHelper::CharacterStats.count_of_genders.to_json)
+    redis.set('stats:ranks', StatsHelper::CharacterStats.count_of_ranks.to_json)
+    redis.set('stats:levels', StatsHelper::CharacterStats.count_of_levels.to_json)
   end
 end

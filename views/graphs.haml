@@ -1,7 +1,5 @@
-%h2 Graphs
-
-%span These charts show statistics about the players that have been uploaded to TreeStats. These statistics do not necessarily represent the players on the servers.
-#chart
+%h2.title Graphs
+%span These charts show statistics about the players that have been uploaded to TreeStats and may not be representative of the all players on the server.
 
 %script{:src => javascript_path('d3.min')}
 %script{:src => javascript_path('barchart')}
@@ -53,8 +51,6 @@
         .call(barchart().width(300).height(400));
     });
 
-
-
 .chart
   %h3 Gender
   #chart-genders
@@ -76,6 +72,7 @@
         .datum(data)
         .call(barchart().width(300).height(300));
     });
+
 .chart
   %h3 Rank
   #chart-ranks
