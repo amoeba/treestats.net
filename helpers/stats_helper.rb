@@ -98,7 +98,7 @@ module StatsHelper
       values
     end
 
-    def self.count_of_races
+    def self.count_of_heritage
       result = Character.collection.aggregate([
         {
           "$group" => {
