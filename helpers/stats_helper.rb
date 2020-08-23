@@ -183,5 +183,52 @@ module StatsHelper
       # Filter
       values.select { |v| !v['x'].nil? }
     end
+
+    def self.frequency_of_levels
+      result = Character.collection.aggregate([
+        {
+          "$match" => {
+            "l" => {
+              "$exists" => true,
+              "$gte" => 1,
+              "$lte" => 275}
+          }
+        },
+        {
+          "$bucket" => {
+            "groupBy" => "$l",
+            "boundaries" => [1, 26, 51, 76, 101, 126, 151, 176, 201, 226, 251, 275],
+            "default" => 0
+          }
+        },
+        {
+          "$match" => {
+            "_id" => {
+              "$ne" => 0
+            }
+          }
+        },
+        {
+          "$project" => {
+            "_id": 0,
+            "x" => "$_id",
+            "y" => "$count"
+          }
+        },
+        {
+          "$sort" => {
+            "x" => 1
+          }
+        },
+        {
+          "$project" => {
+            "x" => {
+              "$concat" => [ { "$toString" => "$x"}, "-",  { "$toString" => {"$add" => ["$x", 24]}}]
+            },
+            "y" => 1
+          }
+        }
+      ])
+    end
   end
 end
