@@ -73,7 +73,6 @@ module StatsHelper
       doc = result.first
 
       if doc.nil?
-        puts "doc was null"
         return values
       end
 
