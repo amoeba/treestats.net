@@ -20,5 +20,6 @@ class StatsJob
     redis.set('stats:ranks', Marshal.dump(StatsHelper::CharacterStats.count_of_ranks.to_json))
     redis.set('stats:levels', Marshal.dump(StatsHelper::CharacterStats.count_of_levels.to_json))
     redis.set('stats:builds', Marshal.dump(StatsHelper::CharacterStats.sum_of_builds.to_json))
+    redis.set('stats:levelfreq', Marshal.dump(StatsHelper::CharacterStats.frequency_of_levels.to_json))
   end
 end

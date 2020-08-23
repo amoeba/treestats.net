@@ -43,6 +43,10 @@ module Sinatra
           app.get '/stats/builds' do
             Marshal.restore(redis.get("stats:builds"))
           end
+
+          app.get '/stats/levelfreq' do
+              Marshal.restore(redis.get("stats:levelfreq"))
+          end
         end
       end
     end

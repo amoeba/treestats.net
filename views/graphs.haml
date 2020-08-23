@@ -53,6 +53,17 @@
     });
 
 .chart
+  %h3 Level
+  #chart-levelfreq
+
+  :javascript
+    d3.json('/stats/levelfreq', function(data) {
+      d3.select("#chart-levelfreq")
+        .datum(data)
+        .call(barchart().width(300).height(300));
+    });
+
+.chart
   %h3 Gender
   #chart-genders
 
@@ -81,17 +92,6 @@
   :javascript
     d3.json('/stats/ranks', function(data) {
       d3.select("#chart-ranks")
-        .datum(data)
-        .call(barchart().width(300).height(300));
-    });
-
-.chart
-  %h3 Level
-  #chart-levels
-
-  :javascript
-    d3.json('/stats/levels', function(data) {
-      d3.select("#chart-levels")
         .datum(data)
         .call(barchart().width(300).height(300));
     });
