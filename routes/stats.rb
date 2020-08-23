@@ -21,33 +21,31 @@ module Sinatra
           end
 
           app.get '/stats/attributes' do
-            value = StatsHelper::CharacterStats.sum_of_attributes
-            value.to_json
+            Marshal.restore(redis.get("stats:attributes"))
           end
 
           app.get '/stats/genders' do
-            value = StatsHelper::CharacterStats.count_of_genders
-            value.to_json
+            Marshal.restore(redis.get("stats:genders"))
+
           end
 
           app.get '/stats/ranks' do
-            value = StatsHelper::CharacterStats.count_of_ranks
-            value.to_json
+            Marshal.restore(redis.get("stats:ranks"))
+
           end
 
           app.get '/stats/levels' do
-            value = StatsHelper::CharacterStats.count_of_levels
-            value.to_json
+            Marshal.restore(redis.get("stats:levels"))
+
           end
 
-          app.get '/stats/races' do
-            value = StatsHelper::CharacterStats.count_of_races
-            value.to_json
+          app.get '/stats/heritage' do
+            Marshal.restore(redis.get("stats:heritage"))
+
           end
 
-          app.get '/stats/sum_of_builds' do
-            value = StatsHelper::CharacterStats.sum_of_builds
-            value.to_json
+          app.get '/stats/builds' do
+            Marshal.restore(redis.get("stats:builds"))
           end
         end
       end

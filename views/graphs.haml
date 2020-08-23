@@ -46,7 +46,7 @@
   #chart-builds
 
   :javascript
-    d3.json('/stats/sum_of_builds', function(data) {
+    d3.json('/stats/builds', function(data) {
       d3.select("#chart-builds")
         .datum(data)
         .call(barchart().width(300).height(400));
@@ -64,12 +64,12 @@
     });
 
 .chart
-  %h3 Race
-  #chart-races
+  %h3 Heritage
+  #chart-heritage
 
   :javascript
-    d3.json('/stats/races', function(data) {
-      d3.select("#chart-races")
+    d3.json('/stats/heritage', function(data) {
+      d3.select("#chart-heritage")
         .datum(data)
         .call(barchart().width(300).height(300));
     });

@@ -14,10 +14,11 @@ class StatsJob
     uri = URI.parse(redis_url)
     redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
 
-    redis.set('stats:attributes', StatsHelper::CharacterStats.sum_of_attributes.to_json)
-    redis.set('stats:races', StatsHelper::CharacterStats.count_of_races.to_json)
-    redis.set('stats:genders', StatsHelper::CharacterStats.count_of_genders.to_json)
-    redis.set('stats:ranks', StatsHelper::CharacterStats.count_of_ranks.to_json)
-    redis.set('stats:levels', StatsHelper::CharacterStats.count_of_levels.to_json)
+    redis.set('stats:attributes', Marshal.dump(StatsHelper::CharacterStats.sum_of_attributes.to_json))
+    redis.set('stats:heritage', Marshal.dump(StatsHelper::CharacterStats.count_of_heritage.to_json))
+    redis.set('stats:genders', Marshal.dump(StatsHelper::CharacterStats.count_of_genders.to_json))
+    redis.set('stats:ranks', Marshal.dump(StatsHelper::CharacterStats.count_of_ranks.to_json))
+    redis.set('stats:levels', Marshal.dump(StatsHelper::CharacterStats.count_of_levels.to_json))
+    redis.set('stats:builds', Marshal.dump(StatsHelper::CharacterStats.sum_of_builds.to_json))
   end
 end
