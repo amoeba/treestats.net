@@ -5,7 +5,14 @@ module StatsHelper
         {
           "$match" => {
             "a" => { "$exists" => true},
-            "r" => { "$nin" => [ "Olthoi Spitter", "Olthoi Soldier" ] }
+            "r" => { "$nin" => [ "Olthoi Spitter", "Olthoi Soldier" ] },
+            "l" => { "$gt" => 10, "$lte" => 275 },
+            "a.strength.creation" => { "$lte" => 100 },
+            "a.endurance.creation" => { "$lte" => 100 },
+            "a.coordination.creation" => { "$lte" => 100 },
+            "a.quickness.creation" => { "$lte" => 100 },
+            "a.focus.creation" => { "$lte" => 100 },
+            "a.self.creation" => { "$lte" => 100 },
           }
         },
         {
@@ -146,6 +153,11 @@ module StatsHelper
 
     def self.count_of_levels
       result = Character.collection.aggregate([
+        {
+          "$match" => {
+            "l" => { "$lte" => 275 }
+          }
+        },
         {
           "$group" => {
             "_id" => "$l",
