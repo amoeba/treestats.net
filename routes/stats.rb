@@ -26,22 +26,18 @@ module Sinatra
 
           app.get '/stats/genders' do
             Marshal.restore(redis.get("stats:genders"))
-
           end
 
           app.get '/stats/ranks' do
             Marshal.restore(redis.get("stats:ranks"))
-
           end
 
           app.get '/stats/levels' do
             Marshal.restore(redis.get("stats:levels"))
-
           end
 
           app.get '/stats/heritage' do
             Marshal.restore(redis.get("stats:heritage"))
-
           end
 
           app.get '/stats/builds' do
