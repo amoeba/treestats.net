@@ -31,8 +31,11 @@ module QueryHelper
       },
       {
         "$sort" => {
-          "server" => 1
+          "count" => -1
         }
+      },
+      {
+        "$limit" => 10
       }
     ]).to_a
   end
