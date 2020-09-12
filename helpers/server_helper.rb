@@ -72,7 +72,7 @@ module ServerHelper
     {
       name: "PotatoAC",
       type: "ACE",
-      description: "PvP. Custom experience: 1.5-3xp w/ emphasis on custom content.",
+      description: "PvP. Custom experience: 1.5-3x XP w/ emphasis on custom content.",
       address: "potato.ac:9000",
       discord: "https://discord.gg/R6dXBP"
     },
@@ -100,9 +100,16 @@ module ServerHelper
     {
       name: "Thistlecrown",
       type: "ACE",
-      description: "PvE. Retail experience with convenience changes..",
+      description: "PvE. Retail experience with convenience changes.",
       address: "thistlecrown.ddns.net:9000",
       discord: "https://discord.gg/4JDxss"
+    },
+    {
+      name: "DobZ",
+      type: "ACE",
+      description: "PvP. Retail experience. 3x XP.",
+      address: "dobzac.ddns.net:9000",
+      discord: "https://discord.gg/wPXb9P"
     }
   ]
 
