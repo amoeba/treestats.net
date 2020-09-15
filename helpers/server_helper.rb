@@ -66,8 +66,8 @@ module ServerHelper
       name: "Levistras",
       type: "ACE",
       description: "PvE. Retail experience. Max. 2 accounts. No botting.",
-      address: "levistras.servequake.com:9000",
-      discord: "https://discord.gg/mWytZA"
+      address: "acportalstorm.com:9000",
+      discord: "https://discord.gg/aD2t6Yb"
     },
     {
       name: "PotatoAC",
