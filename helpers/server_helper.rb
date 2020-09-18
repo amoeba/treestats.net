@@ -7,7 +7,7 @@ module ServerHelper
       type: "GDLE",
       description: "PvE. Retail experience.",
       address: "reefcull.connect-to-server.online:9000",
-      website: "http://reefcull.connect-to-server.online",
+      website: "http://reefcull.gdleac.com/",
       discord: "https://discord.gg/Rh3UVRs"
     },
     {
@@ -23,7 +23,7 @@ module ServerHelper
       type: "GDLE",
       description: "PvE. Retail experience. Max. 3 accounts.",
       address: "harvestbud.connect-to-server.online:9000",
-      website: "http://harvestbud.connect-to-server.online",
+      website: "http://harvestbud.gdleac.com/",
       discord: "https://discord.gg/Rh3UVRs"
     },
     {
