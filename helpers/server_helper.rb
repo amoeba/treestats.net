@@ -112,7 +112,7 @@ module ServerHelper
       discord: "https://discord.gg/wPXb9P"
     },
     {
-      name: "Lost Woods",
+      name: "LostWoods AC",
       type: "ACE",
       description: "PvE. Retail experience w/ progressive custom content. 1x XP.",
       address: "lostwoodsac.hopto.org:9000",
