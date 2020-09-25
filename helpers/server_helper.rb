@@ -110,6 +110,13 @@ module ServerHelper
       description: "PvP. Retail experience. 3x XP.",
       address: "dobzac.ddns.net:9000",
       discord: "https://discord.gg/wPXb9P"
+    },
+    {
+      name: "Lost Woods",
+      type: "ACE",
+      description: "PvE. Retail experience w/ progressive custom content. 1x XP.",
+      address: "lostwoodsac.hopto.org:9000",
+      discord: "https://discord.gg/ZwQkCdx"
     }
   ]
 
