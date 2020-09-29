@@ -23,7 +23,7 @@ module Sinatra
 
             # Server-specific logic
             servers = if params[:servers] && params[:servers].length > 0
-              params[:servers].split(",").sort!
+              params[:servers].split(",").reject { |s| !ServerHelper.servers.include?(s) }.sort!
             else
               nil
             end
