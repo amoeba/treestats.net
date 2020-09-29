@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo:3.4.9
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - .:/data
+  redis:
+    image: redis:4.0.8
+    restart: always
+    ports:
+      - 6379:6379
