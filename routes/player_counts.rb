@@ -6,13 +6,25 @@ module Sinatra
       module PlayerCounts
         def self.registered(app)
           app.get '/player_counts/?' do
-            @servers = ServerHelper.servers
+            @servers = ServerHelper.all_servers
+            @current = params[:servers]
+            @range = params[:range]
 
             # Add in ?servers filter to API call if present
             @player_counts_url = "/player_counts.json"
 
-            if params[:servers]
-              @player_counts_url += "?servers=#{params[:servers]}"
+            if params
+              out = {}
+
+              if params[:servers]
+                out[:servers] = params[:servers]
+              end
+
+              if params[:range]
+                out[:range] = params[:range]
+              end
+
+              @player_counts_url += "?#{out.to_query}"
             end
 
             haml :player_counts
@@ -21,27 +33,46 @@ module Sinatra
           app.get '/player_counts.json' do
             content_type :json
 
-            # Server-specific logic
-            servers = if params[:servers] && params[:servers].length > 0
-              params[:servers].split(",").reject { |s| !ServerHelper.servers.include?(s) }.sort!
-            else
-              nil
+            # servers
+            servers = nil
+
+            if params[:servers] && params[:servers] != "All" && params[:servers].length > 0
+              params[:servers].split(",").each do |server|
+                unless ServerHelper.all_servers.include?(server)
+                  halt 400, "#{server} is not a valid server name"
+                end
+              end
+
+              servers = params[:servers].split
             end
 
+
+            # range
+            ranges = %w{3mo 6mo 1yr All}
+
+            if params[:range]
+              unless ranges.include?(params[:range])
+                halt 400, "#{params[:range]} is not a valid range"
+              end
+            end
+
+            range = params[:range]
+
+            # set up a key for redis caching
             if servers
-              redis_key = "player-counts-#{servers.join("-")}"
+              redis_key = "player-counts-#{servers.join("-")}-#{range}"
             else
               redis_key = "player-counts"
             end
 
-            if !redis.exists?(redis_key)
-              result = player_counts(servers)
-              redis.setex(redis_key, 300, result)
+            # if !redis.exists?(redis_key)
+              result = player_counts(servers, range)
+              # redis.setex(redis_key, 300, result)
 
               return result
-            else
-              return redis.get(redis_key)
-            end
+            # else
+            #   return redis.get(redis_key)
+            # end
           end
 
           app.get '/player_counts-latest.json' do

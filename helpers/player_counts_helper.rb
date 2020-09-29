@@ -1,37 +1,48 @@
-def player_counts(servers = nil)
-  filter_to = servers || ServerHelper.servers
+def player_counts(servers = nil, range = nil)
+  match = {
+    "$match" => {
+      "s" => {
+        "$in" => servers || ServerHelper.servers
+      }
+    }
+  }
 
-  # Get max counts by date & server
-  # TODO: Filter to only allowed servers
-  result = PlayerCount.collection.aggregate([
-    {
-      "$match" => {
-        "c_at" => {
-          "$gte" => Date.today - 120
-        },
-        "s" => {
-          "$in" => filter_to
-        }
-      }
-    },
-    {
-      "$group" => {
-        "_id" => {
-          "s" => "$s",
-          "date" => {
-            "$dateToString" => {
-              "format" => "%Y%m%d",
-              "date" => "$c_at"
-            }
+  group = {
+    "$group" => {
+      "_id" => {
+        "s" => "$s",
+        "date" => {
+          "$dateToString" => {
+            "format" => "%Y%m%d",
+            "date" => "$c_at"
           }
-        },
-        "max" => { "$max" => "$c" }
-      }
-    },
+        }
+      },
+      "max" => { "$max" => "$c" }
+    }
+  }
+
+  sort = {
     "$sort" => {
       "_id.date" => 1
     }
-  ])
+  }
+
+  range = "3mo" if range.nil?
+
+  if range && range != "All"
+    range_map = {
+      "3mo" => 93,
+      "6mo" => 186,
+      "1yr" => 365
+    }
+
+    match["$match"]["c_at"] = {
+      "$gte" => Date.today - range_map[range]
+    }
+  end
+
+  result = PlayerCount.collection.aggregate([match, group, sort])
 
   # Restructure result for better JSON shape
   pops = {}
