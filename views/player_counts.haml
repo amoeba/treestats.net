@@ -6,15 +6,49 @@
   on each server. For information on how to connect to any of these servers, see the
   %a{:href => "/servers"} Servers
   page.
-%p
-  Servers:
-  - @servers.each do |server|
-    %span
-      %a{:href => "/player_counts?servers=#{server}"}= server
+
+#chartcontainer
+  #chartheader
+    %form{ :action => "/player_counts", :method => "GET" }
+      %div
+        %label{:for => "servers"} Server:
+        %select#servers{:name => "servers"}
+          %option{:value => "All"} All Servers
+          - @servers.each do |server|
+            %option{:value => server, :selected => @current == server}= server
+        %input{:type => "submit", :value => "Filter"}
+      %div
+        %label{:for => "range"} Time Range:
+        %select#range{:name => "range"}
+          %option{:value => "3mo", :selected => @range == "3mo"} 3 months
+          %option{:value => "6mo", :selected => @range == "6mo"} 6 months
+          %option{:value => "1yr", :selected => @range == "1yr"} 1 year
+          %option{:value => "All", :selected => @range == "All"} All Time
+        %input{:type => "submit", :value => "Filter"}
+
+  #chart
+
 %p
   %a{:href => "/player_counts-latest.json"} Latest player counts (JSON)
 
 :css
+  #chartcontainer {
+    width: 960px;
+  }
+
+  #chartheader form {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #chartheader div {
+    width: 50%;
+  }
+
+  #chartheader div:last-child {
+    text-align: right;
+  }
+
   svg {
     background-color: black;
     border: 2px solid #AF7A30;
@@ -65,4 +99,4 @@
 %script{:src => javascript_path('popchart')}
 
 :javascript
-  popchart("#content", "#{@player_counts_url}");
+  popchart("#chart", "#{@player_counts_url}");
