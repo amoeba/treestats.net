@@ -128,6 +128,10 @@ module ServerHelper
     @servers.map { |s| s[:name] }
   end
 
+  def self.all_servers
+    retail_servers + servers
+  end
+
   def self.server_details
     @servers
   end
