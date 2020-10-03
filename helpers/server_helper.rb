@@ -116,7 +116,8 @@ module ServerHelper
       type: "ACE",
       description: "PvE. Retail experience w/ progressive custom content. 1x XP.",
       address: "lostwoodsac.hopto.org:9000",
-      discord: "https://discord.gg/ZwQkCdx"
+      website: "https://docs.google.com/spreadsheets/d/1BTKd6_AzcAVeyAjy3YZSsnJeLSgTr-L2BYZdtkXblDw",
+      discord: "https://discord.gg/DShQjRJ"
     }
   ]
 
