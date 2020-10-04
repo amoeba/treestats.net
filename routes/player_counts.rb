@@ -56,13 +56,13 @@ module Sinatra
               end
             end
 
-            range = params[:range]
+            range = params[:range] || "3mo"
 
             # set up a key for redis caching
-            if servers
-              redis_key = "player-counts-#{servers.join("-")}-#{range}"
+            redis_key = if servers
+              "player-counts-#{servers.join("-")}-#{range}"
             else
-              redis_key = "player-counts"
+              "player-counts-All-#{range}"
             end
 
             if !redis.exists?(redis_key)
