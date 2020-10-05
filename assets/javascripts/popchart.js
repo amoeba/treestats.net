@@ -52,7 +52,7 @@ var popchart = function (selector, data_url) {
     }
 
     if (Object.keys(data).length === 0) {
-      document.querySelectorAll(".removeme")[0].innerHTML = "No results found.";
+      document.querySelectorAll(".removeme")[0].innerHTML = "No data found. Try changing your filters.";
 
       return;
     }
