@@ -40,19 +40,35 @@ var popchart = function (selector, data_url) {
   svg.append("text")
     .attr("x", width / 2)
     .attr("y", height / 2)
-    .attr("class", "removeme")
+    .attr("class", "removeme flash")
     .style("font-size", "100%")
     .text("Loading...")
 
   d3.json(data_url, function (error, data) {
+    // Handle error state
     if (error) {
-      document.querySelectorAll(".removeme")[0].innerHTML = error.response;
+      var removeEl = document.querySelectorAll(".removeme");
+
+      if (removeEl.length != 1) {
+        return;
+      }
+
+      removeEl[0].innerHTML = error.response;
+      removeEl[0].classList.remove("flash");
 
       return;
     }
 
+    // Handle no results
     if (Object.keys(data).length === 0) {
-      document.querySelectorAll(".removeme")[0].innerHTML = "No data found. Try changing your filters.";
+      var removeEl = document.querySelectorAll(".removeme");
+
+      if (removeEl.length != 1) {
+        return;
+      }
+
+      removeEl[0].innerHTML = "No data found. Try changing your filters.";
+      removeEl[0].classList.remove("flash");
 
       return;
     }
