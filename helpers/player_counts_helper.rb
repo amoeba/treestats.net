@@ -2,7 +2,7 @@ def player_counts(servers = nil, range = nil)
   match = {
     "$match" => {
       "s" => {
-        "$in" => servers || ServerHelper.servers
+        "$in" => servers || ServerHelper.all_servers
       }
     }
   }
