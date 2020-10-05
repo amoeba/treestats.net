@@ -39,7 +39,7 @@ module Sinatra
             if params[:servers] && params[:servers] != "All" && params[:servers].length > 0
               params[:servers].split(",").each do |server|
                 unless ServerHelper.all_servers.include?(server)
-                  halt 400, "#{server} is not a valid server name"
+                  halt 400, "Invalid query parameters: #{server} is not a valid server name"
                 end
               end
 
@@ -52,7 +52,7 @@ module Sinatra
 
             if params[:range]
               unless ranges.include?(params[:range])
-                halt 400, "#{params[:range]} is not a valid range"
+                halt 400, "Invalid query parameters: #{params[:range]} is not a valid range"
               end
             end
 
