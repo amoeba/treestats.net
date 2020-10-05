@@ -95,6 +95,20 @@
     stroke: white;
   }
 
+  .flash {
+    animation: 1s infinite alternate flash;
+  }
+
+  @keyframes flash {
+    from {
+      opacity: 0%;
+    }
+
+    to {
+      opacity: 100%;
+    }
+  }
+
 %script{:src => javascript_path('d3.min')}
 %script{:src => javascript_path('popchart')}
 
