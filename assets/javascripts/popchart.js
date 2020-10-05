@@ -45,6 +45,18 @@ var popchart = function (selector, data_url) {
     .text("Loading...")
 
   d3.json(data_url, function (error, data) {
+    if (error) {
+      document.querySelectorAll(".removeme")[0].innerHTML = error.response;
+
+      return;
+    }
+
+    if (Object.keys(data).length === 0) {
+      document.querySelectorAll(".removeme")[0].innerHTML = "No results found.";
+
+      return;
+    }
+
     // Remove loading text
     svg.select(".removeme").remove();
 
