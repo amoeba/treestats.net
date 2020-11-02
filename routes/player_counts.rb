@@ -43,7 +43,7 @@ module Sinatra
                 end
               end
 
-              servers = params[:servers].split
+              servers = params[:servers].split(",")
             end
 
 
