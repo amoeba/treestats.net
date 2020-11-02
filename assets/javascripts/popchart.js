@@ -136,11 +136,67 @@ var popchart = function (selector, data_url) {
 
     server.append("text")
       .datum(function (d) { return { name: d.name, value: d.values[d.values.length - 1] }; })
-      .attr("transform", function (d) { return "translate(" + x(d.value.date) + "," + y(d.value.count) + ")"; })
-      .attr("x", 3)
+      .attr("x", function(d) { return x(d.value.date)})
+      .attr("y", function(d) { return y(d.value.count)})
+      .attr("dx", ".35em")
       .attr("dy", ".35em")
       .attr("class", "label")
-      .text(function (d) { return capitalize(d.name) + ": " + Math.round(d.value.count) })
+      .text(function (d) { return d.name + ": " + Math.round(d.value.count) })
       .style("fill", function (d) { return color(d.name); });
+
+    /**
+     * nudge labels so they don't overlap
+     */
+    var nudge = function (amount = 5) {
+      var maxit = 50;
+
+      var sorted = d3.selectAll(".label")[0].sort(function (a, b) {
+        return d3.select(a).datum().value.count - d3.select(b).datum().value.count;
+      });
+
+      var any_intersected = true;
+
+      while (any_intersected && maxit >= 0) {
+        any_intersected = false;
+
+        for (var i = 1; i < sorted.length; i++) {
+          for (var j = i; j < sorted.length; j++) {
+            // Skip the same label
+            if (sorted[i] === sorted[j]) {
+              continue;
+            }
+
+            if (intersects(sorted[i], sorted[j], 5)) {
+              any_intersected = true;
+              sorted[j].setAttribute("y", sorted[j].getAttribute("y") - amount);
+            }
+          }
+        }
+
+        --maxit;
+      }
+
+      return;
+    }
+
+    // Do two SVGRect's intersect?
+    // Allows a fudge parameter to allow partial overlap
+    var intersects = function(a, b, fudge = 0) {
+      var rect1 = a.getBBox();
+      var rect2 = b.getBBox();
+
+      if (
+        rect1.x < rect2.x + rect2.width &&
+        rect1.x + rect2.width > rect2.x &&
+        rect1.y < rect2.y + rect2.height - fudge &&
+        rect1.y + rect1.height - fudge > rect2.y
+      ) {
+        return true;
+      }
+
+      return false;
+    }
+
+    setTimeout(nudge, 300);
   });
 }
