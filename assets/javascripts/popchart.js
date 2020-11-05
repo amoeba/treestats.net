@@ -136,7 +136,7 @@ var popchart = function (selector, data_url) {
 
     server.append("text")
       .datum(function (d) { return { name: d.name, value: d.values[d.values.length - 1] }; })
-      .attr("x", function(d) { return x(d.value.date)})
+      .attr("x", function(d) { return x(d3.max(xvals))})
       .attr("y", function(d) { return y(d.value.count)})
       .attr("dx", ".35em")
       .attr("dy", ".35em")
@@ -159,7 +159,7 @@ var popchart = function (selector, data_url) {
       while (any_intersected && maxit >= 0) {
         any_intersected = false;
 
-        for (var i = 1; i < sorted.length; i++) {
+        for (var i = 0; i < sorted.length; i++) {
           for (var j = i; j < sorted.length; j++) {
             // Skip the same label
             if (sorted[i] === sorted[j]) {
@@ -197,6 +197,6 @@ var popchart = function (selector, data_url) {
       return false;
     }
 
-    setTimeout(nudge, 300);
+    setTimeout(nudge, 150);
   });
 }
