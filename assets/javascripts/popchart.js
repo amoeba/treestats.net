@@ -144,6 +144,15 @@ var popchart = function (selector, data_url) {
       .text(function (d) { return d.name + ": " + Math.round(d.value.count) })
       .style("fill", function (d) { return color(d.name); });
 
+    // Total count
+    var totalpop = servers.reduce(function(acc, x) { return acc + x.values[x.values.length - 1].count; }, 0)
+
+    svg.append("text")
+      .attr("class", "totalpop")
+      .attr("x", x(d3.max(xvals)))
+      .attr("y", 0)
+      .text("Total: " + totalpop);
+    
     /**
      * nudge labels so they don't overlap
      */
