@@ -102,7 +102,7 @@ module ServerHelper
       type: "ACE",
       description: "PvE. Retail experience with convenience changes.",
       address: "thistlecrown.ddns.net:9000",
-      discord: "https://discord.gg/4JDxss"
+      discord: "https://discord.gg/uhZ3hn7"
     },
     {
       name: "DobZ",
