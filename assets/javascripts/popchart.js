@@ -4,7 +4,7 @@ var popchart = function (selector, data_url) {
   // Setup
   var margin = { top: 20, right: 120, bottom: 30, left: 50 },
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 960 - margin.top - margin.bottom;
 
   var parseDate = d3.time.format("%Y%m%d").parse;
   var capitalize = function (s) { return s[0].toUpperCase() + s.slice(1); }
@@ -107,7 +107,7 @@ var popchart = function (selector, data_url) {
     });
 
     x.domain(d3.extent(xvals));
-    y.domain([0, d3.max(yvals) * 1.25]);
+    y.domain([0, d3.max(yvals) * 1.05]);
 
     svg.append("g")
       .attr("class", "x axis")
