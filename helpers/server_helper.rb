@@ -118,6 +118,22 @@ module ServerHelper
       address: "lostwoodsac.hopto.org:9000",
       website: "https://docs.google.com/spreadsheets/d/1BTKd6_AzcAVeyAjy3YZSsnJeLSgTr-L2BYZdtkXblDw",
       discord: "https://discord.gg/DShQjRJ"
+    },
+    {
+      name: "Seedsow",
+      type: "GDLE-Classic",
+      description: "PvE. We are a Release-Dark Majesty based server which means that you will find dungeons that were once re-tiered restored to there former glory!",
+      address: "serafino.ddns.net:9060",
+      website: "https://seedsow.ca/",
+      discord: "https://discord.gg/HB7c38rWGW"
+    },
+    {
+      name: "Snowreap",
+      type: "GDLE-Classic",
+      description: "PvP. We are a RED Release-Dark Majesty based server which means that you will find dungeons that were once re-tiered restored to there former glory!",
+      address: "serafino.ddns.net:9070",
+      website: "https://seedsow.ca/",
+      discord: "https://discord.gg/zFrBsERp8A"
     }
   ]
 
