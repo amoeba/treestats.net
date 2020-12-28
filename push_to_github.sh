@@ -8,7 +8,7 @@ echo $change_branch
 filter_branch=$(git filter-branch --index-filter 'git rm --cached --ignore-unmatch helpers/encryption_helper.rb' -f filtered)
 echo $filter_branch
 
-git_push=$(git push --force github-public filtered:master)
+git_push=$(git push --force github-public filtered:main)
 echo $git_push
 
 delete_branch=$(git branch -D filtered)
