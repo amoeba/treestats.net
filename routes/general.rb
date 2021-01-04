@@ -3,6 +3,11 @@ module Sinatra
     module Routing
       module General
         def self.registered(app)
+          app.head '/' do
+            status :ok
+            body ""
+          end
+
           app.get '/' do
             # Total uploads
             @total_uploads = redis
