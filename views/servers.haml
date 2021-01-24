@@ -23,6 +23,10 @@
 
 - if @servers.length > 0
   %h3 Private Servers
+
+  %p
+    %a{:href => "https://forms.gle/sWY3uv8H5Migi7SM9"} Submit your server by filling out this form
+
   %table.listing
     %thead
       %tr
@@ -44,4 +48,3 @@
               %a{:href => server[:website]} Website
             - if server[:discord]
               %a{:href => server[:discord]} Discord
-
