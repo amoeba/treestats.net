@@ -148,7 +148,6 @@ module ServerHelper
       type: "ACE",
       description: "PVP. Retail Experience - Organic, Vanilla, THE REAL DEAL",
       address: "45.32.0.130:9000",
-      website: "https://seedsow.ca/",
       discord: "https://discord.gg/46w4nGk2yu",
       account_limit: 5
     }
