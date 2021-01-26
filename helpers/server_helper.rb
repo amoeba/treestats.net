@@ -134,6 +134,23 @@ module ServerHelper
       address: "serafino.ddns.net:9070",
       website: "https://seedsow.ca/",
       discord: "https://discord.gg/zFrBsERp8A"
+    },
+    {
+      name: "Nigthfall",
+      type: "ACE",
+      description: "PvE. Full retail experience. Max. 4 simultaneous logins. Moderated. Forked lore. Progressive custom content. 1x XP.",
+      address: "nightfall.ac:9000",
+      website: "http://nightfall.ac",
+      discord: "https://discord.gg/Wzh6742wxS"
+    },
+    {
+      name: "Darktide 2.0",
+      type: "ACE",
+      description: "PVP. Retail Experience - Organic, Vanilla, THE REAL DEAL",
+      address: "45.32.0.130:9000",
+      website: "https://seedsow.ca/",
+      discord: "https://discord.gg/46w4nGk2yu",
+      account_limit: 5
     }
   ]
 
