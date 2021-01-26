@@ -147,7 +147,7 @@ module ServerHelper
       name: "Darktide 2.0",
       type: "ACE",
       description: "PVP. Retail Experience - Organic, Vanilla, THE REAL DEAL",
-      address: "45.32.0.130:9000",
+      address: "45.32.0.134:9000",
       discord: "https://discord.gg/46w4nGk2yu",
       account_limit: 5
     }
