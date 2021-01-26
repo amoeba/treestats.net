@@ -136,7 +136,7 @@ module ServerHelper
       discord: "https://discord.gg/zFrBsERp8A"
     },
     {
-      name: "Nigthfall",
+      name: "Nightfall",
       type: "ACE",
       description: "PvE. Full retail experience. Max. 4 simultaneous logins. Moderated. Forked lore. Progressive custom content. 1x XP.",
       address: "nightfall.ac:9000",
