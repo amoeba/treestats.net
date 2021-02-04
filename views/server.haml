@@ -1,10 +1,5 @@
 %h2.title= params[:server]
 
-- if @characters.count == 0
-  %span No characters to display for this server which means no one is running TreeStats on the server :(.
-- else
-
-
 %table.deflist
   %tbody
     %tr
@@ -44,7 +39,10 @@
         %td
           %a{:href => @details[:discord]}= @details[:discord]
 
-  %p Recently-uploaded characters
+- if @characters.count == 0
+  %span No characters to display for this server which means no one is running TreeStats on the server :(.
+- else
+  %h3 Recent Uploads
   %table.listing
     %thead
       %tr
