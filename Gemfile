@@ -7,8 +7,6 @@ gem 'rack'
 gem 'sinatra'
 gem 'sinatra-redis'
 gem "sinatra-cross_origin"
-gem 'puma'
-gem 'puma_worker_killer'
 
 gem 'mongoid'
 gem 'redis'
@@ -29,6 +27,8 @@ end
 
 group :production do
   gem 'newrelic_rpm'
+  gem 'puma'
+  gem 'puma_worker_killer'
 end
 
 group :test do
