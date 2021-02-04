@@ -30,8 +30,12 @@ module Sinatra
 
           app.get '/:server/?' do |server|
             @characters = Character.where(server: server)
-                                   .desc(:updated_at).limit(100)
+                                   .desc(:updated_at).limit(25)
                                    .only(:name, :server, :updated_at)
+            @uploaded = Character.where(server: server).count
+
+            @online = PlayerCount.where(s: server).desc(:c_at).limit(1).first
+            @details = ServerHelper.server_details.filter { |s| s[:name] == server }.first
 
             haml :server
           end
