@@ -4,7 +4,7 @@ Bundler.require(:default)
 require 'sinatra/redis'
 require 'sinatra/cross_origin'
 
-PumaWorkerKiller.enable_rolling_restart
+PumaWorkerKiller.enable_rolling_restart if (ENV["RACK_ENV"] == "production")
 
 %w[models routes lib helpers].each do |d|
   Dir["./#{d}/*.rb"].each { |file| require file }
