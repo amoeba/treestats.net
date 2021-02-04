@@ -5,16 +5,13 @@ gem 'rake'
 gem 'json'
 gem 'rack'
 gem 'sinatra'
+gem 'sinatra-redis'
 gem "sinatra-cross_origin"
 gem 'puma'
 gem 'puma_worker_killer'
 
 gem 'mongoid'
-gem 'bson_ext'
-gem 'moped'
-gem 'bson'
 gem 'redis'
-gem 'sinatra-redis'
 
 gem 'clockwork'
 gem 'resque'
@@ -25,7 +22,6 @@ gem "sprockets-sass"
 gem 'haml'
 gem "sass"
 gem "uglifier"
-
 
 group :development do
   gem 'pry'
