@@ -4,6 +4,7 @@ ruby '2.6.6'
 gem 'rake'
 gem 'json'
 gem 'rack'
+gem 'puma'
 gem 'sinatra'
 gem 'sinatra-redis'
 gem "sinatra-cross_origin"
@@ -27,7 +28,6 @@ end
 
 group :production do
   gem 'newrelic_rpm'
-  gem 'puma'
   gem 'puma_worker_killer'
 end
 
