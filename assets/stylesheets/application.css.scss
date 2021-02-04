@@ -315,7 +315,7 @@ td.specialized {
  }
 
 td.trained {
-  with: 300px;
+  width: 300px;
   background-color: green;
   background: linear-gradient(to right, #0F3C3E, #0F3C3E, black);
 }
@@ -644,10 +644,6 @@ span.tag-level {
 span.tag-attribute {
   background-color: #392067;
   color: white;
-}
-
-span.tag-skills {
-
 }
 
 span.tag-skill {
