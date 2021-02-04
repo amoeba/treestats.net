@@ -3,13 +3,46 @@
 - if @characters.count == 0
   %span No characters to display for this server which means no one is running TreeStats on the server :(.
 - else
-  %p
-    There
-    = @characters.count > 1 ? "are" : "is"
-    = "#{@characters.count} character#{@characters.count > 1 ? "s" : ""}"
-    uploaded from this server.
-    - if @characters.count > 100
-      Here's 100 of the most recently updated ones.
+
+
+%table.deflist
+  %tbody
+    %tr
+      %td
+        Online
+      %td
+        = @online[:count]
+        players as of
+        = AppHelper.relative_time(@online[:created_at])
+    %tr
+      %td
+        Uploaded
+      %td
+        = AppHelper.add_commas(@uploaded)
+        characters
+    - if @details
+      %tr
+        %td
+          Type
+        %td= @details[:type]
+      %tr
+        %td
+          Description
+        %td= @details[:description]
+      %tr
+        %td
+          Address
+        %td= @details[:address]
+      %tr
+        %td
+          Website
+        %td
+          %a{:href => @details[:website]}= @details[:website]
+      %tr
+        %td
+          Discord
+        %td
+          %a{:href => @details[:discord]}= @details[:discord]
 
   %table.listing
     %thead

@@ -473,6 +473,22 @@ table.listing th {
   background-color: #392067;
 }
 
+/* Definition List Tables */
+table.deflist {
+  width: auto;
+  margin: 0.5rem 0 1.5rem 0;
+  border-left: 2px solid #AF7A30;
+
+}
+
+table.deflist td {
+  padding: 3px 5px;
+}
+
+table.deflist td:first-child {
+  background-color: #0F3C3E;
+}
+
 /* Dashboard */
 
 #dashboard {
