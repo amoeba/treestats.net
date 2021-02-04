@@ -12,14 +12,14 @@
         Online
       %td
         = @online[:count]
-        players as of
+        characters online as of
         = AppHelper.relative_time(@online[:created_at])
     %tr
       %td
         Uploaded
       %td
         = AppHelper.add_commas(@uploaded)
-        characters
+        characters uploaded
     - if @details
       %tr
         %td
