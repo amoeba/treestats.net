@@ -9,6 +9,7 @@
         = @online[:count]
         characters online as of
         = AppHelper.relative_time(@online[:created_at])
+        #sparkline
     %tr
       %td
         Uploaded
@@ -54,3 +55,10 @@
           %td
             %a{:href => "/#{character[:server]}/#{character[:name]}"}= character[:name]
           %td= AppHelper.relative_time(character[:updated_at])
+
+
+%script{:src => javascript_path('d3.min')}
+%script{:src => javascript_path('sparkline')}
+
+:javascript
+  sparkline("#sparkline", "/player_counts.json?range=3mo&servers=#{params[:server]}");
