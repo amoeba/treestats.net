@@ -61,4 +61,4 @@
 %script{:src => javascript_path('sparkline')}
 
 :javascript
-  sparkline("#sparkline", "/player_counts.json?range=3mo&servers=#{params[:server]}");
+  sparkline("#sparkline", params[:server], "/player_counts.json?range=3mo&servers=#{params[:server]}");
