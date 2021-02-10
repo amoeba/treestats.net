@@ -1,4 +1,4 @@
-var sparkline = function (selector, data_url) {
+var sparkline = function (selector, server_name, data_url) {
   var margin = { top: 5, right: 5, bottom: 5, left: 5 },
     width = 200 - margin.left - margin.right,
     height = 25 - margin.top - margin.bottom;
@@ -6,7 +6,7 @@ var sparkline = function (selector, data_url) {
   var parseDate = d3.time.format("%Y%m%d").parse;
 
   d3.json(data_url, function (error, data) {
-    var data = data["Coldeve"];
+    var data = data[server_name];
     var data = data.map(function (d) {
       return {
         date: parseDate(d.date),
