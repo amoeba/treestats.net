@@ -1,44 +1,46 @@
 %h2.title= params[:server]
 
-%table.deflist
-  %tbody
-    %tr
-      %td
-        Online
-      %td
-        = @online[:count]
-        characters online as of
-        = AppHelper.relative_time(@online[:created_at])
-        #sparkline
-    %tr
-      %td
-        Uploaded
-      %td
-        = AppHelper.add_commas(@uploaded)
-        characters uploaded
-    - if @details
-      %tr
-        %td
-          Type
-        %td= @details[:type]
-      %tr
-        %td
-          Description
-        %td= @details[:description]
-      %tr
-        %td
-          Address
-        %td= @details[:address]
-      %tr
-        %td
-          Website
-        %td
-          %a{:href => @details[:website]}= @details[:website]
-      %tr
-        %td
-          Discord
-        %td
-          %a{:href => @details[:discord]}= @details[:discord]
+- if @online || @details
+  %table.deflist
+    %tbody
+      - if @online
+        %tr
+          %td
+            Online
+          %td
+            = @online[:count]
+            characters online as of
+            = AppHelper.relative_time(@online[:created_at])
+            #sparkline
+        %tr
+          %td
+            Uploaded
+          %td
+            = AppHelper.add_commas(@uploaded)
+            characters uploaded
+      - if @details
+        %tr
+          %td
+            Type
+          %td= @details[:type]
+        %tr
+          %td
+            Description
+          %td= @details[:description]
+        %tr
+          %td
+            Address
+          %td= @details[:address]
+        %tr
+          %td
+            Website
+          %td
+            %a{:href => @details[:website]}= @details[:website]
+        %tr
+          %td
+            Discord
+          %td
+            %a{:href => @details[:discord]}= @details[:discord]
 
 - if @characters.count == 0
   %span No characters to display for this server which means no one is running TreeStats on the server :(.
