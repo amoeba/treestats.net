@@ -7,6 +7,12 @@ var sparkline = function (selector, server_name, data_url) {
 
   d3.json(data_url, function (error, data) {
     var data = data[server_name];
+
+    // Stop now if no data
+    if (!data) {
+      return;
+    }
+
     var data = data.map(function (d) {
       return {
         date: parseDate(d.date),
