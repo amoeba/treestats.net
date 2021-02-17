@@ -26,7 +26,7 @@ var sparkline = function (selector, server_name, data_url) {
     var x = d3.time
       .scale()
       .domain([
-        d3.max(
+        d3.min(
           data.map(function (d) {
             return d.date;
           })
