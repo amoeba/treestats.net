@@ -14,15 +14,19 @@ var sparkline = function (selector, server_name, data_url) {
       };
     });
 
+    var today = parseDate(
+      new Date().toISOString().slice(0, 10).replaceAll("-", "")
+    );
     var x = d3.time
       .scale()
-      .domain(
-        d3.extent(
+      .domain([
+        d3.max(
           data.map(function (d) {
             return d.date;
           })
-        )
-      )
+        ),
+        today,
+      ])
       .range([0, width]);
 
     var y = d3.scale

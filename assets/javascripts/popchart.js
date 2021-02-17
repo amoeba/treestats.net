@@ -106,7 +106,9 @@ var popchart = function (selector, data_url) {
       yvals = yvals.concat(counts);
     });
 
-    x.domain(d3.extent(xvals));
+    // End time series at today, even if date don't go up to it
+    var today = parseDate((new Date()).toISOString().slice(0, 10).replaceAll("-", ""));
+    x.domain([d3.min(xvals), today]);
     y.domain([0, d3.max(yvals) * 1.05]);
 
     svg.append("g")
@@ -152,7 +154,7 @@ var popchart = function (selector, data_url) {
       .attr("x", x(d3.max(xvals)))
       .attr("y", 0)
       .text("Total: " + totalpop);
-    
+
     /**
      * nudge labels so they don't overlap
      */
