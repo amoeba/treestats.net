@@ -672,3 +672,14 @@ span.tag-skill {
   background-position: 50% 50%;
   background-color: transparent;
 }
+
+/* Tooltips */
+.tippy {
+  cursor: pointer;
+  opacity: 0.75;
+  padding: 0 0.25rem;
+}
+
+.tippy:hover {
+  opacity: 1;
+}
