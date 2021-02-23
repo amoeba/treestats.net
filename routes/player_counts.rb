@@ -67,7 +67,7 @@ module Sinatra
 
             if !redis.exists?(redis_key)
               result = player_counts(servers, range)
-              redis.setex(redis_key, 300, result)
+              redis.setex(redis_key, 360, result)
 
               return result
             else
@@ -80,7 +80,7 @@ module Sinatra
 
             if !redis.exists?("latest-counts")
               result = latest_player_counts
-              redis.setex("latest-counts", 300, result)
+              redis.setex("latest-counts", 360, result)
 
               return result
             else
