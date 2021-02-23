@@ -11,7 +11,7 @@ module Sinatra
 
                 if !redis.exists?(redis_key)
                   result = ServerHelper.servers_with_counts.to_json
-                  redis.setex(redis_key, 300, result)
+                  redis.setex(redis_key, 360, result)
 
                   halt result
                 else
