@@ -4,7 +4,6 @@ require 'uri'
 
 # require './app.rb'
 require File.expand_path('../query_cache_job', __FILE__)
-require File.expand_path('../stats_job', __FILE__)
 
 redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
 uri = URI.parse(redis_url)
@@ -16,5 +15,4 @@ module Clockwork
   }
 
   every 5.minutes, QueryCacheJob
-  every 1.hours, StatsJob
 end
