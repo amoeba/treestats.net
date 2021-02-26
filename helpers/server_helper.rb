@@ -112,14 +112,6 @@ module ServerHelper
       discord: "https://discord.gg/wPXb9P"
     },
     {
-      name: "LostWoods AC",
-      type: "ACE",
-      description: "PvE. Retail experience w/ progressive custom content. 1x XP.",
-      address: "lostwoodsac.hopto.org:9000",
-      website: "https://docs.google.com/spreadsheets/d/1BTKd6_AzcAVeyAjy3YZSsnJeLSgTr-L2BYZdtkXblDw",
-      discord: "https://discord.gg/DShQjRJ"
-    },
-    {
       name: "Seedsow",
       type: "GDLE-Classic",
       description: "PvE. We are a Release-Dark Majesty based server which means that you will find dungeons that were once re-tiered restored to there former glory!",
