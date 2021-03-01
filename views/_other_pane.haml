@@ -5,6 +5,9 @@
     %tr
       %td Birth
       %td= @character.birth
+    %tr
+      %td Deaths
+      %td= @character.deaths
     - @character.properties.each do |k,v|
     - next unless PropertiesHelper::is_type(k, :general)
       %tr
