@@ -26,7 +26,7 @@ var popchart = function (selector, data_url) {
     .orient("left");
 
   var line = d3.svg.line()
-    .interpolate("linear")
+    .interpolate("basis")
     .x(function (d) { return x(d.date); })
     .y(function (d) { return y(d.count); });
 
