@@ -65,14 +65,16 @@ module Sinatra
               "player-counts-All-#{range}"
             end
 
-            if !redis.exists?(redis_key)
-              result = player_counts(servers, range)
-              redis.setex(redis_key, 360, result)
+            return player_counts(servers, range)
 
-              return result
-            else
-              return redis.get(redis_key)
-            end
+            # if !redis.exists?(redis_key)
+            #   result = player_counts(servers, range)
+            #   redis.setex(redis_key, 360, result)
+
+            #   return result
+            # else
+            #   return redis.get(redis_key)
+            # end
           end
 
           app.get '/player_counts-latest.json' do
