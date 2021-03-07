@@ -7,7 +7,7 @@ var sparkline = function (selector, server_name, data_url) {
 
   d3.json(data_url, function (error, data) {
     // Stop now if no data
-    if (!data) {
+    if (!data || data.length === 0) {
       return;
     }
 
