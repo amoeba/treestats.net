@@ -28,6 +28,15 @@ def player_counts(servers = nil, range = nil)
     }
   }
 
+  project = {
+    "$project" => {
+      "_id": 0,
+      "server" => "$_id.s",
+      "date" => "$_id.date",
+      "count" => "$max"
+    }
+  }
+
   range = "3mo" if range.nil?
 
   if range && range != "All"
@@ -42,20 +51,9 @@ def player_counts(servers = nil, range = nil)
     }
   end
 
-  result = PlayerCount.collection.aggregate([match, group, sort])
+  result = PlayerCount.collection.aggregate([match, group, sort, project])
 
-  # Restructure result for better JSON shape
-  pops = {}
-
-  result.each do |r|
-    pops[r["_id"]["s"]] ||= []
-    pops[r["_id"]["s"]] << {
-      :date => r["_id"]["date"],
-      :count => r["max"]
-    }
-  end
-
-  pops.to_json
+  return result.to_json
 end
 
 def latest_player_counts
