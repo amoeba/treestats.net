@@ -6,8 +6,7 @@ var popchart = function (selector, data_url) {
     width = 960 - margin.left - margin.right,
     height = 960 - margin.top - margin.bottom;
 
-  var parseDate = d3.time.format("%Y%m%d").parse;
-  var capitalize = function (s) { return s[0].toUpperCase() + s.slice(1); }
+  var parseDate = d3.time.format.utc("%Y%m%d").parse;
 
   var x = d3.time.scale()
     .range([0, width]);
@@ -59,8 +58,27 @@ var popchart = function (selector, data_url) {
       return;
     }
 
+    // Parse all dates
+    for (var i = 0; i < data.length; i++) {
+      data[i].date = parseDate(data[i].date)
+    }
+
+    // Grab xvals and yvals to calculate extents
+    var xvals = data.map(function(d) {
+      return d.date
+    });
+
+    var yvals = data.map(function(d) {
+      return d.count
+    });
+
+    // Group by server
+    var byServer = d3.nest()
+      .key(function(d) { return d.server })
+      .entries(data);
+
     // Handle no results
-    if (Object.keys(data).length === 0) {
+    if (Object.keys(byServer).length === 0) {
       var removeEl = document.querySelectorAll(".removeme");
 
       if (removeEl.length != 1) {
@@ -76,35 +94,8 @@ var popchart = function (selector, data_url) {
     // Remove loading text
     svg.select(".removeme").remove();
 
-    color.domain(d3.keys(data))
-
-    // Re-structure and parse values
-    var servers = color.domain().map(function (name) {
-      return {
-        name: name,
-        values: data[name].map(function (count) {
-          return { date: parseDate(count.date), count: +count.count };
-        })
-      };
-    });
-
-    // Find the min and max values for the scales
-    // TODO: Consider a more efficient way to do this
-    var xvals = [],
-      yvals = [];
-
-    servers.forEach(function (server) {
-      var dates = server.values.map(function (data) {
-        return data.date
-      });
-
-      var counts = server.values.map(function (data) {
-        return data.count
-      });
-
-      xvals = xvals.concat(dates);
-      yvals = yvals.concat(counts);
-    });
+    // Color domain
+    color.domain(d3.keys(byServer))
 
     // End time series at today, even if date don't go up to it
     var today = parseDate((new Date()).toISOString().slice(0, 10).replaceAll("-", ""));
@@ -127,17 +118,17 @@ var popchart = function (selector, data_url) {
       .text("Players");
 
     var server = svg.selectAll(".server")
-      .data(servers)
+      .data(byServer)
       .enter().append("g")
       .attr("class", "servers");
 
     server.append("path")
       .attr("class", "line")
       .attr("d", function (d) { return line(d.values); })
-      .style("stroke", function (d) { return color(d.name); });
+      .style("stroke", function (d) { return color(d.key); });
 
     server.append("text")
-      .datum(function (d) { return { name: d.name, value: d.values[d.values.length - 1] }; })
+      .datum(function (d) { return { name: d.key, value: d.values[d.values.length - 1] }; })
       .attr("x", function(d) { return x(d3.max(xvals))})
       .attr("y", function(d) { return y(d.value.count)})
       .attr("dx", ".35em")
@@ -147,7 +138,7 @@ var popchart = function (selector, data_url) {
       .style("fill", function (d) { return color(d.name); });
 
     // Total count
-    var totalpop = servers.reduce(function(acc, x) { return acc + x.values[x.values.length - 1].count; }, 0)
+    var totalpop = byServer.reduce(function(acc, x) { return acc + x.values[x.values.length - 1].count; }, 0)
 
     svg.append("text")
       .attr("class", "totalpop")
