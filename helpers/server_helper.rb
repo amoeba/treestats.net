@@ -142,6 +142,13 @@ module ServerHelper
       address: "45.32.0.134:9000",
       discord: "https://discord.gg/46w4nGk2yu",
       account_limit: 5
+    },
+    {
+      name: "InfiniteAC",
+      type: "ACE",
+      description: "PvE. Single Account - 5x XP - 2X Mob Dmg - Custom Enlightenment System",
+      address: "158.69.123.111:9000",
+      account_limit: 1
     }
   ]
 
