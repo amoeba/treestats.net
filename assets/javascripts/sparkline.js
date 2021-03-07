@@ -6,8 +6,6 @@ var sparkline = function (selector, server_name, data_url) {
   var parseDate = d3.time.format("%Y%m%d").parse;
 
   d3.json(data_url, function (error, data) {
-    var data = data[server_name];
-
     // Stop now if no data
     if (!data) {
       return;
