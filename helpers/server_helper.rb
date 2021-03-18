@@ -149,6 +149,14 @@ module ServerHelper
       description: "PvE. Single Account - 5x XP - 2X Mob Dmg - Custom Enlightenment System",
       address: "158.69.123.111:9000",
       account_limit: 1
+    },
+    {
+      name: "Foredawn",
+      type: "ACE",
+      description: "A PvP ACE server with Minor QoL tweaks and 2x xp - Released March 2021, Legendaries to be released Mid-April.",
+      address: "foredawn.realm.ac:9000",
+      discord: "https://discord.gg/FsNtVdE3ET",
+      account_limit: 3
     }
   ]
 
