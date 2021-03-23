@@ -128,14 +128,6 @@ module ServerHelper
       discord: "https://discord.gg/zFrBsERp8A"
     },
     {
-      name: "Nightfall",
-      type: "ACE",
-      description: "PvE. Full retail experience. Moderated. Forked lore. Progressive custom content. 1x XP.",
-      address: "nightfall.ac:9000",
-      website: "http://nightfall.ac",
-      discord: "https://discord.gg/Wzh6742wxS"
-    },
-    {
       name: "Darktide 2.0",
       type: "ACE",
       description: "PVP. Retail Experience - Organic, Vanilla, THE REAL DEAL",
