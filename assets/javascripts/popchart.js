@@ -135,7 +135,27 @@ var popchart = function (selector, data_url) {
       .attr("dy", ".35em")
       .attr("class", "label")
       .text(function (d) { return d.name + ": " + Math.round(d.value.count) })
-      .style("fill", function (d) { return color(d.name); });
+      .style("fill", function (d) { return color(d.name); })
+      .attr("data-label", function(d) { return d.name })
+      .on("mouseenter", function() {
+        var parent = d3.event.target.parentElement;
+        var servers = document.querySelectorAll(".servers");
+
+        servers.forEach(function(s) {
+          if (s === parent) {
+            return;
+          }
+
+          s.style.opacity = 0.25;
+        });
+      })
+      .on("mouseleave", function() {
+        var servers = document.querySelectorAll(".servers");
+
+        servers.forEach(function(s) {
+          s.style.opacity = 1;
+        });
+      });
 
     // Total count
     var totalpop = byServer.reduce(function(acc, x) { return acc + x.values[x.values.length - 1].count; }, 0)
