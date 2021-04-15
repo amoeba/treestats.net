@@ -143,7 +143,7 @@ module ServerHelper
       description: "PvE. End of Retail experience w/ custom content. 2x XP weekends. Max 4 accounts.",
       address: "www.asheron4fun.com:9000",
       discord: "https://discord.gg/afnQNXj",
-      website: "https://www.asheron4fun.com"
+      website: "https://www.asheron4fun.com",
       account_limit: 4
     },
     {
