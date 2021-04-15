@@ -27,14 +27,6 @@ module ServerHelper
       discord: "https://discord.gg/Rh3UVRs"
     },
     {
-      name: "Riptide",
-      type: "GDLE",
-      description: "A PvP server that will mimic retail with quality of life deviations.",
-      address: "riptide.ac:9000",
-      website: "http://acriptide.herokuapp.com",
-      discord: "https://discord.gg/SZsTGh"
-    },
-    {
       name: "Coldeve",
       type: "ACE",
       description: "PvE. Retail experience.",
@@ -68,13 +60,6 @@ module ServerHelper
       description: "PvE. Retail experience. Max. 2 accounts. No botting.",
       address: "acportalstorm.com:9000",
       discord: "https://discord.gg/aD2t6Yb"
-    },
-    {
-      name: "PotatoAC",
-      type: "ACE",
-      description: "PvP. Custom experience: 1.5-3x XP w/ emphasis on custom content.",
-      address: "potato.ac:9000",
-      discord: "https://discord.gg/R6dXBP"
     },
     {
       name: "RisingSun",
