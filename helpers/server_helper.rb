@@ -92,24 +92,11 @@ module ServerHelper
       discord: "https://discord.gg/mNzpGX"
     },
     {
-      name: "Gloomfell",
-      type: "ACE",
-      description: "PvE. Increased difficulty server. Max. 2 accounts. Custom content.",
-      address: "3.19.16.15:9000"
-    },
-    {
       name: "Thistlecrown",
       type: "ACE",
       description: "PvE. Retail experience with convenience changes.",
       address: "thistlecrown.ddns.net:9000",
       discord: "https://discord.gg/uhZ3hn7"
-    },
-    {
-      name: "DobZ",
-      type: "ACE",
-      description: "PvP. Retail experience. 3x XP.",
-      address: "dobzac.ddns.net:9000",
-      discord: "https://discord.gg/wPXb9P"
     },
     {
       name: "Seedsow",
@@ -149,6 +136,23 @@ module ServerHelper
       address: "foredawn.realm.ac:9000",
       discord: "https://discord.gg/FsNtVdE3ET",
       account_limit: 3
+    },
+    {
+      name: "Asheron4Fun.com",
+      type: "ACE",
+      description: "PvE. End of Retail experience w/ custom content. 2x XP weekends. Max 4 accounts.",
+      address: "www.asheron4fun.com:9000",
+      discord: "https://discord.gg/afnQNXj",
+      website: "https://www.asheron4fun.com"
+      account_limit: 4
+    },
+    {
+      name: "Frostcull",
+      type: "ACE",
+      description: "ACE PvE Server: 10x XP/Lum, 25x Drop Rate, No Level Cap, Custom Content, and More!",
+      address: "frostcull.ddns.net:9000",
+      discord: "https://discord.gg/sBXtZ8S7dG ",
+      account_limit: 5
     }
   ]
 
