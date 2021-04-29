@@ -75,7 +75,7 @@ module Sinatra
               puts json_text
             end
 
-            character = Character.find_or_create_by(name: name, server: server)
+            character = Character.unscoped.find_or_create_by(name: name, server: server)
 
             # Assign attributes then touch
             # We do this instead of just using update_attributes
