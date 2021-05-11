@@ -17,4 +17,4 @@ TODO
 
 ### Under Dockerized MongoDB
 
-`docker exec -i 46b4ccdad542 sh -c 'mongorestore --gzip --archive' < backup.dokku.mongo-new.20210201`
+`docker exec -i $CONTAINER sh -c 'mongorestore --gzip --archive' < backup.dokku.mongo-new.20210201`
