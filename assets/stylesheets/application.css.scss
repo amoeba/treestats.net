@@ -6,7 +6,9 @@ body {
   min-width: 600px;
   background-color: #111;
   color: #fff;
-  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
 }
 
 table {
@@ -15,7 +17,11 @@ table {
   border-spacing: 0;
 }
 
-table, thead, tbody, tr, td {
+table,
+thead,
+tbody,
+tr,
+td {
   margin: 0;
   padding: 0;
 }
@@ -23,8 +29,8 @@ table, thead, tbody, tr, td {
 #header {
   height: 100px;
   background-color: black;
-  background-image: image-url('bg_top.jpg');
-  border-bottom: 2px solid #AF7A30;
+  background-image: image-url("bg_top.jpg");
+  border-bottom: 2px solid #af7a30;
 }
 
 #header td {
@@ -62,7 +68,7 @@ td.logo {
 #search {
   padding: 6px;
   background-color: black;
-  border-bottom: 2px solid #AF7A30;
+  border-bottom: 2px solid #af7a30;
 }
 
 #search form {
@@ -75,7 +81,7 @@ td.logo {
 }
 
 #download-link {
-  color: gold
+  color: gold;
 }
 
 main {
@@ -90,7 +96,7 @@ main {
   padding: 0;
   background-color: #000;
   color: #fff;
-  border-right: 2px solid #AF7A30;
+  border-right: 2px solid #af7a30;
 }
 
 #content {
@@ -136,7 +142,6 @@ table.char tbody td {
   padding: 2px 4px 2px 4px;
 }
 
-
 table.char table.internal tbody td {
   padding: 0;
 }
@@ -155,7 +160,7 @@ div.title h2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   padding: 3px 5px;
-  border-bottom: 2px solid #AF7A30;
+  border-bottom: 2px solid #af7a30;
 }
 
 #links:last-child {
@@ -187,8 +192,8 @@ div.title h2 {
   margin: 0;
   padding: 3px;
   font-size: 14px;
-  background-color: #0F3C3E;
-  background: linear-gradient(to right, #0F3C3E, #0F3C3E, black);
+  background-color: #0f3c3e;
+  background: linear-gradient(to right, #0f3c3e, #0f3c3e, black);
 }
 
 #nav ul {
@@ -197,11 +202,13 @@ div.title h2 {
   padding: 0;
 }
 
-#nav ul, #nav form {
+#nav ul,
+#nav form {
   margin-bottom: 0.5em;
 }
 
-#nav ul li, input.textsubmit {
+#nav ul li,
+input.textsubmit {
   padding: 1px 3px;
   font-size: 14px;
 }
@@ -225,7 +232,7 @@ table.xplum tr td {
 }
 
 tr.line {
-  border-bottom: 2px solid #AF7A30;
+  border-bottom: 2px solid #af7a30;
 }
 
 tr.colnames td {
@@ -234,7 +241,7 @@ tr.colnames td {
 
 td.level {
   width: 65px;
-  border-left: 2px solid #AF7A30;
+  border-left: 2px solid #af7a30;
   font-size: 85%;
 }
 
@@ -300,11 +307,12 @@ span.name {
 
 span.level {
   font-size: 200%;
-  color: #FFF27F;
+  color: #fff27f;
   margin-top: 0;
 }
 
-table.skills tbody td.specialized, table.skills tbody td.trained {
+table.skills tbody td.specialized,
+table.skills tbody td.trained {
   height: 20px;
 }
 
@@ -312,20 +320,21 @@ td.specialized {
   width: 300px;
   background-color: purple;
   background: linear-gradient(to right, #392067, #392067, black);
- }
+}
 
 td.trained {
   width: 300px;
   background-color: green;
-  background: linear-gradient(to right, #0F3C3E, #0F3C3E, black);
+  background: linear-gradient(to right, #0f3c3e, #0f3c3e, black);
 }
 
-tbody.attributes span.title, tbody.skills span.title {
+tbody.attributes span.title,
+tbody.skills span.title {
   margin-bottom: 1em;
 }
 
 span.creation {
-  color: #CCC;
+  color: #ccc;
 }
 
 div.last_updated {
@@ -337,7 +346,7 @@ div.last_updated {
 div.last_updated,
 div.last_updated a,
 div.last_updated a:visited {
-  color: #CCC;
+  color: #ccc;
 }
 
 #chain {
@@ -347,13 +356,13 @@ div.last_updated a:visited {
 
 #tree svg {
   background-color: black;
-  border: 2px solid #AF7A30;
+  border: 2px solid #af7a30;
 }
 
 span.overlaytext {
   margin: 5px;
   font-size: 11px;
-  color: #CCC;
+  color: #ccc;
 }
 
 .overlay {
@@ -367,7 +376,7 @@ span.overlaytext {
 }
 
 .current_title a {
-  color: #00FF00;
+  color: #00ff00;
 }
 
 .title_list_item a {
@@ -402,7 +411,7 @@ span.overlaytext {
 .box {
   background-color: black;
   color: white;
-  border: 2px solid #AF7A30;
+  border: 2px solid #af7a30;
   max-height: 400px;
   overflow-x: hidden;
   overflow-y: auto;
@@ -421,9 +430,9 @@ span.overlaytext {
 }
 
 .tab.active {
-  border-top: 2px solid #AF7A30;
-  border-right: 2px solid #AF7A30;
-  border-left: 2px solid #AF7A30;
+  border-top: 2px solid #af7a30;
+  border-right: 2px solid #af7a30;
+  border-left: 2px solid #af7a30;
   border-bottom: none;
   background-color: #004000;
   background-color: rgba(0, 100, 0, 0.4);
@@ -461,11 +470,16 @@ table.listing {
   width: 600px;
 }
 
-table.listing thead tr {
-  border-bottom: 2px solid #AF7A30;
+table.listing.auto {
+  width: auto;
 }
 
-table.listing th, table.listing td {
+table.listing thead tr {
+  border-bottom: 2px solid #af7a30;
+}
+
+table.listing th,
+table.listing td {
   padding: 3px;
 }
 
@@ -477,8 +491,7 @@ table.listing th {
 table.deflist {
   width: auto;
   margin: 0.5rem 0 1.5rem 0;
-  border-left: 2px solid #AF7A30;
-
+  border-left: 2px solid #af7a30;
 }
 
 table.deflist td {
@@ -486,7 +499,7 @@ table.deflist td {
 }
 
 table.deflist td:first-child {
-  background-color: #0F3C3E;
+  background-color: #0f3c3e;
 }
 
 /* Dashboard */
@@ -511,13 +524,14 @@ table.dashboard a {
   color: #f1f7cb;
 }
 
-table.dashboard th, table.dashboard td {
+table.dashboard th,
+table.dashboard td {
   padding: 5px 3px;
   text-align: left;
 }
 
 table.dashboard thead th {
-  border-bottom: 2px solid #89682B;
+  border-bottom: 2px solid #89682b;
 }
 
 .dashboard th:first-child,
@@ -549,11 +563,11 @@ table.account-fields {
 }
 
 table.account-fields th {
-  background-color: #0F3C3E;
+  background-color: #0f3c3e;
 }
 
 table.account-fields thead tr {
-  border-bottom: #AF7A30 solid 2px;
+  border-bottom: #af7a30 solid 2px;
 }
 table.account-fields td {
   padding: 0.25em 0.25em;
@@ -561,26 +575,29 @@ table.account-fields td {
 
 table.account-fields td.group {
   font-weight: bold;
-  background-color: #0F3C3E;
+  background-color: #0f3c3e;
 }
-
 
 /* Tablesort CSS
    https://github.com/tristen/tablesort
 */
 
-th.sort-header::-moz-selection { background:transparent; }
-th.sort-header::selection      { background:transparent; }
+th.sort-header::-moz-selection {
+  background: transparent;
+}
+th.sort-header::selection {
+  background: transparent;
+}
 th.sort-header {
-  cursor:pointer;
+  cursor: pointer;
 }
 
 th.sort-header::-moz-selection,
 th.sort-header::selection {
-  background:transparent;
+  background: transparent;
 }
 table th.sort-header:after {
-  content:'';
+  content: "";
   float: right;
   margin-top: 7px;
   border-width: 0 4px 4px;
@@ -633,7 +650,6 @@ table th.sort-up:after {
   stroke-width: 1.5px;
 }
 
-
 /* tags */
 div.tag {
   display: inline-block;
@@ -645,7 +661,9 @@ div.tag img {
   height: 15px;
 }
 
-span.tag-level, span.tag-attribute, span.tag-skill {
+span.tag-level,
+span.tag-attribute,
+span.tag-skill {
   display: inline-block;
   padding: 2px 4px;
   font-family: monospace;
@@ -653,7 +671,7 @@ span.tag-level, span.tag-attribute, span.tag-skill {
   text-align: center;
 }
 span.tag-level {
-  background-color: #0F3C3E;
+  background-color: #0f3c3e;
   color: white;
 }
 
