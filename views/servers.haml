@@ -1,6 +1,38 @@
 %h2.title Servers
 
-%h3 Retail Servers
+- if @servers.length > 0
+  %h3#private Private Servers
+
+  %p
+    This is by no means an official or complete list of the available private servers.
+    I keep this list to make the TreeStats website as useful as possible and I pick servers based upon whether the server has been around for a while, has a stable player base, and is likely to be around in the future. Note that my list is different than the <a href="https://github.com/acresources/serverslist">community list</a>.
+  %p.notice
+    Submit your server by filling out <a href="https://forms.gle/sWY3uv8H5Migi7SM9">this Google Form</a>.
+
+
+  %table.listing.auto
+    %thead
+      %tr
+        %th Name
+        %th Type
+        %th Description
+        %th Connect
+        %th More
+    %tbody
+      - @servers.each do |server|
+        %tr
+          %td
+            %a{:href => "/#{server[:name]}"}= server[:name]
+          %td= server[:type]
+          %td= server[:description]
+          %td= server[:address]
+          %td
+            - if server[:website]
+              %a{:href => server[:website]} Website
+            - if server[:discord]
+              %a{:href => server[:discord]} Discord
+
+%h3#retail Retail Servers
 %ul
   %li
     %a{:href => "/Darktide/"} Darktide
@@ -20,34 +52,3 @@
     %a{:href => "/Verdantine/"} Verdantine
   %li
     %a{:href => "/WintersEbb/"} WintersEbb
-
-- if @servers.length > 0
-  %h3 Private Servers
-
-  %p
-    This is by no means an official or complete list of the available private servers.
-    I keep this list to make the TreeStats website as useful as possible and I pick servers based upon whether the server has been around for a while, has a stable player base, and is likely to be around in the future. Note that my list is different than the <a href="https://github.com/acresources/serverslist">community list</a>.
-  %p
-    %a{:href => "https://forms.gle/sWY3uv8H5Migi7SM9"} Submit your server by filling out this form
-
-  %table.listing
-    %thead
-      %tr
-        %th Name
-        %th Type
-        %th Description
-        %th Connect
-        %th Info
-    %tbody
-      - @servers.each do |server|
-        %tr
-          %td
-            %a{:href => "/#{server[:name]}"}= server[:name]
-          %td= server[:type]
-          %td= server[:description]
-          %td= server[:address]
-          %td
-            - if server[:website]
-              %a{:href => server[:website]} Website
-            - if server[:discord]
-              %a{:href => server[:discord]} Discord
