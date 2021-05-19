@@ -59,6 +59,11 @@ end
 def latest_player_counts
   latest_counts = PlayerCount.collection.aggregate([
     {
+      "$sort" => {
+        "c_at" => 1
+      }
+    },
+    {
       "$match" => {
         "c_at" => {
           "$gte" => Date.today - 7
@@ -83,11 +88,6 @@ def latest_player_counts
         "server": "$_id",
         "count": "$count",
         "date": "$created_at"
-      }
-    },
-    {
-      "$sort" => {
-        "c_at" => 1
       }
     }
   ])
