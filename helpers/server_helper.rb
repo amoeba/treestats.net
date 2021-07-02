@@ -48,33 +48,11 @@ module ServerHelper
       discord: "https://discord.gg/mNzpGX"
     },
     {
-      name: "Living Auberean",
-      type: "ACE",
-      description: "PvE. Retail experience with convenience changes. Max. 3 accounts.",
-      address: "63.226.232.178:9000",
-      discord: "https://discord.gg/wjUbrjE"
-    },
-    {
       name: "Levistras",
       type: "ACE",
       description: "PvE. Retail experience. Max. 2 accounts. No botting.",
       address: "acportalstorm.com:9000",
       discord: "https://discord.gg/aD2t6Yb"
-    },
-    {
-      name: "RisingSun",
-      type: "ACE",
-      description: "PvE. Retail experience.",
-      address: "risingsun.hopto.org:9000",
-      discord: "https://discord.gg/XCXH8R8"
-    },
-    {
-      name: "Winterthaw",
-      type: "ACE",
-      description: "PvE. Convenience changes and custom content.",
-      address: "23.20.74.30:9000",
-      website: "https://docs.google.com/spreadsheets/d/1dToIsC8l6dvJqrTloLftiUp40QSqxpNJAiPKnq8cTH4",
-      discord: "https://discord.gg/mNzpGX"
     },
     {
       name: "Thistlecrown",
@@ -98,14 +76,6 @@ module ServerHelper
       address: "serafino.ddns.net:9070",
       website: "https://seedsow.ca/",
       discord: "https://discord.gg/zFrBsERp8A"
-    },
-    {
-      name: "Darktide 2.0",
-      type: "ACE",
-      description: "PVP. Retail Experience - Organic, Vanilla, THE REAL DEAL",
-      address: "45.32.0.134:9000",
-      discord: "https://discord.gg/46w4nGk2yu",
-      account_limit: 5
     },
     {
       name: "InfiniteAC",
