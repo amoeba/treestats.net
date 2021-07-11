@@ -4,35 +4,46 @@
 require 'mongo'
 
 # Change this as needed
-client = Mongo::Client.new()
+client = Mongo::Client.new("mongodb://127.0.0.1:27017/mongo-new")
 db = client.database
 collection = client[:characters]
 
-server = "Hightide"
-records = collection.find({'s':server})
+def find_and_delete_dupes(collection)
+  kept = 0
+  deleted = 0
+  before = nil
+  after = nil
 
-records.each do |r|
-  puts r['n']
+  records = collection.find()
 
-  dupes = collection.find({
-    's': server, 
-    'n': r['n']
-  }, {:limit => 5 }).to_a
+  before = collection.count
 
-  next if dupes.length <= 1
+  records.each do |r|
+    dupes = collection.find({
+      "s": r["s"],
+      "n": r["n"]
+    }).to_a
 
-  dupes = dupes.sort_by { |i| i['u_at']}
+    if dupes.length <= 1
+      kept += 1
+      next
+    end
 
-  puts "Duplicates..."
-  dupes.each do |record|
-    puts "#{record['_id']}/#{record['n']}/#{record['u_at']}"
+    dupes = dupes.sort_by { |i| i['u_at']}
+    to_del = dupes[0..(dupes.length - 2)]
+
+    puts "Deleting...#{to_del[0]["s"]}/#{to_del[0]["n"]} from #{to_del[0]["u_at"].to_f} to #{to_del[to_del.length-2]["u_at"].to_f} but keeping #{dupes[dupes.length-1]["u_at"].to_f}"
+
+    to_del.each do |record|
+      deleted += 1
+      # collection.delete_one({'_id': record['_id']})
+    end
   end
 
-  to_del = dupes[0..(dupes.length - 2)]
-
-  puts "Deleting..."
-  to_del.each do |record|
-    puts "#{record['_id']}/#{record['n']}/#{record['u_at']}"
-    puts collection.delete_one({'_id': record['_id']})
-  end
+  puts "Kept: #{kept}"
+  puts "Deleted #{deleted}"
+  after = collection.count
+  puts "Of #{before} total records, #{before - after} were deleted"
 end
+
+find_and_delete_dupes(collection)
