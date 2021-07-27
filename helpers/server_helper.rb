@@ -98,15 +98,6 @@ module ServerHelper
       account_limit: 1
     },
     {
-      name: "Foredawn",
-      type: "PvP",
-      software: "ACE",
-      description: "Minor QoL tweaks and 2x xp - Released March 2021, Legendaries to be released Mid-April.",
-      address: "foredawn.realm.ac:9000",
-      discord: "https://discord.gg/FsNtVdE3ET",
-      account_limit: 3
-    },
-    {
       name: "Asheron4Fun.com",
       type: "PvE",
       software: "ACE",
