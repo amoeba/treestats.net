@@ -10,6 +10,8 @@ module Sinatra
           end
 
           app.get "/servers.json" do
+            content_type :json
+
             @servers = ServerHelper.server_details
 
             JSON.pretty_generate(@servers)
