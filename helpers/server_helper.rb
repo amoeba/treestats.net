@@ -126,7 +126,7 @@ module ServerHelper
       account_limit: 5
     },
     {
-      name: "Duskfall",
+      name: "DuskFall",
       type: "PvE",
       software: "ACE",
       description: "10x XP, 5x Luminance, Custom Content/Dungeons/Gear/Story Progression",
