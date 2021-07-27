@@ -9,13 +9,15 @@
   %p.notice
     Submit your server by filling out <a href="https://forms.gle/sWY3uv8H5Migi7SM9">this Google Form</a>.
 
-
   %table.listing.auto
     %thead
       %tr
         %th Name
-        %th Type
         %th Description
+        %th Type
+        %th Online
+        %th Account Limit
+        %th Software
         %th Connect
         %th More
     %tbody
@@ -23,8 +25,11 @@
         %tr
           %td
             %a{:href => "/#{server[:name]}"}= server[:name]
-          %td= server[:type]
           %td= server[:description]
+          %td= server[:type]
+          %td= server[:latest_count]
+          %td= server[:account_limit]
+          %td= server[:software]
           %td= server[:address]
           %td
             - if server[:website]

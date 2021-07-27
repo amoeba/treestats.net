@@ -4,28 +4,19 @@ module Sinatra
       module Server
         def self.registered(app)
           app.get "/servers/?" do
-            request.accept.each do |type|
-              case type.to_s
-              when 'application/json'
-                redis_key = "server-counts-with-json"
+            @servers = ServerHelper.server_details
 
-                if !redis.exists?(redis_key)
-                  result = ServerHelper.servers_with_counts.to_json
-                  redis.setex(redis_key, 360, result)
+            haml :servers
+          end
 
-                  halt result
-                else
-                  halt redis.get(redis_key)
-                end
+          app.get "/servers.json" do
+            @servers = ServerHelper.server_details.map do |server|
+              server[:latest_count] = PlayerCount.where(s: server[:name]).desc(:c_at).limit(1).first
 
-                halt
-              when 'text/html'
-                @servers = ServerHelper.server_details
-                halt haml :servers
-              end
+              server
             end
 
-            error 406
+            JSON.pretty_generate(@servers)
           end
 
           app.get '/:server/?' do |server|
