@@ -10,11 +10,7 @@ module Sinatra
           end
 
           app.get "/servers.json" do
-            @servers = ServerHelper.server_details.map do |server|
-              server[:latest_count] = PlayerCount.where(s: server[:name]).desc(:c_at).limit(1).first
-
-              server
-            end
+            @servers = ServerHelper.server_details
 
             JSON.pretty_generate(@servers)
           end
