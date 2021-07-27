@@ -4,23 +4,20 @@ module Sinatra
       module Server
         def self.registered(app)
           app.get "/servers/?" do
+            redis_key = "server-counts-with-json"
+
+            if !redis.exists?(redis_key)
+              @servers = ServerHelper.servers_with_counts
+              redis.setex(redis_key, 360, Marshal.dump(@servers))
+            else
+              @servers = Marshal.restore(redis.get(redis_key))
+            end
+
             request.accept.each do |type|
               case type.to_s
               when 'application/json'
-                redis_key = "server-counts-with-json"
-
-                if !redis.exists?(redis_key)
-                  result = ServerHelper.servers_with_counts.to_json
-                  redis.setex(redis_key, 360, result)
-
-                  halt result
-                else
-                  halt redis.get(redis_key)
-                end
-
-                halt
-              when 'text/html'
-                @servers = ServerHelper.server_details
+                halt @servers.to_json
+              else
                 halt haml :servers
               end
             end
