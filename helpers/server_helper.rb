@@ -4,98 +4,113 @@ module ServerHelper
   @servers = [
     {
       name: "Reefcull",
-      type: "GDLE",
-      description: "PvE. Retail experience.",
+      type: "PvE",
+      software: "GDLE",
+      description: "Retail experience.",
       address: "reefcull.gdleac.com:9000",
       website: "http://reefcull.gdleac.com",
       discord: "https://discord.gg/Rh3UVRs"
     },
     {
       name: "Hightide",
-      type: "GDLE",
-      description: "PvP. Retail experience.",
+      type: "PvP",
+      software: "GDLE",
+      description: "Retail experience.",
       address: "hightide.connect-to-server.online:9000",
       website: "http://hightide.connect-to-server.online",
       discord: "https://discord.gg/Rh3UVRs"
     },
     {
       name: "Harvestbud",
-      type: "GDLE",
-      description: "PvE. Retail experience. Max. 3 accounts.",
+      type: "PvE",
+      software: "GDLE",
+      description: "Retail experience. Max. 3 accounts.",
       address: "harvestbud.gdleac.com:9000",
       website: "http://harvestbud.gdleac.com",
-      discord: "https://discord.gg/Rh3UVRs"
+      discord: "https://discord.gg/Rh3UVRs",
+      account_limit: 3
     },
     {
       name: "Coldeve",
-      type: "ACE",
-      description: "PvE. Retail experience.",
+      type: "PvE",
+      software: "ACE",
+      description: "Retail experience.",
       address: "play.coldeve.online:9000",
       discord: "https://discord.gg/aXtZB4"
     },
     {
       name: "Drunkenfell",
-      type: "ACE",
-      description: "PvE. End-of-retail with modifications.",
+      type: "PvE",
+      software: "ACE",
+      description: "End-of-retail with modifications.",
       address: "df.drunkenfell.com:9000",
       discord: "https://discord.gg/tHEe7QU"
     },
     {
       name: "LeafDawn",
-      type: "ACE",
-      description: "PvE. Retail experience with light focus on custom content.",
+      type: "PvE",
+      software: "ACE",
+      description: "Retail experience with light focus on custom content.",
       address: "leafdawn.hopto.org:9000",
       discord: "https://discord.gg/mNzpGX"
     },
     {
       name: "Levistras",
-      type: "ACE",
-      description: "PvE. Retail experience. Max. 2 accounts. No botting.",
+      type: "PvE",
+      software: "ACE",
+      description: "Retail experience. Max. 2 accounts. No botting.",
       address: "acportalstorm.com:9000",
-      discord: "https://discord.gg/aD2t6Yb"
+      discord: "https://discord.gg/aD2t6Yb",
+      account_limit: 2
     },
     {
       name: "Thistlecrown",
-      type: "ACE",
-      description: "PvE. Retail experience with convenience changes.",
+      type: "PvE",
+      software: "ACE",
+      description: "Retail experience with convenience changes.",
       address: "thistlecrown.ddns.net:9000",
       discord: "https://discord.gg/uhZ3hn7"
     },
     {
       name: "Seedsow",
-      type: "GDLE-Classic",
-      description: "PvE. We are a Release-Dark Majesty based server which means that you will find dungeons that were once re-tiered restored to there former glory!",
+      type: "PvE",
+      software: "GDLE-Classic",
+      description: "We are a Release-Dark Majesty based server which means that you will find dungeons that were once re-tiered restored to there former glory!",
       address: "serafino.ddns.net:9060",
       website: "https://seedsow.ca/",
       discord: "https://discord.gg/HB7c38rWGW"
     },
     {
       name: "Snowreap",
-      type: "GDLE-Classic",
-      description: "PvP. We are a RED Release-Dark Majesty based server which means that you will find dungeons that were once re-tiered restored to there former glory!",
+      type: "PvP",
+      software: "GDLE-Classic",
+      description: "We are a RED Release-Dark Majesty based server which means that you will find dungeons that were once re-tiered restored to there former glory!",
       address: "serafino.ddns.net:9070",
       website: "https://seedsow.ca/",
       discord: "https://discord.gg/zFrBsERp8A"
     },
     {
       name: "InfiniteAC",
-      type: "ACE",
-      description: "PvE. Single Account - 5x XP - 2X Mob Dmg - Custom Enlightenment System",
+      type: "PvE",
+      software: "ACE",
+      description: "Single Account - 5x XP - 2X Mob Dmg - Custom Enlightenment System",
       address: "158.69.123.111:9000",
       account_limit: 1
     },
     {
       name: "Foredawn",
-      type: "ACE",
-      description: "A PvP ACE server with Minor QoL tweaks and 2x xp - Released March 2021, Legendaries to be released Mid-April.",
+      type: "PvP",
+      software: "ACE",
+      description: "Minor QoL tweaks and 2x xp - Released March 2021, Legendaries to be released Mid-April.",
       address: "foredawn.realm.ac:9000",
       discord: "https://discord.gg/FsNtVdE3ET",
       account_limit: 3
     },
     {
       name: "Asheron4Fun.com",
-      type: "ACE",
-      description: "PvE. End of Retail experience w/ custom content. 2x XP weekends. Max 4 accounts.",
+      type: "PvE",
+      software: "ACE",
+      description: "End of Retail experience w/ custom content. 2x XP weekends. Max 4 accounts.",
       address: "www.asheron4fun.com:9000",
       discord: "https://discord.gg/afnQNXj",
       website: "https://www.asheron4fun.com",
@@ -103,11 +118,21 @@ module ServerHelper
     },
     {
       name: "Frostcull",
-      type: "ACE",
-      description: "ACE PvE Server: 10x XP/Lum, 25x Drop Rate, No Level Cap, Custom Content, and More!",
+      type: "PvE",
+      software: "ACE",
+      description: "10x XP/Lum, 25x Drop Rate, No Level Cap, Custom Content, and More!",
       address: "frostcull.ddns.net:9000",
       discord: "https://discord.gg/sBXtZ8S7dG ",
       account_limit: 5
+    },
+    {
+      name: "Duskfall",
+      type: "PvE",
+      software: "ACE",
+      description: "10x XP, 5x Luminance, Custom Content/Dungeons/Gear/Story Progression",
+      address: "198.251.74.29:9000",
+      discord: "https://discord.gg/bHNX9zxvZD",
+      account_limit: 2
     }
   ]
 
