@@ -4,17 +4,43 @@ module Sinatra
       module Server
         def self.registered(app)
           app.get "/servers/?" do
-            @servers = ServerHelper.server_details
+            request.accept.each do |type|
+              case type.to_s
+              when 'application/json'
+                redis_key = "server-counts-with-json"
 
-            haml :servers
+                if !redis.exists?(redis_key)
+                  result = ServerHelper.servers_with_counts.to_json
+                  redis.setex(redis_key, 360, result)
+
+                  halt result
+                else
+                  halt redis.get(redis_key)
+                end
+
+                halt
+              when 'text/html'
+                @servers = ServerHelper.server_details
+                halt haml :servers
+              end
+            end
+
+            error 406
           end
 
           app.get "/servers.json" do
             content_type :json
 
-            @servers = ServerHelper.server_details
+            redis_key = "server-counts-with-json"
 
-            JSON.pretty_generate(@servers)
+            if !redis.exists?(redis_key)
+              result = ServerHelper.servers_with_counts.to_json
+              redis.setex(redis_key, 360, result)
+
+              return result
+            else
+              return redis.get(redis_key)
+            end
           end
 
           app.get '/:server/?' do |server|
