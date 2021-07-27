@@ -36,7 +36,7 @@ module ServerHelper
       software: "ACE",
       description: "Retail experience.",
       address: "play.coldeve.online:9000",
-      discord: "https://discord.gg/aXtZB4"
+      discord: "https://discord.gg/nUR4PHe"
     },
     {
       name: "Drunkenfell",
