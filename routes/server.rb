@@ -4,11 +4,10 @@ module Sinatra
       module Server
         def self.registered(app)
           app.get "/servers/?" do
-            redis_key = "server-counts-with-json"
+            redis_key = "servers-with-counts"
 
             if !redis.exists?(redis_key)
               @servers = ServerHelper.servers_with_counts
-              redis.setex(redis_key, 360, Marshal.dump(@servers))
             else
               @servers = Marshal.restore(redis.get(redis_key))
             end
@@ -16,7 +15,9 @@ module Sinatra
             request.accept.each do |type|
               case type.to_s
               when 'application/json'
-                halt @servers.to_json
+                content_type :json
+
+                halt JSON.pretty_generate(@servers)
               else
                 halt haml :servers
               end
@@ -28,15 +29,12 @@ module Sinatra
           app.get "/servers.json" do
             content_type :json
 
-            redis_key = "server-counts-with-json"
+            redis_key = "servers-with-counts"
 
             if !redis.exists?(redis_key)
-              result = ServerHelper.servers_with_counts.to_json
-              redis.setex(redis_key, 360, result)
-
-              return result
+              return JSON.pretty_generate(ServerHelper.servers_with_counts)
             else
-              return redis.get(redis_key)
+              return Marshal.restore(redis.get(redis_key))
             end
           end
 

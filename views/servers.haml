@@ -15,6 +15,7 @@
         %th Name
         %th Description
         %th Type
+        %th Online
         %th Account Limit
         %th Software
         %th Connect
@@ -26,6 +27,7 @@
             %a{:href => "/#{server[:name]}"}= server[:name]
           %td= server[:description]
           %td= server[:type]
+          %td= server[:players] ? server[:players][:count] : nil
           %td= server[:account_limit]
           %td= server[:software]
           %td= server[:address]
