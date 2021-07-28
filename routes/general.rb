@@ -10,10 +10,11 @@ module Sinatra
 
           app.get '/' do
             # Total uploads
-            @total_uploads = redis
-              .keys("uploads:daily:*")
-              .collect { |k| redis.get(k).to_i }
-              .reduce(:+)
+            # Disabled until I have time to cache this route
+            # @total_uploads = redis
+            #   .keys("uploads:daily:*")
+            #   .collect { |k| redis.get(k).to_i }
+            #   .reduce(:+)
 
             # Latest counts
             if !redis.exists?("dashboard-latest-counts")
