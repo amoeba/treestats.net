@@ -23,6 +23,8 @@ gem 'haml'
 gem "sass"
 gem "uglifier"
 
+gem "skylight"
+
 group :development do
   gem 'pry'
 end
