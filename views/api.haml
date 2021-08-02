@@ -32,7 +32,7 @@ with an Accept header of "application/json" and you'll get back a JSON response 
         "type": "GDLE",
         "description": "PvE. End-of-Retail.",
         "address": "reefcull.connect-to-server.online:9000",
-        "website": "http://reefcull.connect-to-server.online",
+        "website": "https://reefcull.connect-to-server.online",
         "discord": "https://discord.gg/Rh3UVRs",
         "players": {
           "count": 415,
@@ -48,14 +48,14 @@ To get detailed information about a specific character, just append <code>'.json
 
 %pre
   :preserve
-    Before: http://treestats.net/{server}/{character}
-    After:  http://treestats.net/{server}/{character}.json
+    Before: https://treestats.net/{server}/{character}
+    After:  https://treestats.net/{server}/{character}.json
 
 %h4 Example
 
 %h5 Input:
 
-http://treestats.net/WintersEbb/Kolthar%20al%20Magus.json
+https://treestats.net/WintersEbb/Kolthar%20al%20Magus.json
 
 %h5 Output:
 
@@ -84,8 +84,8 @@ Note: Some values replaced with "..." to make the output shorter and more readab
 
 Two variants of this endpoint are available: The latest (per server) and all counts going back in time.
 
-%pre http://treestats.net/player_counts-latest.json
-%pre http://treestats.net/player_counts.json
+%pre https://treestats.net/player_counts-latest.json
+%pre https://treestats.net/player_counts.json
 
 
 %h3
@@ -100,14 +100,14 @@ To get detailed information about every character in an allegiance, just append 
 
 %pre
   :preserve
-    Before: http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans
-    After:  http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans.json
+    Before: https://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans
+    After:  https://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans.json
 
 %h4 Example
 
 %h5 Input:
 
-%pre http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans.json
+%pre https://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans.json
 
 %h5 Output:
 
@@ -128,19 +128,19 @@ The Allegiance Chain is what backs the tree visualization on the character page.
 
 %pre
   :preserve
-    Before: http://treestats.net/{server}/{character}
-    After:  http://treestats.net/chain/{server}/{character}
+    Before: https://treestats.net/{server}/{character}
+    After:  https://treestats.net/chain/{server}/{character}
 
 
 %h4 Example
 
 %h5 Input:
 
-%pre http://treestats.net/chain/WintersEbb/Kolthar%20al%20Magus
+%pre https://treestats.net/chain/WintersEbb/Kolthar%20al%20Magus
 
 %h5 Output:
 
-The output comes in a form suitable for use in a <a href="http://d3js.org/">d3.js</a> chart and follows the form:
+The output comes in a form suitable for use in a <a href="https://d3js.org/">d3.js</a> chart and follows the form:
 
 %pre
   :preserve
@@ -166,17 +166,17 @@ The output comes in a form suitable for use in a <a href="http://d3js.org/">d3.j
 
 Just append <code>'/tree.json'</code> to an allegiance URL, e.g.,
 
-%pre http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans/tree.json
+%pre https://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans/tree.json
 
 %h4 Example
 
 %h5 Input:
 
-%pre http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans/tree.json
+%pre https://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans/tree.json
 
 %h5 Output:
 
-The output comes in a form suitable for use in a <a href="http://d3js.org/">d3.js</a> chart and follows the form:
+The output comes in a form suitable for use in a <a href="https://d3js.org/">d3.js</a> chart and follows the form:
 
 %pre
   :preserve
