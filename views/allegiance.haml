@@ -3,7 +3,8 @@
   %span No characters found.
 - else
   %h2.title= "#{@name} (#{@server})"
-
+  %p
+    %a{:href => "/allegiances/#{@server}-#{@name}.json"} Download all characters as JSON
   %span Showing all characters TreeStats knows about. Scroll to zoom and drag to pan.
 
   #tree
@@ -32,7 +33,7 @@
 
 :javascript
   var tokens = window.location.href.split("/"),
-    request_url = ["/", tokens[tokens.length - 2], "/", tokens[tokens.length - 1], ".json"].join("");
+    request_url = ["/", tokens[tokens.length - 2], "/", tokens[tokens.length - 1], "/chain.json"].join("");
 
   var tmp = tokens[tokens.length - 1].split("-");
   var server_name = tmp[0],

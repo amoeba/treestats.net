@@ -3,7 +3,23 @@ module Sinatra
     module Routing
       module Allegiances
         def self.registered(app)
-          app.get '/allegiances/:key.json' do |key|
+          app.get "/allegiances/:key.json" do |key|
+            content_type :json
+
+            @server, *rest = key.split("-")
+            @name = rest.join("-")
+
+            @characters = Character.where(server: @server,
+              allegiance_name: @name)
+
+            json_chars = @characters.map do |char|
+              char.serializable_hash({}).tap { |h| h.delete("id")}.to_json
+            end
+
+            json_chars.join("\n")
+          end
+
+          app.get '/allegiances/:key/tree.json' do |key|
             content_type :json
 
             # Extract server and allegiance names from the URL

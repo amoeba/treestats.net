@@ -10,9 +10,7 @@ TreeStats has a minimal, JSON-based API. Below is a list of API endpoints -- ple
   %li
     %a{:href => "#player-counts"} Player Counts
   %li
-    %a{:href => "#allegiance-chain"} Allegiance Chain
-  %li
-    %a{:href => "#allegiance-tree"} Allegiance Tree
+    %a{:href => "#allegiance"} Allegiances
 
 %h3
   %a{:id => "servers", :href => "#servers"}= "#"
@@ -91,6 +89,38 @@ Two variants of this endpoint are available: The latest (per server) and all cou
 
 
 %h3
+  %a{:id => "allegiance", :href => "#allegiance"}= "#"
+  Allegiances
+
+%h4
+  %a{:id => "allegiance-characters", :href => "#allegiance-characters"}= "#"
+  Allegiance Dump
+
+To get detailed information about every character in an allegiance, just append <code>.json</code> to the allegiance's URL. e.g.,
+
+%pre
+  :preserve
+    Before: http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans
+    After:  http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans.json
+
+%h4 Example
+
+%h5 Input:
+
+%pre http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans.json
+
+%h5 Output:
+
+The output is newline-delimited JSON, with one character per line.
+
+%pre
+  :preserve
+    {"attribs":{"strength":{"name":"Strength",...
+    {"attribs":{"strength":{"name":"Strength",...
+    {"attribs":{"strength":{"name":"Strength",...
+    {"attribs":{"strength":{"name":"Strength",...
+
+%h4
   %a{:id => "allegiance-chain", :href => "#allegiance-chain"}= "#"
   Allegiance Chain
 
@@ -134,15 +164,15 @@ The output comes in a form suitable for use in a <a href="http://d3js.org/">d3.j
   %a{:id => "allegiance-tree", :href => "#allegiance-tree"}= "#"
   Allegiance Tree
 
-Just append <code>'.json'</code> to an allegiance URL, e.g.,
+Just append <code>'/tree.json'</code> to an allegiance URL, e.g.,
 
-%pre http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans.json
+%pre http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans/tree.json
 
 %h4 Example
 
 %h5 Input:
 
-%pre http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans.json
+%pre http://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans/tree.json
 
 %h5 Output:
 
