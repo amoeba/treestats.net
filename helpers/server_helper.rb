@@ -121,8 +121,8 @@ module ServerHelper
       type: "PvE",
       software: "ACE",
       description: "10x XP, 5x Luminance, Custom Content/Dungeons/Gear/Story Progression",
-      address: "198.251.74.29:9000",
-      discord: "https://discord.gg/bHNX9zxvZD",
+      address: "74.208.43.194:9000",
+      discord: "https://discord.gg/jH7uYyF8gp",
       account_limit: 2
     }
   ]
