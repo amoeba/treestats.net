@@ -99,6 +99,11 @@ main {
   border-right: 2px solid #af7a30;
 }
 
+#nav input,
+#nav select {
+  max-width: 100%;
+}
+
 #content {
   padding: 1em;
   background-color: #000022;
