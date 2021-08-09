@@ -3,11 +3,6 @@ module Sinatra
     module Routing
       module General
         def self.registered(app)
-          app.head '/' do
-            status :ok
-            body ""
-          end
-
           app.get '/' do
             # Total uploads
             # Disabled until I have time to cache this route
