@@ -6,7 +6,7 @@ gem 'json'
 gem 'rack'
 gem 'puma'
 gem 'puma_worker_killer'
-gem 'sinatra'
+gem 'sinatra', "~>2.1.0"
 gem 'sinatra-redis'
 gem "sinatra-cross_origin"
 
@@ -16,11 +16,10 @@ gem 'redis'
 gem 'clockwork'
 gem 'resque'
 
-gem "sprockets"
+gem "sprockets", "~>4.0.2"
 gem "sprockets-helpers"
-gem "sprockets-sass"
 gem 'haml'
-gem "sass"
+gem "sassc"
 gem "uglifier"
 
 gem "skylight"
