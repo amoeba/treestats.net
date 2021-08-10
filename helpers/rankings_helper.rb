@@ -18,7 +18,15 @@ module RankingsHelper
     match = MATCH.merge(ranking[:match])
 
     # Mix in server
-    match = match.merge({ "s" => params["server"] }) if !params.nil? && params.has_key?("server") && params["server"] != "All"
+    if !params.nil? && params.has_key?("server") && params["server"] != "All"
+      if params["server"] == "Retail"
+        match = match.merge({ "s" => { "$in" => ServerHelper.retail_servers } })
+      elsif params["server"] == "Emulators"
+        match = match.merge({ "s" => { "$in" => ServerHelper.servers } })
+      else
+        match = match.merge({ "s" => params["server"] })
+      end
+    end
 
     # Mix in reverse sorting options
     sort = ranking[:sort].clone # Clone so we don't modify the original
