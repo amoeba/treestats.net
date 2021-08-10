@@ -1,16 +1,30 @@
 %h2.title= "Ranking: #{@display_name}"
 
-%p
-  %b Server:
+%h3
+  Server:
   = @server
 
 %p
-  Filter to server:
-  %a{:href => "/rankings?ranking=#{params['ranking']}&server=All"} All
-  - ServerHelper.retail_servers.each do |server|
-    %a{:href => "/rankings?ranking=#{params['ranking']}&server=#{server}"}= server
-  - ServerHelper.servers.each do |server|
-    %a{:href => "/rankings?ranking=#{params['ranking']}&server=#{server}"}= server
+  %h3 Filter to server
+
+  %table.deflist
+    %tbody
+    %tr
+      %td Groups
+      %td
+        %a{:href => "/rankings?ranking=#{params['ranking']}&server=All"} All
+        %a{:href => "/rankings?ranking=#{params['ranking']}&server=Retail"} Retail
+        %a{:href => "/rankings?ranking=#{params['ranking']}&server=Emulators"} Private
+    %tr
+      %td Retail Servers
+      %td
+        - ServerHelper.retail_servers.each do |server|
+          %a{:href => "/rankings?ranking=#{params['ranking']}&server=#{server}"}= server
+    %tr
+      %td Private Servers
+      %td
+        - ServerHelper.servers.each do |server|
+          %a{:href => "/rankings?ranking=#{params['ranking']}&server=#{server}"}= server
 
 %table.listing
   %thead
