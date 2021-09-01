@@ -12,15 +12,6 @@ module ServerHelper
       discord: "https://discord.gg/Rh3UVRs"
     },
     {
-      name: "Hightide",
-      type: "PvP",
-      software: "GDLE",
-      description: "Retail experience.",
-      address: "hightide.connect-to-server.online:9000",
-      website: "http://hightide.connect-to-server.online",
-      discord: "https://discord.gg/Rh3UVRs"
-    },
-    {
       name: "Harvestbud",
       type: "PvE",
       software: "GDLE",
