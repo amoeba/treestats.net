@@ -4,6 +4,8 @@ module Sinatra
       module Upload
         def self.registered(app)
           app.post '/' do
+            halt 405
+
             text = request.body.read
             return if text.length <= 0
 
