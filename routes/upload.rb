@@ -4,9 +4,6 @@ module Sinatra
       module Upload
         def self.registered(app)
           app.post '/' do
-            status 405
-            halt "TreeStats.net is in read-only mode and will return shortly"
-
             text = request.body.read
             return if text.length <= 0
 
