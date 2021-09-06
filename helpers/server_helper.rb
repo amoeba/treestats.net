@@ -43,7 +43,7 @@ module ServerHelper
       software: "ACE",
       description: "Retail experience with light focus on custom content.",
       address: "leafdawn.hopto.org:9000",
-      discord: "https://discord.gg/mNzpGX"
+      discord: "https://discord.gg/ZKN8dTFMz7"
     },
     {
       name: "Levistras",
