@@ -22,8 +22,6 @@ gem "haml"
 gem "sassc"
 gem "uglifier"
 
-gem "skylight"
-
 group :development do
   gem "pry"
 end
