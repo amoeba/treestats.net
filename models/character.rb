@@ -14,7 +14,6 @@ class Character
 
   default_scope -> { where({
     'ar' => false,
-    'l' => { '$not' => {'$gt' => 275 }},
     'n' => { '$regex' => /^[^\+]+/}
   })}
 
