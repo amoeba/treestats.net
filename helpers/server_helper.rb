@@ -123,6 +123,16 @@ module ServerHelper
       description: "Retail experience w/ progressive custom content. 1x XP.",
       address: "ac.jellocull.com:9000",
       discord: "https://discord.gg/snv52pX",
+    },
+    {
+      name: "AChard",
+      type: "PvE",
+      software: "ACE",
+      description: "Retail experience with additional Custom PK content. Limited to 8 Connections per IP.",
+      address: "a-chard.ddns.net:9000",
+      discord: "https://discord.gg/gmHfqt2J2D",
+      website: "http://ac.circleofseven.com",
+      account_limit: 8
     }
   ]
 
