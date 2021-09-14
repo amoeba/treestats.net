@@ -115,6 +115,14 @@ module ServerHelper
       address: "74.208.43.194:9000",
       discord: "https://discord.gg/jH7uYyF8gp",
       account_limit: 2
+    },
+    {
+      name: "Jellocull",
+      type: "PvE",
+      software: "ACE",
+      description: "Retail experience w/ progressive custom content. 1x XP.",
+      address: "ac.jellocull.com:9000",
+      discord: "https://discord.gg/snv52pX",
     }
   ]
 
