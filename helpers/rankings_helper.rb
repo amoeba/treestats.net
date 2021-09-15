@@ -516,6 +516,7 @@ module RankingsHelper
     :level => {
       :display => "Level",
       :group => "Other",
+      :match => { "l" => { "$exists" => true },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "l" => 1 },
       :sort => { "l" => -1 },
       :accessor => Proc.new { |v| v["l"] }
