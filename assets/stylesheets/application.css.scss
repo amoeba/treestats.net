@@ -155,10 +155,22 @@ table.char tbody.skills td.skill_icon {
   padding: 0px 0px 0px 4px;
 }
 
-div.title h2 {
-  display: inline;
-  margin: 0 0 2em 0;
+h2.title {
+  margin: 0;
   color: gold;
+}
+
+.character-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.character-header-server {
+  font-variant: small-caps;
+}
+
+div.character-header-extra {
+  text-align: right;
 }
 
 #links {
