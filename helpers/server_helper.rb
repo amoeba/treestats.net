@@ -50,7 +50,7 @@ module ServerHelper
       type: "PvE",
       software: "ACE",
       description: "Retail experience. Max. 2 accounts. No botting.",
-      address: "acportalstorm.com:9000",
+      address: "levistras.acportalstorm.com:9000",
       discord: "https://discord.gg/aD2t6Yb",
       account_limit: 2
     },
