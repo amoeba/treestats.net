@@ -27,6 +27,7 @@ group :development do
 end
 
 group :production do
+  gem "sentry-ruby"
   gem "newrelic_rpm"
 end
 
