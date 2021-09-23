@@ -15,6 +15,7 @@ module Sinatra
               if(!verify)
                 Log.create(title: "Failed to verify update", message: text)
 
+                status 400
                 return "Failed to verify character update. Character was not saved."
               end
             end
@@ -25,7 +26,7 @@ module Sinatra
 
             # Disallow uploads from retail servers
             if AppHelper.retail_servers.include?(json_text['server'])
-              status = 403
+              status 403
               puts "Upload of characters from retail servers blocked: #{json_text}"
               return "Not allowed."
             end
