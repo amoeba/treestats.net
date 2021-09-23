@@ -79,12 +79,6 @@ class TreeStats < Sinatra::Base
 
   configure :production do
     require 'newrelic_rpm'
-
-    require "sentry-ruby"
-
-    Sentry.init do |config|
-      config.dsn = ENV["SENTRY_DSN"]
-    end
   end
 
   not_found do
