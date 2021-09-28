@@ -32,10 +32,12 @@ module Sinatra
             redis_key = "servers-with-counts"
 
             if !redis.exists?(redis_key)
-              return JSON.pretty_generate(ServerHelper.servers_with_counts)
+              servers = ServerHelper.servers_with_counts
             else
-              return Marshal.restore(redis.get(redis_key))
+              servers = Marshal.restore(redis.get(redis_key))
             end
+
+            return JSON.pretty_generate(servers)
           end
 
           app.get '/:server/?' do |server|
