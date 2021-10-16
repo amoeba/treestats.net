@@ -293,7 +293,7 @@ module ExperienceHelper
     current_level_xp = EXPERIENCE_BY_LEVEL.fetch(character['level'])
     next_level_xp = EXPERIENCE_BY_LEVEL.fetch(character['level'] + 1)
 
-   (character['total_xp'] - current_level_xp) / (next_level_xp - current_level_xp).to_f
+    (character['total_xp'] - current_level_xp) / (next_level_xp - current_level_xp).to_f
   end
 
   def self.percent_string(percent)
