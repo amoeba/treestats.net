@@ -1,6 +1,6 @@
 %h2.title TreeStats API
 
-TreeStats has a minimal, JSON-based API. Below is a list of API endpoints -- please feel free to request more.
+TreeStats has JSON-based API. Below is a list of endpoints -- please feel free to request more.
 
 %ul
   %li
@@ -13,8 +13,7 @@ TreeStats has a minimal, JSON-based API. Below is a list of API endpoints -- ple
     %a{:href => "#allegiance"} Allegiances
 
 %h3
-  %a{:id => "servers", :href => "#servers"}= "#"
-  Servers
+  %a{:id => "servers", :href => "#servers"} Servers
 
 To get detailed information about each server registered with TreeStats, send a request to
 
@@ -22,7 +21,7 @@ To get detailed information about each server registered with TreeStats, send a 
   :preserve
     https://treestats.net/servers
 
-with an Accept header of "application/json" and you'll get back a JSON response structured %like:
+with an <code>Accept</code> header of <code>application/json</code> and you'll get back a JSON response structured like:
 
 %pre
   :preserve
@@ -41,8 +40,7 @@ with an Accept header of "application/json" and you'll get back a JSON response 
       },
 
 %h3
-  %a{:id => "characters", :href => "#characters"}= "#"
-  Characters
+  %a{:id => "characters", :href => "#characters"} Characters
 
 To get detailed information about a specific character, just append <code>'.json'</code> to the character's URL, e.g.,
 
@@ -55,11 +53,9 @@ To get detailed information about a specific character, just append <code>'.json
 
 %h5 Input:
 
-https://treestats.net/WintersEbb/Kolthar%20al%20Magus.json
+%pre https://treestats.net/WintersEbb/Kolthar%20al%20Magus.json
 
-%h5 Output:
-
-Note: Some values replaced with "..." to make the output shorter and more readable.
+%h5 Output
 
 %pre
   :preserve
@@ -79,22 +75,67 @@ Note: Some values replaced with "..." to make the output shorter and more readab
 
 
 %h3
-  %a{:id => "player-counts", :href => "#player-counts"}= "#"
-  Player Counts
+  %a{:id => "player-counts", :href => "#player-counts"} Player Counts
 
-Two variants of this endpoint are available: The latest (per server) and all counts going back in time.
+%h4 Latest Player Counts
+
+%h5 Active Servers
 
 %pre https://treestats.net/player_counts-latest.json
+
+%h6 Example
+
+%pre
+  :preserve
+    [
+      {
+        "server": "Levistras",
+        "count": 28,
+        "date": "2021-10-16 18:27:03 UTC",
+        "age": "13 minutes ago"
+      },
+      ...
+    ]
+
+%h5 Single Server
+
+%pre https://treestats.net/player_counts/Levistras.json
+
+%h6 Example
+
+%pre
+  :preserve
+    {
+      "count": 28,
+      "created_at": "2021-10-16 18:27:03 +0000",
+      "server": "Levistras",
+      "age": "7 minutes ago"
+    }
+
+%h4 Historical Player Counts
+
+You can get back historical player counts for all or one server. Defaults to looking three months back in time.
+
 %pre https://treestats.net/player_counts.json
 
+%h5 Example
+
+%pre
+  :preserve
+    [
+      {"server":"Frostcull","date":"20210715","count":54}
+      ...
+    ]
+
+Use the <code>servers</code> query parameter to filter to one or more servers. Use commas to separate multiple servers.
+
+%pre https://treestats.net/player_counts.json?servers=Levistras,Coldeve
 
 %h3
-  %a{:id => "allegiance", :href => "#allegiance"}= "#"
-  Allegiances
+  %a{:id => "allegiance", :href => "#allegiance"} Allegiances
 
 %h4
-  %a{:id => "allegiance-characters", :href => "#allegiance-characters"}= "#"
-  Allegiance Dump
+  %a{:id => "allegiance-characters", :href => "#allegiance-characters"} Allegiance Dump
 
 To get detailed information about every character in an allegiance, just append <code>.json</code> to the allegiance's URL. e.g.,
 
@@ -109,7 +150,7 @@ To get detailed information about every character in an allegiance, just append 
 
 %pre https://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans.json
 
-%h5 Output:
+%h5 Output
 
 The output is newline-delimited JSON, with one character per line.
 
@@ -121,8 +162,7 @@ The output is newline-delimited JSON, with one character per line.
     {"attribs":{"strength":{"name":"Strength",...
 
 %h4
-  %a{:id => "allegiance-chain", :href => "#allegiance-chain"}= "#"
-  Allegiance Chain
+  %a{:id => "allegiance-chain", :href => "#allegiance-chain"} Allegiance Chain
 
 The Allegiance Chain is what backs the tree visualization on the character page. To get the chain view for a character, just insert <code>/chain/</code> into the middle of the URL and add a '<code>.json</code>', like:
 
@@ -131,14 +171,13 @@ The Allegiance Chain is what backs the tree visualization on the character page.
     Before: https://treestats.net/{server}/{character}
     After:  https://treestats.net/chain/{server}/{character}
 
-
 %h4 Example
 
 %h5 Input:
 
 %pre https://treestats.net/chain/WintersEbb/Kolthar%20al%20Magus
 
-%h5 Output:
+%h5 Output
 
 The output comes in a form suitable for use in a <a href="https://d3js.org/">d3.js</a> chart and follows the form:
 
@@ -161,20 +200,13 @@ The output comes in a form suitable for use in a <a href="https://d3js.org/">d3.
 
 
 %h3
-  %a{:id => "allegiance-tree", :href => "#allegiance-tree"}= "#"
-  Allegiance Tree
+  %a{:id => "allegiance-tree", :href => "#allegiance-tree"} Allegiance Tree
 
-Just append <code>'/tree.json'</code> to an allegiance URL, e.g.,
-
-%pre https://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans/tree.json
-
-%h4 Example
-
-%h5 Input:
+%h5 Example
 
 %pre https://treestats.net/allegiances/WintersEbb-A%20group%20of%20normal%20humans/tree.json
 
-%h5 Output:
+%h5 Output
 
 The output comes in a form suitable for use in a <a href="https://d3js.org/">d3.js</a> chart and follows the form:
 
