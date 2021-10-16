@@ -2,9 +2,6 @@ require_relative '../spec_helper'
 require "./helpers/experience_helper"
 
 describe ExperienceHelper do
-
-
-
   describe ".xp_for_next_level" do
     describe "below max level" do
       let(:character) do
@@ -60,7 +57,6 @@ describe ExperienceHelper do
       end
     end
   end
-
 
   it "builds string (0%-100%) for percent (0.0 - 1.0)" do
     assert_equal("50%", ExperienceHelper.percent_string(0.5))
