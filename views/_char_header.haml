@@ -24,6 +24,12 @@
                 %span Total Experience (XP):
               %td.right
                 %span= AppHelper.add_commas(@character['total_xp'].to_s)
+            %tr{:style => ExperienceHelper.progress_style(@character) }
+              %td.left
+                %span XP for next level:
+              %td.right
+                %span= ExperienceHelper.xp_for_next_level(@character)
+
       %td.headerright.center.level
         %span.block Character
         %span.block Level
