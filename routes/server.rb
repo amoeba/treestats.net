@@ -62,7 +62,10 @@ module Sinatra
             end
 
             content_type 'application/json'
-            JSON.pretty_generate(@character.serializable_hash({}).tap {|h| h.delete("id")})
+            JSON.pretty_generate(@character.serializable_hash({}).tap do |h|
+              h.delete("id")
+              h['birth'] = DateHelper::ensure_century(h['birth'])
+            end)
           end
 
           app.get '/:server/:name/?' do |s,n|
