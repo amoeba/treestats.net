@@ -4,7 +4,7 @@
       %td.specialized{:colspan => 2} General
     %tr
       %td Birth
-      %td= @character.birth
+      %td= DateHelper::ensure_century(@character.birth)
     %tr
       %td Deaths
       %td= @character.deaths
