@@ -67,7 +67,7 @@ module Sinatra
 
             # Convert "birth" field so it's stored as DateTime with GMT-5
             if(json_text.has_key?("birth"))
-              json_text["birth"] = CharacterHelper::parse_birth(json_text["birth"])
+              json_text["birth"] = DateHelper::parse(json_text["birth"])
             end
 
             # Log extra debug info if birth ends up being nil
