@@ -303,6 +303,13 @@ module ExperienceHelper
 
   def self.progress_style(character)
     percent = percent_string(level_percent(character))
-    "background-image: linear-gradient(to right,rgba(165, 42, 42,1) #{percent}, rgba(1,0,0,0) #{percent} 100%"
+
+    "background: linear-gradient(to bottom, black, rgba(200, 45, 25, 1) 50%, black);"
+  end
+
+  def self.overlay_style(character)
+    percent = percent_string(level_percent(character))
+
+    "background: linear-gradient(90deg, transparent #{percent}, rgba(71, 50, 26) #{percent} 100%);"
   end
 end

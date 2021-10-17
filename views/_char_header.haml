@@ -1,7 +1,7 @@
 %table
   %tbody
     %tr
-      %td.headerleft.center
+      %td.headerleft.center.nameplate
         %span.name
           = RankHelper::get_rank_name(@character['race'], @character['gender'], @character['rank'])
           = @character['name']
@@ -11,24 +11,18 @@
           - if @character['current_title']
             %abbr{:title => "Current Title"}= TitleHelper::get_title_name(@character['current_title'])
         %span.block.title &nbsp;
-        %table.internal.xplum
-          %tbody
-            - if @character['luminance_earned'] && @character['luminance_earned'] > 0
-              %tr
-                %td.left
-                  %span Luminance:
-                %td.right
-                  %span= "#{AppHelper.add_commas(@character['luminance_earned'].to_s)} / #{AppHelper.add_commas(@character['luminance_total'].to_s)}"
-            %tr
-              %td.left
-                %span Total Experience (XP):
-              %td.right
-                %span= AppHelper.add_commas(@character['total_xp'].to_s)
-            %tr{:style => ExperienceHelper.progress_style(@character) }
-              %td.left
-                %span XP for next level:
-              %td.right
-                %span= ExperienceHelper.xp_for_next_level(@character)
+        %div.xplum
+          - if @character['luminance_earned'] && @character['luminance_earned'] > 0
+            %div.twocol-onetwo
+              %div Luminance:
+              %div= "#{AppHelper.add_commas(@character['luminance_earned'].to_s)} / #{AppHelper.add_commas(@character['luminance_total'].to_s)}"
+          %div.total-xp.twocol
+            %div Total Experience (XP):
+            %div= AppHelper.add_commas(@character['total_xp'].to_s)
+          %div.xp-next-level{:style => ExperienceHelper.progress_style(@character)}
+            %div.twocol{:style => ExperienceHelper.overlay_style(@character)}
+              %div XP for next level:
+              %div= ExperienceHelper.xp_for_next_level(@character)
 
       %td.headerright.center.level
         %span.block Character
