@@ -283,21 +283,22 @@ module ExperienceHelper
     return "Infinity" if character['level'] >= MAX_LEVEL
 
     next_level = character['level'] + 1
-    xp = EXPERIENCE_BY_LEVEL.fetch(next_level)
+    xp = EXPERIENCE_BY_LEVEL[next_level]
+
     AppHelper.add_commas(xp - character['total_xp'])
   end
 
   def self.level_percent(character)
     return 0.0 if character['level'] >= MAX_LEVEL
 
-    current_level_xp = EXPERIENCE_BY_LEVEL.fetch(character['level'])
-    next_level_xp = EXPERIENCE_BY_LEVEL.fetch(character['level'] + 1)
+    current_level_xp = EXPERIENCE_BY_LEVEL[character['level']]
+    next_level_xp = EXPERIENCE_BY_LEVEL[character['level'] + 1]
 
-    (character['total_xp'] - current_level_xp) / (next_level_xp - current_level_xp).to_f
+    (character['total_xp'] - current_level_xp).to_f / (next_level_xp - current_level_xp).to_f
   end
 
   def self.percent_string(percent)
-    (percent * 100).to_i.to_s + "%"
+    "#{(percent * 100).to_i}%"
   end
 
   def self.progress_style(character)
