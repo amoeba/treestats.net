@@ -1,5 +1,10 @@
 module DateHelper
 
+  FORMATS = [
+    "%m/%d/%Y %H:%M:%S %p %Z",
+    "%m/%d/%Y %H:%M:%S %Z"
+  ]
+
   def self.ensure_century(date)
     return if date.nil?
 
@@ -8,27 +13,17 @@ module DateHelper
   end
 
   def self.parse(date_string)
-    parsed = nil
-
-    # Try our first format
-    begin
-      parsed = DateTime.strptime("#{date_string} EST", "%m/%d/%Y %H:%M:%S %p %Z")
-    rescue ArgumentError
-      puts "ArgumentError caught trying to parse '#{date_string} EST' as a DateTime with format %m/%d/%Y %H:%M:%S %p %Z"
-      puts "Error was `#{$!}`"
-    end
-
-    # Try our second one
-    if parsed.nil?
+    results = FORMATS.lazy.map do |format|
       begin
-        parsed = DateTime.strptime("#{date_string} EST", "%m/%d/%Y %H:%M:%S %Z")
+        parsed = DateTime.strptime("#{date_string} EST", format)
+        ensure_century(parsed)
       rescue ArgumentError
-        puts "ArgumentError caught trying to parse '#{date_string} EST' as a DateTime with format %m/%d/%Y %H:%M:%S %Z"
+        puts "ArgumentError caught trying to parse '#{date_string} EST' as a DateTime with format #{format}"
         puts "Error was `#{$!}`"
       end
     end
 
-    ensure_century(parsed)
+    results.detect { |date| !date.nil? }
   end
 
 end
