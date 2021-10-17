@@ -39,7 +39,7 @@ module AccountHelper
       :name => "birth",
       :label => "Birth",
       :group => :general,
-      :value => Proc.new { |v| v[:birth] }
+      :value => Proc.new { |v| DateHelper::ensure_century(v[:birth]) }
     },
     {
       :name => "aetheria",
