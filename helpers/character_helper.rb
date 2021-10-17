@@ -29,7 +29,7 @@ module CharacterHelper
       end
     end
 
-    parsed
+    DateHelper::ensure_century(parsed)
   end
 
   def self.tag_html(character)
