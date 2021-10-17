@@ -463,7 +463,7 @@ module RankingsHelper
       :match => { "a" => { "$exists" => true }, "b" => { "$ne" => nil } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "b" => 1 },
       :sort => { "b" => 1 },
-      :accessor => Proc.new { |v| v["b"] }
+      :accessor => Proc.new { |v| DateHelper::ensure_century(v["b"]) }
     },
     :deaths => {
       :display => "Deaths",
