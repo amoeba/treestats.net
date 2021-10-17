@@ -280,7 +280,7 @@ module ExperienceHelper
   MAX_LEVEL = 275
 
   def self.xp_for_next_level(character)
-    return "Infinity" if character['level'] == MAX_LEVEL
+    return "Infinity" if character['level'] >= MAX_LEVEL
 
     next_level = character['level'] + 1
     xp = EXPERIENCE_BY_LEVEL.fetch(next_level)
@@ -288,7 +288,7 @@ module ExperienceHelper
   end
 
   def self.level_percent(character)
-    return 0.0 if character['level'] == MAX_LEVEL
+    return 0.0 if character['level'] >= MAX_LEVEL
 
     current_level_xp = EXPERIENCE_BY_LEVEL.fetch(character['level'])
     next_level_xp = EXPERIENCE_BY_LEVEL.fetch(character['level'] + 1)
