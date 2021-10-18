@@ -45,7 +45,7 @@ module AccountHelper
       :name => "aetheria",
       :label => "Aetheria",
       :group => :general,
-      :value => Proc.new { |v| v[:properties]["322"]}
+      :value => Proc.new { |v| PropertiesHelper::AETHERIA_SLOTS[v[:properties]["322"]] }
     },
     {
       :name => "times_enlightened",
