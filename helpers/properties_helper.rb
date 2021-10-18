@@ -86,6 +86,13 @@ module PropertiesHelper
     # "246" => { :type => :resist, :name => "Piercing Resistance"}
   }
 
+  AETHERIA_SLOTS = {
+    0 => 0,
+    1 => 1,
+    3 => 2,
+    7 => 3
+  }
+
   MASTERY_NAMES = {
     '354' => {
         1 => "Unarmed",

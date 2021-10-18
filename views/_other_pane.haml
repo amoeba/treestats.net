@@ -9,11 +9,13 @@
       %td Deaths
       %td= @character.deaths
     - @character.properties.each do |k,v|
-    - next unless PropertiesHelper::is_type(k, :general)
+      - next unless PropertiesHelper::is_type(k, :general)
       %tr
         %td= PropertiesHelper::get_property_name(k)
         -if k == "199"
           %td= Time.at(v.to_i + 4 * 60 * 60).utc
+        -elsif k == "322"
+          %td= PropertiesHelper::AETHERIA_SLOTS[v]
         -else
           %td= v
     - if @character.properties
