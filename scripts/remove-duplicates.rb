@@ -4,7 +4,8 @@
 require 'mongo'
 
 # Change this as needed
-client = Mongo::Client.new("mongodb://127.0.0.1:27017/mongo-new")
+# Remember to use ?authSource=mongo
+client = Mongo::Client.new("mongodb://localhost/db")
 db = client.database
 collection = client[:characters]
 
@@ -14,14 +15,35 @@ def find_and_delete_dupes(collection)
   before = nil
   after = nil
 
-  records = collection.find()
+  records = collection.aggregate([
+    {
+      "$group" => {
+        "_id" => {
+          "server" => "$s",
+          "name" => "$n"
+        },
+        "count" => {
+          "$sum" => 1
+        }
+      }
+    },
+    {
+      "$match" => {
+        "count" => {
+          "$gt" => 1
+        }
+      }
+    }
+  ])
 
   before = collection.count
 
+  puts "Found #{records.count} dupes"
+
   records.each do |r|
     dupes = collection.find({
-      "s": r["s"],
-      "n": r["n"]
+      "s": r["_id"]["server"],
+      "n": r["_id"]["name"]
     }).to_a
 
     if dupes.length <= 1
