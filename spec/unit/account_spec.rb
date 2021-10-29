@@ -2,7 +2,7 @@
 
 require_relative '../spec_helper'
 
-describe 'Character', :unit do
+describe 'Account', :unit do
   before do
     Account.all.destroy
   end
@@ -11,7 +11,7 @@ describe 'Character', :unit do
     a = Account.create
     a.name = "test"
     a.password = "test"
-    assert !a.valid?
+    assert a.valid?
   end
 
   it "is invalid without a username and password" do
