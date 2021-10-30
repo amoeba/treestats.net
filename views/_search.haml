@@ -9,6 +9,7 @@
 
   %input{:name => 'character', :type => 'text', :value => params[:player]}
   %input{:type => 'submit'}
+  %span{"data-tippy-content" => haml(:_search_help), :class => "tippy"} ?
 
 %span Allegiances
 %form{:action => '/search', :method => 'get'}
