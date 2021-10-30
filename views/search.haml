@@ -1,5 +1,8 @@
 %h2.title Search
 - if @records && @records.count > 0
+  Found
+  = @records.count
+  = @records.count == 1 ? "result" : "results"
   - if params && params[:character]
     %ul
       - @records.to_a.each do |r|

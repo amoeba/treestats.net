@@ -62,6 +62,12 @@
       #content= yield
     #footer
       This website created with love by <a href="https://github.com/amoeba">Kolth</a>.
-      <!-- Cloudflare Web Analytics -->
-      <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "841aa24155424425a1a71c4f6acc0dfd"}'></script>
-      <!-- End Cloudflare Web Analytics -->
+  %script{:src=> "https://unpkg.com/@popperjs/core@2"}
+  %script{:src=> "https://unpkg.com/tippy.js@6"}
+
+  :javascript
+    tippy('[data-tippy-content]', {
+      allowHTML: true
+    });
+
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "841aa24155424425a1a71c4f6acc0dfd"}'></script>

@@ -14,9 +14,9 @@ module Sinatra
             # Deal with whether we're searching players or allegiances
             if(params && params[:character])
               if(params[:character].length >= 0)
-                criteria[:name] = /#{Regexp.escape(params[:character])}/i
+                criteria.merge!(SearchHelper::process_search(params[:character]))
               end
-              
+
               @records = Character.limit(50).asc(:name).where(criteria)
             elsif(params && params[:allegiance])
               if(params[:allegiance].length >= 0)
