@@ -1,3 +1,5 @@
 .env
 .DS_Store
 .sass-cache/
+mongo-export
+mongodump
