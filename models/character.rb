@@ -59,6 +59,8 @@ class Character
 
   field :ar,  as: :archived,          type: Boolean, default: -> { false }
 
+  field :loc, as: :location,          type: String
+
   after_save do |document|
     self_race = RaceHelper::get_race_name(self.race.to_i)
     self_gender = GenderHelper::get_gender_name(self.gender.to_i)

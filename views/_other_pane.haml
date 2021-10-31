@@ -8,6 +8,10 @@
     %tr
       %td Deaths
       %td= @character.deaths
+    - if @character.location && !@character.location.empty?
+      %tr
+        %td Location
+        %td= @character.location
     - @character.properties.each do |k,v|
       - next unless PropertiesHelper::is_type(k, :general)
       %tr
