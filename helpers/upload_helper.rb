@@ -14,6 +14,8 @@ module UploadHelper
     rescue SyntaxError => e
       # Allow uploads on eval exception
       puts "UploadHelper.validate: Eval failed, passing upload."
+      puts "UploadHelper.validate:   text: #{text}"
+      puts "UploadHelper.validate:   secret: #{secret}"
 
       return true
     end
@@ -23,6 +25,8 @@ module UploadHelper
     rescue => e
       # Allow uploads on call exception
       puts "UploadHelper.validate: Call failed, passing upload."
+      puts "UploadHelper.validate:   text: #{text}"
+      puts "UploadHelper.validate:   secret: #{secret}"
 
       return true
     end
