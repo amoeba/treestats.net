@@ -1,3 +1,5 @@
+require "digest"
+
 module UploadHelper
   def self.validate(text)
     return false if text.nil? or text.length <= 0
