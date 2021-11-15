@@ -9,15 +9,12 @@ module Sinatra
 
             # Verify
             # Before we do anything, verify the message wasn't tampered with
-            if settings.production?
-              verify = Encryption::decrypt(text)
+            valid = UploadHelper::validate(text)
 
-              if(!verify)
-                Log.create(title: "Failed to verify update", message: text)
+            if !valid
+              status 403
 
-                status 400
-                return "Failed to verify character update. Character was not saved."
-              end
+              return "Failed to verify character update. Character was not saved."
             end
 
             # Parse message
@@ -27,6 +24,7 @@ module Sinatra
             if AppHelper.retail_servers.include?(json_text['server'])
               status 403
               puts "Upload of characters from retail servers blocked: #{json_text}"
+
               return "Not allowed."
             end
 

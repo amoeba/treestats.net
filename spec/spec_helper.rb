@@ -22,3 +22,26 @@ class UnitTest < MiniTest::Spec
     true if desc.is_a?(Class)
   end
 end
+
+# Based on https://gist.github.com/jazzytomato/79bb6ff516d93486df4e14169f4426af
+def with_env(env)
+  old_env = ENV.to_hash
+  ENV.update env
+
+  begin
+    yield
+  ensure
+    ENV.replace old_env
+  end
+end
+
+def without_env(key)
+  old_env = ENV.to_hash
+  ENV.delete key
+
+  begin
+    yield
+  ensure
+    ENV.replace old_env
+  end
+end
