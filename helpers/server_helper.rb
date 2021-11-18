@@ -104,7 +104,7 @@ module ServerHelper
       software: "ACE",
       description: "10x XP/Lum, 25x Drop Rate, No Level Cap, Custom Content, and More!",
       address: "frostcull.ddns.net:9000",
-      discord: "https://discord.gg/sBXtZ8S7dG ",
+      discord: "https://discord.gg/RQF7HgEZn4",
       account_limit: 5
     },
     {
