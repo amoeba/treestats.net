@@ -184,4 +184,16 @@ describe "CharacterStory" do
       assert_nil Character.find_by(name: "some char").vassals
     end
   end
+
+  describe "Character.to_json" do
+    it "filters out id and ip_address" do
+      post('/', '{"name" : "player", "server" : "test", "ip_address": "127.0.0.1"}')
+
+      c = Character.find_by(name: "player", server: "test")
+      json = c.to_json
+
+      assert !json.include?("_id")
+      assert !json.include?("ip_address")
+    end
+  end
 end

@@ -12,6 +12,12 @@ class Character
     Hash[original_hash.map {|k, v| [self.aliased_fields.invert[k] || k , v] }]
   end
 
+  FILTERED_FIELDS = [ "id", "ip_address" ]
+
+  def to_json
+    JSON.pretty_generate(serializable_hash({}).tap { |h| Character::FILTERED_FIELDS.each { |f| h.delete(f) }})
+  end
+
   default_scope -> { where({
     'ar' => false,
     'n' => { '$regex' => /^[^\+]+/}

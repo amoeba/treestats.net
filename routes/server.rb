@@ -62,7 +62,7 @@ module Sinatra
             end
 
             content_type 'application/json'
-            JSON.pretty_generate(@character.serializable_hash({}).tap {|h| h.delete("id")})
+            Character.to_json
           end
 
           app.get '/:server/:name/?' do |s,n|
