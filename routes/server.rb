@@ -62,7 +62,7 @@ module Sinatra
             end
 
             content_type 'application/json'
-            Character.to_json
+            @character.to_json
           end
 
           app.get '/:server/:name/?' do |s,n|

@@ -194,6 +194,11 @@ describe "CharacterStory" do
 
       assert !json.include?("_id")
       assert !json.include?("ip_address")
+
+      resp = get("/test/player.json")
+
+      assert resp.body.include?("player")
+      assert !resp.body.include?("ip_adderss")
     end
   end
 end
