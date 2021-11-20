@@ -18,7 +18,12 @@ module Sinatra
             end
 
             # Parse message
-            json_text = JSON.parse(text)
+            begin
+              json_text = JSON.parse(text)
+            rescue JSON::ParserError
+              status 400
+              return "Upload failed for an unknown reason. Please report this as a bug at https://github.com/amoeba/treestats."
+            end
 
             # Disallow uploads from retail servers
             if AppHelper.retail_servers.include?(json_text['server'])
