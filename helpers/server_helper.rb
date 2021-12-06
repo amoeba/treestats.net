@@ -126,13 +126,12 @@ module ServerHelper
     },
     {
       name: "AChard",
-      type: "PvE",
+      type: "PvP",
       software: "ACE",
-      description: "Retail experience with additional Custom PK content. Limited to 8 Connections per IP.",
+      description: "ACE Retail PVP Server with Custom PK Content. Limit 4 Connections.",
       address: "a-chard.ddns.net:9000",
-      discord: "https://discord.gg/gmHfqt2J2D",
+      discord: "https://discord.gg/Z5eHEZeW2Z",
       website: "http://ac.circleofseven.com",
-      account_limit: 8
     }
   ]
 
