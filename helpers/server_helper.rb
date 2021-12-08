@@ -132,6 +132,15 @@ module ServerHelper
       address: "a-chard.ddns.net:9000",
       discord: "https://discord.gg/Z5eHEZeW2Z",
       website: "http://ac.circleofseven.com",
+    },
+    {
+      name: "Podtide",
+      type: "PvP",
+      software: "ACE",
+      description: "Where the PvP happens",
+      address: "podtide.ddns.net:9000",
+      discord: "https://discord.gg/CwSSvJJvbJ",
+      account_limit: 4
     }
   ]
 
