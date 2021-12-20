@@ -141,6 +141,15 @@ module ServerHelper
       address: "podtide.ddns.net:9000",
       discord: "https://discord.gg/CwSSvJJvbJ",
       account_limit: 4
+    },
+    {
+      name: "Killiakta",
+      type: "PvE",
+      software: "ACE",
+      description: "PvE (nearly) infinite level server offering end of retail as well as custom content to include new land masses not seen ingame (even a PKL only landmass), updates to add viability to nostalgic quests, and more!",
+      address: "killiakta.ddns.net:9000",
+      discord: "https://discord.gg/uaDGHU8ucW",
+      account_limit: 2
     }
   ]
 
