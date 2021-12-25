@@ -1,15 +1,15 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    activemodel (6.1.4.1)
-      activesupport (= 6.1.4.1)
-    activesupport (6.1.4.1)
+    activemodel (6.1.4.4)
+      activesupport (= 6.1.4.4)
+    activesupport (6.1.4.4)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
-    bson (4.12.1)
+    bson (4.13.0)
     clockwork (3.0.0)
       activesupport
       tzinfo
@@ -45,7 +45,7 @@ GEM
       concurrent-ruby (~> 1.0)
     json (2.6.1)
     method_source (1.0.0)
-    minitest (5.14.4)
+    minitest (5.15.0)
     mongo (2.17.0)
       bson (>= 4.8.2, < 5.0.0)
     mongoid (7.3.3)
@@ -117,7 +117,6 @@ GEM
     zeitwerk (2.5.1)
 
 PLATFORMS
-  ruby
   x86_64-darwin-21
 
 DEPENDENCIES
@@ -145,7 +144,7 @@ DEPENDENCIES
   uglifier
 
 RUBY VERSION
-   ruby 2.7.5p203
+   ruby 3.1.0p0
 
 BUNDLED WITH
-   2.2.33
+   2.3.3
