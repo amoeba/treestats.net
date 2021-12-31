@@ -8,7 +8,7 @@
           %td
             Online
           %td
-            = @online[:count]
+            = AppHelper.add_commas(@online[:count])
             = @online[:count] == 1 ? "character" : "characters"
             online as of
             = AppHelper.relative_time(@online[:created_at])
@@ -18,7 +18,8 @@
             Uploaded
           %td
             = AppHelper.add_commas(@uploaded)
-            characters uploaded
+            = @uploaded == 1 ? "character" : "character"
+            uploaded
       - if @details
         %tr
           %td
