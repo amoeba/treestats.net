@@ -10,6 +10,11 @@ module QueryHelper
         }
       },
       {
+        "$sort" => {
+          "c_at" => 1
+        }
+      },
+      {
         "$group" =>
           {
             "_id" => "$s",
@@ -22,16 +27,16 @@ module QueryHelper
           }
       },
       {
+        "$sort" => {
+          "count" => -1
+        }
+      },
+      {
         "$project" => {
           "_id": 0,
           "server": "$_id",
           "count": "$count",
           "date": "$created_at"
-        }
-      },
-      {
-        "$sort" => {
-          "count" => -1
         }
       },
       {
