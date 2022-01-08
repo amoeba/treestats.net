@@ -41,6 +41,16 @@ class TreeStats < Sinatra::Base
   # Load server route last because it has catch-alls
   register Sinatra::TreeStats::Routing::Server
 
+  # Sentry
+  require "sentry-ruby"
+
+  Sentry.init do |config|
+    config.dsn = ENV["SENTRY_DSN"]
+    config.traces_sample_rate = 0.2
+  end
+
+  use Sentry::Rack::CaptureExceptions
+
   configure do
     # Turn on logging
     enable :logging
@@ -80,16 +90,6 @@ class TreeStats < Sinatra::Base
   configure :production do
     # NewRelic
     require 'newrelic_rpm'
-
-    # Sentry
-    require "sentry-ruby"
-
-    Sentry.init do |config|
-      config.dsn = ENV["SENTRY_DSN"]
-      config.traces_sample_rate = 0.2
-    end
-
-    use Sentry::Rack::CaptureExceptions
   end
 
   not_found do
