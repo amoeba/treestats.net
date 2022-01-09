@@ -150,6 +150,16 @@ module ServerHelper
       address: "killiakta.ddns.net:9000",
       discord: "https://discord.gg/uaDGHU8ucW",
       account_limit: 2
+    },
+    {
+      name: "Morntide",
+      type: "PvE",
+      software: "ACE",
+      description: "PvE. Retail experience. Max. 3 accounts.",
+      address: "morntide.shard.ac:9000",
+      discord: "https://discord.gg/7Gcc2XFqhJ",
+      website: "https://morntide.ac",
+      account_limit: 3
     }
   ]
 
