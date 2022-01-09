@@ -15,6 +15,7 @@ module Sinatra
               status 403
 
               Sentry.capture_message("Failed to verify: #{text}")
+              puts "Upload failed with text: #{text}"
 
               return "Failed to verify character update. Character was not saved."
             end
