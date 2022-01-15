@@ -70,4 +70,41 @@ module QueryHelper
       }
     ]).to_a
   end
+
+  def self.latest_player_counts
+    PlayerCount.collection.aggregate([
+      {
+        "$sort" => {
+          "c_at" => 1
+        }
+      },
+      {
+        "$match" => {
+          "c_at" => {
+            "$gte" => Date.today - 7
+          }
+        }
+      },
+      {
+        "$group" =>
+          {
+            "_id" => "$s",
+            "count" => {
+              "$last" => "$c"
+            },
+            "created_at" => {
+              "$last" => "$c_at"
+            }
+          }
+      },
+      {
+        "$project" => {
+          "_id": 0,
+          "server": "$_id",
+          "count": "$count",
+          "date": "$created_at"
+        }
+      }
+    ])
+  end
 end

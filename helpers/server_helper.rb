@@ -182,7 +182,7 @@ module ServerHelper
   # @servers, enhanced with player counts
   def self.servers_with_counts
     servers = @servers
-    counts = QueryHelper.dashboard_latest_counts
+    counts = QueryHelper.latest_player_counts
 
     servers.each do |server|
       count = counts.find { |count| server[:name] == count[:server]}
