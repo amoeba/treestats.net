@@ -160,6 +160,15 @@ module ServerHelper
       discord: "https://discord.gg/7Gcc2XFqhJ",
       website: "https://morntide.ac",
       account_limit: 3
+    },
+    {
+      name: "FunkyTown 2.0",
+      type: "PvE",
+      software: "GDLE",
+      description: "We have exclusive content that can't be found anywhere else! We offer a retail experience with something new to do. \"Funky Island\". PvE and PvP welcome.  WE LOVE AC!",
+      address: "funkytownac.com:9050",
+      discord: "https://discord.gg/XNkMHZSfHk",
+      account_limit: 4
     }
   ]
 
