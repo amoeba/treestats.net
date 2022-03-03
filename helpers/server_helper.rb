@@ -81,14 +81,6 @@ module ServerHelper
       discord: "https://discord.gg/zFrBsERp8A"
     },
     {
-      name: "InfiniteAC",
-      type: "PvE",
-      software: "ACE",
-      description: "Single Account - 5x XP - 2X Mob Dmg - Custom Enlightenment System",
-      address: "158.69.123.111:9000",
-      account_limit: 1
-    },
-    {
       name: "Asheron4Fun.com",
       type: "PvE",
       software: "ACE",
@@ -169,6 +161,25 @@ module ServerHelper
       address: "funkytownac.com:9050",
       discord: "https://discord.gg/XNkMHZSfHk",
       account_limit: 4
+    },
+    {
+      name: "Morgentau",
+      type: "PvE",
+      software: "ACE",
+      description: "PvE. Retail experience. Max. 6 connections.",
+      address: "morgentau.online:9000",
+      discord: "https://discord.gg/B3mYXdavTr",
+      website: "https://forum.morgentau.online/index.php",
+      account_limit: 6
+    },
+    {
+      name: "BartleskeetHG",
+      type: "PvE",
+      software: "ACE",
+      description: "PvE, Retail Settings Mostly, Houses on every character, No official account limit, but will be reviewed.",
+      address: "bartleskeethg.bartleskeet.com:9000",
+      discord: "https://discord.gg/VMqA5F5g9d",
+      website: "https://www.bartleskeet.com"
     }
   ]
 
