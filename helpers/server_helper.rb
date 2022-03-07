@@ -173,7 +173,7 @@ module ServerHelper
       account_limit: 6
     },
     {
-      name: "BartleskeetHG",
+      name: "BartleSkeetHG",
       type: "PvE",
       software: "ACE",
       description: "PvE, Retail Settings Mostly, Houses on every character, No official account limit, but will be reviewed.",
