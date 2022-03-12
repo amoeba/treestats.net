@@ -33,16 +33,18 @@
           %td
             Address
           %td= @details[:address]
-        %tr
-          %td
-            Website
-          %td
-            %a{:href => @details[:website]}= @details[:website]
-        %tr
-          %td
-            Discord
-          %td
-            %a{:href => @details[:discord]}= @details[:discord]
+        - if @details[:website]
+          %tr
+            %td
+              Website
+            %td
+              %a{:href => @details[:website]}= @details[:website]
+        - if @details[:discord]
+          %tr
+            %td
+              Discord
+            %td
+              %a{:href => @details[:discord]}= @details[:discord]
 
 - if @characters.count == 0
   %span No characters to display for this server which means no one is running TreeStats on the server :(.
