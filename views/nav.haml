@@ -22,7 +22,7 @@
 %h2 Private Servers
 
 %ul
-  - ServerHelper.servers.each do |server|
+  - ServerHelper.servers.sort.each do |server|
     %li
       %a{:href => "/#{server}"}= server
 
