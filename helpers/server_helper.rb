@@ -180,6 +180,15 @@ module ServerHelper
       address: "bartleskeethg.bartleskeet.com:9000",
       discord: "https://discord.gg/VMqA5F5g9d",
       website: "https://www.bartleskeet.com"
+    },
+    {
+      name: "Derptide",
+      type: "PvE",
+      software: "ACE",
+      description: "Retail with many QoL improvements most quest rewards updated to be usable, and useful for the leading experience, ongoing story arcs and live events.",
+      address: "ac.derptide.net:9000",
+      discord: "https://discord.gg/cuWrY9Ewj7",
+      account_limit: 3
     }
   ]
 
