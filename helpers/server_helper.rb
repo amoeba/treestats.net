@@ -190,6 +190,15 @@ module ServerHelper
       address: "ac.derptide.net:9000",
       discord: "https://discord.gg/cuWrY9Ewj7",
       account_limit: 3
+    },
+    {
+      name: "Wynterthaw",
+      type: "PvE",
+      software: "ACE",
+      description: "Custom content created for lower and post 275 life.  Entire new island for 275+.",
+      address: "71.87.108.159:9000",
+      discord: "https://discord.gg/uWUgNv2yDP",
+      account_limit: 3
     }
   ]
 
