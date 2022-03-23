@@ -131,7 +131,8 @@ module ServerHelper
       software: "ACE",
       description: "Where the PvP happens",
       address: "podtide.ddns.net:9000",
-      discord: "https://discord.gg/CwSSvJJvbJ",
+      discord: "https://discord.gg/MQEfzwTddG",
+      website: "http://podtide.com",
       account_limit: 4
     },
     {
