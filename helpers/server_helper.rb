@@ -122,7 +122,7 @@ module ServerHelper
       software: "ACE",
       description: "ACE Retail PVP Server with Custom PK Content. Limit 4 Connections.",
       address: "a-chard.ddns.net:9000",
-      discord: "https://discord.gg/Z5eHEZeW2Z",
+      discord: "https://discord.gg/gmHfqt2J2D",
       website: "http://ac.circleofseven.com",
     },
     {
