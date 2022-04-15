@@ -127,35 +127,37 @@ var popchart = function (selector, data_url) {
       .attr("d", function (d) { return line(d.values); })
       .style("stroke", function (d) { return color(d.key); });
 
-    server.append("text")
-      .datum(function (d) { return { name: d.key, value: d.values[d.values.length - 1] }; })
-      .attr("x", function(d) { return x(d3.max(xvals))})
-      .attr("y", function(d) { return y(d.value.count)})
-      .attr("dx", ".35em")
-      .attr("dy", ".35em")
-      .attr("class", "label")
-      .text(function (d) { return d.name + ": " + Math.round(d.value.count) })
-      .style("fill", function (d) { return color(d.name); })
-      .attr("data-label", function(d) { return d.name })
-      .on("mouseenter", function() {
-        var parent = d3.event.target.parentElement;
-        var servers = document.querySelectorAll(".servers");
+    server.append("a")
+    .datum(function (d) { return { name: d.key, value: d.values[d.values.length - 1] }; })
+      .attr("xlink:href", function(d) { return "/" + d.name; })
+      .append("text")
+        .attr("x", function(d) { return x(d3.max(xvals))})
+        .attr("y", function(d) { return y(d.value.count)})
+        .attr("dx", ".35em")
+        .attr("dy", ".35em")
+        .attr("class", "label")
+        .text(function (d) { return d.name + ": " + Math.round(d.value.count) }) 
+        .style("fill", function (d) { return color(d.name); })
+        .attr("data-label", function(d) { return d.name })
+        .on("mouseenter", function() {
+          var parent = d3.event.target.parentElement.parentElement;
+          var servers = document.querySelectorAll(".servers");
 
-        servers.forEach(function(s) {
-          if (s === parent) {
-            return;
-          }
+          servers.forEach(function(s) {
+            if (s === parent) {
+              return;
+            }
 
-          s.style.opacity = 0.25;
+            s.style.opacity = 0.25;
+          });
+        })
+        .on("mouseleave", function() {
+          var servers = document.querySelectorAll(".servers");
+
+          servers.forEach(function(s) {
+            s.style.opacity = 1;
+          });
         });
-      })
-      .on("mouseleave", function() {
-        var servers = document.querySelectorAll(".servers");
-
-        servers.forEach(function(s) {
-          s.style.opacity = 1;
-        });
-      });
 
     // Total count
     var totalpop = byServer.reduce(function(acc, x) { return acc + x.values[x.values.length - 1].count; }, 0)
