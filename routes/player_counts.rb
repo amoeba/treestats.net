@@ -30,6 +30,31 @@ module Sinatra
             haml :player_counts
           end
 
+          app.get '/player_counts_redesign/?' do
+            @servers = ServerHelper.all_servers
+            @current = params[:servers]
+            @range = params[:range]
+
+            # Add in ?servers filter to API call if present
+            @player_counts_url = "/player_counts.json"
+
+            if params
+              out = {}
+
+              if params[:servers]
+                out[:servers] = params[:servers]
+              end
+
+              if params[:range]
+                out[:range] = params[:range]
+              end
+
+              @player_counts_url += "?#{out.to_query}"
+            end
+
+            haml :player_counts_redesign
+          end
+
           app.get '/player_counts.json' do
             content_type :json
 
