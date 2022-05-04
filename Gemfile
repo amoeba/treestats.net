@@ -6,7 +6,7 @@ gem "json"
 gem "rack"
 gem "puma"
 gem "puma_worker_killer"
-gem "sinatra", "~>2.1.0"
+gem "sinatra", "~>2.2.0"
 gem "sinatra-redis"
 gem "sinatra-cross_origin"
 
