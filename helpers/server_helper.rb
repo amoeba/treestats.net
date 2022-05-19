@@ -199,6 +199,13 @@ module ServerHelper
       address: "71.87.108.159:9000",
       discord: "https://discord.gg/uWUgNv2yDP",
       account_limit: 3
+    },
+    {
+      name: "Shadowland",
+      type: "PvE",
+      software: "ACE",
+      description: "PvE Retail. Standard settings. No max on accounts.",
+      address: "shadowland.zapto.org:9000"
     }
   ]
 
