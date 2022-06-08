@@ -22,6 +22,14 @@ module ServerHelper
       account_limit: 3
     },
     {
+      name: "Hightide",
+      type: "PvP",
+      software: "GDLE",
+      description: "PvP Testing grounds.",
+      address: "158.69.54.138:9080",
+      discord: "https://discord.gg/6u6G2GTj"
+    },
+    {
       name: "Coldeve",
       type: "PvE",
       software: "ACE",
@@ -206,6 +214,30 @@ module ServerHelper
       software: "ACE",
       description: "PvE Retail. Standard settings. No max on accounts.",
       address: "shadowland.zapto.org:9000"
+    },
+    {
+      name: "Pourtide",
+      type: "PvP",
+      software: "ACE",
+      description: "PvP Server. Custom Content but mainly focusing on PvP Aspects. Hellgates currently active on this server. Max level 126 may change in the future. Only majors.",
+      address: "pourtide.ddns.net:9000",
+      discord: "https://discord.gg/SwqTnYBdEH",
+      account_limit: 2
+    },
+    {
+      name: "FrostfACE",
+      type: "PvE",
+      software: "ACE",
+      description: "New accounts include lvl 275 starter characters. Retail character restoration also supported.",
+      address: "172.111.230.127:9000"
+    },
+    {
+      name: "Infinite Frosthaven",
+      type: "PvE",
+      software: "ACE",
+      description: "Active play rewarded! Earn permanent account-wide increased XP% from completing quests. No level cap. Magic learned from looted scrolls only. Custom content.",
+      address: "ifh.ddns.net:9000",
+      discord: "https://discord.gg/zdQVP7bmjC"
     }
   ]
 
