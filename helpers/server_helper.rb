@@ -238,6 +238,13 @@ module ServerHelper
       description: "Active play rewarded! Earn permanent account-wide increased XP% from completing quests. No level cap. Magic learned from looted scrolls only. Custom content.",
       address: "ifh.ddns.net:9000",
       discord: "https://discord.gg/zdQVP7bmjC"
+    },
+    {
+      name: "DARKSIDE-PK",
+      type: "PvE",
+      software: "ACE",
+      description: "Retail experience. 3x.",
+      address: "daksidegaming.ddns.net:9000"
     }
   ]
 
