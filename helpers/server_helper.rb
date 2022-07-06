@@ -245,6 +245,15 @@ module ServerHelper
       software: "ACE",
       description: "Retail experience. 3x.",
       address: "daksidegaming.ddns.net:9000"
+    },
+    {
+      name: "ValHeel",
+      type: "PvE",
+      software: "ACE",
+      description: "PvE. Post End-of-Retail content. Level 300 Cap.",
+      address: "162.250.127.186:9000",
+      account_limit: 2,
+      discord: "https://discord.gg/Xwn2NZE2rd"
     }
   ]
 
