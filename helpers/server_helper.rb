@@ -257,7 +257,7 @@ module ServerHelper
     },
     {
       name: "ACE Classic PvP",
-      type: "PvE",
+      type: "PvP",
       software: "ACE",
       description: "Pre-Throne of Destiny Retail PvP server. Old school skills, Max 2 accounts logged in at one time, NO VPN or Proxy allowed. Targets Infiltration patch (February 2005)",
       address: "147.135.8.167:9100",
