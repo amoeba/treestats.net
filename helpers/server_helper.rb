@@ -259,10 +259,19 @@ module ServerHelper
       name: "ACE Classic PvP",
       type: "PvP",
       software: "ACE",
-      description: "Pre-Throne of Destiny Retail PvP server. Old school skills, Max 2 accounts logged in at one time, NO VPN or Proxy allowed. Targets Infiltration patch (February 2005)",
+      description: "A PvP server that replicates the era of retail Feb 2005 Infiltration patch",
       address: "147.135.30.224:9000",
       account_limit: 2,
       discord: "https://discord.gg/GbAtfwNwKj"
+    },
+    {
+      name: "ACE Classic PvE",
+      type: "PvE",
+      software: "ACE",
+      description: "A PvE server that replicates the era of retail Feb 2005 Infiltration patch",
+      address: "147.135.30.224:9002",
+      account_limit: 2,
+      discord: "https://discord.gg/DEnCWW4N4p"
     }
   ]
 
