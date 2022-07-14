@@ -3,7 +3,7 @@ module ServerHelper
 
   @softwares = {
     "GDLE" => "https://www.gdleac.com",
-    "ACE" => "https://acemulator.github.io",
+    "ACE" => "https://emulator.ac",
     "ACE-Classic" => "https://github.com/Advan-tage/ACEclassic"
   }
 
