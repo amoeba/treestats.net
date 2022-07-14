@@ -258,7 +258,7 @@ module ServerHelper
     {
       name: "ACE Classic PvP",
       type: "PvP",
-      software: "ACE",
+      software: "ACE-Classic",
       description: "A PvP server that replicates the era of retail Feb 2005 Infiltration patch",
       address: "147.135.30.224:9000",
       account_limit: 2,
@@ -267,7 +267,7 @@ module ServerHelper
     {
       name: "ACE Classic PvE",
       type: "PvE",
-      software: "ACE",
+      software: "ACE-Classic",
       description: "A PvE server that replicates the era of retail Feb 2005 Infiltration patch",
       address: "147.135.30.224:9002",
       account_limit: 2,
