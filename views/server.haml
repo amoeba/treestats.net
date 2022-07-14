@@ -1,3 +1,6 @@
+%small
+  %a{:href => "/servers"} Back to List of Servers
+
 %h2.title= params[:server]
 
 - if @online || @details
@@ -33,6 +36,13 @@
           %td
             Address
           %td= @details[:address]
+        %tr
+          %td Software
+          %td
+            - if @softwares[@details[:software]]
+              %a{:href => @softwares[@details[:software]]}= @details[:software]
+            - else
+              = @details[:software]
         - if @details[:website]
           %tr
             %td

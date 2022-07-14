@@ -1,6 +1,12 @@
 module ServerHelper
   @retail_servers = %w{Darktide Frostfell Harvestgain Leafcull Morningthaw Thistledown Solclaim Verdantine WintersEbb}
 
+  @softwares = {
+    "GDLE" => "https://www.gdleac.com",
+    "ACE" => "https://acemulator.github.io",
+    "ACE-Classic" => "https://github.com/Advan-tage/ACEclassic"
+  }
+
   @servers = [
     {
       name: "Reefcull",
@@ -274,6 +280,10 @@ module ServerHelper
       discord: "https://discord.gg/DEnCWW4N4p"
     }
   ]
+
+  def self.softwares
+    @softwares
+  end
 
   def self.retail_servers
     @retail_servers

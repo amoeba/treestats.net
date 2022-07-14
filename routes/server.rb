@@ -19,6 +19,8 @@ module Sinatra
 
                 halt JSON.pretty_generate(@servers)
               else
+                @softwares = ServerHelper.softwares
+
                 halt haml :servers
               end
             end
@@ -48,6 +50,7 @@ module Sinatra
 
             @online = PlayerCount.where(s: server).desc(:c_at).limit(1).first
             @details = ServerHelper.server_details.filter { |s| s[:name] == server }.first
+            @softwares = ServerHelper.softwares
 
             haml :server
           end

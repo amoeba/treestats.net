@@ -29,7 +29,11 @@
           %td= server[:type]
           %td= server[:players] ? server[:players][:count] : nil
           %td= server[:account_limit]
-          %td= server[:software]
+          %td
+            - if @softwares[server[:software]]
+              %a{:href => @softwares[server[:software]]}= server[:software]
+            - else
+              = server[:software]
           %td= server[:address]
           %td
             - if server[:website]
