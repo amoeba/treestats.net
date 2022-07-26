@@ -202,7 +202,7 @@ module ServerHelper
       software: "ACE",
       description: "Retail with many QoL improvements most quest rewards updated to be usable, and useful for the leading experience, ongoing story arcs and live events.",
       address: "ac.derptide.net:9000",
-      discord: "https://discord.gg/cuWrY9Ewj7",
+      discord: "https://discord.gg/TgGrbFey",
       account_limit: 3
     },
     {
