@@ -56,6 +56,8 @@ var sparkline = function (selector, server_name, data_url) {
 
     var svg = d3
       .select(selector)
+      .append("a")
+      .attr("href", "/player_counts?servers=" + server_name + "&range=3mo")
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
