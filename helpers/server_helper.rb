@@ -114,15 +114,6 @@ module ServerHelper
       account_limit: 5
     },
     {
-      name: "Duskfall",
-      type: "PvE",
-      software: "ACE",
-      description: "10x XP, 5x Luminance, Custom Content/Dungeons/Gear/Story Progression",
-      address: "ac.duskfall.net:9000",
-      discord: "https://discord.gg/jH7uYyF8gp",
-      account_limit: 2
-    },
-    {
       name: "Jellocull",
       type: "PvE",
       software: "ACE",
@@ -186,15 +177,6 @@ module ServerHelper
       discord: "https://discord.gg/B3mYXdavTr",
       website: "https://forum.morgentau.online/index.php",
       account_limit: 6
-    },
-    {
-      name: "BartleSkeetHG",
-      type: "PvE",
-      software: "ACE",
-      description: "PvE, Retail Settings Mostly, Houses on every character, No official account limit, but will be reviewed.",
-      address: "bartleskeethg.bartleskeet.com:9000",
-      discord: "https://discord.gg/VMqA5F5g9d",
-      website: "https://www.bartleskeet.com"
     },
     {
       name: "Derptide",
@@ -262,22 +244,13 @@ module ServerHelper
       discord: "https://discord.gg/Xwn2NZE2rd"
     },
     {
-      name: "ACE Classic PvP",
+      name: "Dekarutide",
       type: "PvP",
       software: "ACE-Classic",
-      description: "A PvP server that replicates the era of retail Feb 2005 Infiltration patch",
+      description: "ACE-Classic Dark Majesty era custom server, with new skills, techniques, tactics, endless hybrid template possibilities.",
       address: "147.135.30.224:9000",
       account_limit: 2,
       discord: "https://discord.gg/GbAtfwNwKj"
-    },
-    {
-      name: "ACE Classic PvE",
-      type: "PvE",
-      software: "ACE-Classic",
-      description: "A PvE server that replicates the era of retail Feb 2005 Infiltration patch",
-      address: "147.135.30.224:9002",
-      account_limit: 2,
-      discord: "https://discord.gg/DEnCWW4N4p"
     }
   ]
 
