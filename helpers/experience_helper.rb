@@ -294,7 +294,13 @@ module ExperienceHelper
     current_level_xp = EXPERIENCE_BY_LEVEL[character['level']]
     next_level_xp = EXPERIENCE_BY_LEVEL[character['level'] + 1]
 
-    (character['total_xp'] - current_level_xp).to_f / (next_level_xp - current_level_xp).to_f
+    # Throw this in a begin/rescue because of client server data like
+    # Funkytown 2.0's level 0 characters *sigh*
+    begin
+      (character['total_xp'] - current_level_xp).to_f / (next_level_xp - current_level_xp).to_f
+    rescue
+      0.0
+    end
   end
 
   def self.percent_string(percent)
