@@ -62,11 +62,16 @@ module Sinatra
             servers = nil
 
             if params[:servers] && params[:servers] != "All" && params[:servers].length > 0
-              params[:servers].split(",").each do |server|
-                unless ServerHelper.all_servers.include?(server)
-                  halt 400, "Invalid query parameters: #{server} is not a valid server name"
-                end
-              end
+              # FIXME: Comment this out for now so players can request data from
+              #        old servers
+
+              # params[:servers].split(",").each do |server|
+              #   unless ServerHelper.all_servers.include?(server)
+              #     halt 400, "Invalid query parameters: #{server} is not a valid server name"
+              #   end
+              # end
+
+              # ENDFIXME
 
               servers = params[:servers].split(",")
             end
