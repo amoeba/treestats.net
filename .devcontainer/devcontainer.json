@@ -1,0 +1,12 @@
+{
+	"name": "Ruby",
+	"image": "mcr.microsoft.com/devcontainers/ruby:3-bullseye",
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "lts"
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker:1": {}
+	},
+	"forwardPorts": [9292],
+	"postCreateCommand": "bundle && docker compose up -d",
+}
