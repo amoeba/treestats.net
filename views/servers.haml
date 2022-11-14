@@ -9,7 +9,7 @@
   %p.notice
     Submit your server by filling out <a href="https://forms.gle/sWY3uv8H5Migi7SM9">this Google Form</a>.
 
-  %table.listing.auto
+  %table.listing.auto#servers
     %thead
       %tr
         %th Name
@@ -61,3 +61,10 @@
     %a{:href => "/Verdantine/"} Verdantine
   %li
     %a{:href => "/WintersEbb/"} WintersEbb
+
+%script{:type => "text/javascript", :src => javascript_path('tablesort.min')}
+%script{:type => "text/javascript", :src => javascript_path('tablesort.numeric')}
+%script{:type => "text/javascript", :src => javascript_path('tablesort.commasep')}
+
+:javascript
+  new Tablesort(document.getElementById("servers"))
