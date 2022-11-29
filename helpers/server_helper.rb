@@ -165,7 +165,8 @@ module ServerHelper
       software: "GDLE",
       description: "We have exclusive content that can't be found anywhere else! We offer a retail experience with something new to do. \"Funky Island\". PvE and PvP welcome.  WE LOVE AC!",
       address: "funkytownac.com:9050",
-      discord: "https://discord.gg/XNkMHZSfHk",
+      discord: "https://discord.gg/4gzFWTMu",
+      website: "https://www.funkytownac.com",
       account_limit: 4
     },
     {
