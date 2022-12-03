@@ -252,6 +252,16 @@ module ServerHelper
       address: "147.135.30.224:9000",
       account_limit: 2,
       discord: "https://discord.gg/GbAtfwNwKj"
+    },
+    {
+      name: "Doctide",
+      type: "PvP",
+      software: "ACE",
+      description: "Where all the PvP happens.",
+      address: "doctide.online:9000",
+      account_limit: 3,
+      discord: "https://discord.gg/Qts4sF58H6",
+      website: "http://doctide.online"
     }
   ]
 
