@@ -262,6 +262,15 @@ module ServerHelper
       account_limit: 3,
       discord: "https://discord.gg/Qts4sF58H6",
       website: "http://doctide.online"
+    },
+    {
+      name: "BartleSkeetHG",
+      type: "PvE",
+      software: "ACE",
+      description: "PvE, Retail Settings Mostly, Houses on every character, No official account limit, but will be reviewed.",
+      address: "bartleskeethg.bartleskeet.com:9000",
+      discord: "https://discord.gg/VMqA5F5g9d",
+      website: "https://www.bartleskeet.com"
     }
   ]
 
