@@ -178,6 +178,14 @@ div.character-header-extra {
   grid-template-columns: 1fr 1fr;
   padding: 3px 5px;
   border-bottom: 2px solid #af7a30;
+  background-color: #B3000C;
+}
+
+#links,
+#links a,
+#links a:visited {
+  color: #1FD537;
+  text-decoration: none;
 }
 
 #links:last-child {
