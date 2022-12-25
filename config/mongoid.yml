@@ -1,7 +1,7 @@
 development:
   clients:
     default:
-      database: treestats-dev
+      database: mongo
       hosts:
         - localhost:27017
 

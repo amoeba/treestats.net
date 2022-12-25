@@ -30,47 +30,47 @@
           Titles
           = @character.titles.nil? ? "" : "(#{@character.titles.length})"
       .box.active
-        = haml :_attributes_pane
+        != haml :_attributes_pane
       .box.inactive
-        = haml :_skills_pane
+        != haml :_skills_pane
       .box.inactive
-        = haml :_titles_pane
+        != haml :_titles_pane
 
     - if @character.properties
       .tabcontainer
         .tabbar
           .tab.active Allegiance
         .box.active
-          = haml :_allegiance_pane
+          != haml :_allegiance_pane
       .tabcontainer
         .tabbar
           .tab.active Augmentations
           .tab.inactive Ratings
           .tab.inactive Other
         .box.active
-          = haml :_augmentations_pane
+          != haml :_augmentations_pane
         .box.inactive
-          = haml :_ratings_pane
+          != haml :_ratings_pane
         .box.inactive
-          = haml :_other_pane
+          != haml :_other_pane
     - else
       .tabcontainer
         .tabbar
           .tab.active Allegiance
           .tab.inactive Other
         .box.active
-          = haml :_allegiance_pane
+          != haml :_allegiance_pane
         .box.inactive
-          = haml :_other_pane
+          != haml :_other_pane
 
   - else
-    = haml :_stub_pane
+    != haml :_stub_pane
 
   .tabcontainer.chain
     .tabbar
       .tab.active Allegiance Chain
     .box.active
-      = haml :_chain_pane
+      != haml :_chain_pane
 
 %script{:type => 'text/javascript', :src => javascript_path('tabs')}
 

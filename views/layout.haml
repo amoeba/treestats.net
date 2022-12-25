@@ -56,10 +56,10 @@
           Player tracking for
           %a{:href => "http://www.turbine.com/"} Turbine's
           %a{:href => "https://www.asheronscall.com/"} Asheron's Call
-    #search= haml :_search
+    #search!= haml :_search
     %main
-      #nav= haml :nav
-      #content= yield
+      #nav!= haml :nav
+      #content!= yield
     #footer
       This website created with love by <a href="https://github.com/amoeba">Kolth</a>.
   %script{:src=> "https://unpkg.com/@popperjs/core@2"}
