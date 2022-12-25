@@ -19,7 +19,10 @@
             Open in Planner
 
   .last_updated
-    = "Last updated #{AppHelper.relative_time(@character["updated_at"])} via <a href='https://github.com/amoeba/treestats/releases'>Decal Plugin</a>"
+    Last updated
+    = AppHelper.relative_time(@character["updated_at"])
+    via
+    %a{:href => "https://github.com/amoeba/treestats/releases"} Decal Plugin
 
   - if @character.attribs
     .tabcontainer
