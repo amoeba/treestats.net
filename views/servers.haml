@@ -1,13 +1,18 @@
-%h2.title Servers
+%h2.title
+  %a{:href => "/servers"} Servers
 
 - if @servers.length > 0
-  %h3#private Private Servers
+  %h3#private
+    %a{:href => "#private"} Private Servers
 
   %p
-    This is by no means an official or complete list of the available private servers.
-    I keep this list to make the TreeStats website as useful as possible and I pick servers based upon whether the server has been around for a while, has a stable player base, and is likely to be around in the future. Note that my list is different than the <a href="https://github.com/acresources/serverslist">community list</a>.
-  %p.notice
-    Submit your server by filling out <a href="https://forms.gle/sWY3uv8H5Migi7SM9">this Google Form</a>.
+    This list stays roughly in sync with the
+    %a{:href => "https://github.com/acresources/serverslist/"} Community Server List
+    \. If you'd like to add or remove your server, please
+    %a{:href => "https://github.com/acresources/serverslist"} go there
+    and submit a
+    %a{:href => "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests"} Pull Request
+    \.
 
   %table.listing.auto#servers
     %thead
@@ -16,7 +21,6 @@
         %th Description
         %th Type
         %th Online
-        %th Account Limit
         %th Software
         %th Connect
         %th More
@@ -28,20 +32,20 @@
           %td= server[:description]
           %td= server[:type]
           %td= server[:players] ? server[:players][:count] : nil
-          %td= server[:account_limit]
           %td
             - if @softwares[server[:software]]
               %a{:href => @softwares[server[:software]]}= server[:software]
             - else
               = server[:software]
-          %td= server[:address]
+          %td= "#{server[:host]}:#{server[:port]}"
           %td
-            - if server[:website]
-              %a{:href => server[:website]} Website
-            - if server[:discord]
-              %a{:href => server[:discord]} Discord
+            - if server[:website_url]
+              %a{:href => server[:website_url]} Website
+            - if server[:discord_url]
+              %a{:href => server[:discord_url]} Discord
 
-%h3#retail Retail Servers
+%h3#retail
+  %a{:href => "#retail" }Retail Servers
 %ul
   %li
     %a{:href => "/Darktide/"} Darktide

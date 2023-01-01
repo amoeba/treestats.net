@@ -24,6 +24,8 @@ gem "uglifier"
 
 group :development do
   gem "pry"
+  gem "nokogiri"
+  gem "standard"
 end
 
 group :production do
@@ -35,3 +37,5 @@ group :test do
   gem "minitest"
   gem "rack-test"
 end
+
+gem "ruby-lsp", "~> 0.3.7", :group => :development
