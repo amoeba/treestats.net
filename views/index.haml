@@ -33,7 +33,7 @@
           %td
             %a{:href => "/#{s["_id"]}"}= "#{s["_id"] }"
 
-  %div{"hx-get" => "/dashboard/uploads_latest", "hx-trigger"=> "every 5s"}!= haml :_dashboard_uploads_latest
+  != haml :_dashboard_uploads_latest
 
 %h2 News
 
