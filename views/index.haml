@@ -32,19 +32,7 @@
         %td
           %a{:href => "/#{s["_id"]}"}= "#{s["_id"] }"
 
-%table.dashboard.wide
-  %thead
-    %tr
-      %th Latest Uploads
-      %th{:colspan => 2} Server
-  %tbody
-    - @latest.each do |c|
-      %tr
-        %td
-          %a{:href => "/#{c.server}/#{c.name}"}= "#{c.name}"
-        %td
-          %a{:href => "/#{c.server}"}= c.server
-        %td= AppHelper.relative_time(c.updated_at)
+!= haml :_dashboard_uploads_latest
 
 %h2 News
 

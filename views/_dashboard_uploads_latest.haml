@@ -1,0 +1,13 @@
+%table.dashboard.wide{"hx-get" => "/dashboard/uploads_latest", "hx-trigger"=> "every 5s"}
+  %thead
+    %tr
+      %th Latest Uploads
+      %th{:colspan => 2} Server
+  %tbody
+    - @latest.each do |c|
+      %tr
+        %td
+          %a{:href => "/#{c.server}/#{c.name}"}= "#{c.name}"
+        %td
+          %a{:href => "/#{c.server}"}= c.server
+        %td= AppHelper.relative_time(c.updated_at)

@@ -43,6 +43,21 @@ namespace :servers do
   end
 end
 
+desc 'Simulate uploads'
+task :simulate do
+  puts 'hi'
+
+  def rand_name
+    (0...8).map { ([65, 97].sample + rand(26)).chr }.push(rand(99)).join
+  end
+
+  while true
+    c = Character.create(name: rand_name, server: rand_name)
+    puts c
+    sleep rand(10)
+  end
+end
+
 # Testing
 task :test do
   Dir['./spec/**/*_spec.rb'].each { |f| load f }
