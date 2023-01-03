@@ -34,6 +34,7 @@ class TreeStats < Sinatra::Base
   register Sinatra::TreeStats::Routing::Stats
   register Sinatra::TreeStats::Routing::Titles
   register Sinatra::TreeStats::Routing::Upload
+  register Sinatra::TreeStats::Routing::Dashboards
 
   # CORS
   register Sinatra::CrossOrigin
