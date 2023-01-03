@@ -8,11 +8,7 @@ module Sinatra
                                .limit(10)
                                .only(:name, :server, :updated_at)
 
-            if request.env['HTTP_HX_REQUEST'] == 'true'
-              haml :_dashboard_uploads_latest, layout: false
-            else
-              haml :_dashboard_uploads_latest
-            end
+            haml :_dashboard_uploads_latest, layout: false
           end
         end
       end

@@ -551,10 +551,11 @@ table.deflist td:first-child {
   background-color: #0f3c3e;
 }
 
-/* Dashboard */
+/* Dashboards */
 
-#dashboard {
-  width: 100%;
+#dashboards {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 table.dashboard {

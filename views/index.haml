@@ -3,36 +3,37 @@
 -# Disabled in code until I cache this
 -# %h3.subtitle= "#{AppHelper.add_commas(@total_uploads)} uploads and counting"
 
-%table.dashboard
-  %thead
-    %tr
-      %th Population
-      %th{:colspan => 1}
-        Server
-      %th.gold= "(Total: #{@latest_counts.map { |p| p[:count]}.sum})"
-  %tbody
-    - @latest_counts.to_a.each do |pop|
+#dashboards
+  %table.dashboard
+    %thead
       %tr
-        %td= pop[:count]
-        %td
-          %a{:href => "/#{pop[:server]}"}= "#{pop[:server]}"
-        %td= "as of #{AppHelper.relative_time(pop[:date])}"
+        %th Population
+        %th{:colspan => 1}
+          Server
+        %th.gold= "(Total: #{@latest_counts.map { |p| p[:count]}.sum})"
+    %tbody
+      - @latest_counts.to_a.each do |pop|
+        %tr
+          %td= pop[:count]
+          %td
+            %a{:href => "/#{pop[:server]}"}= "#{pop[:server]}"
+          %td= "as of #{AppHelper.relative_time(pop[:date])}"
 
-%table.dashboard
-  %thead
-    %tr
-      %th
-        Total Uploaded
-        %span{"data-tippy-content" => "Just the number of characters from each server that have been uploaded to TreeStats. The number of characters on each server might be much higher.", :class => "tippy"} ?
-      %th Server
-  %tbody
-    - @total_uploaded.each do |s|
+  %table.dashboard
+    %thead
       %tr
-        %td= s["count"]
-        %td
-          %a{:href => "/#{s["_id"]}"}= "#{s["_id"] }"
+        %th
+          Total Uploaded
+          %span{"data-tippy-content" => "Just the number of characters from each server that have been uploaded to TreeStats. The number of characters on each server might be much higher.", :class => "tippy"} ?
+        %th Server
+    %tbody
+      - @total_uploaded.each do |s|
+        %tr
+          %td= s["count"]
+          %td
+            %a{:href => "/#{s["_id"]}"}= "#{s["_id"] }"
 
-!= haml :_dashboard_uploads_latest
+  %div{"hx-get" => "/dashboard/uploads_latest", "hx-trigger"=> "every 5s"}!= haml :_dashboard_uploads_latest
 
 %h2 News
 
