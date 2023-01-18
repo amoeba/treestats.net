@@ -21,7 +21,7 @@
 
 %h2 Private Servers
 
-%ul
+%ul{:style => "max-height: 14em; overflow-y: auto;"}
   - ServerHelper.servers.sort.each do |server|
     %li
       %a{:href => "/#{server}"}= server
