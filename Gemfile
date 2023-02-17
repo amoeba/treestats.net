@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "3.2.0"
+ruby "3.2.1"
 
 gem "rake"
 gem "json"
@@ -25,7 +25,7 @@ gem "uglifier"
 group :development do
   gem "pry"
   gem "nokogiri"
-  gem "standard"
+  gem "standardrb"
 end
 
 group :production do
