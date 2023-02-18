@@ -255,7 +255,7 @@ module ServerHelper
      port: "9000",
      website_url: "",
      discord_url: "https://discord.gg/uWUgNv2yDP"},
-    {name: "asheron4fun.com",
+    {name: "Asheron4fun.com",
      description: "A PVE ACE server with End of Retail + easy mode content.",
      type: "PVE",
      software: "ACE",
