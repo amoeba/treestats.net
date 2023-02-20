@@ -94,11 +94,6 @@ class TreeStats < Sinatra::Base
     include Sprockets::Helpers
   end
 
-  configure :production do
-    # NewRelic
-    require "newrelic_rpm"
-  end
-
   not_found do
     haml :not_found
   end
