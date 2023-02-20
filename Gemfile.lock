@@ -104,6 +104,9 @@ GEM
     ruby2_keywords (0.0.5)
     sassc (2.4.0)
       ffi (~> 1.9)
+    sentry-resque (5.8.0)
+      resque (>= 1.24)
+      sentry-ruby (~> 5.8.0)
     sentry-ruby (5.8.0)
       concurrent-ruby (~> 1.0, >= 1.0.2)
     sinatra (3.0.5)
@@ -162,6 +165,7 @@ DEPENDENCIES
   resque
   ruby-lsp (~> 0.3.7)
   sassc
+  sentry-resque
   sentry-ruby
   sinatra
   sinatra-cross_origin

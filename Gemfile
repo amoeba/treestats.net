@@ -30,6 +30,7 @@ end
 
 group :production do
   gem "sentry-ruby"
+  gem "sentry-resque"
   gem "newrelic_rpm"
 end
 

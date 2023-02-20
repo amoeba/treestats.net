@@ -1,8 +1,20 @@
-require 'bundler/setup'
+# Initialize Sentry as soon as possible as recommended
+if ENV["RACK_ENV"] == "production"
+  require "sentry-ruby"
+
+  Sentry.init do |config|
+    config.dsn = ENV["SENTRY_DSN"]
+    config.breadcrumbs_logger = [:sentry_logger, :http_logger]
+    config.traces_sample_rate = 0.2
+  end
+end
+
+# Regular app startup begins now
+require "bundler/setup"
 Bundler.require(:default)
 
-require 'sinatra/redis'
-require 'sinatra/cross_origin'
+require "sinatra/redis"
+require "sinatra/cross_origin"
 
 PumaWorkerKiller.enable_rolling_restart if (ENV["RACK_ENV"] == "production")
 
@@ -11,6 +23,10 @@ PumaWorkerKiller.enable_rolling_restart if (ENV["RACK_ENV"] == "production")
 end
 
 class TreeStats < Sinatra::Base
+  configure :production do
+    use Sentry::Rack::CaptureExceptions
+  end
+
   set :root, File.dirname(__FILE__)
 
   set :sprockets,     Sprockets::Environment.new(root)
@@ -41,15 +57,6 @@ class TreeStats < Sinatra::Base
 
   # Load server route last because it has catch-alls
   register Sinatra::TreeStats::Routing::Server
-
-  # Sentry
-  require "sentry-ruby"
-
-  Sentry.init do |config|
-    config.dsn = ENV["SENTRY_DSN"]
-  end
-
-  use Sentry::Rack::CaptureExceptions
 
   configure do
     # Turn on logging
