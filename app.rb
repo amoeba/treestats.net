@@ -16,7 +16,7 @@ Bundler.require(:default)
 require "sinatra/redis"
 require "sinatra/cross_origin"
 
-PumaWorkerKiller.enable_rolling_restart if (ENV["RACK_ENV"] == "production")
+PumaWorkerKiller.enable_rolling_restart if ENV["RACK_ENV"] == "production"
 
 %w[models routes lib helpers].each do |d|
   Dir["./#{d}/*.rb"].each { |file| require file }
@@ -29,11 +29,11 @@ class TreeStats < Sinatra::Base
 
   set :root, File.dirname(__FILE__)
 
-  set :sprockets,     Sprockets::Environment.new(root)
-  set :precompile,    [ /\w+\.(?!js|css).+/, /application.(css|js)$/, /.+\.js/ ]
+  set :sprockets, Sprockets::Environment.new(root)
+  set :precompile, [/\w+\.(?!js|css).+/, /application.(css|js)$/, /.+\.js/]
   set :assets_prefix, "/assets"
   set :digest_assets, true
-  set(:assets_path)   { File.join public_folder, assets_prefix }
+  set(:assets_path) { File.join public_folder, assets_prefix }
 
   # Explicitly register Sinatra::Redis so the method `redis` is available
   # to other parts of our application like routes
@@ -72,7 +72,7 @@ class TreeStats < Sinatra::Base
     set :redis, redis_url
 
     # Resque
-    Resque.redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
+    Resque.redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
 
     # Setup Sprockets
     sprockets.append_path File.join(root, "assets", "stylesheets")
@@ -81,8 +81,8 @@ class TreeStats < Sinatra::Base
 
     Sprockets::Helpers.configure do |config|
       config.environment = sprockets
-      config.prefix      = assets_prefix
-      config.digest      = digest_assets
+      config.prefix = assets_prefix
+      config.digest = digest_assets
       config.public_path = public_folder
     end
 
@@ -96,7 +96,7 @@ class TreeStats < Sinatra::Base
 
   configure :production do
     # NewRelic
-    require 'newrelic_rpm'
+    require "newrelic_rpm"
   end
 
   not_found do

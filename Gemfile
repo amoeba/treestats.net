@@ -39,4 +39,4 @@ group :test do
   gem "rack-test"
 end
 
-gem "ruby-lsp", "~> 0.3.7", :group => :development
+gem "ruby-lsp", "~> 0.3.7", group: :development
