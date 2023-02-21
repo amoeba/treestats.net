@@ -93,7 +93,6 @@ class TreeStats < Sinatra::Base
   end
 
   configure :production do
-    # NewRelic
     require "newrelic_rpm"
   end
 
