@@ -9,14 +9,14 @@
         %h2.title= "#{@character['name']}"
     %div.character-header-extra
       - if @character['account_name']
-        %span
+        %div
           %a{:href => "/account/#{@character['account_name']}"}
             -# https://phosphoricons.com/
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fff" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><circle cx="128" cy="128" r="96" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></circle><circle cx="128" cy="120" r="40" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></circle><path d="M63.8,199.4a72,72,0,0,1,128.4,0" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path></svg>
-            View other characters
+            View Other Characters
 
       - if @character.attribs
-        %span
+        %div
           %a{:href => "https://planner.treestats.net/?action=import&server=#{@character['server']}&character=#{@character['name']}"}
             -# https://phosphoricons.com/
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fff" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><polyline points="216 100 216 40 156 40" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polyline><line x1="144" y1="112" x2="216" y2="40" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line><path d="M184,144v64a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8h64" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path></svg>

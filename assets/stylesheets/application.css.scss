@@ -173,9 +173,32 @@ h2.title {
   font-variant: small-caps;
 }
 
-div.character-header-extra {
-  text-align: right;
+.character-header-extra {
+  display: flex;
+  align-items: flex-start;
+  justify-content: right;
+  gap: 1em;
 }
+
+.character-header-extra div {
+  border: 1px solid #af7a30;
+  background-color: rgb(0, 64, 0);
+  border-radius: 3px;
+}
+
+.character-header-extra div:hover {
+  background-color: rgba(0, 64, 0, 0.8);
+}
+
+.character-header-extra a {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  text-decoration: none;
+  padding: 0.25em 0.5em;
+}
+
+// End Character Header
 
 #links {
   display: grid;
