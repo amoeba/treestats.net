@@ -28,7 +28,7 @@ var popchart = function (selector, url) {
     .text("Loading...");
 
   function setStatus(message) {
-    var messageEl = document.querySelectorAll(messageClass);
+    var messageEl = document.querySelectorAll("." + messageClass);
 
     if (messageEl.length != 1) {
       return;
