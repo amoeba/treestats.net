@@ -1,11 +1,11 @@
-require 'sinatra/redis'
+require "sinatra/redis"
 
 module Sinatra
   module TreeStats
     module Routing
       module PlayerCounts
         def self.registered(app)
-          app.get '/player_counts/?' do
+          app.get "/player_counts/?" do
             @servers = ServerHelper.all_servers
             @current = params[:servers]
             @range = params[:range]
@@ -30,32 +30,7 @@ module Sinatra
             haml :player_counts
           end
 
-          app.get '/player_counts_redesign/?' do
-            @servers = ServerHelper.all_servers
-            @current = params[:servers]
-            @range = params[:range]
-
-            # Add in ?servers filter to API call if present
-            @player_counts_url = "/player_counts.json"
-
-            if params
-              out = {}
-
-              if params[:servers]
-                out[:servers] = params[:servers]
-              end
-
-              if params[:range]
-                out[:range] = params[:range]
-              end
-
-              @player_counts_url += "?#{out.to_query}"
-            end
-
-            haml :player_counts_redesign
-          end
-
-          app.get '/player_counts.json' do
+          app.get "/player_counts.json" do
             content_type :json
 
             # servers
@@ -76,9 +51,8 @@ module Sinatra
               servers = params[:servers].split(",")
             end
 
-
             # range
-            ranges = %w{3mo 6mo 1yr All}
+            ranges = %w[3mo 6mo 1yr All]
 
             if params[:range]
               unless ranges.include?(params[:range])
@@ -105,7 +79,7 @@ module Sinatra
             end
           end
 
-          app.get '/player_counts-latest.json' do
+          app.get "/player_counts-latest.json" do
             content_type :json
 
             if !redis.exists?("latest-counts")
@@ -118,13 +92,13 @@ module Sinatra
             end
           end
 
-          app.get '/player_counts/:server.json' do |server|
+          app.get "/player_counts/:server.json" do |server|
             content_type :json
 
             count = PlayerCount.where(s: server).desc(:c_at).limit(1).first
             not_found if count.nil?
 
-            cleaned_count = count.serializable_hash({}).tap { |h| h.delete("id") }.tap { |h| h['age'] = AppHelper.relative_time(h["created_at"]) }
+            cleaned_count = count.serializable_hash({}).tap { |h| h.delete("id") }.tap { |h| h["age"] = AppHelper.relative_time(h["created_at"]) }
             JSON.pretty_generate(cleaned_count)
           end
         end
