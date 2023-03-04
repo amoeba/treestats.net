@@ -181,15 +181,20 @@ var popchart = function (selector, url) {
     }
 
     // Total population
-    const total_pop = L.reduce((p, c) => {
-      return p + c["count"];
-    }, 0);
+    // Only display if we have more than one server
+    if (L.length > 1) {
+      const total_pop = L.reduce((p, c) => {
+        return p + c["count"];
+      }, 0);
 
-    svg
-      .append("text")
-      .attr("x", xScale(d3.max(X)))
-      .attr("y", margin.top)
-      .text("Total: " + total_pop);
+      svg
+        .append("text")
+        .attr("class", "total_pop")
+        .attr("x", xScale(d3.max(X)))
+        .attr("dx", 4)
+        .attr("y", margin.top)
+        .text("Total: " + total_pop);
+    }
   };
 
   const tidy = (data) => {
