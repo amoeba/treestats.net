@@ -188,7 +188,7 @@ var popchart = function (selector, url) {
     svg
       .append("text")
       .attr("x", xScale(d3.max(X)))
-      .attr("y", yScale(d3.max(Y)))
+      .attr("y", margin.top)
       .text("Total: " + total_pop);
   };
 
