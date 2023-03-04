@@ -1,9 +1,13 @@
-%h2.title Player Counts (Redesign)
+%h2.title Player Counts
 
 %p
-  The graph below shows the maximum number of players seen by day and server.
-  This includes bots and isn't an accurate count of the number of people playing
-  on each server. For information on how to connect to any of these servers, see the
+  %strong Maximum daily count of players by server<br>
+  %small
+    Note: Counts may include bots or players running bot armies and therefore isn't
+    necessarily an accurate count of the number of people playing on each server.
+
+%p
+  For information on how to connect to any of these servers, see the
   %a{:href => "/servers"} Servers
   page.
 
@@ -32,10 +36,6 @@
   %a{:href => "/player_counts-latest.json"} Latest player counts (JSON)
 
 :css
-  #chartcontainer {
-    width: 960px;
-  }
-
   #chartheader form {
     display: flex;
     flex-wrap: wrap;
@@ -51,17 +51,17 @@
 
   svg {
     background-color: black;
-    border: 2px solid #AF7A30;
+    border: 1px solid rgba(220, 220, 220, 0.4);
   }
 
   text {
-    fill: white;
+    fill: rgba(220, 220, 220, 0.8);
     font-weight: normal;
     font-size: 10px;
   }
 
   .x.axis line {
-    stroke: white;
+    stroke: rgba(220, 220, 220, 0.2);
   }
 
   .axis label {
