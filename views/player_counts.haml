@@ -37,7 +37,7 @@
 
 :css
   #chartcontainer {
-    width: 960px;
+    max-width: 960px;
   }
 
   #chartheader form {
@@ -54,22 +54,16 @@
   }
 
   svg {
-    background-color: black;
-    border: 2px solid #AF7A30;
-  }
-
-  path {
-    fill: none;
   }
 
   text {
-    fill: white;
+    fill: rgba(220, 220, 220, 0.8);
     font-weight: normal;
     font-size: 10px;
   }
 
   .x.axis line {
-    stroke: white;
+    stroke: rgba(220, 220, 220, 0.2);
   }
 
   .axis label {
@@ -117,8 +111,9 @@
     }
   }
 
-%script{:src => javascript_path('d3.min')}
-%script{:src => javascript_path('popchart')}
+-# %script{:src => javascript_path('d3.min')}
+%script{:src => "https://d3js.org/d3.v7.min.js"}
+%script{:src => javascript_path('popchart_redesign')}
 
 :javascript
   popchart("#chart", "#{@player_counts_url}");

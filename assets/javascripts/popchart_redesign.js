@@ -9,16 +9,14 @@ var popchart = function (selector, url) {
   const loadingClass = "flash";
 
   // Colors
-  const mainColor = "rgba(220, 220, 220, 0.8)";
+  const mainColor = "rgba(0, 180, 0, 0.8)";
   const fadedColor = "rgba(220, 220, 220, 0.3)";
 
   const svg = d3
     .select(selector)
     .append("svg")
     .attr("viewBox", [0, 0, width, height])
-    // .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
     .attr("preserveAspectRatio", "xMidYMid meet");
-  // .style("-webkit-tap-highlight-color", "transparent");
 
   // Loading / Error indicator
   svg
