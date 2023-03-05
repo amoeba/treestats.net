@@ -3,7 +3,7 @@
 var popchart = function (selector, url) {
   const width = 960;
   const height = 640;
-  const margin = { top: 60, right: 130, bottom: 60, left: 60 };
+  const margin = { top: 60, right: 140, bottom: 60, left: 60 };
   const yLabel = "Population";
   const messageClass = "status";
   const loadingClass = "flash";
