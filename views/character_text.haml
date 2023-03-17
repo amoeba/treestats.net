@@ -1,0 +1,31 @@
+:plain
+  #{@character[:name]} is a level #{@character[:level]} #{@character[:gender]} #{@character[:race]} #{TitleHelper::get_title_name(@character.current_title)}.
+
+:plain
+  #{@character[:gender] == "Male" ? "He" : "She"} is specialized in the following skills:
+- @character['skills'].select { |key,value| value['training'] == "Specialized"}.sort.each do |skill|
+  = "- #{skill[1]["name"].split("_").map(&:capitalize).join(" ")}"
+=""
+
+
+:plain
+  #{@character[:gender] == "Male" ? "He" : "She"} is also trained in the following skills:
+- @character['skills'].select { |key,value| value['training'] == "Trained"}.sort.each do |skill|
+  = "- #{skill[1]["name"].split("_").map(&:capitalize).join(" ")}"
+
+=""
+- if @character[:monarch][:name] == @character[:name]
+  = "#{@character[:gender] == "Male" ? "He" : "She"} is the monarch of #{@character[:allegiance_name]} and has #{@character[:followers]} followers."
+
+
+  = "#{@character[:gender] == "Male" ? "His" : "Her"} vassals are:"
+  =""
+  :plain
+    #{@character[:vassals].map { |v| "- " + v[:name] }.join("\n")}
+- else
+  = "#{@character[:gender] == "Male" ? "His" : "Her"} patron is #{@character[:patron][:name]} and has #{@character[:followers]} followers."
+  =""
+  = "#{@character[:gender] == "Male" ? "His" : "Her"} vassals are:"
+  =""
+  :plain
+    #{@character[:vassals].map { |v| "- " + v[:name] }.join("\n")}

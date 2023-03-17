@@ -6,15 +6,15 @@ module Sinatra
           app.get "/servers/?" do
             redis_key = "servers-with-counts"
 
-            if !redis.exists?(redis_key)
-              @servers = ServerHelper.servers_with_counts
+            @servers = if !redis.exists?(redis_key)
+              ServerHelper.servers_with_counts
             else
-              @servers = Marshal.restore(redis.get(redis_key))
+              Marshal.restore(redis.get(redis_key))
             end
 
             request.accept.each do |type|
               case type.to_s
-              when 'application/json'
+              when "application/json"
                 content_type :json
 
                 halt JSON.pretty_generate(@servers)
@@ -33,19 +33,19 @@ module Sinatra
 
             redis_key = "servers-with-counts"
 
-            if !redis.exists?(redis_key)
-              servers = ServerHelper.servers_with_counts
+            servers = if !redis.exists?(redis_key)
+              ServerHelper.servers_with_counts
             else
-              servers = Marshal.restore(redis.get(redis_key))
+              Marshal.restore(redis.get(redis_key))
             end
 
             return JSON.pretty_generate(servers)
           end
 
-          app.get '/:server/?' do |server|
+          app.get "/:server/?" do |server|
             @characters = Character.where(server: server)
-                                   .desc(:updated_at).limit(25)
-                                   .only(:name, :server, :updated_at)
+              .desc(:updated_at).limit(25)
+              .only(:name, :server, :updated_at)
             @uploaded = Character.unscoped.where(server: server).count
 
             @online = PlayerCount.where(s: server).desc(:c_at).limit(1).first
@@ -55,7 +55,7 @@ module Sinatra
             haml :server
           end
 
-          app.get '/:server/:name.json' do |s,n|
+          app.get "/:server/:name.json" do |s, n|
             cross_origin
 
             begin
@@ -64,11 +64,24 @@ module Sinatra
               not_found
             end
 
-            content_type 'application/json'
+            content_type "application/json"
             @character.to_json
           end
 
-          app.get '/:server/:name/?' do |s,n|
+          app.get "/:server/:name.text" do |s, n|
+            cross_origin
+
+            begin
+              @character = Character.unscoped.find_by(server: s, name: n)
+            rescue Mongoid::Errors::DocumentNotFound
+              not_found
+            end
+
+            content_type "text/plain"
+            haml :character_text, layout: false
+          end
+
+          app.get "/:server/:name/?" do |s, n|
             begin
               @character = Character.unscoped.find_by(server: s, name: n)
             rescue Mongoid::Errors::DocumentNotFound
