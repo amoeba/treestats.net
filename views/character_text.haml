@@ -1,31 +1,35 @@
 :plain
-  #{@character[:name]} is a level #{@character[:level]} #{@character[:gender]} #{@character[:race]} #{TitleHelper::get_title_name(@character.current_title)}.
+  #{@character[:name]} is level #{@character[:level]}
+  #{@character[:name]} is a #{@character[:gender]}
+  #{@character[:name]} has the title of #{@character[:race]} #{TitleHelper::get_title_name(@character.current_title)}
 
 :plain
-  #{@character[:gender] == "Male" ? "He" : "She"} is specialized in the following skills:
+  #{@character[:name]} is specialized in the following skills:
 - @character['skills'].select { |key,value| value['training'] == "Specialized"}.sort.each do |skill|
   = "- #{skill[1]["name"].split("_").map(&:capitalize).join(" ")}"
 =""
 
 
 :plain
-  #{@character[:gender] == "Male" ? "He" : "She"} is also trained in the following skills:
+  #{@character[:name]} is trained in the following skills:
 - @character['skills'].select { |key,value| value['training'] == "Trained"}.sort.each do |skill|
   = "- #{skill[1]["name"].split("_").map(&:capitalize).join(" ")}"
 
 =""
 - if @character[:monarch][:name] == @character[:name]
-  = "#{@character[:gender] == "Male" ? "He" : "She"} is the monarch of #{@character[:allegiance_name]} and has #{@character[:followers]} followers."
-
-
-  = "#{@character[:gender] == "Male" ? "His" : "Her"} vassals are:"
+  = "#{@character[:name]} is the monarch of #{@character[:allegiance_name]}"
+  = "#{@character[:name]} has #{@character[:followers]} followers."
   =""
+  :plain
+    #{@character[:name]}'s vassals are:
   :plain
     #{@character[:vassals].map { |v| "- " + v[:name] }.join("\n")}
 - else
-  = "#{@character[:gender] == "Male" ? "His" : "Her"} patron is #{@character[:patron][:name]} and has #{@character[:followers]} followers."
+  :plain
+    #{@character[:name]}'s patron is #{@character[:patron][:name]}
+    #{@character[:name]} has #{@character[:followers]} followers
   =""
-  = "#{@character[:gender] == "Male" ? "His" : "Her"} vassals are:"
-  =""
+  :plain
+    #{@character[:name]}'s vassals are:
   :plain
     #{@character[:vassals].map { |v| "- " + v[:name] }.join("\n")}
