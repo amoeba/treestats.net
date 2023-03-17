@@ -17,19 +17,32 @@
 
 =""
 - if @character[:monarch][:name] == @character[:name]
-  = "#{@character[:name]} is the monarch of #{@character[:allegiance_name]}"
+  = "#{@character[:name]} is a monarch"
+  = "His allegiance is of #{@character[:allegiance_name]}"
   = "#{@character[:name]} has #{@character[:followers]} followers."
   =""
   :plain
-    #{@character[:name]}'s vassals are:
+    #{@character[:name]}'s vassals names are:
   :plain
     #{@character[:vassals].map { |v| "- " + v[:name] }.join("\n")}
 - else
   :plain
-    #{@character[:name]}'s patron is #{@character[:patron][:name]}
     #{@character[:name]} has #{@character[:followers]} followers
-  =""
-  :plain
-    #{@character[:name]}'s vassals are:
-  :plain
-    #{@character[:vassals].map { |v| "- " + v[:name] }.join("\n")}
+  - if @character[:patron]
+    :plain
+      #{@character[:name]}'s patron's name is #{@character[:patron][:name]}
+  - else
+    :plain
+      #{@character[:name]} does not have a patron
+  - if @character[:vassals].length > 0
+    :plain
+      #{@character[:name]} is a patron
+    :plain
+      #{@character[:name]}'s vassals names are:
+    :plain
+      #{@character[:vassals].map { |v| "- " + v[:name] }.join("\n")}
+  - else
+    :plain
+      #{@character[:name]} is not a patron
+
+
