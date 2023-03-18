@@ -16,7 +16,7 @@
   = "- #{skill[1]["name"].split("_").map(&:capitalize).join(" ")}"
 
 =""
-- if @character[:monarch][:name] == @character[:name]
+- if @character[:monarch] && @character[:monarch][:name] == @character[:name]
   = "#{@character[:name]} is a monarch"
   = "His allegiance is of #{@character[:allegiance_name]}"
   = "#{@character[:name]} has #{@character[:followers]} followers."
@@ -34,7 +34,7 @@
   - else
     :plain
       #{@character[:name]} does not have a patron
-  - if @character[:vassals].length > 0
+  - if @character[:vassals] && @character[:vassals].length > 0
     :plain
       #{@character[:name]} is a patron
     :plain
