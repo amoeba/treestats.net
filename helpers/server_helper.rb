@@ -134,7 +134,7 @@ module ServerHelper
      host: "test.gdleac.com",
      port: "9050",
      website_url: "",
-     discord_url: "https://discord.gg/jd3dEJf"},
+     discord_url: "https://discord.gg/ncueg4gK2b"},
     {name: "Harvestbud",
      description: "Retail experience. 3 account max",
      type: "",
