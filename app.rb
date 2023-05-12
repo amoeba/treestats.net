@@ -1,21 +1,21 @@
 # Initialize Sentry as soon as possible as recommended
-if ENV["RACK_ENV"] == "production"
-  require "sentry-ruby"
+if ENV['RACK_ENV'] == 'production'
+  require 'sentry-ruby'
 
   Sentry.init do |config|
-    config.dsn = ENV["SENTRY_DSN"]
+    config.dsn = ENV['SENTRY_DSN']
     config.traces_sample_rate = 0.01
   end
 end
 
 # Regular app startup begins now
-require "bundler/setup"
+require 'bundler/setup'
 Bundler.require(:default)
 
-require "sinatra/redis"
-require "sinatra/cross_origin"
+require 'sinatra/redis'
+require 'sinatra/cross_origin'
 
-PumaWorkerKiller.enable_rolling_restart if ENV["RACK_ENV"] == "production"
+PumaWorkerKiller.enable_rolling_restart if ENV['RACK_ENV'] == 'production'
 
 %w[models routes lib helpers].each do |d|
   Dir["./#{d}/*.rb"].each { |file| require file }
@@ -30,7 +30,7 @@ class TreeStats < Sinatra::Base
 
   set :sprockets, Sprockets::Environment.new(root)
   set :precompile, [/\w+\.(?!js|css).+/, /application.(css|js)$/, /.+\.js/]
-  set :assets_prefix, "/assets"
+  set :assets_prefix, '/assets'
   set :digest_assets, true
   set(:assets_path) { File.join public_folder, assets_prefix }
 
@@ -62,11 +62,11 @@ class TreeStats < Sinatra::Base
     enable :logging
 
     # Mongoid
-    Mongoid.load!("./config/mongoid.yml")
+    Mongoid.load!('./config/mongoid.yml')
     Mongo::Logger.logger.level = ::Logger::INFO
 
     # Redis
-    redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
+    redis_url = ENV['REDIS_URL'] || 'redis://localhost:6379'
     uri = URI.parse(redis_url)
     set :redis, redis_url
 
@@ -74,9 +74,9 @@ class TreeStats < Sinatra::Base
     Resque.redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
 
     # Setup Sprockets
-    sprockets.append_path File.join(root, "assets", "stylesheets")
-    sprockets.append_path File.join(root, "assets", "javascripts")
-    sprockets.append_path File.join(root, "assets", "images")
+    sprockets.append_path File.join(root, 'assets', 'stylesheets')
+    sprockets.append_path File.join(root, 'assets', 'javascripts')
+    sprockets.append_path File.join(root, 'assets', 'images')
 
     Sprockets::Helpers.configure do |config|
       config.environment = sprockets
@@ -94,7 +94,7 @@ class TreeStats < Sinatra::Base
   end
 
   configure :production do
-    require "newrelic_rpm"
+    require 'newrelic_rpm'
   end
 
   not_found do
