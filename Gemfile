@@ -29,7 +29,6 @@ group :development do
 end
 
 group :production do
-  gem "stackprof"
   gem "sentry-ruby"
   gem "sentry-resque"
   gem "newrelic_rpm"
