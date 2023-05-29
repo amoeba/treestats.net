@@ -38,7 +38,8 @@ module Sinatra
 
             if params[:servers] && params[:servers] != "All" && params[:servers].length > 0
               # FIXME: Comment this out for now so players can request data from
-              #        old servers
+              #        unlisted servers. This is the case for private servers that
+              # no longer operate
 
               # params[:servers].split(",").each do |server|
               #   unless ServerHelper.all_servers.include?(server)
