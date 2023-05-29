@@ -7,6 +7,35 @@ def player_counts(servers = nil, range = nil)
     }
   }
 
+  match = if servers.nil?
+    {
+      "$match" => {
+        "s" => {
+          "$in" => ServerHelper.all_servers
+        }
+      }
+    }
+  else
+    positive = servers.filter { |s| !s.starts_with?("-")}.map { |s| s.sub(/^+/, "")}
+    negative = servers.filter { |s| s.starts_with?("-")}.map { |s| s.sub(/^-/, "")}
+
+    filter = {}
+
+    if positive.length > 0
+      filter["$in"] = positive
+    end
+
+    if negative.length > 0
+      filter["$nin"] = negative
+    end
+
+    {
+      "$match" => {
+        "s" => filter
+      }
+    }
+  end
+
   group = {
     "$group" => {
       "_id" => {

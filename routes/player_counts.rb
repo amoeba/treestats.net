@@ -7,6 +7,9 @@ module Sinatra
         def self.registered(app)
           app.get "/player_counts/?" do
             @servers = ServerHelper.all_servers
+            @retail_servers = ServerHelper.retail_servers
+            @private_servers = ServerHelper.servers
+
             @current = params[:servers]
             @range = params[:range]
 
@@ -33,6 +36,10 @@ module Sinatra
           app.get "/player_counts.json" do
             content_type :json
 
+            @servers = ServerHelper.all_servers
+            @retail_servers = ServerHelper.retail_servers
+            @private_servers = ServerHelper.servers
+
             # servers
             servers = nil
 
@@ -49,7 +56,14 @@ module Sinatra
 
               # ENDFIXME
 
-              servers = params[:servers].split(",")
+              servers = params[:servers]
+
+              # Special case: Replace keywords "retail" and "emulator" with their
+              # respective servers
+              servers = servers.sub("retail", @retail_servers.join(","))
+              servers = servers.sub("emulator", @private_servers.join(","))
+
+              servers = servers.split(",")
             end
 
             # range

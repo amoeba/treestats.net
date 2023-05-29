@@ -12,23 +12,66 @@
   page.
 
 #chartcontainer
-  #chartheader
-    %form{ :action => "/player_counts", :method => "GET" }
-      %div
-        %label{:for => "servers"} Server:
-        %select#servers{:name => "servers"}
-          %option{:value => "All"} All Servers
-          - @servers.each do |server|
-            %option{:value => server, :selected => @current == server}= server
-        %input{:type => "submit", :value => "Filter"}
-      %div
-        %label{:for => "range"} Time Range:
-        %select#range{:name => "range"}
-          %option{:value => "3mo", :selected => @range == "3mo"} 3 months
-          %option{:value => "6mo", :selected => @range == "6mo"} 6 months
-          %option{:value => "1yr", :selected => @range == "1yr"} 1 year
-          %option{:value => "All", :selected => @range == "All"} All Time
-        %input{:type => "submit", :value => "Filter"}
+  #chartsidebar
+    .sidebargroup
+      .sidebargroup-header
+        Time Range
+      .sidebargroup-items
+        %ul
+          %li
+            %a{:href => "?servers=#{params[:servers]}&range=3mo"} 3mo
+            %a{:href => "?servers=#{params[:servers]}&range=6mo"} 6mo
+            %a{:href => "?servers=#{params[:servers]}&range=1yr"} 1yr
+            %a{:href => "?servers=#{params[:servers]}&range=All"} All
+    .sidebargroup
+      .sidebargroup-header
+        Favorites
+      .sidebargroup-items
+        %ul
+          %li
+            %a{:href => "?servers=-Coldeve,-Reefcull&range=#{params[:range]}"} ⭐️ Lower Pop Servers
+    .sidebargroup
+      .sidebargroup-header
+        Server Type
+      .sidebargroup-items
+        %ul
+          %li
+            %a{:href => "?servers=retail&range=#{params[:range]}"} Retail
+          %li
+            %a{:href => "?servers=emulator&range=#{params[:range]}"} Emulator
+    .sidebargroup
+      .sidebargroup-header
+        Retail Servers
+      .sidebargroup-items
+        %ul
+          - @retail_servers.each do |s|
+            %li
+              %a{:href => "?servers=#{s}&range=#{params[:range]}"}= s
+    .sidebargroup
+      .sidebargroup-header
+        Emulator Servers
+      .sidebargroup-items
+        %ul
+          - @private_servers.each do |s|
+            %li
+              %a{:href => "?servers=#{s}&range=#{params[:range]}"}= s
+  -# #chartheader
+  -#   %form{ :action => "/player_counts", :method => "GET" }
+  -#     %div
+  -#       %label{:for => "servers"} Server:
+  -#       %select#servers{:name => "servers"}
+  -#         %option{:value => "All"} All Servers
+  -#         - @servers.each do |server|
+  -#           %option{:value => server, :selected => @current == server}= server
+  -#       %input{:type => "submit", :value => "Filter"}
+  -#     %div
+  -#       %label{:for => "range"} Time Range:
+  -#       %select#range{:name => "range"}
+  -#         %option{:value => "3mo", :selected => @range == "3mo"} 3 months
+  -#         %option{:value => "6mo", :selected => @range == "6mo"} 6 months
+  -#         %option{:value => "1yr", :selected => @range == "1yr"} 1 year
+  -#         %option{:value => "All", :selected => @range == "All"} All Time
+  -#       %input{:type => "submit", :value => "Filter"}
 
   #chart
 
@@ -38,6 +81,33 @@
 :css
   #chartcontainer {
     max-width: 960px;
+    display: grid;
+    grid-template-columns: 170px auto;
+    border: 1px solid #af7a30;
+  }
+
+  #chartsidebar {
+    border-right: 1px solid #af7a30;
+  }
+
+  #chartsidebar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  #chartsidebar .sidebargroup-header {
+    background-color: purple;
+  }
+
+  .sidebargroup-header,
+  .sidebargroup-items li {
+    padding: 1px 5px;
+  }
+
+  .sidebargroup-items ul {
+    line-height: 1.5em;
+    padding: 0 5px;
   }
 
   #chartheader form {
