@@ -41,9 +41,14 @@ module Sinatra
             @private_servers = ServerHelper.servers
 
             # servers
-            servers = nil
+            servers = params[:servers]
 
-            if params[:servers] && params[:servers] != "All" && params[:servers].length > 0
+            # Nil-ify empty value
+            if servers && servers.strip.length == 0
+              servers = nil
+            end
+
+            if servers && servers != "All"
               # FIXME: Comment this out for now so players can request data from
               #        unlisted servers. This is the case for private servers that
               # no longer operate
@@ -56,8 +61,6 @@ module Sinatra
 
               # ENDFIXME
 
-              servers = params[:servers]
-
               # Special case: Replace keywords "retail" and "emulator" with their
               # respective servers
               servers = servers.sub("retail", @retail_servers.join(","))
@@ -68,14 +71,20 @@ module Sinatra
 
             # range
             ranges = %w[3mo 6mo 1yr All]
+            range = params[:range]
 
-            if params[:range]
-              unless ranges.include?(params[:range])
-                halt 400, "Invalid query parameters: #{params[:range]} is not a valid range"
+            # Nil-ify empty value
+            if range && range.strip.length == 0
+              range = nil
+            end
+
+            if range
+              unless ranges.include?(range)
+                halt 400, "Invalid query parameters: #{range} is not a valid range"
               end
             end
 
-            range = params[:range] || "3mo"
+            range = range || "3mo"
 
             # set up a key for redis caching
             redis_key = if servers
