@@ -1,17 +1,18 @@
 def player_counts(servers = nil, range = nil)
-  match = {
-    "$match" => {
-      "s" => {
-        "$in" => servers || ServerHelper.all_servers
-      }
-    }
-  }
-
   match = if servers.nil?
     {
       "$match" => {
         "s" => {
           "$in" => ServerHelper.all_servers
+        }
+      }
+    }
+  elsif servers.length == 1 && servers[0] == "lowerpop"
+    {
+      "$match" => {
+        "s" => {
+          "$in" => ServerHelper.servers,
+          "$nin" => ["Coldeve", "Reefcull"]
         }
       }
     }
