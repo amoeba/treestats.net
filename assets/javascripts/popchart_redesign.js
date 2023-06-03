@@ -39,7 +39,6 @@ var popchart = function (selector, url) {
   }
 
   const draw = (data) => {
-    console.log("draw");
     if (data.length <= 0) {
       setStatus("No results to show. Try changing your filters.");
       return;
@@ -47,17 +46,9 @@ var popchart = function (selector, url) {
 
     svg.select("." + messageClass).remove();
 
+    // Start with X and Y so we can do scales first, then work on data
     const X = d3.map(data, (x) => x.date);
     const Y = d3.map(data, (x) => x.count);
-    const Z = d3.map(data, (x) => x.server);
-    const G = d3.group(data, (d) => d.server);
-    const L = d3.map(G, ([s, v]) => {
-      return {
-        server: s,
-        date: v[v.length - 1].date,
-        count: v[v.length - 1].count,
-      };
-    });
 
     // Domains
     const xDomain = d3.extent(X);
@@ -70,10 +61,36 @@ var popchart = function (selector, url) {
     // Scales and axes
     const xScale = d3.scaleTime(xDomain, xRange);
     const yScale = d3.scaleLinear(yDomain, yRange);
+
+    // Now deal with the data transformation
+    const Z = d3.map(data, (x) => x.server);
+    const G = d3.group(data, (d) => d.server);
+    const L = d3.map(G, ([s, v]) => {
+      return {
+        server: s,
+        date: v[v.length - 1].date,
+        count: v[v.length - 1].count,
+      };
+    });
+    const LL = d3.map(G, ([s, v]) => {
+      return {
+        server: s,
+        points: [
+          [xScale(v[v.length - 1].date), yScale(v[v.length - 1].count)],
+          [
+            xScale(v[v.length - 1].date) + 100,
+            yScale(v[v.length - 1].count + 10),
+          ], // FIXME
+        ],
+      };
+    });
+
+    // Axes
     const xAxis = d3
       .axisBottom(xScale)
       .ticks(width / 120)
       .tickSizeOuter(0);
+
     const yAxis = d3.axisLeft(yScale).ticks(height / 60);
 
     // Line
@@ -82,6 +99,13 @@ var popchart = function (selector, url) {
       .curve(d3.curveNatural)
       .x((d) => xScale(d.date))
       .y((d) => yScale(d.count));
+
+    // Line for label lines, this is semi-redundant with above
+    const label_line = d3
+      .line()
+      .curve(d3.curveLinear)
+      .x((d) => d[0])
+      .y((d) => d[1]);
 
     // Draw xAxis
     svg
@@ -118,6 +142,7 @@ var popchart = function (selector, url) {
         return "/" + d.server;
       })
       .append("text")
+      .attr("class", "label")
       .attr("x", (d) => xScale(d.date))
       .attr("y", (d) => yScale(d.count))
       .attr("dx", 4)
@@ -126,6 +151,17 @@ var popchart = function (selector, url) {
       .attr("font-size", 10)
       .attr("text-anchor", "left")
       .text((d) => d.server + ": " + d.count);
+
+    // Lines from server lines to labels
+    // const label_lines = svg
+    //   .append("g")
+    //   .selectAll("path")
+    //   .data(LL)
+    //   .join("path")
+    //   .attr("class", "label_line")
+    //   .attr("stroke", "red")
+    //   .attr("fill", "none")
+    //   .attr("d", (d) => label_line(d.points));
 
     // Draw dot
     const dot = svg.append("g").attr("display", "none");
@@ -195,6 +231,8 @@ var popchart = function (selector, url) {
         .attr("y", margin.top)
         .text("Total: " + total_pop);
     }
+
+    setTimeout(nudge, 150);
   };
 
   const tidy = (data) => {
@@ -207,10 +245,71 @@ var popchart = function (selector, url) {
     });
   };
 
-  d3.json(url)
-    .then(tidy)
-    .then(draw)
-    .catch((err) => {
-      setStatus(err.response);
-    });
+  /**
+   * nudge labels so they don't overlap
+   */
+  var nudge = function (amount = 5) {
+    var maxit = 50;
+
+    var sorted = d3
+      .selectAll(".label")
+      .sort(function (a, b) {
+        return a.count - b.count;
+      })
+      .nodes();
+
+    var any_intersected = true;
+
+    while (any_intersected && maxit >= 0) {
+      any_intersected = false;
+
+      for (var i = 0; i < sorted.length; i++) {
+        for (var j = i; j < sorted.length; j++) {
+          // Skip the same label
+          if (sorted[i] === sorted[j]) {
+            continue;
+          }
+
+          if (intersects(sorted[i], sorted[j], 5)) {
+            any_intersected = true;
+            sorted[j].setAttribute("y", sorted[j].getAttribute("y") - amount);
+          }
+        }
+      }
+
+      --maxit;
+    }
+
+    return;
+  };
+
+  // Do two SVGRect's intersect?
+  // Allows a fudge parameter to allow partial overlap
+  var intersects = function (a, b, fudge = 0) {
+    var rect1 = a.getBBox();
+    var rect2 = b.getBBox();
+
+    if (
+      rect1.x < rect2.x + rect2.width &&
+      rect1.x + rect2.width > rect2.x &&
+      rect1.y < rect2.y + rect2.height - fudge &&
+      rect1.y + rect1.height - fudge > rect2.y
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
+  try {
+    d3.json(url)
+      .then(tidy)
+      .then(draw)
+      .catch((err) => {
+        console.log(err);
+        setStatus(err.response);
+      });
+  } catch (e) {
+    console.log(e);
+  }
 };
