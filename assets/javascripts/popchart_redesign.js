@@ -203,9 +203,7 @@ var popchart = function (selector, url) {
 
       // TODO: This code could be DRY'd
       if (xm > xScale(d3.max(X))) {
-        const label_nodes = d3
-          .selectAll(".label")
-          .nodes();
+        const label_nodes = d3.selectAll(".label").nodes();
 
         const closest_label = d3.least(label_nodes, (l) =>
           Math.hypot(l.getAttribute("x") - xm, l.getAttribute("y") - ym)
@@ -215,7 +213,7 @@ var popchart = function (selector, url) {
           server: closest_label.getAttribute("data-server"),
           date: closest_label.getAttribute("data-date"),
           count: closest_label.getAttribute("data-count"),
-        }
+        };
 
         servers
           .style("stroke", ([server]) =>
@@ -243,7 +241,10 @@ var popchart = function (selector, url) {
           .style("fill", (d) => (i.server === d.server ? null : fadedColor))
           .filter((d) => i.server === d.server)
           .raise();
-        dot.attr("transform", `translate(${xScale(i.date)},${yScale(i.count)})`);
+        dot.attr(
+          "transform",
+          `translate(${xScale(i.date)},${yScale(i.count)})`
+        );
         dot.select("text").text(i.count);
         dot.attr("display", null);
       }
