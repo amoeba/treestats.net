@@ -167,7 +167,7 @@ module ServerHelper
      port: "9000",
      website_url: "",
      discord_url: "https://discord.gg/zdQVP7bmjC"},
-    {name: "Infinite Leaftide",
+    {name: "InfiniteLeaftide",
      description: "Inifinite Level and Enlightenment, an Infinite Extended Retail Experience. Custom content, constant development and active community! ",
      type: "PvE",
      software: "ACE",
