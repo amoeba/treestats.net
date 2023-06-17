@@ -143,7 +143,7 @@ var popchart = function (selector, url) {
       })
       .append("text")
       .attr("class", "label")
-      .attr("x", (d) => xScale(d.date))
+      .attr("x", (d) => xScale(xDomain[1]))
       .attr("y", (d) => yScale(d.count))
       .attr("dx", 4)
       .attr("dy", 4)
