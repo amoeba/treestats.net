@@ -150,6 +150,9 @@ var popchart = function (selector, url) {
       .attr("font-family", "sans-serif")
       .attr("font-size", 10)
       .attr("text-anchor", "left")
+      .attr("data-server", (d) => d.server)
+      .attr("data-date", (d) => d.date)
+      .attr("data-count", (d) => d.count)
       .text((d) => d.server + ": " + d.count);
 
     // Lines from server lines to labels
@@ -186,22 +189,64 @@ var popchart = function (selector, url) {
     // Interaction
     function pointermoved(event) {
       const [xm, ym] = d3.pointer(event);
-      const i = d3.least(data, (d) =>
-        Math.hypot(xScale(d.date) - xm, yScale(d.count) - ym)
-      ); // closest point
 
-      servers
-        .style("stroke", ([server]) =>
-          i.server === server ? null : fadedColor
-        )
-        .filter(([server]) => i.server === server)
-        .raise();
-      labels
-        .style("fill", (d) => (i.server === d.server ? null : fadedColor))
-        .filter((d) => i.server === d.server)
-        .raise();
-      dot.attr("transform", `translate(${xScale(i.date)},${yScale(i.count)})`);
-      dot.select("text").text(i.count);
+      // First, decide whether we're mousing over lines or line labels. We want
+      // to find the nearest line or line label, then highlight the line and
+      // line label for whatever server that is.
+
+      // To decide whether we're hovering over lines or line labels, we just
+      // need to compare our X value. If we're beyond the end of the X range of
+      // the data points, we're nearer to line labels. Otherwise, we're nearer
+      // to lines.
+
+      let i;
+
+      // TODO: This code could be DRY'd
+      if (xm > xScale(d3.max(X))) {
+        const label_nodes = d3
+          .selectAll(".label")
+          .nodes();
+
+        const closest_label = d3.least(label_nodes, (l) =>
+          Math.hypot(l.getAttribute("x") - xm, l.getAttribute("y") - ym)
+        );
+
+        i = {
+          server: closest_label.getAttribute("data-server"),
+          date: closest_label.getAttribute("data-date"),
+          count: closest_label.getAttribute("data-count"),
+        }
+
+        servers
+          .style("stroke", ([server]) =>
+            i.server === server ? null : fadedColor
+          )
+          .filter(([server]) => i.server === server)
+          .raise();
+        labels
+          .style("fill", (d) => (i.server === d.server ? null : fadedColor))
+          .filter((d) => i.server === d.server)
+          .raise();
+        dot.attr("display", "none");
+      } else {
+        i = d3.least(data, (d) =>
+          Math.hypot(xScale(d.date) - xm, yScale(d.count) - ym)
+        ); // closest point
+
+        servers
+          .style("stroke", ([server]) =>
+            i.server === server ? null : fadedColor
+          )
+          .filter(([server]) => i.server === server)
+          .raise();
+        labels
+          .style("fill", (d) => (i.server === d.server ? null : fadedColor))
+          .filter((d) => i.server === d.server)
+          .raise();
+        dot.attr("transform", `translate(${xScale(i.date)},${yScale(i.count)})`);
+        dot.select("text").text(i.count);
+        dot.attr("display", null);
+      }
     }
 
     function pointerentered() {
