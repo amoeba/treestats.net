@@ -138,9 +138,9 @@ var popchart = function (selector, url) {
       .selectAll("text")
       .data(L)
       .join("a")
-      .attr("xlink:href", function (d) {
-        return "/" + d.server;
-      })
+      // .attr("xlink:href", function (d) {
+      //   return "/" + d.server;
+      // })
       .append("text")
       .attr("class", "label")
       .attr("x", (d) => xScale(xDomain[1]))
