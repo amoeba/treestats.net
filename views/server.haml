@@ -43,13 +43,13 @@
               %a{:href => @softwares[@details[:software]]}= @details[:software]
             - else
               = @details[:software]
-        - if @details[:website_url] && @details[:website_url].length > 0
+        - if @details[:website_url]
           %tr
             %td
               Website
             %td
               %a{:href => @details[:website_url]}= @details[:website_url]
-        - if @details[:discord_url] && @details[:discord_url].length > 0
+        - if @details[:discord_url]
           %tr
             %td
               Discord
