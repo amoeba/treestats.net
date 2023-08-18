@@ -5,6 +5,10 @@ if ENV['RACK_ENV'] == 'production'
   Sentry.init do |config|
     config.dsn = ENV['SENTRY_DSN']
     config.traces_sample_rate = 0.01
+
+    if ENV['GIT_REV']
+      config.release = ENV['GIT_REV']
+    end
   end
 end
 
