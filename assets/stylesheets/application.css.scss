@@ -200,6 +200,14 @@ h2.title {
 
 // End Character Header
 
+#banner {
+  background-color: gold;
+  color: black;
+  padding: 0.15em 0.25em;
+  font-size: 90%;
+  text-align: center;
+}
+
 #links {
   display: grid;
   grid-template-columns: 1fr 1fr;
