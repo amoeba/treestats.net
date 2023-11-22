@@ -13,7 +13,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"asheronscall.hopto.org",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/VSFtYXN3v7"},
  {:name=>"AChard",
   :description=>"ACE EOR PVP Server/Custom PK Content/PK Kill Rankings",
@@ -38,7 +37,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"play.coldeve.online",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/nUR4PHe"},
  {:name=>"DarkSide-PK",
   :description=>
@@ -91,7 +89,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"ac.duskfall.net",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/jH7uYyF8gp"},
  {:name=>"Fathomless Refuge",
   :description=>
@@ -100,7 +97,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"23.254.209.233",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/C9Tu5yUYn2"},
  {:name=>"Frostcull",
   :description=>
@@ -109,7 +105,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"frostcull.ddns.net",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/RQF7HgEZn4"},
  {:name=>"FrostfACE",
   :description=>
@@ -117,9 +112,7 @@ module ServerHelper
   :type=>"PvE",
   :software=>"ACE",
   :host=>"172.111.230.127",
-  :port=>"9000",
-  :website_url=>"",
-  :discord_url=>""},
+  :port=>"9000"},
  {:name=>"FunkyTEST",
   :description=>"FunkyTown 2.0 Test Server",
   :type=>"PvE",
@@ -152,7 +145,6 @@ module ServerHelper
   :software=>"GDL",
   :host=>"test.gdleac.com",
   :port=>"9050",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/jd3dEJf"},
  {:name=>"Harvestbud",
   :description=>"Retail experience. 3 account max",
@@ -177,7 +169,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"ifh.ddns.net",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/zdQVP7bmjC"},
  {:name=>"InfiniteLeaftide",
   :description=>
@@ -186,7 +177,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"infiniteleaftide.online",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/KtNxP8CaZt"},
  {:name=>"Jellocull",
   :description=>"A PVE Server to mimic retail and later add custom content. ",
@@ -194,7 +184,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"ac.jellocull.com",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/snv52pX"},
  {:name=>"Levistras",
   :description=>"A 100% Botting-Free PvE Server! Open access! 2 account limit",
@@ -202,7 +191,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"levistras.acportalstorm.com",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/TtkcWbv"},
  {:name=>"Modclaim",
   :description=>
@@ -210,9 +198,7 @@ module ServerHelper
   :type=>"PvE",
   :software=>"ACE",
   :host=>"ngc1069.dynamic-dns.net",
-  :port=>"9000",
-  :website_url=>"",
-  :discord_url=>""},
+  :port=>"9000"},
  {:name=>"Morgentau",
   :description=>
    "A PVE server with some server side portal bots.  Max. 7 accounts per IP.",
@@ -237,7 +223,6 @@ module ServerHelper
   :software=>"GDL",
   :host=>"reefcull.gdleac.com",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.com/jd3dEJf"},
  {:name=>"Seedsow",
   :description=>"A PVE Dark Majesty server must use classic AC .dats",
@@ -245,7 +230,6 @@ module ServerHelper
   :software=>"GDL",
   :host=>"serafino.ddns.net",
   :port=>"9060",
-  :website_url=>"",
   :discord_url=>"https://goo.gl/mUEu6g"},
  {:name=>"Shadowland",
   :description=>
@@ -262,7 +246,6 @@ module ServerHelper
   :software=>"GDL",
   :host=>"serafino.ddns.net",
   :port=>"9070",
-  :website_url=>"",
   :discord_url=>"https://goo.gl/mUEu6g"},
  {:name=>"Soulclaim",
   :description=>
@@ -271,7 +254,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"soulclaim.ddns.net",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/939ARjY"},
  {:name=>"Thistlecrown",
   :description=>"Everyone welcome! 3 account limit. Recreation of TD.",
@@ -279,7 +261,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"thistlecrown.ddns.net",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/uhZ3hn7"},
  {:name=>"ValHeel",
   :description=>
@@ -288,7 +269,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"162.250.127.186",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/U5wxByySCt"},
  {:name=>"Wynterhaven",
   :description=>
@@ -297,7 +277,6 @@ module ServerHelper
   :software=>"ACE",
   :host=>"71.87.108.159",
   :port=>"9000",
-  :website_url=>"",
   :discord_url=>"https://discord.gg/uWUgNv2yDP"}]
 
   def self.softwares

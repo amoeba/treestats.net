@@ -26,16 +26,22 @@ namespace :servers do
     servers = []
 
     doc.xpath('//serveritem').each do |server|
-      servers.push({
-                     name: server.xpath('./name').first.content,
-                     description: server.xpath('./description').first.content,
-                     type: server.xpath('./type').first.content,
-                     software: server.xpath('./emu').first.content,
-                     host: server.xpath('./server_host').first.content,
-                     port: server.xpath('./server_port').first.content,
-                     website_url: server.xpath('./website_url').first.content,
-                     discord_url: server.xpath('./discord_url').first.content
-                   })
+      s = {
+        name: server.xpath('./name').first.content,
+        description: server.xpath('./description').first.content,
+        type: server.xpath('./type').first.content,
+        software: server.xpath('./emu').first.content,
+        host: server.xpath('./server_host').first.content,
+        port: server.xpath('./server_port').first.content,
+        website_url: server.xpath('./website_url').first.content,
+        discord_url: server.xpath('./discord_url').first.content
+      }
+
+      # clean up
+      s.delete(:website_url) if s[:website_url].length <= 0
+      s.delete(:discord_url) if s[:discord_url].length <= 0
+
+      servers.push(s)
     end
 
     servers = servers.sort_by { |server| server[:name] }
