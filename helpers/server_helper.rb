@@ -55,7 +55,7 @@ module ServerHelper
   :host=>"135.148.121.170",
   :port=>"9000",
   :website_url=>"https://www.dekarutide.com/",
-  :discord_url=>"https://discord.gg/GbAtfwNwKj"},
+  :discord_url=>"https://discord.gg/gTv9XMC8aN"},
  {:name=>"Derptide",
   :description=>
    "EOR server that pushes custom content and Qol changes, All quest weapons have been upgraded to be useful, and usable. No quest item will EVER be better than lootgen, Live events, Ongoing story arcs. and TONS of tailoring options.",
