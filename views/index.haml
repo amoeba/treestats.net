@@ -39,6 +39,17 @@
 
 %div
   %p
+    %p Update <code>2023-12-26 2200 UTC</code>
+    %h3 Update on recent brief outage
+    %p
+      <a href="https://treestats.net">treestats.net</a> was unavailable for roughly 90 minutes today after going down while perming a routine upgrade. Services have been fully restored but please reach out <a href="https://discord.gg/MDSSYeW2c5">on Discord</a> if you see any issues.
+    %p
+      <strong>Synopsis:</strong> Partially for my memory but also for anyone who's curious about the reason for the outage, here's a summary: Just prior to the outage, I updated the system TreeStats runs on with <code>apt upgrade</code> which is somethingn I do on a semi-regular basis. This upgraded packages for my deployment tool, <a href="https://dokku.com/">Dokku</a>, which resulted in a mix of incompatible binaries from different versions of Dokku for reasons I don't yet understand.
+    %p
+      Rather than attempting to downgrade back to a known working version of Dokku, I decided to take advantage of the already-underway downtime to upgrade the operating system from Debian 10 to 12, upgrade Dokku from a 0.2x version to a 0.3x version (which I've been meaning to do for a while), and also upgrade MongoDB and Redis images up a few major versions each. With these upgrades now done, it should be easier to continue to do upgrades without downtime.
+
+%div
+  %p
     %p Update <code>2023-01-01 0300 UTC</code>
     %h3 Private servers list now uses Community List
     %p
