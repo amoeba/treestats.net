@@ -22,7 +22,7 @@ jobs:
         id: push
         uses: dokku/github-action@master
         with:
-          git_remote_url: "ssh://dokku@treestats.net:22/treestats-production"
+          git_remote_url: "dokku@treestats.net:treestats-production"
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           continue_on_failure: true
       - name: Notify Discord
