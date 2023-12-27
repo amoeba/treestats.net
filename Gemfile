@@ -1,42 +1,44 @@
-source "https://rubygems.org"
-ruby "3.3.0"
+# frozen_string_literal: true
 
-gem "rake"
-gem "json"
-gem "rack"
-gem "puma"
-gem "puma_worker_killer"
-gem "sinatra"
-gem "sinatra-redis"
-gem "sinatra-cross_origin"
+source 'https://rubygems.org'
+ruby '3.3.0'
 
-gem "mongoid"
-gem "redis"
+gem 'json'
+gem 'puma'
+gem 'puma_worker_killer'
+gem 'rack'
+gem 'rake'
+gem 'sinatra'
+gem 'sinatra-cross_origin'
+gem 'sinatra-redis'
 
-gem "clockwork"
-gem "resque"
+gem 'mongoid'
+gem 'redis'
 
-gem "sprockets", "~>4.0.2"
-gem "sprockets-helpers"
-gem "haml"
-gem "sassc"
-gem "uglifier"
+gem 'clockwork'
+gem 'resque'
+
+gem 'haml'
+gem 'sassc'
+gem 'sprockets', '~>4.0.2'
+gem 'sprockets-helpers'
+gem 'uglifier'
 
 group :development do
-  gem "pry"
-  gem "nokogiri"
-  gem "standardrb"
+  gem 'nokogiri'
+  gem 'pry'
+  gem 'standardrb'
 end
 
 group :production do
-  gem "sentry-ruby"
-  gem "sentry-resque"
-  gem "newrelic_rpm"
+  gem 'newrelic_rpm'
+  gem 'sentry-resque'
+  gem 'sentry-ruby'
 end
 
 group :test do
-  gem "minitest"
-  gem "rack-test"
+  gem 'minitest'
+  gem 'rack-test'
 end
 
-gem "ruby-lsp", "~> 0.3.7", group: :development
+gem 'ruby-lsp', '~> 0.3.7', group: :development
