@@ -40,5 +40,3 @@ group :test do
   gem 'minitest'
   gem 'rack-test'
 end
-
-gem 'ruby-lsp', '~> 0.3.7', group: :development
