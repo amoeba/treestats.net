@@ -90,6 +90,9 @@ module Sinatra
               character.vassals = nil
             end
 
+            # IP Address
+            character.ip = request.ip
+
             character.save
             character.touch
 
