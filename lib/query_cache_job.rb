@@ -9,7 +9,10 @@ class QueryCacheJob
   @queue = :default
 
   def self.perform
-    puts "QueryCacheJob.perform"
+    start = Time.now
+    id = start.to_i
+
+    puts "QueryCacheJob(#{id}).perform called"
 
     # Setup
     redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
@@ -20,5 +23,7 @@ class QueryCacheJob
     redis.set("dashboard-latest-counts", Marshal.dump(QueryHelper.dashboard_latest_counts))
     redis.set("dashboard-total-uploaded", Marshal.dump(QueryHelper.dashboard_total_uploaded))
     redis.set("servers-with-counts", Marshal.dump(ServerHelper.servers_with_counts))
+
+    puts "QueryCacheJob(#{id}) finished in #{Time.now - start} seconds"
   end
 end
