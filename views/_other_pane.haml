@@ -44,13 +44,13 @@
         %tr
           %td= PropertiesHelper::get_property_name(k)
           %td
-            -if v < 101
+            -if v < 95
               = "Initiate (#{v})"
-            - elsif v < 301
+            - elsif v < 295
               = "Adept (#{v})"
-            - elsif v < 601
-              = "Adept (#{v})"
-            - elsif v < 1001
-              = "Adept (#{v})"
-            - elsif v == 1001
+            - elsif v < 595
+              = "Knight (#{v})"
+            - elsif v < 995
+              = "Lord (#{v})"
+            - elsif v > 995
               = "Master (#{v})"
