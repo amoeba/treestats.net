@@ -4,20 +4,23 @@
 -# %h3.subtitle= "#{AppHelper.add_commas(@total_uploads)} uploads and counting"
 
 #dashboards
-  %table.dashboard
-    %thead
-      %tr
-        %th Population
-        %th{:colspan => 1}
-          Server
-        %th.gold= "(Total: #{@latest_counts.map { |p| p[:count]}.sum})"
-    %tbody
-      - @latest_counts.to_a.each do |pop|
+  %div
+    %table.dashboard
+      %thead
         %tr
-          %td= pop[:count]
-          %td
-            %a{:href => "/#{pop[:server]}"}= "#{pop[:server]}"
-          %td= "as of #{AppHelper.relative_time(pop[:date])}"
+          %th Population
+          %th{:colspan => 1}
+            Server
+          %th.gold= "(Total: #{@latest_counts.map { |p| p[:count]}.sum})"
+      %tbody
+        - @latest_counts.to_a.each do |pop|
+          %tr
+            %td= pop[:count]
+            %td
+              %a{:href => "/#{pop[:server]}"}= "#{pop[:server]}"
+            %td= "as of #{AppHelper.relative_time(pop[:date])}"
+    %div.right
+      %a{:href => "/servers", :style => "color: rgba(255, 255, 255, 0.75); font-size: 80%; text-decoration: none"} → View All
 
   %table.dashboard
     %thead
