@@ -191,7 +191,7 @@ module ServerHelper
    "Active play rewarded! Earn permanent account-wide increased XP% from completing quests. No level cap. Magic learned from looted scrolls only. Custom content. ",
   :type=>"PvE",
   :software=>"ACE",
-  :host=>"ifh.ddns.net",
+  :host=>"infinitefrosthaven.hopto.org",
   :port=>"9000",
   :discord_url=>"https://discord.gg/zdQVP7bmjC"},
  {:name=>"InfiniteLeaftide",
