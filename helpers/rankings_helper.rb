@@ -26,6 +26,9 @@ module RankingsHelper
       else
         match = match.merge({ "s" => params["server"] })
       end
+    else
+      # Or just remove server entirely
+      match.delete("s")
     end
 
     # Mix in reverse sorting options

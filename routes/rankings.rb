@@ -17,7 +17,11 @@ module Sinatra
               # Set view variables
               @key = RankingsHelper::RANKINGS[ranking][:sort].keys.first
               @display_name = RankingsHelper::RANKINGS[ranking][:display]
-              @server = params.has_key?("server") ? params["server"] : "All Servers"
+              @server = if params.has_key?("server") && params["server"].length > 0
+                params["server"]
+              else
+                 "All"
+              end
               @accessor = RankingsHelper::RANKINGS[ranking][:accessor]
               @sort_url = "/rankings"
 
