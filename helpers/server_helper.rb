@@ -81,6 +81,14 @@ module ServerHelper
   :port=>"9000",
   :website_url=>"http://doctide.online",
   :discord_url=>"https://discord.gg/Qts4sF58H6"},
+ {:name=>"DragonMoon",
+  :description=>
+   "Level 1000 mod, new rare system, quest item updates, custom loot tables and several custom areas. Community Discord! WIP!",
+  :type=>"PvE",
+  :software=>"ACE",
+  :host=>"dragonmoonclan.duckdns.org",
+  :port=>"9030",
+  :discord_url=>"https://discord.gg/dragonmoon"},
  {:name=>"Drunkenfell",
   :description=>
    "A PvE server that will resemble end-of-retail with some modifications.",
