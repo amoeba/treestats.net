@@ -99,10 +99,14 @@ module PropertiesHelper
         2 => "Swords",
         3 => "Axes",
         4 => "Maces",
+        5 => "Spears",
         6 => "Daggers",
         7 => "Staves",
+        # I tested 8 under ACE and it's "Unknown" ingame
         9 => "Crossbows",
+        # I tested 10 under ACE and it's "Unknown" ingame
         11 => "Two-Handed"
+        # I tested 12 under ACE and it's "Unknown" ingame
       },
     '355' => {
       8 => "Bows",
