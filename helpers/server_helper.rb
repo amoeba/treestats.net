@@ -36,7 +36,7 @@ module ServerHelper
   :software=>"ACE",
   :host=>"www.asheron4fun.com",
   :port=>"9050",
-  :website_url=>"https://www.asheron4fun.com/",
+  :website_url=>"https://web.asheron4fun.com/",
   :discord_url=>"https://discord.gg/afnQNXj"},
  {:name=>"Coldeve",
   :description=>
