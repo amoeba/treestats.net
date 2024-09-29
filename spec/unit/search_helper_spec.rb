@@ -37,4 +37,12 @@ describe 'SearchHelper', :unit do
     result = SearchHelper.process_search("gender:male")
     assert_equal({:gender => /\Amale\Z/i }, result)
   end
+
+  it "parses the page param well" do
+    assert_equal(SearchHelper.get_page(nil), 1)
+    assert_equal(SearchHelper.get_page("3"), 3)
+    assert_equal(SearchHelper.get_page("03"), 3)
+    assert_equal(SearchHelper.get_page("a"), 1)
+    assert_equal(SearchHelper.get_page(-1), 1)
+  end
 end

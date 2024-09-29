@@ -780,3 +780,12 @@ pre {
   background-color: rgba(212, 212, 212, 0.2);
   padding: 0.5em;
 }
+
+// Pagination
+.pagination-controls {
+  display: inline-flex;
+  gap: 0.5em;
+  background-color: rgba(220, 220, 220, 0.2);
+  border-radius: 0.25em;
+  padding: 0.25em 0.5em ;
+}

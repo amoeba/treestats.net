@@ -32,4 +32,12 @@ module SearchHelper
 
     parts
   end
+
+  def self.get_page(page_param)
+    page = page_param.to_i
+
+    return 1 if page <= 0
+
+    page
+  end
 end

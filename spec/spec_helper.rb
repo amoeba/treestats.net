@@ -13,7 +13,7 @@ require_relative '../app'
 Mongo::Logger.logger.level = ::Logger::FATAL
 
 # Create a custom class inheriting from MiniTest::Spec for your unit tests
-class UnitTest < MiniTest::Spec
+class UnitTest < Minitest::Spec
   # Any test that ends with 'Unit|Spec|Model' is a `UnitTest`
   register_spec_type(/(Unit|Spec|Model)$/, self)
 

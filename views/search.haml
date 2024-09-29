@@ -1,8 +1,9 @@
 %h2.title Search
-- if @records && @records.count > 0
+- if @records && @count > 0
   Found
-  = @records.count
-  = @records.count == 1 ? "result" : "results"
+  = @count
+  = @count == 1 ? "result" : "results"
+  != haml :_pagination
   - if params && params[:character]
     %ul
       - @records.to_a.each do |r|
@@ -13,5 +14,6 @@
       - @records.to_a.each do |r|
         %li
           %a{:href => "/allegiances/#{r.server}-#{r.name}"}= "#{r.name} (#{r.server})"
+  != haml :_pagination
 - else
   %span No records found.

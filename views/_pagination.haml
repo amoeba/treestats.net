@@ -1,0 +1,13 @@
+%div.pagination-controls-container
+  %div{class: "pagination-controls"}
+    - if @page > 1
+      %a{:href => "/search?#{@prev_page_params}"}
+        Previous Page
+    - else
+      %a{style: "color: gray"} Previous Page
+    = "Page #{@page} of #{@npages}"
+    - if @page < @npages
+      %a{:href => "/search?#{@next_page_params}"}
+        Next Page
+    - else
+      %a{style: "color: gray"} Next Page
