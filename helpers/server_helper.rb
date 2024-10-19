@@ -38,6 +38,15 @@ module ServerHelper
   :port=>"9050",
   :website_url=>"https://web.asheron4fun.com/",
   :discord_url=>"https://discord.gg/afnQNXj"},
+ {:name=>"Buadren AC",
+  :description=>
+   "End of retail with quality of life additions. Small community - see discord!",
+  :type=>"PvE",
+  :software=>"ACE",
+  :host=>"gs1.buadren.com",
+  :port=>"9000",
+  :website_url=>"http://buadren.com",
+  :discord_url=>"https://discord.gg/yMkzW3yAd4"},
  {:name=>"Coldeve",
   :description=>
    "A PVE AC Server evolving to provide a end of retail experience running ACEmulator.",
