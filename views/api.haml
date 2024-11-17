@@ -15,13 +15,20 @@ TreeStats has JSON-based API. Below is a list of endpoints -- please feel free t
 %h3
   %a{:id => "servers", :href => "#servers"} Servers
 
-To get detailed information about each server registered with TreeStats, send a request to
+To get detailed information about all the servers registered with TreeStats, send a request to
 
 %pre
   :preserve
-    https://treestats.net/servers
+    https://treestats.net/servers.json
 
-with an <code>Accept</code> header of <code>application/json</code> and you'll get back a JSON response structured like:
+%h4 Example
+%h5 Input
+
+%pre
+  :preserve
+    https://treestats.net/servers.json
+
+%h5 Output
 
 %pre
   :preserve
