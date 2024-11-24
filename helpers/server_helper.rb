@@ -335,15 +335,7 @@ module ServerHelper
   :software=>"ACE",
   :host=>"vh.derptide.net",
   :port=>"9012",
-  :discord_url=>"https://discord.gg/U5wxByySCt"},
- {:name=>"Wynterhaven",
-  :description=>
-   "Custom content server with high level areas and conveniences.",
-  :type=>"PvE",
-  :software=>"ACE",
-  :host=>"71.87.108.159",
-  :port=>"9000",
-  :discord_url=>"https://discord.gg/uWUgNv2yDP"}]
+  :discord_url=>"https://discord.gg/U5wxByySCt"}]
 
   def self.softwares
     @softwares
