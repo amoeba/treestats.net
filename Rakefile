@@ -20,7 +20,7 @@ namespace :servers do
     require 'nokogiri'
     require 'open-uri'
 
-    url = 'https://raw.githubusercontent.com/acresources/serverslist/master/Servers.xml'
+    url = 'https://raw.githubusercontent.com/acresources/serverslist/refs/heads/master/Servers.xml'
     doc = Nokogiri::HTML(URI.open(url))
 
     servers = []
