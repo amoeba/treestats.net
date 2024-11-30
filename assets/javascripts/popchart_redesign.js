@@ -96,7 +96,7 @@ var popchart = function (selector, url) {
     // Line
     const line = d3
       .line()
-      .curve(d3.curveNatural)
+      .curve(d3.curveMonotoneX)
       .x((d) => xScale(d.date))
       .y((d) => yScale(d.count));
 
