@@ -611,6 +611,8 @@ table.dashboard th,
 table.dashboard td {
   padding: 5px 3px;
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 table.dashboard thead th {
