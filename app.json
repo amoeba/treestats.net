@@ -1,12 +1,14 @@
 {
   "name": "treestats",
   "healthchecks": {
-    "web": {
-      "type": "startup",
-      "name": "web check",
-      "description": "Checking if the app responds to the /up endpoint",
-      "path": "/up",
-      "attempts": 3
-    }
+    "web": [
+      {
+        "type": "startup",
+        "name": "web check",
+        "description": "Checking if the app responds to the /up endpoint",
+        "path": "/up",
+        "attempts": 3
+      }
+    ]
   }
 }
