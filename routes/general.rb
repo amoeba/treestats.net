@@ -57,6 +57,10 @@ module Sinatra
           app.get '/about/?' do
             haml :about
           end
+
+          app.get "/up/?" do
+            [200, '<!DOCTYPE html><html><body style="background-color: green"></body></html>']
+          end
         end
       end
     end
