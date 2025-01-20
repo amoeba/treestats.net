@@ -66,6 +66,12 @@ module Sinatra
               puts json_text
             end
 
+            # Temporary: (2025-01-20): Log debug info for Whitingn server
+            if !json_text["server"].nil? && json_text["server"] == "Whiting"
+              puts "Debug-printing for Whiting...."
+              puts json_text
+            end
+
             character = Character.unscoped.find_or_create_by(name: name, server: server)
 
             # Assign attributes then touch
