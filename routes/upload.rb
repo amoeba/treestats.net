@@ -66,8 +66,23 @@ module Sinatra
               puts json_text
             end
 
-            # Temporary: (2025-01-20): Log debug info for Whitingn server
-            if !json_text["server"].nil? && json_text["server"] == "Whiting"
+            # Maybe temporary maybe not: Reject updates from that have
+            # patron.name set to ??
+            #
+            # e.g.
+            #   "patron" => {"name" => "??", "race" => 11, "rank" => 4, "gender" => 1}
+            #
+            # I've only seen this on Whiting so far with one account / machine
+            begin
+              if json_text["patron"]["name"] == "??"
+                status 400
+                return "Malformed patron name. Ignoring your update."
+              end
+            rescue
+              # And just continue
+            end
+
+            if !json_text["server"].nil? && json_text["server"] == "Whiting" && !json_text["patron"].nil?
               puts "Debug-printing for Whiting...."
               puts json_text
             end
