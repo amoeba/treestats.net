@@ -94,11 +94,6 @@ module Sinatra
               # And just continue
             end
 
-            if !json_text["server"].nil? && json_text["server"] == "Whiting" && !json_text["patron"].nil?
-              puts "Debug-printing for Whiting...."
-              puts json_text
-            end
-
             character = Character.unscoped.find_or_create_by(name: name, server: server)
 
             # Assign attributes then touch
