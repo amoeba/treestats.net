@@ -25,6 +25,12 @@ module Sinatra
               json_text = JSON.parse(text)
             rescue JSON::ParserError
               status 400
+
+              if ENV['RACK_ENV'] != 'test'
+                puts 'Character updated failed due to JSON parse error..'
+                puts json_text
+              end
+
               return "Upload failed for an unknown reason. Please report this as a bug at https://github.com/amoeba/treestats."
             end
 
@@ -76,6 +82,12 @@ module Sinatra
             begin
               if json_text["patron"]["name"] == "??"
                 status 400
+
+                if ENV['RACK_ENV'] != 'test'
+                  puts 'Character updated failed due to "??" patron bug...'
+                  puts json_text
+                end
+
                 return "Malformed patron name. Ignoring your update."
               end
             rescue
