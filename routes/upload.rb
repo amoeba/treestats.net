@@ -1,3 +1,8 @@
+def print_and_maybe_sentry(msg)
+  Sentry.capture_message(msg) if ENV["RACK_ENV"] == "production"
+  puts msg
+end
+
 module Sinatra
   module TreeStats
     module Routing
@@ -14,7 +19,7 @@ module Sinatra
             if !valid
               status 403
 
-              Sentry.capture_message("Failed to verify: #{text}")
+              print_and_maybe_sentry("Failed to verify: #{text}")
               puts "Upload failed with text: #{text}"
 
               return "Failed to verify character update. Character was not saved."
@@ -25,11 +30,7 @@ module Sinatra
               json_text = JSON.parse(text)
             rescue JSON::ParserError
               status 400
-
-              if ENV['RACK_ENV'] != 'test'
-                puts 'Character updated failed due to JSON parse error..'
-                puts json_text
-              end
+              print_and_maybe_sentry("Upload failed due to JSON parse exception: json_text=`#{json_text}`")
 
               return "Upload failed for an unknown reason. Please report this as a bug at https://github.com/amoeba/treestats."
             end
@@ -37,7 +38,7 @@ module Sinatra
             # Disallow uploads from retail servers
             if AppHelper.retail_servers.include?(json_text['server'])
               status 403
-              puts "Upload of characters from retail servers blocked: #{json_text}"
+              print_and_maybe_sentry("Upload of characters from retail servers blocked: #{json_text}")
 
               return "Not allowed."
             end
@@ -68,8 +69,7 @@ module Sinatra
 
             # Log extra debug info if birth ends up being nil
             if json_text["birth"].nil? && ENV['RACK_ENV'] != 'test'
-              puts "Failed to parse birth field with the following JSON..."
-              puts json_text
+              print_and_maybe_sentry("Failed to parse birth field with the following JSON: #{json_text}")
             end
 
             # Maybe temporary maybe not: Reject updates from that have
@@ -83,10 +83,7 @@ module Sinatra
               if json_text["patron"]["name"] == "??"
                 status 400
 
-                if ENV['RACK_ENV'] != 'test'
-                  puts 'Character updated failed due to "??" patron bug...'
-                  puts json_text
-                end
+                print_and_maybe_sentry("Character updated failed due to \"??\" patron bug: #{json_text}")
 
                 return "Malformed patron name. Ignoring your update."
               end
