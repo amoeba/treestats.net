@@ -272,7 +272,7 @@ module ServerHelper
   port: "9000",
   discord_url: "https://discord.gg/uhZ3hn7"},
  {name: "Whiting",
-  description: "A PVE Server. Stock ACE end-of-retail experience.",
+  description: "A PVE Server. Stock ACE end-of-retail experience. With some QOL additions",
   type: "PvE",
   software: "ACE",
   host: "whitingace.ddns.net",
