@@ -28,42 +28,34 @@
     %link{:rel => "icon", :sizes => "32x32", :href => "/favicon-32x32.png"}
     %link{:rel => "icon", :sizes => "16x16", :href => "/favicon-16x16.png"}
   %body
-    #links
-      %div
-        %ul
-          %li
-            %a{:href => "https://treestats.net", :style => "color: white;"} TreeStats
-          %li
-            %a{:href => "https://planner.treestats.net", :style => "color: rgb(255, 20, 20);"} Character Planner
-          %li
-            %a{:href => "https://files.treestats.net", :style => "color: rgb(140, 120, 220);"} Files
-          %li
-            %a{:href => "https://dungeonmaps.treestats.net", :style => "color: rgb(60, 220, 20);"} Dungeon Maps
-          %li
-            %a{:href => "https://acedb.treestats.net", :style => "color: violet;"} Online ACEmulator Database
-          %li
-            %a{:href => "https://servers.treestats.net", :style => "color: deepskyblue;"} Server Uptime Monitor
-      %div.right
-        %ul
-          %li
-            %a{:href => "irc://irc.sorcery.net/treestats", :style => "color: violet"} IRC
-          %li
-            %a{:href => "https://discord.gg/MDSSYeW2c5", :style => "color: #7289DA"} Discord
-          %li
+    %header
+      %div.header-links
+        %div.header-links-network
+          %div.header-links-group
+            %div
+              <strong>TreeStats Network</strong>
+            %div
+              %a{:href => "https://planner.treestats.net", :style => "color: limegreen;"} Character Planner
+              %a{:href => "https://files.treestats.net", :style => "color: salmon"} Files
+              %a{:href => "https://dungeonmaps.treestats.net", :style => "color: rgb(220, 220, 20);"} Dungeon Maps
+              %a{:href => "https://acedb.treestats.net", :style => "color: violet;"} Online ACEmulator Database
+              %a{:href => "https://servers.treestats.net", :style => "color: deepskyblue;"} Server Uptime Monitor
+      .title{:colspan => 2}
+        %div.title-left
+          %div
+            %a{:href => "/"}
+              %img{:src => image_path("tree.png"), :height => "48", :alt => "TreeStats.net logo"}
+          %span
+            Player tracking for
+            %a{:href => "http://www.turbine.com/"} Turbine's
+            %a{:href => "https://www.asheronscall.com/"} Asheron's Call
+        %div.title-right
+          %div
             %a{:href => "/api"} API
-          %li
             %a{:href => "/about"} About
-          %li
+            %a{:href => "irc://irc.sorcery.net/treestats", :style => "background-color: violet"} IRC
+            %a{:href => "https://discord.gg/MDSSYeW2c5", :style => "background-color: #7289DA"} Discord
             %a#download-link{:href => "https://github.com/amoeba/treestats/releases"} Download Decal Plugin
-    #header
-      #title{:colspan => 2}
-        %div
-          %a{:href => "/"}
-            %img{:src => image_path("tree.png"), :height => "48", :alt => "TreeStats.net logo"}
-        %span
-          Player tracking for
-          %a{:href => "http://www.turbine.com/"} Turbine's
-          %a{:href => "https://www.asheronscall.com/"} Asheron's Call
     #search!= haml :_search
     %main
       #nav!= haml :nav

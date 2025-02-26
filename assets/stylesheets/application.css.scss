@@ -4,7 +4,7 @@ body {
   margin: 0;
   height: 100%;
   min-width: 600px;
-  background-color: #111;
+  background-color: #000022;
   color: #fff;
   font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
@@ -26,22 +26,59 @@ td {
   padding: 0;
 }
 
-#header {
-  height: 100px;
-  background-color: black;
+header .header-links-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  padding: 0.25em 0.5em;
+}
+
+header .header-links-group div:first-child {}
+
+header .header-links-group div:last-child {
+  display: flex;
+  gap: 1em;
+}
+
+header .header-links-network {
+  background-color: #000022;
+  ;
+}
+
+header .header-links-elsewhere {
+  background-color: #000022;
+
+}
+
+header .title {
   background-image: image-url("bg_top.jpg");
   border-bottom: 2px solid #af7a30;
+  display: flex;
+  height: 100px;
 }
 
-#header td {
-  vertical-align: middle;
+header .title .title-left {
+  display: grid;
+  align-content: center;
+  padding-left: 1em;
+  ;
 }
 
-#header table {
-  background: none;
+header .title .title-right {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: row-reverse;
 }
 
-#header h1 {
+header .title .title-right a {
+  display: inline-block;
+  padding: 0.25em 0.5em;
+  border-radius: 0 0 5px 5px;
+  font-weight: bold;
+  font-size: 90%;
+}
+
+header h1 {
   margin: 0;
   padding: 0;
   font-size: 40px;
@@ -88,7 +125,8 @@ td.logo {
 }
 
 #download-link {
-  color: gold;
+  background-color: gold;
+  color: #000022cf;
 }
 
 main {
@@ -233,7 +271,7 @@ h2.title {
   margin-right: 5px;
 }
 
-#header a {
+header a {
   text-decoration: none;
   color: white;
 }
@@ -534,7 +572,7 @@ span.overlaytext {
   display: none;
 }
 
-.box > span {
+.box>span {
   font-size: 85%;
   margin: 5px;
 }
@@ -654,6 +692,7 @@ table.account-fields th {
 table.account-fields thead tr {
   border-bottom: #af7a30 solid 2px;
 }
+
 table.account-fields td {
   padding: 0.25em 0.25em;
 }
@@ -686,7 +725,7 @@ th[aria-sort="ascending"]:not(.no-sort):after {
 
 th[aria-sort]:not(.no-sort):after {
   visibility: visible;
-    opacity: 0.4;
+  opacity: 0.4;
 }
 
 th[role="columnheader"]:not(.no-sort):hover:after {
@@ -742,6 +781,7 @@ span.tag-skill {
   font-size: 80%;
   text-align: center;
 }
+
 span.tag-level {
   background-color: #0f3c3e;
   color: white;
@@ -789,5 +829,5 @@ pre {
   gap: 0.5em;
   background-color: rgba(220, 220, 220, 0.2);
   border-radius: 0.25em;
-  padding: 0.25em 0.5em ;
+  padding: 0.25em 0.5em;
 }
