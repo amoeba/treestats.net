@@ -52,7 +52,7 @@ module ServerHelper
    "ACE-Classic Dark Majesty era custom PVE server with Hardcore PVE and Hardcore PK option, with new skills, techniques, tactics, endless hybrid template possibilities!",
   type: "PvE",
   software: "ACE",
-  host: "192.211.51.54",
+  host: "dekaru.ac",
   port: "9000",
   website_url: "https://www.dekarutide.com/",
   discord_url: "https://discord.gg/gTv9XMC8aN"},
@@ -272,7 +272,8 @@ module ServerHelper
   port: "9000",
   discord_url: "https://discord.gg/uhZ3hn7"},
  {name: "Whiting",
-  description: "A PVE Server. Stock ACE end-of-retail experience. With some QOL additions",
+  description:
+   "A PVE Server. Stock ACE end-of-retail experience. With some QOL additions",
   type: "PvE",
   software: "ACE",
   host: "whitingace.ddns.net",
