@@ -222,7 +222,7 @@ module ServerHelper
   software: "GDL",
   host: "serafino.ddns.net",
   port: "9060",
-  discord_url: "https://goo.gl/mUEu6g"},
+  discord_url: "https://discord.gg/GHKk4ck"},
  {name: "Shadowland",
   description:
    "A PVE Server thats goal is to mimic end of game retail.  No max on accounts or sessions.",
@@ -238,7 +238,7 @@ module ServerHelper
   software: "GDL",
   host: "serafino.ddns.net",
   port: "9070",
-  discord_url: "https://goo.gl/mUEu6g"},
+  discord_url: "https://discord.gg/GHKk4ck"},
  {name: "Soulclaim",
   description:
    "1.5x XP/Luminance - 2x Quest XP/Luminance - Custom starting items and content.",
