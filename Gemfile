@@ -7,6 +7,7 @@ gem 'json'
 gem 'puma'
 gem 'puma_worker_killer'
 gem 'rack'
+gem "ostruct", "~> 0.6.1"
 gem 'rake'
 gem 'sinatra'
 gem 'sinatra-cross_origin'
