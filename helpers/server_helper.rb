@@ -271,6 +271,15 @@ module ServerHelper
   host: "thistlecrown.ddns.net",
   port: "9000",
   discord_url: "https://discord.gg/uhZ3hn7"},
+ {name: "ValHeel",
+  description:
+   "An enhanced PvE server, completely ahead of it's time. TONS of custom content to explore, with classes of DPS, Tank, or Healer. Many bugs have been squashed.",
+  type: "PvE",
+  software: "ACE",
+  host: "valheel.ddns.net",
+  port: "9012",
+  website_url: "https://valheel.lingrad.net",
+  discord_url: "https://discord.gg/6zPQ8Nx2pY"},
  {name: "Whiting",
   description:
    "A PVE Server. Stock ACE end-of-retail experience. With some QOL additions",
