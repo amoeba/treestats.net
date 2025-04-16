@@ -14,7 +14,6 @@ module Sinatra
 
             # Verify
             # Before we do anything, verify the message wasn't tampered with
-            puts text
             valid = UploadHelper::validate(text)
 
             if !valid
