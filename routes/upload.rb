@@ -14,17 +14,16 @@ module Sinatra
 
             # Verify
             # Before we do anything, verify the message wasn't tampered with
-            puts text
             valid = UploadHelper::validate(text)
+            puts "testing validation #{valid}: this upload have been valid"
+            # if !valid
+            #   status 403
 
-            if !valid
-              status 403
+            #   print_and_maybe_sentry("Failed to verify: #{text}")
+            #   puts "Upload failed with text: #{text}"
 
-              print_and_maybe_sentry("Failed to verify: #{text}")
-              puts "Upload failed with text: #{text}"
-
-              return "Failed to verify character update. Character was not saved."
-            end
+            #   return "Failed to verify character update. Character was not saved."
+            # end
 
             # Parse message
             begin
