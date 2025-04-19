@@ -39,6 +39,13 @@ module ServerHelper
   port: "9000",
   website_url: "http://buadren.com",
   discord_url: "https://discord.gg/yMkzW3yAd4"},
+ {name: "CABA",
+  description: "Just a generic ACE PK server, not much going on",
+  type: "PvP",
+  software: "ACE",
+  host: "z123.zapto.org",
+  port: "9000",
+  discord_url: "https://discord.gg/n4T2AhEg"},
  {name: "Coldeve",
   description:
    "A PVE AC Server evolving to provide a end of retail experience running ACEmulator.",
