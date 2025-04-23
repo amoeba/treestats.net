@@ -278,6 +278,14 @@ module ServerHelper
   host: "thistlecrown.ddns.net",
   port: "9000",
   discord_url: "https://discord.gg/uhZ3hn7"},
+ {name: "Unfamiliar Shores",
+  description:
+   "Pvp Focused Custom Content CustomDM Client with Modes Softcore, Hardcore Pk/Npk, Solo Self Found",
+  type: "PvE",
+  software: "ACE",
+  host: "74.50.118.178",
+  port: "9000",
+  discord_url: "https://discord.gg/d3ZPpQsHCd"},
  {name: "ValHeel",
   description:
    "An enhanced PvE server, completely ahead of it's time. TONS of custom content to explore, with classes of DPS, Tank, or Healer. Many bugs have been squashed.",
