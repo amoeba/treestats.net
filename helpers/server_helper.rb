@@ -45,7 +45,7 @@ module ServerHelper
   software: "ACE",
   host: "z123.zapto.org",
   port: "9000",
-  discord_url: "https://discord.gg/n4T2AhEg"},
+  discord_url: "https://discord.gg/d7gUEBZSZR"},
  {name: "Coldeve",
   description:
    "A PVE AC Server evolving to provide a end of retail experience running ACEmulator.",
