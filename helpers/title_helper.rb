@@ -289,7 +289,7 @@ module TitleHelper
     284 => "Lore Champion - Quiz Night",
     285 => "Lore Champion Quiz Night",
     286 => "Lore Master",
-    287 => "{{keepspaces}}Lore Master  Quiz Night",
+    287 => "Lore Master Quiz Night",
     288 => "Lore Master - Quiz Night",
     289 => "Lore Master 2nd Place",
     290 => "Lore Master of Staves",
