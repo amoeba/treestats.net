@@ -544,7 +544,7 @@ module TitleHelper
     543 => "Harvester Harvester Harvester",
     544 => "Pumpkin Throne Usurper",
     545 => "Death Knight",
-    546 => "",
+    546 => "Null Title",
     547 => "Tracker Guardian",
     548 => "Dojiro Sangi's Savior",
     549 => "Master of the Hunt",
