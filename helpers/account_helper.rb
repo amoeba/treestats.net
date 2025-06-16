@@ -75,7 +75,7 @@ module AccountHelper
       :name => "followers",
       :label => "Followers",
       :group => :allegiance,
-      :value => Proc.new { |v| v[:folowers] }
+      :value => Proc.new { |v| v[:followers] }
     },
     {
       :name => "allegiance_name",
