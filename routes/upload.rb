@@ -14,7 +14,8 @@ module Sinatra
 
             # Verify
             # Before we do anything, verify the message wasn't tampered with
-            valid = UploadHelper::validate(text)
+            signature = request.env['HTTP_X_SIGNATURE']
+            valid = UploadHelper::validate(text, signature)
 
             if !valid
               status 403

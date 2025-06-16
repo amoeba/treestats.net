@@ -1,38 +1,17 @@
-require "digest"
+require "openssl"
+require "rack/utils"
 
 module UploadHelper
-  def self.validate(text)
-    return false if text.nil? or text.length <= 0
+  def self.validate(text, signature)
+    return false if text.nil? || text.length <= 0
 
     secret = ENV["TREESTATS_SECRET"]
     return true if secret.nil?
 
-    result = false
+    return false if signature.nil? || signature.length <= 0
 
-    begin
-      l = eval "lambda { |x| #{secret} }"
-    rescue SyntaxError => e
-      # Allow uploads on eval exception
-      puts "UploadHelper.validate: Eval failed, passing upload."
-      puts "UploadHelper.validate:   text: #{text}"
-      puts "UploadHelper.validate:   secret: #{secret}"
+    digest = OpenSSL::HMAC.hexdigest("SHA256", secret, text)
 
-      return true
-    end
-
-    begin
-      result = l.call(text)
-    rescue => e
-      # Allow uploads on call exception
-      puts "UploadHelper.validate: Call failed, passing upload."
-      puts "UploadHelper.validate:   text: #{text}"
-      puts "UploadHelper.validate:   secret: #{secret}"
-
-      return true
-    end
-
-    # TODO: Ensure we're boolean
-
-    result
+    Rack::Utils.secure_compare(digest, signature)
   end
 end
