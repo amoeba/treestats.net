@@ -8,3 +8,4 @@ class Allegiance
   field :s,   as: :server,  type: String
   field :n,   as: :name,    type: String
 end
+
