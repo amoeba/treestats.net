@@ -312,11 +312,11 @@ module RankHelper
 
   def self.get_rank_name(race, gender, rank)
     rank_name = nil
-    
+
     if RANKS[race] && RANKS[race][gender] && RANKS[race][gender][rank]
       rank_name = RANKS[race][gender][rank]
     end
-    
+
     rank_name
   end
 end

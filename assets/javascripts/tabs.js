@@ -9,20 +9,20 @@ var activate = function(ele) {
   if (!ele) {
     return;
   }
-  
+
   var index = -1,
       clicked_index = -1,
       children = ele.parentNode.parentNode.childNodes;
-  
+
   for(var i in children) {
     if (has_class(children[i], "tabbar")) {
       var tabs = children[i].childNodes;
-      
+
       // Tabs
       for(var j in tabs) {
         if(has_class(tabs[j], "tab")) {
           index += 1;
-          
+
           if(tabs[j] == ele) {
             clicked_index = index;
             tabs[j].className = "tab active";
@@ -33,19 +33,19 @@ var activate = function(ele) {
       }
     }
   }
-      
-      
-  // Boxes    
+
+
+  // Boxes
   if(ele.parentNode && ele.parentNode.parentNode) {
     var children = ele.parentNode.parentNode.childNodes;
-    
+
     var box_index = -1;
         index = -1;
-    
+
     for(var i in children) {
       if(has_class(children[i], "box")) {
         index += 1;
-                      
+
         if(index == clicked_index) {
           children[i].className = "box active";
         } else {
@@ -60,16 +60,16 @@ var activate = function(ele) {
 //
 // Selects all documents with class class_name.
 var select_by_class = function(class_name) {
-  var all = document.getElementsByTagName('*'), 
+  var all = document.getElementsByTagName('*'),
         i,
         elements = [];
-    
+
   for (i in all) {
     if(has_class(all[i], class_name)) {
       elements.push(all[i]);
     }
   }
-  
+
   return elements;
 }
 

@@ -136,7 +136,7 @@ var popchart = function (selector, data_url) {
         .attr("dx", ".35em")
         .attr("dy", ".35em")
         .attr("class", "label")
-        .text(function (d) { return d.name + ": " + Math.round(d.value.count) }) 
+        .text(function (d) { return d.name + ": " + Math.round(d.value.count) })
         .style("fill", function (d) { return color(d.name); })
         .attr("data-label", function(d) { return d.name })
         .on("mouseenter", function() {
