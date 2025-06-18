@@ -208,7 +208,7 @@ module RankHelper
         7 =>  "Count",
         8 =>  "Viscount",
         9 =>  "Highness",
-        10 => "Annointed"
+        10 => "Anointed"
       },
       2 => {
         0 =>  "",
@@ -221,7 +221,7 @@ module RankHelper
         7 =>  "Countess",
         8 =>  "Viscountess",
         9 =>  "Highness",
-        10 => "Annointed"
+        10 => "Anointed"
       }
     },
     12 => { # Empyrean

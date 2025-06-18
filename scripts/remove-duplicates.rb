@@ -1,5 +1,5 @@
 # Script to delete duplicate characters after I merged Reefcull/ReefCull and
-# Hightide/HighTide. After running, only the most recent copy fo the char, as
+# Hightide/HighTide. After running, only the most recent copy of the char, as
 # determined by most recent updated_at datetime, will remain.
 require 'mongo'
 
