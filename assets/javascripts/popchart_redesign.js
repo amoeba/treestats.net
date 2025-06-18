@@ -179,6 +179,34 @@ var popchart = function (selector, url) {
       .attr("text-anchor", "middle")
       .attr("y", -8);
 
+    // Helpers for interaction
+    function highlight(server) {
+      servers
+        .style("stroke", ([s]) => (server === s ? null : fadedColor))
+        .filter(([s]) => server === s)
+        .raise();
+      labels
+        .style("fill", (d) => (server === d.server ? null : fadedColor))
+        .filter((d) => server === d.server)
+        .raise();
+    }
+
+    function updateDot(point) {
+      dot.attr(
+        "transform",
+        `translate(${xScale(point.date)},${yScale(point.count)})`
+      );
+      dot.select("text").text(point.count);
+    }
+
+    function showDot() {
+      dot.attr("display", null);
+    }
+
+    function hideDot() {
+      dot.attr("display", "none");
+    }
+
     // Set up input handlers
     svg
       .on("pointerenter", pointerentered)
@@ -201,10 +229,8 @@ var popchart = function (selector, url) {
 
       let i;
 
-      // TODO: This code could be DRY'd
       if (xm > xScale(d3.max(X))) {
         const label_nodes = d3.selectAll(".label").nodes();
-
         const closest_label = d3.least(label_nodes, (l) =>
           Math.hypot(l.getAttribute("x") - xm, l.getAttribute("y") - ym)
         );
@@ -215,38 +241,16 @@ var popchart = function (selector, url) {
           count: closest_label.getAttribute("data-count"),
         };
 
-        servers
-          .style("stroke", ([server]) =>
-            i.server === server ? null : fadedColor
-          )
-          .filter(([server]) => i.server === server)
-          .raise();
-        labels
-          .style("fill", (d) => (i.server === d.server ? null : fadedColor))
-          .filter((d) => i.server === d.server)
-          .raise();
-        dot.attr("display", "none");
+        highlight(i.server);
+        hideDot();
       } else {
         i = d3.least(data, (d) =>
           Math.hypot(xScale(d.date) - xm, yScale(d.count) - ym)
         ); // closest point
 
-        servers
-          .style("stroke", ([server]) =>
-            i.server === server ? null : fadedColor
-          )
-          .filter(([server]) => i.server === server)
-          .raise();
-        labels
-          .style("fill", (d) => (i.server === d.server ? null : fadedColor))
-          .filter((d) => i.server === d.server)
-          .raise();
-        dot.attr(
-          "transform",
-          `translate(${xScale(i.date)},${yScale(i.count)})`
-        );
-        dot.select("text").text(i.count);
-        dot.attr("display", null);
+        highlight(i.server);
+        updateDot(i);
+        showDot();
       }
     }
 
