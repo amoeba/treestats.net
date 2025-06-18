@@ -171,7 +171,7 @@ module ServerHelper
   discord_url: "https://discord.gg/zdQVP7bmjC"},
  {name: "InfiniteLeaftide",
   description:
-   "Inifinite Level and Enlightenment, an Infinite Extended Retail Experience. Custom content, constant development and active community! ",
+   "Infinite Level and Enlightenment, an Infinite Extended Retail Experience. Custom content, constant development and active community! ",
   type: "PvE",
   software: "ACE",
   host: "infiniteleaftide.online",
@@ -217,7 +217,7 @@ module ServerHelper
   website_url: "https://morntide.net",
   discord_url: "https://discord.gg/7Gcc2XFqhJ"},
  {name: "Reefcull",
-  description: "A PVE Server thats goal is to mimic end of game retail.",
+  description: "A PVE Server that's goal is to mimic end of game retail.",
   type: "PvE",
   software: "GDL",
   host: "reefcull.gdleac.com",
@@ -232,7 +232,7 @@ module ServerHelper
   discord_url: "https://discord.gg/GHKk4ck"},
  {name: "Shadowland",
   description:
-   "A PVE Server thats goal is to mimic end of game retail.  No max on accounts or sessions.",
+   "A PVE Server that's goal is to mimic end of game retail.  No max on accounts or sessions.",
   type: "PvE",
   software: "ACE",
   host: "shadowland.zapto.org",

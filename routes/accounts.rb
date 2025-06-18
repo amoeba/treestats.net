@@ -21,7 +21,7 @@ module Sinatra
             end
 
             # Validate:
-            #  Nam or password is wrong format
+            #  Name or password is wrong format
             #    Name: [a-zA-Z'] {length > 0}
             #    Password: {length > 0}
 
