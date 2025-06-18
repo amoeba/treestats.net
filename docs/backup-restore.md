@@ -13,7 +13,11 @@
 
 ### Under standalone MongoDB
 
-TODO
+- `mongo treestats-dev --eval "db.dropDatabase()"`
+- `mongorestore --gzip --archive=backup.dokku.mongo-new.20210201 \
+    --host 127.0.0.1 --port 27017 \
+    --username youruser --password yourpass \
+    --authenticationDatabase admin`
 
 ### Under Dockerized MongoDB
 
