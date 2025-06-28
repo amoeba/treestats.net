@@ -183,7 +183,7 @@ module ServerHelper
   software: "ACE",
   host: "leafdawning.duckdns.org",
   port: "9000",
-  discord_url: "https://discord.gg/NeEcnGrM"},
+  discord_url: "https://discord.gg/sQpDgAzSXB"},
  {name: "Levistras",
   description: "A 100% Botting-Free PvE Server! Open access! 2 account limit",
   type: "PvE",
