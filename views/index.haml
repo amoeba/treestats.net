@@ -8,7 +8,10 @@
     %table.dashboard
       %thead
         %tr
-          %th Population
+          %th
+            Population
+            %span{"data-tippy-content" => "Updated every 5 minutes. Numbers only update when a player running the TreeStats Decal plugin logs in for the first time. Count includes all characters in the world not just those running TreeStats.", :class => "tippy"} ?
+
           %th{:colspan => 1}
             Server
           %th.gold= "(Total: #{@latest_counts.map { |p| p[:count]}.sum})"
