@@ -97,6 +97,13 @@ module ServerHelper
   port: "9000",
   website_url: "http://www.drunkenfell.com",
   discord_url: "https://discord.gg/e365fBcuaB"},
+ {name: "Ebontide",
+  description: "A PvP server that will resemble end-of-retail.",
+  type: "PvP",
+  software: "ACE",
+  host: "ebontide.zapto.org",
+  port: "9000",
+  discord_url: "https://discord.gg/r4b9yeNY"},
  {name: "Frostcull",
   description:
    "NO LEVEL/ATTRIBUTE CAP! 10x XP/Luminance, 25x Drop Rate, Quest Timers Reduced By 90%!",
@@ -207,6 +214,13 @@ module ServerHelper
   port: "9000",
   website_url: "https://forum.morgentau.online/",
   discord_url: "https://discord.gg/gJCYTr5fPU"},
+ {name: "MorningStorm",
+  description:
+   "Vanilla ACE Server - No Server Modifications - 5 Connection Limit - No Registration",
+  type: "PvE",
+  software: "ACE",
+  host: "morningstorm.redirectme.net",
+  port: "9070"},
  {name: "Morntide",
   description:
    "PvE 3-account limit end-of-retail server with retro content additions. Requires MegaDat.",
