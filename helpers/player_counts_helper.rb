@@ -12,7 +12,7 @@ def player_counts(servers = nil, range = nil)
       "$match" => {
         "s" => {
           "$in" => ServerHelper.servers,
-          "$nin" => ["Coldeve", "Reefcull"]
+          "$nin" => ["Coldeve", "Reefcull", "InfiniteLeaftide"]
         }
       }
     }
