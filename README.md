@@ -38,6 +38,19 @@ TreeStats comes in two parts:
 - A [Decal](http://www.decaldev.com/) plugin
 - A web app that the Decal plugin communicates with (http://treestats.net)
 
+## Development
+
+### Updating Private Servers
+
+The list of private servers TreeStats uses is 1:1 with the [community servers list](https://github.com/acresources/serverslist).
+TreeStats is manually synchronized with the list by running,
+
+```sh
+be rake servers:sync
+```
+
+This updates `./data/servers.rb` which stores the data.
+
 ## Contribute
 
 I am of course open to any feature requests or bug reports. Please use the Issues feature to send those in. The other thing I could use help with is discovering what the unknown character properties are. You'll notice that each player's page has a tab for Unknown Properties. I store a lot more data than is display in a structured way, and this is because I don't know what everything is. On the Unknown Properties tab are pairs of IDs and Values. If you do Decal development, you might know these as Character Property DWORD values. If the value of something sticks out as being a particular thing, please let me know.
