@@ -43,6 +43,27 @@ module Sinatra
               haml :rankings
             end
           end
+
+          app.get '/rankings/:ranking/summary/?' do
+            ranking = params["ranking"].to_sym
+
+            # Check if the ranking exists
+            not_found("Ranking '#{ranking.to_s}' does not exist.") if !RankingsHelper::RANKINGS.has_key?(ranking)
+            
+            # Check if summary is available for this ranking (opt-in only)
+            not_found("Summary not available for ranking '#{ranking.to_s}'.") if !RankingsHelper::RANKINGS[ranking].has_key?(:summary)
+
+            # Generate summary data
+            summary_data = RankingsHelper.generate_summary_data(ranking, params)
+            
+            # Return JSON response
+            content_type :json
+            JSON.pretty_generate({
+              ranking: ranking.to_s,
+              display_name: RankingsHelper::RANKINGS[ranking][:display],
+              data: summary_data
+            })
+          end
         end
       end
     end

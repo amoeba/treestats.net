@@ -48,6 +48,106 @@ module RankingsHelper
     pipeline
   end
 
+  def self.generate_summary_args(name, params)
+    # Convert name to symbol first if we happened to pass in a String instead
+    name = name.to_sym if name.is_a? String
+
+    # Return nil if the ranking is not found
+    return nil if !RANKINGS.has_key?(name)
+
+    ranking = RANKINGS[name]
+
+    # Return nil if no summary configuration exists (opt-in only)
+    return nil if !ranking.has_key?(:summary)
+
+    # Mix in match args from default
+    match = MATCH.merge(ranking[:match])
+
+    # Mix in server
+    if !params.nil? && params.has_key?("server") && params["server"] != "All"
+      if params["server"] == "Retail"
+        match = match.merge({ "s" => { "$in" => ServerHelper.retail_servers } })
+      elsif params["server"] == "Emulators"
+        match = match.merge({ "s" => { "$in" => ServerHelper.servers } })
+      else
+        match = match.merge({ "s" => params["server"] })
+      end
+    else
+      # Or just remove server entirely
+      match.delete("s")
+    end
+
+    # Get the field we're sorting by (this is what we'll summarize)
+    sort_field = ranking[:sort].keys.first
+
+    # Build summary pipeline
+    pipeline = [{ "$match" => match }]
+
+    summary_config = ranking[:summary]
+
+    if summary_config == :categorical
+      # Simple categorical grouping (gender, race, etc.)
+      pipeline << {
+        "$group" => {
+          "_id" => "$#{sort_field}",
+          "count" => { "$sum" => 1 }
+        }
+      }
+      pipeline << {
+        "$project" => {
+          "_id" => 0,
+          "label" => "$_id",
+          "count" => 1
+        }
+      }
+    elsif summary_config.is_a?(Array)
+      # Custom breakpoints provided as array
+      boundaries = summary_config
+
+      pipeline << {
+        "$bucket" => {
+          "groupBy" => "$#{sort_field}",
+          "boundaries" => boundaries,
+          "default" => "Other"
+        }
+      }
+
+      pipeline << {
+        "$project" => {
+          "_id" => 0,
+          "label" => "$_id",
+          "count" => 1
+        }
+      }
+    else
+      return nil
+    end
+
+    # Sort results by label (ascending for meaningful histogram ordering)
+    pipeline << { "$sort" => { "label" => 1 } }
+
+    pipeline
+  end
+
+
+  def self.generate_summary_data(name, params = {})
+    pipeline = generate_summary_args(name, params)
+    return nil if pipeline.nil?
+
+    results = Character.collection.aggregate(pipeline)
+
+    # Convert results to array format for easy consumption
+    summary_data = []
+    results.each do |doc|
+      summary_data << {
+        'label' => doc['label'],
+        'count' => doc['count']
+      }
+    end
+
+    summary_data
+  end
+
   # Default / Base pipeline parameters
   # These are merged with explicitly stated pipeline parameters to allow
   # for global settings and per-ranking settings
@@ -84,7 +184,8 @@ module RankingsHelper
       :match => { "a" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "a.strength.base" => 1 },
       :sort => { "a.strength.base" => -1 },
-      :accessor => Proc.new { |v| v["a"]["strength"]["base"] }
+      :accessor => Proc.new { |v| v["a"]["strength"]["base"] },
+      :summary => [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340]
     },
     :endurance => {
       :display => "Endurance (Base)",
@@ -92,7 +193,8 @@ module RankingsHelper
       :match => { "a" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "a.endurance.base" => 1 },
       :sort => { "a.endurance.base" => -1 },
-      :accessor => Proc.new { |v| v["a"]["endurance"]["base"] }
+      :accessor => Proc.new { |v| v["a"]["endurance"]["base"] },
+      :summary => [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340]
     },
     :coordination => {
       :display => "Coordination (Base)",
@@ -100,7 +202,8 @@ module RankingsHelper
       :match => { "a" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "a.coordination.base" => 1 },
       :sort => { "a.coordination.base" => -1 },
-      :accessor => Proc.new { |v| v["a"]["coordination"]["base"] }
+      :accessor => Proc.new { |v| v["a"]["coordination"]["base"] },
+      :summary => [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340]
     },
     :quickness => {
       :display => "Quickness (Base)",
@@ -108,7 +211,8 @@ module RankingsHelper
       :match => { "a" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "a.quickness.base" => 1 },
       :sort => { "a.quickness.base" => -1 },
-      :accessor => Proc.new { |v| v["a"]["quickness"]["base"] }
+      :accessor => Proc.new { |v| v["a"]["quickness"]["base"] },
+      :summary => [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340]
     },
     :focus => {
       :display => "Focus (Base)",
@@ -116,7 +220,8 @@ module RankingsHelper
       :match => { "a" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "a.focus.base" => 1 },
       :sort => { "a.focus.base" => -1 },
-      :accessor => Proc.new { |v| v["a"]["focus"]["base"] }
+      :accessor => Proc.new { |v| v["a"]["focus"]["base"] },
+      :summary => [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340]
     },
     :self => {
       :display => "Self (Base)",
@@ -124,7 +229,8 @@ module RankingsHelper
       :match => { "a" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "a.self.base" => 1 },
       :sort => { "a.self.base" => -1 },
-      :accessor => Proc.new { |v| v["a"]["self"]["base"] }
+      :accessor => Proc.new { |v| v["a"]["self"]["base"] },
+      :summary => [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340]
     },
 
     # Vitals
@@ -134,7 +240,8 @@ module RankingsHelper
       :match => { "vi" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "vi.health.base" => 1 },
       :sort => { "vi.health.base" => -1 },
-      :accessor => Proc.new { |v| v["vi"]["health"]["base"] }
+      :accessor => Proc.new { |v| v["vi"]["health"]["base"] },
+      :summary => [5, 40, 75, 110, 145, 180, 215, 250, 285, 320, 341, 350]
     },
     :stamina => {
       :display => "Stamina (Base)",
@@ -142,7 +249,8 @@ module RankingsHelper
       :match => { "vi" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "vi.stamina.base" => 1 },
       :sort => { "vi.stamina.base" => -1 },
-      :accessor => Proc.new { |v| v["vi"]["stamina"]["base"] }
+      :accessor => Proc.new { |v| v["vi"]["stamina"]["base"] },
+      :summary => [10, 60, 110, 160, 210, 260, 310, 360, 410, 460, 486, 500]
     },
     :mana => {
       :display => "Mana (Base)",
@@ -150,7 +258,8 @@ module RankingsHelper
       :match => { "vi" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "vi.mana.base" => 1 },
       :sort => { "vi.mana.base" => -1 },
-      :accessor => Proc.new { |v| v["vi"]["mana"]["base"] }
+      :accessor => Proc.new { |v| v["vi"]["mana"]["base"] },
+      :summary => [10, 60, 110, 160, 210, 260, 310, 360, 410, 460, 486, 500]
     },
 
     # Skills
@@ -511,10 +620,11 @@ module RankingsHelper
     :times_enlightened => {
       :display => "Times Enlightened",
       :group => "Other",
-      :match => { "pr.390" => { "$gt" => 0 } },
+      :match => { "pr.390" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "pr" => { "390" => 1 } },
       :sort => { "pr.390" => -1 },
-      :accessor => Proc.new { |v| v["pr"]["390"] }
+      :accessor => Proc.new { |v| v["pr"]["390"] },
+      :summary => [0, 1, 2, 3, 4, 5, 6] # Times enlightened buckets 0-5, 6+
     },
     :level => {
       :display => "Level",
@@ -522,7 +632,8 @@ module RankingsHelper
       :match => { "l" => { "$gt" => 0 } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "l" => 1 },
       :sort => { "l" => -1 },
-      :accessor => Proc.new { |v| v["l"] }
+      :accessor => Proc.new { |v| v["l"] },
+      :summary => [1, 2, 4, 5, 6, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 126, 275, 276] # 276 captures > 275
     },
     :rank => {
       :display => "Rank",
