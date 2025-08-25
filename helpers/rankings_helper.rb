@@ -101,24 +101,60 @@ module RankingsHelper
         }
       }
     elsif summary_config.is_a?(Array)
-      # Custom breakpoints provided as array
-      boundaries = summary_config
+      # Check if this is an array of [breakpoint, label] pairs or just breakpoints
+      if summary_config.first.is_a?(Array)
+        # Array of [breakpoint, label] pairs for custom labels
+        boundaries = summary_config.map(&:first)
+        label_map = Hash[summary_config.map { |breakpoint, label| [breakpoint, label] }]
 
-      pipeline << {
-        "$bucket" => {
-          "groupBy" => "$#{sort_field}",
-          "boundaries" => boundaries,
-          "default" => "Other"
-        }
-      }
+        # Use the highest boundary + 1 as the default bucket identifier
+        # This ensures the default bucket gets a predictable _id
+        default_bucket_id = boundaries.last + 1
 
-      pipeline << {
-        "$project" => {
-          "_id" => 0,
-          "label" => "$_id",
-          "count" => 1
+        pipeline << {
+          "$bucket" => {
+            "groupBy" => "$#{sort_field}",
+            "boundaries" => boundaries,
+            "default" => default_bucket_id
+          }
         }
-      }
+
+        pipeline << {
+          "$project" => {
+            "_id" => 0,
+            "label" => {
+              "$switch" => {
+                "branches" => label_map.map { |breakpoint, label|
+                  { "case" => { "$eq" => ["$_id", breakpoint] }, "then" => label }
+                } + [
+                  { "case" => { "$eq" => ["$_id", default_bucket_id] }, "then" => "#{boundaries.last}+" }
+                ],
+                "default" => "$_id"
+              }
+            },
+            "count" => 1
+          }
+        }
+      else
+        # Traditional array of breakpoints - use breakpoint values as labels
+        boundaries = summary_config
+
+        pipeline << {
+          "$bucket" => {
+            "groupBy" => "$#{sort_field}",
+            "boundaries" => boundaries,
+            "default" => "Other"
+          }
+        }
+
+        pipeline << {
+          "$project" => {
+            "_id" => 0,
+            "label" => "$_id",
+            "count" => 1
+          }
+        }
+      end
     else
       return nil
     end
@@ -620,11 +656,20 @@ module RankingsHelper
     :times_enlightened => {
       :display => "Times Enlightened",
       :group => "Other",
-      :match => { "pr.390" => { "$exists" => true } },
+      :match => { "pr.390" => { "$gt" => 0 } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "pr" => { "390" => 1 } },
       :sort => { "pr.390" => -1 },
       :accessor => Proc.new { |v| v["pr"]["390"] },
-      :summary => [0, 1, 2, 3, 4, 5, 6] # Times enlightened buckets 0-5, 6+
+      :summary => [
+        [0,"0"],
+        [1,"1"],
+        [2,"2"],
+        [3,"3"],
+        [4,"4"],
+        [5,"5"],
+        [6,"6+"],
+        [999]
+      ]
     },
     :level => {
       :display => "Level",
@@ -641,7 +686,28 @@ module RankingsHelper
       :match => { "rn" => { "$exists" => true } },
       :project => { "_id" => 0, "n" => 1, "s" => 1, "rn" => 1 },
       :sort => { "rn" => -1 },
-      :accessor => Proc.new { |v| v["rn"] }
+      :accessor => Proc.new { |v| v["rn"] },
+      :summary => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] # Rank buckets 0-10
+    },
+
+    # Demographics
+    :gender => {
+      :display => "Gender",
+      :group => "Demographics",
+      :match => { "g" => { "$exists" => true } },
+      :project => { "_id" => 0, "n" => 1, "s" => 1, "g" => 1 },
+      :sort => { "g" => 1 },
+      :accessor => Proc.new { |v| v["g"] },
+      :summary => :categorical
+    },
+    :race => {
+      :display => "Race",
+      :group => "Demographics",
+      :match => { "r" => { "$exists" => true } },
+      :project => { "_id" => 0, "n" => 1, "s" => 1, "r" => 1 },
+      :sort => { "r" => 1 },
+      :accessor => Proc.new { |v| v["r"] },
+      :summary => :categorical
     }
   }
 end
