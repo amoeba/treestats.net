@@ -210,6 +210,27 @@ module RankingsHelper
 
   LIMIT = 100
 
+  SUMMARY_BREAKS_ATTRIBUTES = [
+    [10, "10"], [11, "11+"], [20, "20+"], [30, "30+"], [40, "40+"], [50, "50+"],
+    [60, "60+"], [70, "70+"], [80, "80+"], [90, "90+"], [100, "100+"],
+    [110, "110+"], [120, "120+"], [130, "130+"], [140, "140+"], [150, "150+"],
+    [160, "160+"], [170, "170+"], [180, "180+"], [190, "190+"], [200, "200+"],
+    [210, "210+"], [220, "220+"], [230, "230+"], [240, "240+"], [250, "250+"],
+    [260, "260+"], [270, "270+"], [280, "280+"], [290, "290+"], [300, "300+"],
+    [310, "310+"], [320, "320+"], [330, "330"], [331, "331+"]
+    ]
+
+  SUMMARY_BREAKS_VITALS_HEALTH = [
+    [0, "0"], [5, "5"], [6, "6+"], [50, "50+"], [100, "100+"], [150, "150+"],
+    [200, "200+"], [250, "250+"], [300, "300+"], [341, "341+"], [342, "342+"]
+  ]
+
+  SUMMARY_BREAKS_VITALS_STAMINA_MANA = [
+    [0, "0"], [10, "10"], [11, "11+"], [50, "50+"], [100, "100+"], [150, "150+"],
+    [200, "200+"], [250, "250+"], [300, "300+"], [350, "350+"], [486, "341+"],
+    [487, "487+"]
+  ]
+
   # Rankings hash
   RANKINGS = {
 
@@ -221,7 +242,7 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "a.strength.base" => 1 },
       :sort => { "a.strength.base" => -1 },
       :accessor => Proc.new { |v| v["a"]["strength"]["base"] },
-      :summary => [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340]
+      :summary => SUMMARY_BREAKS_ATTRIBUTES
     },
     :endurance => {
       :display => "Endurance (Base)",
@@ -230,7 +251,7 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "a.endurance.base" => 1 },
       :sort => { "a.endurance.base" => -1 },
       :accessor => Proc.new { |v| v["a"]["endurance"]["base"] },
-      :summary => [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340]
+      :summary => SUMMARY_BREAKS_ATTRIBUTES
     },
     :coordination => {
       :display => "Coordination (Base)",
@@ -239,7 +260,7 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "a.coordination.base" => 1 },
       :sort => { "a.coordination.base" => -1 },
       :accessor => Proc.new { |v| v["a"]["coordination"]["base"] },
-      :summary => [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340]
+      :summary => SUMMARY_BREAKS_ATTRIBUTES
     },
     :quickness => {
       :display => "Quickness (Base)",
@@ -248,7 +269,7 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "a.quickness.base" => 1 },
       :sort => { "a.quickness.base" => -1 },
       :accessor => Proc.new { |v| v["a"]["quickness"]["base"] },
-      :summary => [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340]
+      :summary => SUMMARY_BREAKS_ATTRIBUTES
     },
     :focus => {
       :display => "Focus (Base)",
@@ -257,7 +278,7 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "a.focus.base" => 1 },
       :sort => { "a.focus.base" => -1 },
       :accessor => Proc.new { |v| v["a"]["focus"]["base"] },
-      :summary => [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340]
+      :summary => SUMMARY_BREAKS_ATTRIBUTES
     },
     :self => {
       :display => "Self (Base)",
@@ -266,7 +287,7 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "a.self.base" => 1 },
       :sort => { "a.self.base" => -1 },
       :accessor => Proc.new { |v| v["a"]["self"]["base"] },
-      :summary => [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340]
+      :summary => SUMMARY_BREAKS_ATTRIBUTES
     },
 
     # Vitals
@@ -277,7 +298,7 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "vi.health.base" => 1 },
       :sort => { "vi.health.base" => -1 },
       :accessor => Proc.new { |v| v["vi"]["health"]["base"] },
-      :summary => [5, 40, 75, 110, 145, 180, 215, 250, 285, 320, 341, 350]
+      :summary => SUMMARY_BREAKS_VITALS_HEALTH
     },
     :stamina => {
       :display => "Stamina (Base)",
@@ -286,7 +307,7 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "vi.stamina.base" => 1 },
       :sort => { "vi.stamina.base" => -1 },
       :accessor => Proc.new { |v| v["vi"]["stamina"]["base"] },
-      :summary => [10, 60, 110, 160, 210, 260, 310, 360, 410, 460, 486, 500]
+      :summary => SUMMARY_BREAKS_VITALS_STAMINA_MANA
     },
     :mana => {
       :display => "Mana (Base)",
@@ -295,7 +316,7 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "vi.mana.base" => 1 },
       :sort => { "vi.mana.base" => -1 },
       :accessor => Proc.new { |v| v["vi"]["mana"]["base"] },
-      :summary => [10, 60, 110, 160, 210, 260, 310, 360, 410, 460, 486, 500]
+      :summary => SUMMARY_BREAKS_VITALS_STAMINA_MANA
     },
 
     # Skills
@@ -668,7 +689,6 @@ module RankingsHelper
         [4,"4"],
         [5,"5"],
         [6,"6+"],
-        [999]
       ]
     },
     :level => {
@@ -678,7 +698,10 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "l" => 1 },
       :sort => { "l" => -1 },
       :accessor => Proc.new { |v| v["l"] },
-      :summary => [1, 2, 4, 5, 6, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 126, 275, 276] # 276 captures > 275
+      :summary => [
+        [1, "1"], [2, "2-4"], [5, "5"], [6, "6-49"], [50, "50-125"],
+        [126, "126-199"], [200, "126-274"], [275, "275"], [276, "276+"]
+      ]
     },
     :rank => {
       :display => "Rank",
@@ -687,7 +710,7 @@ module RankingsHelper
       :project => { "_id" => 0, "n" => 1, "s" => 1, "rn" => 1 },
       :sort => { "rn" => -1 },
       :accessor => Proc.new { |v| v["rn"] },
-      :summary => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] # Rank buckets 0-10
+      :summary => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     },
 
     # Demographics

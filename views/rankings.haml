@@ -31,13 +31,7 @@
   %script{:src => javascript_path('summary_chart')}
 
   :css
-    div.chart {
-      margin: 20px 10px 30px 0px;
-      width: 600px;
-      height: 165px;
-      position: relative;
-    }
-    
+
     .chart-loading {
       display: flex;
       align-items: center;
@@ -90,7 +84,7 @@
       d3.json('/rankings/#{params['ranking']}/summary#{request.query_string.length > 0 ? '?' + request.query_string : ''}', function(data) {
         // Clear loading message
         d3.select("#chart-summary").selectAll("*").remove();
-        
+
         if(data && data.data && data.data.length > 0) {
           d3.select("#chart-summary")
             .datum(data.data)
