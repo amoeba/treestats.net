@@ -102,6 +102,11 @@ module Sinatra
             # Removed archived flag
             character[:archived] = false if character[:archived]
 
+            # Remove location if it wasnt sent (i.e., the user disabled it after initially sending it)
+            if !json_text["location"]
+              character.location = nil
+            end
+
             # Remove monarch, patron, vassal if necessary
             if !json_text["monarch"]
               character.monarch = nil
