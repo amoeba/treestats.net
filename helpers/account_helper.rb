@@ -419,7 +419,6 @@ module AccountHelper
       :group => :augmentations,
       :value => Proc.new { |v| v[:properties]["221"]}
     },
-
     {
       :name => "222",
       :label => "Enduring Calm",
@@ -757,7 +756,6 @@ module AccountHelper
       :value => Proc.new { |v| v[:properties]["379"]}
     }
   ]
-
 
   def self.fields_for(key)
     TABLE_FIELD_MAPPINGS.select { |h| h[:group] == key }
