@@ -138,4 +138,21 @@ module PropertiesHelper
 
     MASTERY_NAMES[type][id]
   end
+
+  def self.format_society_rank(value)
+    return nil if value.nil?
+
+    case value
+    when 0...95
+      "#{value} (Initiate)"
+    when 95...295
+      "#{value} (Adept)"
+    when 295...595
+      "#{value} (Knight)"
+    when 595...995
+      "#{value} (Lord)"
+    else
+      "#{value} (Master)"
+    end
+  end
 end

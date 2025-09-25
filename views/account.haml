@@ -17,9 +17,10 @@
           %th Augmentations
           %th Auras
           %th Ratings
+          %th Other
       %tbody
         %tr
-          - %w[general allegiance attributes skills augmentations auras ratings].each do |group|
+          - %w[general allegiance attributes skills augmentations auras ratings other].each do |group|
             %td
               %select{:multiple => "multiple", :name => "#{group}[]", :size => 10}
                 - AccountHelper::fields_for(group.to_sym).each do |field|
@@ -36,7 +37,7 @@
       %tr
         %th Name
         %th Server
-        - %w[general allegiance attributes skills augmentations auras ratings].each do |group|
+        - %w[general allegiance attributes skills augmentations auras ratings other].each do |group|
           - if(params.has_key?(group))
             - params[group].each do |name|
               %th= AccountHelper::field_label(group, name)
@@ -46,7 +47,7 @@
           %td
             %a{:href => "/#{character[:server]}/#{character[:name]}"}= character[:name]
           %td.center= character[:server]
-          - %w[general allegiance attributes skills augmentations auras ratings].each do |group|
+          - %w[general allegiance attributes skills augmentations auras ratings other].each do |group|
             - if(params.has_key?(group))
               - params[group].each do |name|
                 %td= AccountHelper::field_value(group, name).call(character)

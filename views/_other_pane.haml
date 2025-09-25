@@ -43,14 +43,4 @@
       - next unless PropertiesHelper::is_type(k, :society)
         %tr
           %td= PropertiesHelper::get_property_name(k)
-          %td
-            -if v < 95
-              = "Initiate (#{v})"
-            - elsif v < 295
-              = "Adept (#{v})"
-            - elsif v < 595
-              = "Knight (#{v})"
-            - elsif v < 995
-              = "Lord (#{v})"
-            - elsif v > 995
-              = "Master (#{v})"
+          %td= PropertiesHelper.format_society_rank(v)

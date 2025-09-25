@@ -1,3 +1,5 @@
+require_relative "./properties_helper"
+
 module AccountHelper
   TABLE_FIELD_MAPPINGS = [
     { :name => "race",
@@ -754,6 +756,24 @@ module AccountHelper
       :label => "Vitality",
       :group => :ratings,
       :value => Proc.new { |v| v[:properties]["379"]}
+    },
+    {
+      :name => "287",
+      :label => "Celestial Hand",
+      :group => :other,
+      :value => Proc.new { |v| PropertiesHelper.format_society_rank(v[:properties]["287"]) }
+    },
+    {
+      :name => "288",
+      :label => "Eldrytch Web",
+      :group => :other,
+      :value => Proc.new { |v| PropertiesHelper.format_society_rank(v[:properties]["288"]) }
+    },
+    {
+      :name => "289",
+      :label => "Radiant Blood",
+      :group => :other,
+      :value => Proc.new { |v| PropertiesHelper.format_society_rank(v[:properties]["289"]) }
     }
   ]
 
