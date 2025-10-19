@@ -28,6 +28,7 @@ end
 class TreeStats < Sinatra::Base
   configure :production do
     use Sentry::Rack::CaptureExceptions
+    use RateLimiter, limit: 100, seconds: 60
   end
 
   set :root, File.dirname(__FILE__)
