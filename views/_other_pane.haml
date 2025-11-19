@@ -12,35 +12,35 @@
       %tr
         %td Location
         %td= @character.location
-    - @character.properties.each do |k,v|
-      - next unless PropertiesHelper::is_type(k, :general)
-      %tr
-        %td= PropertiesHelper::get_property_name(k)
-        -if k == "199"
-          %td= Time.at(v.to_i + 4 * 60 * 60).utc
-        -elsif k == "322"
-          %td= PropertiesHelper::AETHERIA_SLOTS[v]
-        -else
-          %td= v
     - if @character.properties
+      - @character.properties.each do |k,v|
+        - next unless PropertiesHelper::is_type(k, :general)
+        %tr
+          %td= PropertiesHelper::get_property_name(k)
+          - if k == "199"
+            %td= Time.at(v.to_i + 4 * 60 * 60).utc
+          - elsif k == "322"
+            %td= PropertiesHelper::AETHERIA_SLOTS[v]
+          - else
+            %td= v
       %tr
         %td.specialized{:colspan => 2} Masteries
       - @character.properties.each do |k,v|
-      - next unless PropertiesHelper::is_type(k, :mastery)
+        - next unless PropertiesHelper::is_type(k, :mastery)
         %tr
           %td= PropertiesHelper::get_property_name(k)
           %td= PropertiesHelper::get_mastery_name(k,v)
       %tr
         %td.specialized{:colspan => 2} Resistances
       - @character.properties.each do |k,v|
-      - next unless PropertiesHelper::is_type(k, :resist)
+        - next unless PropertiesHelper::is_type(k, :resist)
         %tr
           %td= PropertiesHelper::get_property_name(k)
           %td= v
       %tr
         %td.specialized{:colspan => 2} Society
       - @character.properties.each do |k,v|
-      - next unless PropertiesHelper::is_type(k, :society)
+        - next unless PropertiesHelper::is_type(k, :society)
         %tr
           %td= PropertiesHelper::get_property_name(k)
           %td= PropertiesHelper.format_society_rank(v)
