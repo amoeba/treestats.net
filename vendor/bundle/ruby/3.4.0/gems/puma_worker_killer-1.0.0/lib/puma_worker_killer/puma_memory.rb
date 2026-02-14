@@ -1,0 +1,84 @@
+# frozen_string_literal: true
+
+module PumaWorkerKiller
+  class PumaMemory
+    def initialize(master = nil)
+      @master = master || get_master
+      @workers = nil
+    end
+
+    attr_reader :master
+
+    def size
+      workers.size
+    end
+
+    def term_worker(worker)
+      worker.term
+    end
+
+    def term_largest_worker
+      largest_worker.term
+    end
+
+    def workers_stopped?
+      !running?
+    end
+
+    def running?
+      @master && workers.any?
+    end
+
+    def smallest_worker
+      smallest, = workers.to_a.first
+      smallest
+    end
+
+    def smallest_worker_memory
+      _, smallest_mem = workers.to_a.first
+      smallest_mem
+    end
+
+    def largest_worker
+      largest_worker, = workers.to_a.last
+      largest_worker
+    end
+
+    def largest_worker_memory
+      _, largest_memory_used = workers.to_a.last
+      largest_memory_used
+    end
+
+    # Will refresh @workers
+    def get_total(workers = set_workers)
+      master_memory = GetProcessMem.new(Process.pid).mb
+      worker_memory = workers.values.inject(:+) || 0
+      worker_memory + master_memory
+    end
+    alias_method :get_total_memory, :get_total
+
+    def workers
+      @workers || set_workers
+    end
+
+    private
+
+    def get_master
+      ObjectSpace.each_object(Puma::Cluster).map { |obj| obj }.first if defined?(Puma::Cluster)
+    end
+
+    # Returns sorted hash, keys are worker objects, values are memory used per worker
+    # sorted by memory ascending (smallest first, largest last)
+    def set_workers
+      workers = {}
+      @master.instance_variable_get(:@workers).each do |worker|
+        workers[worker] = GetProcessMem.new(worker.pid).mb
+      end
+      if workers.any?
+        @workers = workers.sort_by { |_, mem| mem }.to_h
+      else
+        {}
+      end
+    end
+  end
+end

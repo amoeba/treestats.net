@@ -1,0 +1,114 @@
+- name: scalar field - matches exact value
+  document:
+    count: 10
+  query:
+    count:
+      $nin: [10, 11]
+  matches: false
+
+- name: scalar field - does not match exact value
+  document:
+    count: 8
+  query:
+    count:
+      $nin: [10, 11]
+  matches: true
+
+- name: scalar field - matches native regexp
+  document:
+    name: Boris
+  query:
+    name:
+      $nin:
+        - !ruby/regexp /..ris/
+  matches: false
+
+- name: scalar field - does not match native regexp
+  document:
+    name: Boris
+  query:
+    name:
+      $nin:
+        - !ruby/regexp /ri$/
+  matches: true
+
+- name: scalar field - matches bson regexp
+  document:
+    name: Boris
+  query:
+    name:
+      $nin:
+        - !ruby/object:BSON::Regexp::Raw
+          pattern: ..ris
+          options: ''
+  matches: false
+
+- name: scalar field - does not match bson regexp
+  document:
+    name: Boris
+  query:
+    name:
+      $nin:
+        - !ruby/object:BSON::Regexp::Raw
+          pattern: ..ri$
+          options: ''
+  matches: true
+
+- name: field value missing
+  document:
+    xcount: 10
+  query:
+    count:
+      $nin: [10, 11]
+  matches: true
+
+- name: field value is null
+  document:
+    count: ~
+  query:
+    count:
+      $nin: [10, 11]
+  matches: true
+
+- name: nil argument
+  document:
+    position: ceo
+  query:
+    position:
+      $nin: ~
+  error: true
+
+- name: empty array argument
+  document:
+    position: ceo
+  query:
+    position:
+      $nin: []
+  matches: true
+
+- name: empty hash argument
+  document:
+    position: ceo
+  query:
+    position:
+      $nin: {}
+  error: true
+
+- name: numeric argument
+  document:
+    position: ceo
+  query:
+    position:
+      $nin: 42
+  error: true
+
+- name: matching range
+  document:
+    age: 10
+  query:
+    age:
+      $nin: !ruby/range
+        begin: 1
+        end: 20
+        excl: false
+  error: true

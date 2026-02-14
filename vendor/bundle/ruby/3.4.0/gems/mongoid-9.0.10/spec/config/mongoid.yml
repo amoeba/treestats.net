@@ -1,0 +1,70 @@
+test:
+  clients:
+    default:
+      database: mongoid_test
+      hosts:
+        <% SpecConfig.instance.addresses.each do |address| %>
+          - <%= address %>
+        <% end %>
+      options:
+        user: "mongoid-user"
+        password: "password"
+        auth_source: "admin"
+        read:
+          mode: :primary_preferred
+          tag_sets:
+            - use: web
+        max_pool_size: 1
+        server_selection_timeout: 3.14
+    reports:
+      database: reports
+      hosts:
+        <% SpecConfig.instance.addresses.each do |address| %>
+          - <%= address %>
+        <% end %>
+      options:
+        user: "mongoid-user"
+        password: "password"
+        auth_source: "admin"
+        server_selection_timeout: 3.14
+  options:
+    include_root_in_json: false
+    include_type_for_serialization: false
+    preload_models: false
+    scope_overwrite_exception: false
+    raise_not_found_error: true
+    use_utc: false
+    log_level: :warn
+    belongs_to_required_by_default: false
+    app_name: 'testing'
+    background_indexing: false
+    join_contexts: false
+  driver_options:
+    broken_view_options: false
+    # Don't set validate_update_replace here, as it is used to check if the
+    # default driver options are kept in Mongoid.
+test_nil:
+  clients:
+    default:
+      database: mongoid_test
+      hosts:
+        <% SpecConfig.instance.addresses.each do |address| %>
+          - <%= address %>
+        <% end %>
+  driver_options:
+    broken_view_options:
+    validate_update_replace: false
+
+test_with_max_staleness:
+  clients:
+    default:
+      database: mongoid_test
+      hosts:
+        <% SpecConfig.instance.addresses.each do |address| %>
+          - <%= address %>
+        <% end %>
+      options:
+        read:
+          mode: :primary_preferred
+          max_staleness: 100
+        server_selection_timeout: 3.14

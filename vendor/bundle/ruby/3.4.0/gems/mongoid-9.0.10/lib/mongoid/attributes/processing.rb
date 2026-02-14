@@ -1,0 +1,163 @@
+# frozen_string_literal: true
+
+module Mongoid
+  module Attributes
+    # This module contains the behavior for processing attributes.
+    module Processing
+      # Process the provided attributes casting them to their proper values if a
+      # field exists for them on the document. This will be limited to only the
+      # attributes provided in the supplied +Hash+ so that no extra nil values get
+      # put into the document's attributes.
+      #
+      # @example Process the attributes.
+      #   person.process_attributes(:title => "sir", :age => 40)
+      #
+      # @param [ Hash ] attrs The attributes to set.
+      def process_attributes(attrs = nil)
+        attrs ||= {}
+        unless attrs.empty?
+          attrs = sanitize_for_mass_assignment(attrs)
+          attrs.each_pair do |key, value|
+            next if pending_attribute?(key, value)
+
+            process_attribute(key, value)
+          end
+        end
+        yield self if block_given?
+        process_pending
+      end
+
+      private
+
+      # If the key provided is the name of an association or a nested attribute, we
+      # need to wait until all other attributes are set before processing
+      # these.
+      #
+      # @example Is the attribute pending?
+      #   document.pending_attribute?(:name, "Durran")
+      #
+      # @param [ Symbol ] key The name of the attribute.
+      # @param [ Object ] value The value of the attribute.
+      #
+      # @return [ true | false ] True if pending, false if not.
+      def pending_attribute?(key, value)
+        name = key.to_s
+        aliased = if aliased_associations.key?(name)
+                    aliased_associations[name]
+                  else
+                    name
+                  end
+        if relations.key?(aliased)
+          set_pending_relation(name, aliased, value)
+          return true
+        end
+        if nested_attributes.key?(aliased)
+          set_pending_nested(name, aliased, value)
+          return true
+        end
+        false
+      end
+
+      # Set value of the pending relation.
+      #
+      # @param [ Symbol ] name The name of the relation.
+      # @param [ Symbol ] aliased The aliased name of the relation.
+      # @param [ Object ] value The value of the relation.
+      def set_pending_relation(name, aliased, value)
+        if stored_as_associations.include?(name)
+          pending_relations[aliased] = value
+        else
+          pending_relations[name] = value
+        end
+      end
+
+      # Set value of the pending nested attribute.
+      #
+      # @param [ Symbol ] name The name of the nested attribute.
+      # @param [ Symbol ] aliased The aliased name of the nested attribute.
+      # @param [ Object ] value The value of the nested attribute.
+      def set_pending_nested(name, aliased, value)
+        if stored_as_associations.include?(name)
+          pending_nested[aliased] = value
+        else
+          pending_nested[name] = value
+        end
+      end
+
+      # Get all the pending associations that need to be set.
+      #
+      # @example Get the pending associations.
+      #   document.pending_relations
+      #
+      # @return [ Hash ] The pending associations in key/value pairs.
+      def pending_relations
+        @pending_relations ||= {}
+      end
+
+      # Get all the pending nested attributes that need to be set.
+      #
+      # @example Get the pending nested attributes.
+      #   document.pending_nested
+      #
+      # @return [ Hash ] The pending nested attributes in key/value pairs.
+      def pending_nested
+        @pending_nested ||= {}
+      end
+
+      # If the attribute is dynamic, add a field for it with a type of object
+      # and then either way set the value.
+      #
+      # @example Process the attribute.
+      #   document.process_attribute(name, value)
+      #
+      # @param [ Symbol ] name The name of the field.
+      # @param [ Object ] value The value of the field.
+      def process_attribute(name, value)
+        if !respond_to?("#{name}=", true) && (store_as = aliased_fields.invert[name.to_s])
+          name = store_as
+        end
+        responds = respond_to?("#{name}=", true)
+        raise Errors::UnknownAttribute.new(self.class, name) unless responds
+
+        send("#{name}=", value)
+      end
+
+      # Process all the pending nested attributes that needed to wait until
+      # ids were set to fire off.
+      #
+      # @example Process the nested attributes.
+      #   document.process_nested
+      def process_nested
+        pending_nested.each_pair do |name, value|
+          send("#{name}=", value)
+        end
+      end
+
+      # Process all the pending items, then clear them out.
+      #
+      # @example Process the pending items.
+      #   document.process_pending
+      def process_pending
+        process_nested and process_relations
+        pending_nested.clear and pending_relations.clear
+        _reset_memoized_descendants!
+      end
+
+      # Process all the pending associations that needed to wait until ids were set
+      # to fire off.
+      #
+      # @example Process the associations.
+      #   document.process_relations
+      def process_relations
+        pending_relations.each_pair do |name, value|
+          association = relations[name]
+          if value.is_a?(Hash)
+            association.nested_builder(value, {}).build(self)
+          else
+            send("#{name}=", value)
+          end
+        end
+      end
+    end
+  end
+end

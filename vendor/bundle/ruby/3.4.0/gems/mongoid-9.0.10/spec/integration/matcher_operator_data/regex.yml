@@ -1,0 +1,174 @@
+- name: string - matches
+  document:
+    title: King
+  query:
+    title:
+      $regex: K..g
+  matches: true
+
+- name: string - does not match
+  document:
+    title: Queen
+  query:
+    title:
+      $regex: K..g
+  matches: false
+
+- name: native regexp - matches
+  document:
+    title: King
+  query:
+    title:
+      $regex: !ruby/regexp /K..g/
+  matches: true
+
+- name: native regexp - does not match
+  document:
+    title: Queen
+  query:
+    title:
+      $regex: !ruby/regexp /K..g/
+  matches: false
+
+- name: bson regexp - matches
+  document:
+    title: King
+  query:
+    title:
+      $regex: !ruby/object:BSON::Regexp::Raw
+        pattern: K..g
+        options: ''
+  matches: true
+
+- name: bson regexp - does not match
+  document:
+    title: Queen
+  query:
+    title:
+      $regex: !ruby/object:BSON::Regexp::Raw
+        pattern: K..g
+        options: ''
+  matches: false
+
+- name: string argument - matches
+  document:
+    title: King
+  query:
+    title:
+      $regex:
+        K..g
+  matches: true
+
+- name: string argument - does not match
+  document:
+    title: King
+  query:
+    title:
+      $regex:
+        K...g
+  matches: false
+
+- name: nil argument
+  document:
+    position: ceo
+  query:
+    position:
+      $regex: ~
+  error: true
+
+- name: empty array argument
+  document:
+    position: ceo
+  query:
+    position:
+      $regex: []
+  error: true
+
+- name: empty hash argument
+  document:
+    position: ceo
+  query:
+    position:
+      $regex: {}
+  error: true
+
+- name: numeric argument
+  document:
+    position: ceo
+  query:
+    position:
+      $regex: 42
+  error: true
+
+- name: numeric field value - matches if stringified
+  document:
+    title: 42
+  query:
+    title:
+      $regex:
+        '42'
+  matches: false
+
+- name: array field value - matches an element
+  document:
+    title:
+      - foo
+  query:
+    title:
+      $regex: foo
+  matches: true
+
+- name: array field value - does not match an element
+  document:
+    title:
+      - foo
+  query:
+    title:
+      $regex: bar
+  matches: false
+
+- name: empty array field value
+  document:
+    title: []
+  query:
+    title:
+      $regex: bar
+  matches: false
+
+- name: true field value
+  document:
+    title: true
+  query:
+    title:
+      $regex:
+        'true'
+  matches: false
+
+- name: false field value
+  document:
+    title: false
+  query:
+    title:
+      $regex:
+        'false'
+  matches: false
+
+- name: nil field value
+  document:
+    title: ~
+  query:
+    title:
+      $regex:
+        ''
+  matches: false
+
+- name: range
+  document:
+    name: 42
+  query:
+    name:
+      $regex: !ruby/range
+        begin: 1
+        end: 2
+        excl: false
+  error: true

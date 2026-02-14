@@ -1,0 +1,409 @@
+- name: string attribute value matched with operator
+  document:
+    tags: Angel Share
+  query:
+    tags:
+      $elemMatch:
+        $eq: Angel Share
+  matches: false
+
+- name: integer attribute value matched with operator
+  document:
+    tags: 42
+  query:
+    tags:
+      $elemMatch:
+        $eq: 42
+  matches: false
+
+- name: string attribute value matched against hash
+  document:
+    tags: Angel Share
+  query:
+    tags:
+      $elemMatch:
+        foo: Angel Share
+  matches: false
+
+- name: integer attribute value matched against hash
+  document:
+    tags: 42
+  query:
+    tags:
+      $elemMatch:
+        foo: 42
+  matches: false
+
+- name: array attribute string value matched with operator - matches
+  document:
+    tags:
+      - intelligent
+  query:
+    tags:
+      $elemMatch:
+        $eq: intelligent
+  matches: true
+
+- name: array attribute string value matched with operator - does not match
+  document:
+    tags:
+      - intelligent
+  query:
+    tags:
+      $elemMatch:
+        $ne: intelligent
+  matches: false
+
+- name: array attribute integer value matched with operator - matches
+  document:
+    tags:
+      - 42
+  query:
+    tags:
+      $elemMatch:
+        $eq: 42
+  matches: true
+
+- name: array attribute integer value matched with operator - does not match
+  document:
+    tags:
+      - 42
+  query:
+    tags:
+      $elemMatch:
+        $ne: 42
+  matches: false
+
+- name: array attribute value with scalar string value matched with hash
+  document:
+    tags:
+      - intelligent
+  query:
+    tags:
+      $elemMatch:
+        foo: intelligent
+  matches: false
+
+- name: array attribute value with scalar integer value matched with hash
+  document:
+    tags:
+      - 42
+  query:
+    tags:
+      $elemMatch:
+        foo: 42
+  matches: false
+
+- name: hash attribute value
+  document:
+    tags:
+      a: Angel Share
+  query:
+    tags:
+      $elemMatch:
+        a: Angel Share
+  matches: false
+
+- name: array of hashes attribute value - matches
+  document:
+    tags:
+      - a: Angel Share
+  query:
+    tags:
+      $elemMatch:
+        a: Angel Share
+  matches: true
+
+- name: array of hashes attribute value - some of array elements match
+  document:
+    tags:
+      - a: Angel Share
+      - a: Hello
+  query:
+    tags:
+      $elemMatch:
+        a: Angel Share
+  matches: true
+
+- name: array of hashes attribute value - does not match
+  document:
+    tags:
+      - a: Angel Share
+  query:
+    tags:
+      $elemMatch:
+        a: Angel
+  matches: false
+
+- name: array of hashes attribute value - with operator - matches
+  document:
+    tags:
+      - a: Angel Share
+  query:
+    tags:
+      $elemMatch:
+        a:
+          $eq: Angel Share
+  matches: true
+
+- name: array of hashes attribute value - with operator - does not match
+  document:
+    tags:
+      - a: Angel Share
+  query:
+    tags:
+      $elemMatch:
+        a:
+          $ne: Angel Share
+  matches: false
+
+- name: array of scalars attribute value matching against scalar
+  document:
+    tags:
+      - mongodb
+  query:
+    tags:
+      $elemMatch:
+        mongodb
+  error: true
+
+- name: array of scalars attribute value matching against array
+  document:
+    tags:
+      - mongodb
+  query:
+    tags:
+      $elemMatch: []
+  error: true
+
+- name: multiple conditions per array element
+  document:
+    tags:
+      - a: 1
+        b: 2
+      - a: 3
+        b: 2
+  query:
+    tags:
+      $elemMatch:
+        a: 1
+        b: 2
+  matches: true
+
+- name: multiple conditions per array element - partial match
+  document:
+    tags:
+      - a: 1
+        b: 1
+      - a: 3
+        b: 3
+  query:
+    tags:
+      $elemMatch:
+        a: 1
+        b: 3
+  matches: false
+
+- name: nested operator - matches
+  document:
+    tags:
+      - a: 1
+  query:
+    tags:
+      $elemMatch:
+        a:
+          $in: [1]
+  matches: true
+
+- name: nested operator - does not match
+  document:
+    tags:
+      - a: 1
+  query:
+    tags:
+      $elemMatch:
+        a:
+          $in: [2]
+  matches: false
+
+- name: multiple nested operators
+  document:
+    tags:
+      - a: 1
+      - a: 2
+        b: 3
+  query:
+    tags:
+      $elemMatch:
+        a:
+          $in: [2]
+        b:
+          $gt: 1
+  matches: true
+
+- name: nested operators with $not - matches
+  document:
+    tags:
+      - a: 1
+      - a: 2
+        b: 3
+  query:
+    tags:
+      $elemMatch:
+        a:
+          $not:
+            $in: [1]
+        b:
+          $gt: 1
+  matches: true
+
+- name: nested operators with $not - does not match
+  document:
+    tags:
+      - a: 1
+      - a: 2
+        b: 3
+  query:
+    tags:
+      $elemMatch:
+        a:
+          $not:
+            $in: [2]
+        b:
+          $gt: 1
+  matches: false
+
+- name: nil argument
+  document:
+    positions: [ceo, cto]
+  query:
+    positions:
+      $elemMatch: ~
+  error: true
+
+- name: numeric argument
+  document:
+    positions: [ceo, cto]
+  query:
+    positions:
+      $elemMatch: 42
+  error: true
+
+- name: empty array argument
+  document:
+    positions: [ceo, cto]
+  query:
+    positions:
+      $elemMatch: []
+  error: true
+
+- name: field value is a number
+  document:
+    tags: 12
+  query:
+    tags:
+      $elemMatch:
+        $eq: 12
+  matches: false
+
+- name: field value is an empty array
+  document:
+    tags: []
+  query:
+    tags:
+      $elemMatch:
+        $not:
+          $eq: y
+  matches: false
+
+- name: field value is an empty hash
+  document:
+    tags: {}
+  query:
+    tags:
+      $elemMatch:
+        $not:
+          $eq: y
+  matches: false
+
+- name: field value is null
+  document:
+    tags: ~
+  query:
+    tags:
+      $elemMatch:
+        $not:
+          $eq: y
+  matches: false
+
+- name: range - match
+  document:
+    products: [1, 2, 3]
+  query:
+    products:
+      $elemMatch: !ruby/range
+        begin: 1
+        end: 20
+        excl: false
+  # https://jira.mongodb.org/browse/MONGOID-4908
+  matches: true
+  error: [matcher, driver]
+
+- name: range - no match
+  document:
+    products: [1, 2, 3]
+  query:
+    products:
+      $elemMatch: !ruby/range
+        begin: 10
+        end: 20
+        excl: false
+  # https://jira.mongodb.org/browse/MONGOID-4908
+  matches: false
+  error: [matcher, driver]
+
+- name: $elemMatch given as symbol
+  document:
+    tags:
+      - intelligent
+  query:
+    tags:
+      :$elemMatch:
+        $eq: intelligent
+  matches: true
+
+- name: $elemMatch given as symbol - document does not contain the matched field
+  document:
+  query:
+    tags:
+      :$elemMatch:
+        $eq: intelligent
+  matches: false
+
+- name: $elemMatch argument operator given as symbol - matches
+  document:
+    tags:
+      - intelligent
+  query:
+    tags:
+      $elemMatch:
+        :$eq: intelligent
+  matches: true
+
+- name: $elemMatch argument operator given as symbol - does not match
+  document:
+    tags:
+      - intelligent
+  query:
+    tags:
+      $elemMatch:
+        :$eq: intelli
+  matches: false
+
+- name: $elemMatch argument operator given as symbol - document does not contain the matched field
+  document:
+  query:
+    tags:
+      $elemMatch:
+        :$eq: intelli
+  matches: false

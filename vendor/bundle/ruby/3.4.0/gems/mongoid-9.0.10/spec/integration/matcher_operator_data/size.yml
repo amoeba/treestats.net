@@ -1,0 +1,171 @@
+- name: correct size
+  document:
+    products: [1, 2, 3]
+  query:
+    products:
+      $size: 3
+  matches: true
+
+- name: incorrect size
+  document:
+    products: [1, 2, 3]
+  query:
+    products:
+      $size: 2
+  matches: false
+
+- name: empty array - correct size
+  document:
+    products: []
+  query:
+    products:
+      $size: 0
+  matches: true
+
+- name: empty array - incorrect size
+  document:
+    products: []
+  query:
+    products:
+      $size: 1
+  matches: false
+
+- name: condition is an array
+  document:
+    products: [1, 2, 3]
+  query:
+    products:
+      - $size: 3
+  matches: false
+
+- name: field value is a scalar
+  document:
+    hello: world
+  query:
+    hello:
+      $size: 5
+  matches: false
+
+- name: field value is a hash
+  document:
+    hello:
+      foo: bar
+  query:
+    hello:
+      $size: 1
+  matches: false
+
+- name: nil argument
+  document:
+    position: ceo
+  query:
+    position:
+      $size: ~
+  error: true
+
+- name: empty array argument
+  document:
+    position: ceo
+  query:
+    position:
+      $size: []
+  error: true
+
+- name: empty hash argument
+  document:
+    position: ceo
+  query:
+    position:
+      $size: {}
+  error: true
+
+- name: string argument
+  document:
+    position: ceo
+  query:
+    position:
+      $size: foo
+  error: true
+
+- name: floating point argument
+  document:
+    position: ceo
+  query:
+    position:
+      $size: 2.5
+  error: true
+
+- name: negative integer argument
+  document:
+    position: ceo
+  query:
+    position:
+      $size: -2
+  error: true
+
+- name: empty array field value
+  document:
+    position: []
+  query:
+    position:
+      $size: 1
+  matches: false
+
+- name: empty hash field value
+  document:
+    position: {}
+  query:
+    position:
+      $size: 1
+  matches: false
+
+- name: numeric field value
+  document:
+    position: 42
+  query:
+    position:
+      $size: 1
+  matches: false
+
+- name: string field value
+  document:
+    position: foo
+  query:
+    position:
+      $size: 1
+  matches: false
+
+- name: true field value
+  document:
+    position: true
+  query:
+    position:
+      $size: 0
+  matches: false
+
+- name: false field value
+  document:
+    position: false
+  query:
+    position:
+      $size: 0
+  matches: false
+
+- name: null field value
+  document:
+    position: ~
+  query:
+    position:
+      $size: 0
+  matches: false
+
+- name: range
+  document:
+    name: 42
+  query:
+    name:
+      $size: !ruby/range
+        begin: 1
+        end: 2
+        excl: false
+  error: true

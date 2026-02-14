@@ -1,0 +1,51 @@
+current directory: /home/runner/work/treestats.net/treestats.net/vendor/bundle/ruby/3.4.0/gems/bson-5.2.0/ext/bson
+/opt/hostedtoolcache/Ruby/3.4.7/x64/bin/ruby extconf.rb
+checking for whether -Wall is accepted as CFLAGS... yes
+checking for whether -g is accepted as CFLAGS... yes
+checking for whether -std=c99 is accepted as CFLAGS... yes
+creating Makefile
+
+current directory: /home/runner/work/treestats.net/treestats.net/vendor/bundle/ruby/3.4.0/gems/bson-5.2.0/ext/bson
+make DESTDIR\= sitearchdir\=./.gem.20260214-2299-jftayi sitelibdir\=./.gem.20260214-2299-jftayi clean
+
+current directory: /home/runner/work/treestats.net/treestats.net/vendor/bundle/ruby/3.4.0/gems/bson-5.2.0/ext/bson
+make DESTDIR\= sitearchdir\=./.gem.20260214-2299-jftayi sitelibdir\=./.gem.20260214-2299-jftayi
+compiling bytebuf.c
+compiling endian.c
+compiling init.c
+init.c: In function ‘Init_bson_native’:
+init.c:36:6: warning: old-style function definition [-Wold-style-definition]
+   36 | void Init_bson_native()
+      |      ^~~~~~~~~~~~~~~~
+At top level:
+cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+compiling libbson-utf8.c
+compiling read.c
+compiling util.c
+util.c: In function ‘pvt_get_object_id_random_value’:
+util.c:152:10: warning: old-style function definition [-Wold-style-definition]
+  152 | uint8_t* pvt_get_object_id_random_value() {
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+util.c: In function ‘pvt_init_rand’:
+util.c:191:6: warning: old-style function definition [-Wold-style-definition]
+  191 | void pvt_init_rand() {
+      |      ^~~~~~~~~~~~~
+util.c: In function ‘pvt_rand’:
+util.c:235:5: warning: old-style function definition [-Wold-style-definition]
+  235 | int pvt_rand() {
+      |     ^~~~~~~~
+At top level:
+cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+compiling write.c
+linking shared-object bson_native.so
+
+current directory: /home/runner/work/treestats.net/treestats.net/vendor/bundle/ruby/3.4.0/gems/bson-5.2.0/ext/bson
+make DESTDIR\= sitearchdir\=./.gem.20260214-2299-jftayi sitelibdir\=./.gem.20260214-2299-jftayi install
+/usr/bin/install -c -m 0755 bson_native.so ./.gem.20260214-2299-jftayi
+
+current directory: /home/runner/work/treestats.net/treestats.net/vendor/bundle/ruby/3.4.0/gems/bson-5.2.0/ext/bson
+make DESTDIR\= sitearchdir\=./.gem.20260214-2299-jftayi sitelibdir\=./.gem.20260214-2299-jftayi clean

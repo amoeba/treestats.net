@@ -1,0 +1,132 @@
+- name: field value larger than condition
+  document:
+    count: 10
+  query:
+    count:
+      $gt: 9
+  matches: true
+
+- name: field value equal to condition
+  document:
+    count: 10
+  query:
+    count:
+      $gt: 10
+  matches: false
+
+- name: field value smaller than condition
+  document:
+    count: 10
+  query:
+    count:
+      $gt: 11
+  matches: false
+
+- name: field value does not exist
+  document:
+    count: 10
+  query:
+    xcount:
+      $gt: 9
+  matches: false
+
+- name: field value is null
+  document:
+    count: ~
+  query:
+    count:
+      $gt: 9
+  matches: false
+
+- name: field value is non-numeric
+  document:
+    count: '6'
+  query:
+    count:
+      $gt: 5
+  matches: false
+
+- name: field value is an array with element larger than condition
+  document:
+    counts: [10]
+  query:
+    counts:
+      $gt: 9
+  matches: true
+
+- name: field value is an array with element equal to condition
+  document:
+    counts: [10]
+  query:
+    counts:
+      $gt: 10
+  matches: false
+
+- name: field value is an array with element smaller than condition
+  document:
+    counts: [10]
+  query:
+    counts:
+      $gt: 11
+  matches: false
+
+- name: field value is an empty array
+  document:
+    counts: []
+  query:
+    counts:
+      $gt: 11
+  matches: false
+
+- name: field value is an array with element which is null
+  document:
+    counts: [~]
+  query:
+    counts:
+      $gt: 11
+  matches: false
+
+- name: field value is an array with element which non-numeric
+  document:
+    counts: ['6']
+  query:
+    counts:
+      $gt: 5
+  matches: false
+
+- name: nil argument
+  document:
+    count: 10
+  query:
+    count:
+      $gt: ~
+  matches: false
+
+- name: empty array argument
+  document:
+    count: 10
+  query:
+    count:
+      $gt: []
+  matches: false
+
+- name: field value is an empty hash
+  document:
+    counts: {}
+  query:
+    counts:
+      $gt: 11
+  matches: false
+
+- name: range
+  document:
+    age: 10
+  query:
+    age:
+      $gt: !ruby/range
+        begin: 1
+        end: 20
+        excl: false
+  error: [matcher, driver]
+  # https://jira.mongodb.org/browse/MONGOID-4908
+  matches: false

@@ -1,0 +1,18 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+git_source(:github) { |name| "https://github.com/#{name}.git" }
+
+eval_gemfile "../Gemfile.dev"
+
+# Specify your gem's dependencies in sentry-ruby.gemspec
+gemspec
+
+gem "sentry-ruby", path: "../sentry-ruby"
+
+gem "resque-retry", "~> 1.8"
+
+group :rails do
+  gem "sentry-rails", path: "../sentry-rails"
+  gem "rails", "> 5.2.0"
+end

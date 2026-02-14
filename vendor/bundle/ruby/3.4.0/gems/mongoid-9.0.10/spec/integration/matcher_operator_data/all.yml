@@ -1,0 +1,140 @@
+- name: attribute includes all condition values
+  document:
+    products: [1, 2, 3]
+  query:
+    products:
+      $all: [1, 2]
+  matches: true
+
+- name: attribute does not include all condition values
+  document:
+    products: [1, 2, 3]
+  query:
+    products:
+      $all: [1, 4]
+  matches: false
+
+- name: attribute value is empty
+  document:
+    products: []
+  query:
+    products:
+      $all: [1, 4]
+  matches: false
+
+- name: condition value is empty
+  document:
+    products: [1, 2, 3]
+  query:
+    products:
+      $all: []
+  matches: false
+
+- name: condition value is a matching native regexp
+  document:
+    positions: [ceo, cto]
+  query:
+    positions:
+      $all:
+        - !ruby/regexp /c.o/
+  matches: true
+
+- name: condition value is a not matching native regexp
+  document:
+    positions: [ceo, cto]
+  query:
+    positions:
+      $all:
+        - !ruby/regexp /a.o/
+  matches: false
+
+- name: condition value is a matching bson regexp
+  document:
+    positions: [ceo, cto]
+  query:
+    positions:
+      $all:
+        - !ruby/object:BSON::Regexp::Raw
+          pattern: c.o
+          options: ''
+  matches: true
+
+- name: condition value is a not matching bson regexp
+  document:
+    positions: [ceo, cto]
+  query:
+    positions:
+      $all:
+        - !ruby/object:BSON::Regexp::Raw
+          pattern: a.o
+          options: ''
+  matches: false
+
+- name: nil argument
+  document:
+    positions: [ceo, cto]
+  query:
+    positions:
+      $all: ~
+  error: true
+
+- name: numeric argument
+  document:
+    positions: [ceo, cto]
+  query:
+    positions:
+      $all: 42
+  error: true
+
+- name: hash argument
+  document:
+    positions: [ceo, cto]
+  query:
+    positions:
+      $all:
+        foo: bar
+  error: true
+
+- name: scalar argument that exists in target array
+  document:
+    positions: [ceo, cto]
+  query:
+    positions:
+      $all:
+        ceo
+  error: true
+
+- name: field value is null
+  document:
+    products: ~
+  query:
+    products:
+      $all: [1, 2]
+  matches: false
+
+- name: field value is numeric
+  document:
+    products: 42
+  query:
+    products:
+      $all: [42]
+  matches: true
+
+- name: field value is null and query is for null value
+  document:
+    products: ~
+  query:
+    products:
+      $all: [~]
+  matches: true
+
+- name: range - match
+  document:
+    products: [1, 2, 3]
+  query:
+    products:
+      $all: !ruby/range
+        begin: 1
+        end: 20
+        excl: false
+  error: true
