@@ -25,9 +25,12 @@ class QueryCacheJob
     redis.set("servers-with-counts", Marshal.dump(ServerHelper.servers_with_counts))
 
     # Pre-warm the all-data player counts cache (used by /player_charts)
-    # player_counts is a top-level method from helpers/player_counts_helper.rb and returns a JSON string
-    all_data = player_counts(nil, "All")
-    redis.setex("player-counts-all-data", 86400, all_data.to_s)
+    # Only runs the query if the cache is missing (expires at midnight daily)
+    unless redis.exists?("player-counts-all-data")
+      all_data = player_counts(nil, "All")
+      seconds_until_midnight = ((Date.today + 1).to_time - Time.now).to_i
+      redis.setex("player-counts-all-data", seconds_until_midnight, all_data)
+    end
 
     puts "QueryCacheJob(#{id}) finished in #{Time.now - start} seconds"
   end

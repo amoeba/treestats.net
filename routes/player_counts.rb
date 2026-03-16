@@ -10,20 +10,22 @@ module Sinatra
             haml :player_charts
           end
 
-          # All player count data, cached aggressively (24h) for client-side filtering
+          # All player count data, cached until next midnight (when the day's max is finalized)
           app.get "/player_counts_all.json" do
             content_type :json
             cache_control :public, max_age: 3600
 
             redis_key = "player-counts-all-data"
 
-            if !redis.exists?(redis_key)
-              result = player_counts(nil, "All").to_s
-              redis.setex(redis_key, 86400, result)
-              return result
-            else
-              return redis.get(redis_key)
+            cached = redis.get(redis_key)
+            if cached
+              return cached
             end
+
+            result = player_counts(nil, "All")
+            seconds_until_midnight = ((Date.today + 1).to_time - Time.now).to_i
+            redis.setex(redis_key, seconds_until_midnight, result)
+            result
           end
 
           app.get "/player_counts/?" do
