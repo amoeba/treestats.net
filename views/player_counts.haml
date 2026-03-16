@@ -9,6 +9,30 @@
   %a{:href => "/servers"} Servers
   page.
 
+.beta-banner
+  %a{:href => "/player_counts_beta/"}
+    %strong New:
+    Try the beta redesign &rarr;
+
+:css
+  .beta-banner {
+    border-left: 3px solid #af7a30;
+    padding: 4px 12px;
+    margin: 8px 0;
+    max-width: 350px;
+  }
+  .beta-banner a {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  .beta-banner a:hover {
+    color: gold;
+  }
+  .beta-banner strong {
+    color: gold;
+  }
+
 #chartcontainer
   #chartsidebar
     .sidebargroup

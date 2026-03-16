@@ -5,6 +5,27 @@ module Sinatra
     module Routing
       module PlayerCounts
         def self.registered(app)
+          # New interactive chart view — all data, client-side filtering
+          app.get "/player_counts_beta/?" do
+            haml :player_charts
+          end
+
+          # All player count data, cached aggressively (24h) for client-side filtering
+          app.get "/player_counts_all.json" do
+            content_type :json
+            cache_control :public, max_age: 3600
+
+            redis_key = "player-counts-all-data"
+
+            if !redis.exists?(redis_key)
+              result = player_counts(nil, "All").to_s
+              redis.setex(redis_key, 86400, result)
+              return result
+            else
+              return redis.get(redis_key)
+            end
+          end
+
           app.get "/player_counts/?" do
             @servers = ServerHelper.all_servers
             @retail_servers = ServerHelper.retail_servers

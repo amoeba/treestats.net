@@ -24,6 +24,11 @@ class QueryCacheJob
     redis.set("dashboard-total-uploaded", Marshal.dump(QueryHelper.dashboard_total_uploaded))
     redis.set("servers-with-counts", Marshal.dump(ServerHelper.servers_with_counts))
 
+    # Pre-warm the all-data player counts cache (used by /player_charts)
+    # player_counts is a top-level method from helpers/player_counts_helper.rb and returns a JSON string
+    all_data = player_counts(nil, "All")
+    redis.setex("player-counts-all-data", 86400, all_data.to_s)
+
     puts "QueryCacheJob(#{id}) finished in #{Time.now - start} seconds"
   end
 end

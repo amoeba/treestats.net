@@ -1,0 +1,222 @@
+%h2.title Player Counts (Beta)
+
+%p
+  %a{:href => "/player_counts"}
+    &larr; Back to classic view
+
+#player-charts
+
+%p
+  %a{:href => "/player_counts-latest.json"} Latest player counts (JSON)
+
+:css
+  #player-charts {
+    max-width: 960px;
+  }
+
+  /* Controls bar */
+  .chart-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid #af7a30;
+    border-bottom: none;
+    font-size: 13px;
+  }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .control-label {
+    color: #af7a30;
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .toggle-buttons {
+    display: flex;
+    gap: 0;
+  }
+
+  .toggle-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid #555;
+    color: #ccc;
+    padding: 3px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .toggle-btn:first-child {
+    border-radius: 3px 0 0 3px;
+  }
+
+  .toggle-btn:last-child {
+    border-radius: 0 3px 3px 0;
+  }
+
+  .toggle-btn.active {
+    background: #af7a30;
+    border-color: #af7a30;
+    color: #fff;
+  }
+
+  .toggle-btn:hover:not(.active) {
+    background: rgba(175, 122, 48, 0.3);
+  }
+
+  .control-select {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid #555;
+    color: #ccc;
+    padding: 3px 6px;
+    font-size: 12px;
+    border-radius: 3px;
+  }
+
+  .control-select option {
+    background: #222;
+    color: #ccc;
+  }
+
+  /* Chart SVG */
+  #player-charts svg {
+    border-left: 1px solid #af7a30;
+    border-right: 1px solid #af7a30;
+  }
+
+  #player-charts svg text {
+    fill: rgba(220, 220, 220, 0.8);
+  }
+
+  #player-charts svg .domain,
+  #player-charts svg .tick line {
+    stroke: rgba(220, 220, 220, 0.2);
+  }
+
+  /* Tooltip */
+  .chart-tooltip {
+    position: fixed;
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid #af7a30;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 11px;
+    line-height: 1.5;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .tt-date {
+    color: #af7a30;
+    font-weight: bold;
+    margin-bottom: 2px;
+    border-bottom: 1px solid rgba(175, 122, 48, 0.3);
+    padding-bottom: 2px;
+  }
+
+  .tt-total {
+    color: gold;
+    font-weight: bold;
+    margin-bottom: 2px;
+    border-bottom: 1px solid rgba(175, 122, 48, 0.3);
+    padding-bottom: 2px;
+  }
+
+  /* Loading */
+  .chart-loading {
+    padding: 40px;
+    text-align: center;
+    color: #af7a30;
+    font-size: 18px;
+    border: 1px solid #af7a30;
+    animation: 1s infinite alternate flash;
+  }
+
+  /* Server filter */
+  .server-filter {
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid #af7a30;
+    border-top: none;
+    font-size: 12px;
+  }
+
+  .quick-filters {
+    display: inline-flex;
+    gap: 4px;
+    margin-left: 8px;
+    margin-bottom: 6px;
+  }
+
+  .filter-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid #555;
+    color: #ccc;
+    padding: 2px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+
+  .filter-btn:hover {
+    background: rgba(175, 122, 48, 0.3);
+  }
+
+  .server-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+  }
+
+  .server-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    color: #ccc;
+    padding: 1px 0;
+  }
+
+  .server-checkbox input {
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .server-swatch {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+
+  /* Brush selection styling */
+  .brush .selection {
+    fill: rgba(175, 122, 48, 0.3);
+    stroke: #af7a30;
+  }
+
+  .flash {
+    animation: 1s infinite alternate flash;
+  }
+
+  @keyframes flash {
+    from { opacity: 0%; }
+    to { opacity: 100%; }
+  }
+
+%script{:src => "https://d3js.org/d3.v7.min.js", :integrity => "sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i", :crossorigin => "anonymous"}
+%script{:src => javascript_path('popchart_v2')}
+
+:javascript
+  popchart_v2("#player-charts");
