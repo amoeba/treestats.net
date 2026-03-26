@@ -28,6 +28,8 @@ And the entire allegiance tree, drawn as a force-directed graph (again, as it is
 
 ![Allegiance tree viewer](docs/tree.png)
 
+TreeStats also tracks server population over time. A redesigned beta player counts chart (powered by D3.js) is available at `/player_counts_beta/` and is accessible via a banner on the main player counts page.
+
 
 One limitation of TreeStats is that it only knows about monarchs, patrons, and vassals of the characters that are directly uploaded (i.e. what is on your Allegiance pane). It won't know about the characters in between unless those players upload their characters using the plugin directly.
 
