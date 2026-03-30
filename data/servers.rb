@@ -327,13 +327,4 @@ SERVERS = [{name: "ACPrime",
   software: "ACE",
   host: "74.50.118.178",
   port: "9000",
-  discord_url: "https://discord.gg/d3ZPpQsHCd"},
- {name: "ValHeel",
-  description:
-   "An enhanced PvE server, completely ahead of it's time. TONS of custom content to explore, with classes of DPS, Tank, or Healer. Many bugs have been squashed.",
-  type: "PvE",
-  software: "ACE",
-  host: "valheel.ddns.net",
-  port: "9012",
-  website_url: "https://valheel.lingrad.net",
-  discord_url: "https://discord.gg/6zPQ8Nx2pY"}]
+  discord_url: "https://discord.gg/d3ZPpQsHCd"}]
