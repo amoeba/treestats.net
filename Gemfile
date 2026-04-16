@@ -29,6 +29,7 @@ group :development do
   gem 'nokogiri'
   gem 'pry'
   gem 'standardrb'
+  gem 'foreman'
 end
 
 group :production do
