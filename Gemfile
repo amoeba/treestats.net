@@ -19,6 +19,10 @@ gem 'redis'
 gem 'clockwork'
 gem 'resque'
 
+gem 'sidekiq'
+gem 'sidekiq-cron'
+gem 'connection_pool', '~> 2.4'
+
 gem 'haml'
 gem 'sassc'
 gem 'sprockets', '~>4.0.2'
@@ -36,6 +40,7 @@ group :production do
   gem 'newrelic_rpm'
   gem 'sentry-resque'
   gem 'sentry-ruby'
+  gem 'sentry-sidekiq'
 end
 
 group :test do
