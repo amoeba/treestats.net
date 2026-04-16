@@ -9,14 +9,13 @@
 # Sentry must be initialized before sentry-sidekiq is required
 if ENV["RACK_ENV"] == "production"
   require "sentry-ruby"
+  require "sentry-sidekiq"
 
   Sentry.init do |config|
     config.dsn = ENV["SENTRY_DSN"]
     config.traces_sample_rate = 0.01
     config.release = ENV["GIT_REV"] if ENV["GIT_REV"]
   end
-
-  require "sentry-sidekiq"
 end
 
 require "bundler/setup"
