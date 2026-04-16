@@ -1,6 +1,7 @@
 # Initialize Sentry as soon as possible as recommended
 if ENV['RACK_ENV'] == 'production'
   require 'sentry-ruby'
+  require 'sentry-resque'
 
   Sentry.init do |config|
     config.dsn = ENV['SENTRY_DSN']
@@ -21,9 +22,16 @@ require 'sinatra/cross_origin'
 
 PumaWorkerKiller.enable_rolling_restart if ENV['RACK_ENV'] == 'production'
 
-%w[models routes lib helpers].each do |d|
+%w[models routes helpers].each do |d|
   Dir["./#{d}/*.rb"].each { |file| require file }
 end
+
+%w[
+  lib/clock.rb
+  lib/graph_job.rb
+  lib/query_cache_job.rb
+  lib/stats_job.rb
+].each { |file| require_relative file }
 
 class TreeStats < Sinatra::Base
   configure :production do

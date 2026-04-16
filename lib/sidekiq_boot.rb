@@ -22,7 +22,7 @@ require "bundler/setup"
 Bundler.require(:default)
 
 # Mongoid
-Mongoid.load!(File.expand_path("../../config/mongoid.yml", __FILE__))
+Mongoid.load!(File.expand_path("../config/mongoid.yml", __dir__))
 Mongo::Logger.logger.level = ::Logger::INFO
 
 # Job files
