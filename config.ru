@@ -20,10 +20,11 @@ map "/sidekiq" do
       username == ENV.fetch("SIDEKIQ_WEB_USERNAME", "admin") &&
         password == ENV["SIDEKIQ_WEB_PASSWORD"]
     end
-    run Sidekiq::Web
-  else
+  elsif ENV["RACK_ENV"] == "production"
     run proc { [403, {}, []] }
+    next
   end
+  run Sidekiq::Web
 end
 
 map "/" do
