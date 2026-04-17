@@ -25,8 +25,13 @@ Bundler.require(:default)
 Mongoid.load!(File.expand_path("../config/mongoid.yml", __dir__))
 Mongo::Logger.logger.level = ::Logger::INFO
 
+# Models and helpers needed by jobs
+Dir[File.expand_path("../models/*.rb", __dir__)].each { |file| require file }
+Dir[File.expand_path("../helpers/*.rb", __dir__)].each { |file| require file }
+
 # Job files
 require_relative "probe_job"
+require_relative "bulk_upload_job"
 
 redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
 

@@ -31,6 +31,7 @@ end
   lib/graph_job.rb
   lib/query_cache_job.rb
   lib/stats_job.rb
+  lib/bulk_upload_job.rb
 ].each { |file| require_relative file }
 
 class TreeStats < Sinatra::Base
@@ -61,6 +62,7 @@ class TreeStats < Sinatra::Base
   register Sinatra::TreeStats::Routing::Stats
   register Sinatra::TreeStats::Routing::Titles
   register Sinatra::TreeStats::Routing::Upload
+  register Sinatra::TreeStats::Routing::BulkUpload
   register Sinatra::TreeStats::Routing::Dashboards
 
   # CORS
@@ -89,6 +91,11 @@ class TreeStats < Sinatra::Base
 
     # Resque
     Resque.redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
+
+    # Sidekiq client (web process only enqueues, never processes)
+    Sidekiq.configure_client do |config|
+      config.redis = { url: redis_url }
+    end
 
     # Setup Sprockets
     sprockets.append_path File.join(root, 'assets', 'stylesheets')
