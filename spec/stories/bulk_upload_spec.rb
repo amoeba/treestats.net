@@ -27,6 +27,7 @@ describe "BulkUploadStory" do
     redis.del("#{BulkUploadHelper::RATE_LIMIT_KEY}:127.0.0.1")
     Character.all.destroy
     Allegiance.all.destroy
+    BulkUploadLog.all.destroy
     ApiKey.all.destroy
     Account.all.destroy
     @account = Account.create!(name: "TestUser", password: "pass")

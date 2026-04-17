@@ -8,13 +8,12 @@ module Sinatra
         def self.registered(app)
           app.post "/characters" do
             max_bytes = (ENV["BULK_UPLOAD_MAX_BYTES"] || (10 * 1024 * 1024)).to_i
-            if request.content_length.to_i > max_bytes
+            body_str = request.body.read(max_bytes + 1)
+            if body_str.length > max_bytes
               status 413
               content_type :json
               return JSON.generate({ "error" => "request body too large" })
             end
-
-            body_str = request.body.read
             content_type_header = request.content_type.to_s
 
             unless BulkUploadHelper.valid_signature?(request, body_str)

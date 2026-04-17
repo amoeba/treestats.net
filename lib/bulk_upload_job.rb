@@ -5,6 +5,7 @@ require "json"
 
 class BulkUploadJob
   include Sidekiq::Worker
+  sidekiq_options retry: 0
 
   def perform(file_path, content_type, log_id = nil)
     log = log_id ? (BulkUploadLog.find(log_id) rescue nil) : nil
