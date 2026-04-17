@@ -23,7 +23,7 @@ describe BulkUploadHelper do
 
   # ---------------------------------------------------------------------------
   describe ".valid_signature?" do
-    let(:body) { '{"name":"Stormwall","server":"Coldeve"}' }
+    let(:body) { { "name" => "Stormwall", "server" => "TestServer" }.to_json }
     let(:account) { Account.create!(name: "TestUser", password: "pass") }
     let(:api_key) { ApiKey.create!(account: account) }
 

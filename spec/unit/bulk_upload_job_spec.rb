@@ -2,6 +2,9 @@ require_relative '../spec_helper'
 require 'securerandom'
 
 describe BulkUploadJob do
+  let(:emu_server)    { "TestServer" }
+  let(:retail_server) { AppHelper.retail_servers.first }
+
   before do
     Character.all.destroy
     Allegiance.all.destroy
@@ -29,8 +32,8 @@ describe BulkUploadJob do
   describe "parsing" do
     it "reads NDJSON (one object per line)" do
       path = ndjson_file(
-        { "name" => "Stormwall", "server" => "Coldeve" },
-        { "name" => "Asheron",   "server" => "Coldeve" }
+        { "name" => "Stormwall", "server" => emu_server },
+        { "name" => "Asheron",   "server" => emu_server }
       )
       perform_job(path)
       assert_equal 2, Character.count
@@ -38,8 +41,8 @@ describe BulkUploadJob do
 
     it "reads a JSON array" do
       path = json_array_file(
-        { "name" => "Stormwall", "server" => "Coldeve" },
-        { "name" => "Asheron",   "server" => "Coldeve" }
+        { "name" => "Stormwall", "server" => emu_server },
+        { "name" => "Asheron",   "server" => emu_server }
       )
       perform_job(path, "application/json")
       assert_equal 2, Character.count
@@ -47,7 +50,7 @@ describe BulkUploadJob do
 
     it "ignores blank lines in NDJSON" do
       path = "/tmp/bulk_upload_test_#{SecureRandom.uuid}"
-      File.write(path, "\n{\"name\":\"Stormwall\",\"server\":\"Coldeve\"}\n\n")
+      File.write(path, "\n#{{"name" => "Stormwall", "server" => emu_server}.to_json}\n\n")
       perform_job(path)
       assert_equal 1, Character.count
     end
@@ -56,35 +59,35 @@ describe BulkUploadJob do
   # ---------------------------------------------------------------------------
   describe "character creation" do
     it "creates a character with the correct name and server" do
-      path = ndjson_file({ "name" => "Stormwall", "server" => "Coldeve" })
+      path = ndjson_file({ "name" => "Stormwall", "server" => emu_server })
       perform_job(path)
-      c = Character.find_by(name: "Stormwall", server: "Coldeve")
+      c = Character.find_by(name: "Stormwall", server: emu_server)
       refute_nil c
     end
 
     it "updates an existing character rather than creating a duplicate" do
-      Character.create!(name: "Stormwall", server: "Coldeve", level: 100)
-      path = ndjson_file({ "name" => "Stormwall", "server" => "Coldeve", "level" => 200 })
+      Character.create!(name: "Stormwall", server: emu_server, level: 100)
+      path = ndjson_file({ "name" => "Stormwall", "server" => emu_server, "level" => 200 })
       perform_job(path)
       assert_equal 1, Character.count
       assert_equal 200, Character.find_by(name: "Stormwall").level
     end
 
     it "parses the birth date field" do
-      path = ndjson_file({ "name" => "OldChar", "server" => "Coldeve", "birth" => "2/14/2003 12:00:00 AM" })
+      path = ndjson_file({ "name" => "OldChar", "server" => emu_server, "birth" => "2/14/2003 12:00:00 AM" })
       perform_job(path)
       c = Character.find_by(name: "OldChar")
       assert_instance_of DateTime, c.birth
     end
 
     it "creates an allegiance when allegiance_name is present" do
-      path = ndjson_file({ "name" => "Knight", "server" => "Coldeve", "allegiance_name" => "Round Table" })
+      path = ndjson_file({ "name" => "Knight", "server" => emu_server, "allegiance_name" => "Round Table" })
       perform_job(path)
-      assert Allegiance.find_by(server: "Coldeve", name: "Round Table")
+      assert Allegiance.find_by(server: emu_server, name: "Round Table")
     end
 
     it "does not create an allegiance when allegiance_name is absent" do
-      path = ndjson_file({ "name" => "Loner", "server" => "Coldeve" })
+      path = ndjson_file({ "name" => "Loner", "server" => emu_server })
       perform_job(path)
       assert_equal 0, Allegiance.count
     end
@@ -94,8 +97,8 @@ describe BulkUploadJob do
   describe "filtering" do
     it "skips characters from retail servers" do
       path = ndjson_file(
-        { "name" => "Retail Guy", "server" => "Darktide" },
-        { "name" => "Emulator",   "server" => "Coldeve" }
+        { "name" => "Retail Guy", "server" => retail_server },
+        { "name" => "Emulator",   "server" => emu_server }
       )
       perform_job(path)
       assert_equal 1, Character.count
@@ -104,8 +107,8 @@ describe BulkUploadJob do
 
     it "skips records with a malformed patron name (\"??\")" do
       path = ndjson_file(
-        { "name" => "Good",   "server" => "Coldeve" },
-        { "name" => "Broken", "server" => "Coldeve", "patron" => { "name" => "??" } }
+        { "name" => "Good",   "server" => emu_server },
+        { "name" => "Broken", "server" => emu_server, "patron" => { "name" => "??" } }
       )
       perform_job(path)
       assert_equal 1, Character.count
@@ -113,11 +116,10 @@ describe BulkUploadJob do
     end
 
     it "removes the verification key field before saving" do
-      path = ndjson_file({ "name" => "Foo", "server" => "Coldeve", "key" => "secret123" })
+      path = ndjson_file({ "name" => "Foo", "server" => emu_server, "key" => "secret123" })
       perform_job(path)
       c = Character.find_by(name: "Foo")
       refute_nil c
-      # No 'key' field should have leaked into the document
       assert_nil c["key"]
     end
   end
@@ -131,7 +133,7 @@ describe BulkUploadJob do
     end
 
     it "deletes the temp file after successful processing" do
-      path = ndjson_file({ "name" => "Foo", "server" => "Coldeve" })
+      path = ndjson_file({ "name" => "Foo", "server" => emu_server })
       perform_job(path)
       refute File.exist?(path)
     end

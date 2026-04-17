@@ -3,6 +3,9 @@ require 'sidekiq/testing'
 require 'openssl'
 
 describe "BulkUploadStory" do
+  let(:emu_server)    { "TestServer" }
+  let(:retail_server) { AppHelper.retail_servers.first }
+
   def sign(body, secret)
     "sha256=#{OpenSSL::HMAC.hexdigest("SHA256", secret, body)}"
   end
@@ -38,28 +41,28 @@ describe "BulkUploadStory" do
   # ---------------------------------------------------------------------------
   describe "signature verification" do
     it "returns 403 when the signature header is missing" do
-      post_characters('{"name":"Foo","server":"Coldeve"}', signature: nil)
+      post_characters({ name: "Foo", server: emu_server }.to_json, signature: nil)
       assert_equal 403, last_response.status
     end
 
     it "returns 403 when the api key header is missing" do
-      post_characters('{"name":"Foo","server":"Coldeve"}', api_key: nil)
+      post_characters({ name: "Foo", server: emu_server }.to_json, api_key: nil)
       assert_equal 403, last_response.status
     end
 
     it "returns 403 when the signature is wrong" do
-      post_characters('{"name":"Foo","server":"Coldeve"}', signature: "sha256=deadbeef")
+      post_characters({ name: "Foo", server: emu_server }.to_json, signature: "sha256=deadbeef")
       assert_equal 403, last_response.status
     end
 
     it "returns 403 with a JSON error body" do
-      post_characters('{"name":"Foo","server":"Coldeve"}', signature: nil)
+      post_characters({ name: "Foo", server: emu_server }.to_json, signature: nil)
       body = JSON.parse(last_response.body)
       assert_equal "invalid signature", body["error"]
     end
 
     it "returns 202 with a valid signature" do
-      post_characters('{"name":"Foo","server":"Coldeve"}')
+      post_characters({ name: "Foo", server: emu_server }.to_json)
       assert_equal 202, last_response.status
     end
   end
@@ -68,14 +71,14 @@ describe "BulkUploadStory" do
   describe "rate limiting" do
     it "returns 202 when under the per-IP limit" do
       with_env("BULK_UPLOAD_RATE_LIMIT" => "5") do
-        post_characters('{"name":"Foo","server":"Coldeve"}')
+        post_characters({ name: "Foo", server: emu_server }.to_json)
         assert_equal 202, last_response.status
       end
     end
 
     it "returns 429 once the per-IP limit is exceeded" do
       with_env("BULK_UPLOAD_RATE_LIMIT" => "2") do
-        body = '{"name":"Foo","server":"Coldeve"}'
+        body = { name: "Foo", server: emu_server }.to_json
         2.times { post_characters(body) }
         post_characters(body)
         assert_equal 429, last_response.status
@@ -84,7 +87,7 @@ describe "BulkUploadStory" do
 
     it "returns a JSON error body on 429" do
       with_env("BULK_UPLOAD_RATE_LIMIT" => "0") do
-        post_characters('{"name":"Foo","server":"Coldeve"}')
+        post_characters({ name: "Foo", server: emu_server }.to_json)
         body = JSON.parse(last_response.body)
         assert_equal "rate limit exceeded", body["error"]
       end
@@ -95,7 +98,7 @@ describe "BulkUploadStory" do
   describe "inflight limiting" do
     it "returns 202 when inflight is below the limit" do
       with_env("BULK_UPLOAD_MAX_INFLIGHT" => "5") do
-        post_characters('{"name":"Foo","server":"Coldeve"}')
+        post_characters({ name: "Foo", server: emu_server }.to_json)
         assert_equal 202, last_response.status
       end
     end
@@ -103,7 +106,7 @@ describe "BulkUploadStory" do
     it "returns 503 when the inflight limit is reached" do
       with_env("BULK_UPLOAD_MAX_INFLIGHT" => "1") do
         redis.set(BulkUploadHelper::INFLIGHT_KEY, 1)
-        post_characters('{"name":"Foo","server":"Coldeve"}')
+        post_characters({ name: "Foo", server: emu_server }.to_json)
         assert_equal 503, last_response.status
       end
     end
@@ -111,14 +114,14 @@ describe "BulkUploadStory" do
     it "returns a JSON error body on 503" do
       with_env("BULK_UPLOAD_MAX_INFLIGHT" => "1") do
         redis.set(BulkUploadHelper::INFLIGHT_KEY, 1)
-        post_characters('{"name":"Foo","server":"Coldeve"}')
+        post_characters({ name: "Foo", server: emu_server }.to_json)
         body = JSON.parse(last_response.body)
         assert_equal "too many jobs in flight, try again later", body["error"]
       end
     end
 
     it "increments the inflight counter when a job is queued" do
-      post_characters('{"name":"Foo","server":"Coldeve"}')
+      post_characters({ name: "Foo", server: emu_server }.to_json)
       assert_equal 1, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
     end
   end
@@ -126,18 +129,18 @@ describe "BulkUploadStory" do
   # ---------------------------------------------------------------------------
   describe "response format" do
     it "returns application/json content type on 202" do
-      post_characters('{"name":"Foo","server":"Coldeve"}')
+      post_characters({ name: "Foo", server: emu_server }.to_json)
       assert last_response.headers["Content-Type"].include?("application/json")
     end
 
     it "returns a JSON body with status queued on 202" do
-      post_characters('{"name":"Foo","server":"Coldeve"}')
+      post_characters({ name: "Foo", server: emu_server }.to_json)
       body = JSON.parse(last_response.body)
       assert_equal "queued", body["status"]
     end
 
     it "returns application/json content type on 403" do
-      post_characters('{"name":"Foo","server":"Coldeve"}', signature: nil)
+      post_characters({ name: "Foo", server: emu_server }.to_json, signature: nil)
       assert last_response.headers["Content-Type"].include?("application/json")
     end
   end
@@ -148,22 +151,22 @@ describe "BulkUploadStory" do
 
     it "creates characters from NDJSON" do
       body = [
-        { "name" => "Stormwall", "server" => "Coldeve" },
-        { "name" => "Asheron",   "server" => "Coldeve" }
+        { "name" => "Stormwall", "server" => emu_server },
+        { "name" => "Asheron",   "server" => emu_server }
       ].map(&:to_json).join("\n")
 
       post_characters(body)
 
       assert_equal 202, last_response.status
       assert_equal 2, Character.count
-      assert Character.find_by(name: "Stormwall", server: "Coldeve")
-      assert Character.find_by(name: "Asheron",   server: "Coldeve")
+      assert Character.find_by(name: "Stormwall", server: emu_server)
+      assert Character.find_by(name: "Asheron",   server: emu_server)
     end
 
     it "creates characters from a JSON array" do
       records = [
-        { "name" => "Stormwall", "server" => "Coldeve" },
-        { "name" => "Asheron",   "server" => "Coldeve" }
+        { "name" => "Stormwall", "server" => emu_server },
+        { "name" => "Asheron",   "server" => emu_server }
       ]
       post_characters(records.to_json, content_type: "application/json")
 
@@ -172,15 +175,15 @@ describe "BulkUploadStory" do
     end
 
     it "creates an allegiance" do
-      body = { "name" => "Knight", "server" => "Coldeve", "allegiance_name" => "Round Table" }.to_json
+      body = { "name" => "Knight", "server" => emu_server, "allegiance_name" => "Round Table" }.to_json
       post_characters(body)
-      assert Allegiance.find_by(server: "Coldeve", name: "Round Table")
+      assert Allegiance.find_by(server: emu_server, name: "Round Table")
     end
 
     it "does not create characters from retail servers" do
       body = [
-        { "name" => "Retail Guy", "server" => "Darktide" },
-        { "name" => "Emu Player", "server" => "Coldeve" }
+        { "name" => "Retail Guy", "server" => retail_server },
+        { "name" => "Emu Player", "server" => emu_server }
       ].map(&:to_json).join("\n")
 
       post_characters(body)
@@ -190,13 +193,13 @@ describe "BulkUploadStory" do
     end
 
     it "decrements the inflight counter after the job completes" do
-      body = { "name" => "Stormwall", "server" => "Coldeve" }.to_json
+      body = { "name" => "Stormwall", "server" => emu_server }.to_json
       post_characters(body)
       assert_equal 0, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
     end
 
     it "does not leave temp files on disk" do
-      body = { "name" => "Stormwall", "server" => "Coldeve" }.to_json
+      body = { "name" => "Stormwall", "server" => emu_server }.to_json
       files_before = Dir.glob("/tmp/bulk_upload_*").sort
 
       post_characters(body)
