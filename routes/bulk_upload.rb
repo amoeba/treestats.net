@@ -54,8 +54,8 @@ module Sinatra
               return JSON.generate({ "error" => "failed to save upload" })
             end
 
-            BulkUploadJob.perform_async(file_path, content_type_header, log.id.to_s)
             BulkUploadHelper.increment_inflight!(redis)
+            BulkUploadJob.perform_async(file_path, content_type_header, log.id.to_s)
 
             status 202
             content_type :json

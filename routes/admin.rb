@@ -4,6 +4,17 @@ module Sinatra
       module Admin
         def self.registered(app)
           app.get "/admin/logs" do
+            auth = Rack::Auth::Basic::Request.new(request.env)
+            expected_user = ENV.fetch("SIDEKIQ_WEB_USERNAME", "admin")
+            expected_pass = ENV["SIDEKIQ_WEB_PASSWORD"]
+
+            unless expected_pass &&
+                   auth.provided? && auth.basic? &&
+                   auth.credentials == [expected_user, expected_pass]
+              response.headers["WWW-Authenticate"] = 'Basic realm="Admin"'
+              halt 401, JSON.generate({ "error" => "unauthorized" })
+            end
+
             @logs = BulkUploadLog.all.desc(:submitted_at).limit(100)
 
             if request.preferred_type("text/html", "application/json").to_s == "application/json"

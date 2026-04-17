@@ -468,7 +468,7 @@ all_found = false
 
 until waited >= max_wait
   found = EXPECTED_NAMES.count do |name|
-    Character.unscoped.where(name: name, server: "Coldeve").exists?
+    Character.unscoped.where(name: name, server: "TestServer").exists?
   end
 
   if found == EXPECTED_NAMES.length
@@ -484,7 +484,7 @@ end
 if all_found
   pass("All #{EXPECTED_NAMES.length} expected characters in DB (waited #{waited}s)")
 else
-  found = EXPECTED_NAMES.count { |n| Character.unscoped.where(name: n, server: "Coldeve").exists? }
+  found = EXPECTED_NAMES.count { |n| Character.unscoped.where(name: n, server: "TestServer").exists? }
   fail("Only #{found}/#{EXPECTED_NAMES.length} characters found after #{max_wait}s")
 end
 
@@ -509,14 +509,14 @@ end
 
 # Verify each uploaded record with field-level assertions
 expected_records = [
-  { name: "E Two ENdjson0", server: "Coldeve", level: 50,  total_xp: 1_000_000     },
-  { name: "E Two ENdjson1", server: "Coldeve", level: 51,  total_xp: 2_000_000     },
-  { name: "E Two ENdjson2", server: "Coldeve", level: 52,  total_xp: 3_000_000     },
-  { name: "E Two EJson0",   server: "Coldeve", level: 100, total_xp: 2_000_000     },
-  { name: "E Two EJson1",   server: "Coldeve", level: 101, total_xp: 4_000_000     },
-  { name: "E Two ESingle",  server: "Coldeve", level: 275, total_xp: 9_999_999_999 },
-  { name: "E Two EPop",     server: "Coldeve", level: 75                            },
-  { name: "E Two EKeyStrip",server: "Coldeve", level: 60                            },
+  { name: "E Two ENdjson0", server: "TestServer", level: 50,  total_xp: 1_000_000     },
+  { name: "E Two ENdjson1", server: "TestServer", level: 51,  total_xp: 2_000_000     },
+  { name: "E Two ENdjson2", server: "TestServer", level: 52,  total_xp: 3_000_000     },
+  { name: "E Two EJson0",   server: "TestServer", level: 100, total_xp: 2_000_000     },
+  { name: "E Two EJson1",   server: "TestServer", level: 101, total_xp: 4_000_000     },
+  { name: "E Two ESingle",  server: "TestServer", level: 275, total_xp: 9_999_999_999 },
+  { name: "E Two EPop",     server: "TestServer", level: 75                            },
+  { name: "E Two EKeyStrip",server: "TestServer", level: 60                            },
 ]
 
 expected_records.each do |exp|
@@ -532,11 +532,11 @@ expected_records.each do |exp|
 end
 
 # 'key' field must have been stripped before the character was saved
-keystrip = Character.unscoped.find_by(name: "E Two EKeyStrip", server: "Coldeve") rescue nil
+keystrip = Character.unscoped.find_by(name: "E Two EKeyStrip", server: "TestServer") rescue nil
 db_check.("'E Two EKeyStrip': 'key' field stripped before save", keystrip&.[]("key").nil?)
 
 # server_population=42 must have created a PlayerCount record
-pc_exists = PlayerCount.where(server: "Coldeve", count: 42).exists? rescue false
+pc_exists = PlayerCount.where(server: "TestServer", count: 42).exists? rescue false
 db_check.("PlayerCount created from server_population=42 on 'E Two EPop'", pc_exists)
 
 # Forbidden names must NOT be in the DB

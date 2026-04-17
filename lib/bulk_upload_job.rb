@@ -51,7 +51,8 @@ class BulkUploadJob
 
   def parse_records(body, content_type)
     if content_type.include?("application/json")
-      JSON.parse(body)
+      parsed = JSON.parse(body)
+      parsed.is_a?(Array) ? parsed : [parsed]
     else
       # NDJSON: one JSON object per line
       body.each_line.map(&:strip).reject(&:empty?).map { |line| JSON.parse(line) }
@@ -72,7 +73,7 @@ class BulkUploadJob
 
     if json_text.key?("server_population")
       server_pop = json_text.delete("server_population")
-      PlayerCount.create(server: server, count: server_pop)
+      PlayerCount.create!(server: server, count: server_pop)
     end
 
     if json_text.key?("birth")

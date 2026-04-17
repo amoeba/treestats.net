@@ -6,6 +6,8 @@ class ApiKey
 
   belongs_to :account
 
+  index({ account_id: 1 }, { unique: true })
+
   field :s, as: :secret, type: String
 
   before_create :generate_secret
