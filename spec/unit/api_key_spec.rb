@@ -21,13 +21,13 @@ describe ApiKey do
 
     it "embeds the account id immediately after the prefix" do
       key = ApiKey.create!(account: account)
-      embedded = key.secret[3, 24]
+      embedded = key.secret[BulkUploadHelper::TOKEN_PREFIX.length, BulkUploadHelper::ACCOUNT_ID_LEN]
       assert_equal account.id.to_s, embedded
     end
 
     it "appends 64 hex chars of random data after the account id" do
       key = ApiKey.create!(account: account)
-      random_part = key.secret[27..]
+      random_part = key.secret[(BulkUploadHelper::TOKEN_PREFIX.length + BulkUploadHelper::ACCOUNT_ID_LEN)..]
       assert_equal 64, random_part.length
       assert_match(/\A[0-9a-f]+\z/, random_part)
     end

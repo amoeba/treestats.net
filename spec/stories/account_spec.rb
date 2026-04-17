@@ -101,6 +101,30 @@ describe "ApiKeyStory" do
   end
 
   # ---------------------------------------------------------------------------
+  describe "bad request body" do
+    it "returns 400 for a non-JSON body" do
+      post('/account/key', "not json", { "CONTENT_TYPE" => "application/json" })
+      assert_equal 400, last_response.status
+      body = JSON.parse(last_response.body)
+      assert_equal "invalid JSON", body["error"]
+    end
+
+    it "returns 400 when name is missing" do
+      post('/account/key',
+           JSON.generate({ "password" => "passw0rd" }),
+           { "CONTENT_TYPE" => "application/json" })
+      assert_equal 400, last_response.status
+    end
+
+    it "returns 400 when password is missing" do
+      post('/account/key',
+           JSON.generate({ "name" => "TestUser" }),
+           { "CONTENT_TYPE" => "application/json" })
+      assert_equal 400, last_response.status
+    end
+  end
+
+  # ---------------------------------------------------------------------------
   describe "account not found" do
     it "returns 401 for a wrong password" do
       request_key(password: "wrongpassword")

@@ -55,7 +55,20 @@ module Sinatra
 
           app.post '/account/key' do
             body = request.body.read
-            fields = JSON.parse(body)
+
+            begin
+              fields = JSON.parse(body)
+            rescue JSON::ParserError
+              status 400
+              content_type :json
+              return JSON.generate({ "error" => "invalid JSON" })
+            end
+
+            unless fields.has_key?("name") && fields.has_key?("password")
+              status 400
+              content_type :json
+              return JSON.generate({ "error" => "name and password are required" })
+            end
 
             account = Account.where(name: fields["name"], password: fields["password"]).first
             if account.nil?
