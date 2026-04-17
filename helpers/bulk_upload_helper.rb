@@ -8,6 +8,11 @@ module BulkUploadHelper
   INFLIGHT_KEY     = "bulk_upload:inflight"
   RATE_LIMIT_KEY   = "bulk_upload:ratelimit"
 
+  def self.account_id_from_request(request)
+    token = request.env[API_KEY_HEADER].to_s
+    token.start_with?(TOKEN_PREFIX) ? token[TOKEN_PREFIX.length, ACCOUNT_ID_LEN] : nil
+  end
+
   def self.valid_signature?(request, body)
     token = request.env[API_KEY_HEADER]
     return false if token.nil? || !token.start_with?(TOKEN_PREFIX)

@@ -28,22 +28,38 @@ module Sinatra
               return JSON.generate({ "error" => "too many jobs in flight, try again later" })
             end
 
+            record_count = if content_type_header.include?("application/json")
+              parsed = JSON.parse(body_str) rescue nil
+              parsed.is_a?(Array) ? parsed.length : 1
+            else
+              body_str.each_line.count { |l| !l.strip.empty? }
+            end
+
+            log = BulkUploadLog.create!(
+              account_id:   BulkUploadHelper.account_id_from_request(request),
+              submitted_at: Time.now.utc,
+              record_count: record_count,
+              content_type: content_type_header,
+              status:       "queued"
+            )
+
             file_path = "/tmp/bulk_upload_#{SecureRandom.uuid}"
 
             begin
               File.write(file_path, body_str)
             rescue => e
+              log.set(status: "failed")
               status 500
               content_type :json
               return JSON.generate({ "error" => "failed to save upload" })
             end
 
-            BulkUploadJob.perform_async(file_path, content_type_header)
+            BulkUploadJob.perform_async(file_path, content_type_header, log.id.to_s)
             BulkUploadHelper.increment_inflight!(redis)
 
             status 202
             content_type :json
-            JSON.generate({ "status" => "queued" })
+            JSON.generate({ "status" => "queued", "log_id" => log.id.to_s })
           end
         end
       end
