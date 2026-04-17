@@ -50,16 +50,18 @@ module BulkUploadHelper
     count > max
   end
 
-  # Returns true if the global in-flight job count is at or over the cap.
+  # Atomically increments the in-flight counter and returns true if the new
+  # value exceeds the cap (rolling back with DECR in that case).
   # Cap: BULK_UPLOAD_MAX_INFLIGHT concurrent jobs.
-  def self.over_inflight_limit?(redis)
+  def self.try_increment_inflight!(redis)
     max = (ENV["BULK_UPLOAD_MAX_INFLIGHT"] || "10").to_i
-    redis.get(INFLIGHT_KEY).to_i >= max
-  end
-
-  # Called in the endpoint after a job is enqueued.
-  def self.increment_inflight!(redis)
-    redis.incr(INFLIGHT_KEY)
+    new_val = redis.incr(INFLIGHT_KEY)
+    if new_val > max
+      redis.decr(INFLIGHT_KEY)
+      false
+    else
+      true
+    end
   end
 
   # Called in the job's ensure block. Accepts an explicit redis client for

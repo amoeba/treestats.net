@@ -22,12 +22,6 @@ module Sinatra
               return JSON.generate({ "error" => "rate limit exceeded" })
             end
 
-            if BulkUploadHelper.over_inflight_limit?(redis)
-              status 503
-              content_type :json
-              return JSON.generate({ "error" => "too many jobs in flight, try again later" })
-            end
-
             record_count = if content_type_header.include?("application/json")
               parsed = JSON.parse(body_str) rescue nil
               parsed.is_a?(Array) ? parsed.length : 1
@@ -43,18 +37,25 @@ module Sinatra
               status:       "queued"
             )
 
+            unless BulkUploadHelper.try_increment_inflight!(redis)
+              log.set(status: "failed")
+              status 503
+              content_type :json
+              return JSON.generate({ "error" => "too many jobs in flight, try again later" })
+            end
+
             file_path = "/tmp/bulk_upload_#{SecureRandom.uuid}"
 
             begin
               File.write(file_path, body_str)
             rescue => e
+              BulkUploadHelper.decrement_inflight!(redis)
               log.set(status: "failed")
               status 500
               content_type :json
               return JSON.generate({ "error" => "failed to save upload" })
             end
 
-            BulkUploadHelper.increment_inflight!(redis)
             begin
               BulkUploadJob.perform_async(file_path, content_type_header, log.id.to_s)
             rescue => e

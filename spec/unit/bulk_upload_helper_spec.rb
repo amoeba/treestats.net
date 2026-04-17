@@ -122,58 +122,53 @@ describe BulkUploadHelper do
   end
 
   # ---------------------------------------------------------------------------
-  describe ".over_inflight_limit?" do
-    it "returns false when no jobs are in flight" do
+  describe ".try_increment_inflight!" do
+    it "returns true and increments when under the limit" do
       with_env("BULK_UPLOAD_MAX_INFLIGHT" => "5") do
-        refute BulkUploadHelper.over_inflight_limit?(redis)
+        assert BulkUploadHelper.try_increment_inflight!(redis)
+        assert_equal 1, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
       end
     end
 
-    it "returns false when below the limit" do
+    it "returns true when reaching the limit exactly" do
       with_env("BULK_UPLOAD_MAX_INFLIGHT" => "5") do
         redis.set(BulkUploadHelper::INFLIGHT_KEY, 4)
-        refute BulkUploadHelper.over_inflight_limit?(redis)
+        assert BulkUploadHelper.try_increment_inflight!(redis)
+        assert_equal 5, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
       end
     end
 
-    it "returns true when at the limit" do
+    it "returns false and does not increment when at the limit" do
       with_env("BULK_UPLOAD_MAX_INFLIGHT" => "5") do
         redis.set(BulkUploadHelper::INFLIGHT_KEY, 5)
-        assert BulkUploadHelper.over_inflight_limit?(redis)
+        refute BulkUploadHelper.try_increment_inflight!(redis)
+        assert_equal 5, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
       end
     end
 
-    it "returns true when over the limit" do
+    it "increments additively while under the limit" do
       with_env("BULK_UPLOAD_MAX_INFLIGHT" => "5") do
-        redis.set(BulkUploadHelper::INFLIGHT_KEY, 99)
-        assert BulkUploadHelper.over_inflight_limit?(redis)
+        3.times { BulkUploadHelper.try_increment_inflight!(redis) }
+        assert_equal 3, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
       end
     end
   end
 
   # ---------------------------------------------------------------------------
-  describe ".increment_inflight! and .decrement_inflight!" do
-    it "increments the counter" do
-      BulkUploadHelper.increment_inflight!(redis)
-      assert_equal 1, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
-    end
-
-    it "increments additively" do
-      3.times { BulkUploadHelper.increment_inflight!(redis) }
-      assert_equal 3, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
-    end
-
+  describe ".decrement_inflight!" do
     it "decrements the counter" do
       redis.set(BulkUploadHelper::INFLIGHT_KEY, 3)
       BulkUploadHelper.decrement_inflight!(redis)
       assert_equal 2, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
     end
 
-    it "round-trips correctly" do
-      BulkUploadHelper.increment_inflight!(redis)
-      BulkUploadHelper.increment_inflight!(redis)
-      BulkUploadHelper.decrement_inflight!(redis)
-      assert_equal 1, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
+    it "round-trips correctly with try_increment_inflight!" do
+      with_env("BULK_UPLOAD_MAX_INFLIGHT" => "5") do
+        BulkUploadHelper.try_increment_inflight!(redis)
+        BulkUploadHelper.try_increment_inflight!(redis)
+        BulkUploadHelper.decrement_inflight!(redis)
+        assert_equal 1, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
+      end
     end
   end
 end

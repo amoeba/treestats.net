@@ -55,7 +55,12 @@ class BulkUploadJob
       parsed.is_a?(Array) ? parsed : [parsed]
     else
       # NDJSON: one JSON object per line
-      body.each_line.map(&:strip).reject(&:empty?).map { |line| JSON.parse(line) }
+      body.each_line.map(&:strip).reject(&:empty?).filter_map do |line|
+        JSON.parse(line)
+      rescue JSON::ParserError => e
+        logger.error "BulkUploadJob: skipping malformed NDJSON line: #{e}"
+        nil
+      end
     end
   end
 
@@ -66,6 +71,8 @@ class BulkUploadJob
     end
 
     json_text.delete("key")
+    json_text.delete("account_name")
+    json_text.delete("ip_address")
 
     name = json_text["name"]
     server = json_text["server"]
