@@ -64,7 +64,7 @@ module Sinatra
               return JSON.generate({ "error" => "invalid JSON" })
             end
 
-            unless fields.has_key?("name") && fields.has_key?("password")
+            unless fields["name"].is_a?(String) && fields["password"].is_a?(String)
               status 400
               content_type :json
               return JSON.generate({ "error" => "name and password are required" })

@@ -114,6 +114,7 @@ describe "ApiKeyStory" do
            JSON.generate({ "password" => "passw0rd" }),
            { "CONTENT_TYPE" => "application/json" })
       assert_equal 400, last_response.status
+      assert_equal "name and password are required", JSON.parse(last_response.body)["error"]
     end
 
     it "returns 400 when password is missing" do
@@ -121,6 +122,23 @@ describe "ApiKeyStory" do
            JSON.generate({ "name" => "TestUser" }),
            { "CONTENT_TYPE" => "application/json" })
       assert_equal 400, last_response.status
+      assert_equal "name and password are required", JSON.parse(last_response.body)["error"]
+    end
+
+    it "returns 400 when name is explicitly null" do
+      post('/account/key',
+           JSON.generate({ "name" => nil, "password" => "passw0rd" }),
+           { "CONTENT_TYPE" => "application/json" })
+      assert_equal 400, last_response.status
+      assert_equal "name and password are required", JSON.parse(last_response.body)["error"]
+    end
+
+    it "returns 400 when password is explicitly null" do
+      post('/account/key',
+           JSON.generate({ "name" => "TestUser", "password" => nil }),
+           { "CONTENT_TYPE" => "application/json" })
+      assert_equal 400, last_response.status
+      assert_equal "name and password are required", JSON.parse(last_response.body)["error"]
     end
   end
 
