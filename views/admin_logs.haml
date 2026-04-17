@@ -1,0 +1,27 @@
+%h2 Bulk Upload Logs
+
+- if @logs.empty?
+  %p No upload logs yet.
+- else
+  %table
+    %thead
+      %tr
+        %th Status
+        %th Account
+        %th Submitted
+        %th Records
+        %th Processed
+        %th Skipped
+        %th Errors
+        %th Duration
+    %tbody
+      - @logs.each do |log|
+        %tr
+          %td{class: "status-#{log.status}"}= log.status
+          %td= log.account_id
+          %td= log.submitted_at&.strftime("%Y-%m-%d %H:%M:%S UTC")
+          %td= log.record_count
+          %td= log.processed_count
+          %td= log.skipped_count
+          %td= log.error_count
+          %td= log.duration_ms ? "#{log.duration_ms.to_f / 1000}s" : "—"

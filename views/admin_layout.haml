@@ -1,0 +1,34 @@
+!!!
+%html{lang: "en"}
+  %head
+    %title TreeStats Admin
+    %link{rel: "stylesheet", href: stylesheet_path("application")}
+    %meta{name: "viewport", content: "width=device-width, initial-scale=1"}
+    :css
+      body { font-family: monospace; margin: 0; background: #111; color: #eee; }
+      #admin-header { background: #1a1a1a; border-bottom: 1px solid #333; padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+      #admin-header a { color: #aaa; text-decoration: none; }
+      #admin-header a:hover { color: #fff; }
+      #admin-header .brand { font-weight: bold; color: #fff; font-size: 1.1rem; }
+      #admin-header .brand span { color: #f90; }
+      #admin-nav { display: flex; gap: 1rem; }
+      #admin-content { padding: 1.5rem; }
+      h2 { margin-top: 0; color: #f90; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.1em; }
+      table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+      th { text-align: left; padding: 0.4rem 0.75rem; border-bottom: 2px solid #333; color: #888; font-weight: normal; text-transform: uppercase; letter-spacing: 0.05em; }
+      td { padding: 0.4rem 0.75rem; border-bottom: 1px solid #222; }
+      tr:hover td { background: #1a1a1a; }
+      .status-completed { color: #4c4; }
+      .status-failed    { color: #c44; }
+      .status-processing { color: #fc4; }
+      .status-queued    { color: #888; }
+  %body
+    #admin-header
+      %span.brand
+        Tree
+        %span Stats
+      %span Admin
+      #admin-nav
+        %a{href: "/admin/logs"} Bulk Upload Logs
+    #admin-content
+      != yield
