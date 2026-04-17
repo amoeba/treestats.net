@@ -59,6 +59,8 @@ module Sinatra
               BulkUploadJob.perform_async(file_path, content_type_header, log.id.to_s)
             rescue => e
               BulkUploadHelper.decrement_inflight!(redis)
+              File.delete(file_path) if File.exist?(file_path)
+              log.set(status: "failed")
               raise
             end
 

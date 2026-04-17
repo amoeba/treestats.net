@@ -21,6 +21,7 @@ require "json"
 require "openssl"
 require "securerandom"
 require "open3"
+require "base64"
 
 # Load app models + Mongoid so we can query MongoDB directly at the end.
 require_relative "../app"
@@ -646,7 +647,12 @@ puts ""
 
 bold "11. GET /admin/logs (JSON)"
 
-res = http_get("/admin/logs", headers: { "Accept" => "application/json" })
+admin_user = ENV.fetch("SIDEKIQ_WEB_USERNAME", "admin")
+admin_pass = ENV["SIDEKIQ_WEB_PASSWORD"]
+admin_headers = { "Accept" => "application/json" }
+admin_headers["Authorization"] = "Basic #{Base64.strict_encode64("#{admin_user}:#{admin_pass}")}" if admin_pass
+
+res = http_get("/admin/logs", headers: admin_headers)
 check_status("GET /admin/logs returns 200", res, 200)
 
 if res.code == "200"

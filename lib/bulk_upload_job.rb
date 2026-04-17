@@ -69,6 +69,8 @@ class BulkUploadJob
 
     name = json_text["name"]
     server = json_text["server"]
+    return :skipped if name.nil? || server.nil?
+
     allegiance_name = json_text["allegiance_name"]
 
     if json_text.key?("server_population")
@@ -84,8 +86,6 @@ class BulkUploadJob
       logger.warn "BulkUploadJob: skipping #{name.inspect} on #{server.inspect} due to malformed patron name"
       return :skipped
     end
-
-    return :skipped if name.nil? || server.nil?
 
     character = Character.unscoped.find_or_create_by(name: name, server: server)
     character.assign_attributes(json_text)
