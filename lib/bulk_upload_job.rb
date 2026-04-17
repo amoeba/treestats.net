@@ -66,43 +66,43 @@ class BulkUploadJob
     end
   end
 
-  def process_record(json_text)
-    if AppHelper.retail_servers.include?(json_text["server"])
-      logger.warn "BulkUploadJob: skipping retail server character #{json_text["name"].inspect} on #{json_text["server"].inspect}"
+  def process_record(record)
+    if AppHelper.retail_servers.include?(record["server"])
+      logger.warn "BulkUploadJob: skipping retail server character #{record["name"].inspect} on #{record["server"].inspect}"
       return :skipped
     end
 
-    json_text.delete("key")
-    json_text.delete("account_name")
-    json_text.delete("ip_address")
+    record.delete("key")
+    record.delete("account_name")
+    record.delete("ip_address")
 
-    name = json_text["name"]
-    server = json_text["server"]
+    name = record["name"]
+    server = record["server"]
     return :skipped if name.nil? || server.nil?
 
-    allegiance_name = json_text["allegiance_name"]
+    allegiance_name = record["allegiance_name"]
 
-    if json_text.key?("server_population")
-      server_pop = json_text.delete("server_population")
+    if record.key?("server_population")
+      server_pop = record.delete("server_population")
       PlayerCount.where(server: server).find_one_and_update({ "$set" => { count: server_pop } }, upsert: true)
     end
 
-    if json_text.key?("birth")
-      json_text["birth"] = CharacterHelper.parse_birth(json_text["birth"])
+    if record.key?("birth")
+      record["birth"] = CharacterHelper.parse_birth(record["birth"])
     end
 
-    if json_text.dig("patron", "name") == "??"
+    if record.dig("patron", "name") == "??"
       logger.warn "BulkUploadJob: skipping #{name.inspect} on #{server.inspect} due to malformed patron name"
       return :skipped
     end
 
     character = Character.unscoped.find_or_create_by(name: name, server: server)
-    character.assign_attributes(json_text)
+    character.assign_attributes(record)
     character[:archived] = false if character[:archived]
-    character.location = nil unless json_text["location"]
-    character.monarch  = nil unless json_text["monarch"]
-    character.patron   = nil unless json_text["patron"]
-    character.vassals  = nil unless json_text["vassals"]
+    character.location = nil unless record["location"]
+    character.monarch  = nil unless record["monarch"]
+    character.patron   = nil unless record["patron"]
+    character.vassals  = nil unless record["vassals"]
 
     character.save!
 
@@ -110,7 +110,7 @@ class BulkUploadJob
 
     :processed
   rescue => e
-    logger.error "BulkUploadJob: error processing #{json_text["name"].inspect}: #{e}"
+    logger.error "BulkUploadJob: error processing #{record["name"].inspect}: #{e}"
     :error
   end
 end

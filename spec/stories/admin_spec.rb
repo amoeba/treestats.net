@@ -1,4 +1,5 @@
 require_relative '../story_helper.rb'
+require 'base64'
 
 describe "AdminLogsStory" do
   def get_logs(user: "admin", password: "secret", accept: "application/json")

@@ -40,6 +40,19 @@ describe "BulkUploadStory" do
   end
 
   # ---------------------------------------------------------------------------
+  describe "body size limiting" do
+    it "returns 413 when the body exceeds BULK_UPLOAD_MAX_BYTES" do
+      with_env("BULK_UPLOAD_MAX_BYTES" => "100") do
+        body = "x" * 101
+        post_characters(body, signature: sign(body, @api_key.secret), api_key: @api_key.secret)
+        assert_equal 413, last_response.status
+        error = JSON.parse(last_response.body)
+        assert_equal "request body too large", error["error"]
+      end
+    end
+  end
+
+  # ---------------------------------------------------------------------------
   describe "signature verification" do
     it "returns 403 when the signature header is missing" do
       post_characters({ name: "Foo", server: emu_server }.to_json, signature: nil)

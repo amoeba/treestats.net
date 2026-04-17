@@ -54,3 +54,4 @@ Jobs run asynchronously via Sidekiq. Each record is upserted into `Character`. T
 | `BULK_UPLOAD_RATE_LIMIT` | 5 | Max requests per window per IP |
 | `BULK_UPLOAD_RATE_WINDOW` | 60 | Rate limit window in seconds |
 | `BULK_UPLOAD_MAX_INFLIGHT` | 10 | Max concurrent jobs |
+| `BULK_UPLOAD_MAX_BYTES` | 10485760 | Max request body size in bytes (10 MB) |
