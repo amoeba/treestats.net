@@ -160,6 +160,18 @@ describe "BulkUploadStory" do
   end
 
   # ---------------------------------------------------------------------------
+  describe "malformed JSON with application/json content type" do
+    it "logs record_count 0 for malformed JSON" do
+      body = "not valid json {"
+      post_characters(body, content_type: "application/json",
+                      signature: sign(body, @api_key.secret))
+      assert_equal 202, last_response.status
+      log = BulkUploadLog.first
+      assert_equal 0, log.record_count
+    end
+  end
+
+  # ---------------------------------------------------------------------------
   describe "end-to-end with inline job execution" do
     before { Sidekiq::Testing.inline! }
 

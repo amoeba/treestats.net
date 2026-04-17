@@ -51,5 +51,13 @@ describe "AdminLogsStory" do
         assert_instance_of Array, body
       end
     end
+
+    it "returns HTML when Accept: text/html" do
+      with_env("SIDEKIQ_WEB_PASSWORD" => "secret") do
+        get_logs(accept: "text/html")
+        assert_equal 200, last_response.status
+        assert last_response.headers["Content-Type"].include?("text/html")
+      end
+    end
   end
 end

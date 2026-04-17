@@ -84,6 +84,11 @@ module Sinatra
               rescue Mongo::Error::OperationFailure => e
                 raise unless e.message.include?("E11000")
                 api_key = ApiKey.where(account_id: account.id).first
+                if api_key.nil?
+                  status 500
+                  content_type :json
+                  return JSON.generate({ "error" => "key conflict" })
+                end
               end
             end
 
