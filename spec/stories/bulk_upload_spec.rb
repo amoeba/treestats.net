@@ -3,31 +3,35 @@ require 'sidekiq/testing'
 require 'openssl'
 
 describe "BulkUploadStory" do
-  BULK_TEST_SECRET = "treestats-bulk-upload-test-secret"
-
-def sign(body, secret = BULK_TEST_SECRET)
+  def sign(body, secret)
     "sha256=#{OpenSSL::HMAC.hexdigest("SHA256", secret, body)}"
   end
 
   # Post to POST /characters with the right headers.
-  # Pass signature: nil to omit the header entirely.
-  def post_characters(body, content_type: "application/x-ndjson", signature: sign(body))
+  # Pass signature: nil to omit the signature header entirely.
+  # Pass api_key: nil to omit the api key header entirely.
+  def post_characters(body, content_type: "application/x-ndjson",
+                      signature: sign(body, @api_key.secret),
+                      api_key: @api_key.secret)
     env = { "CONTENT_TYPE" => content_type }
     env["HTTP_X_TREESTATS_UPLOAD_SIGNATURE"] = signature unless signature.nil?
+    env["HTTP_X_TREESTATS_API_KEY"] = api_key unless api_key.nil?
     post("/characters", body, env)
   end
 
   before do
-    ENV["BULK_UPLOAD_SECRET"] = BULK_TEST_SECRET
     redis.del(BulkUploadHelper::INFLIGHT_KEY)
     redis.del("#{BulkUploadHelper::RATE_LIMIT_KEY}:127.0.0.1")
     Character.all.destroy
     Allegiance.all.destroy
+    ApiKey.all.destroy
+    Account.all.destroy
+    @account = Account.create!(name: "TestUser", password: "pass")
+    @api_key = ApiKey.create!(account: @account)
     Sidekiq::Testing.fake! # default: enqueue without running
   end
 
   after do
-    ENV.delete("BULK_UPLOAD_SECRET")
     Sidekiq::Testing.fake!
   end
 
@@ -35,6 +39,11 @@ def sign(body, secret = BULK_TEST_SECRET)
   describe "signature verification" do
     it "returns 403 when the signature header is missing" do
       post_characters('{"name":"Foo","server":"Coldeve"}', signature: nil)
+      assert_equal 403, last_response.status
+    end
+
+    it "returns 403 when the api key header is missing" do
+      post_characters('{"name":"Foo","server":"Coldeve"}', api_key: nil)
       assert_equal 403, last_response.status
     end
 

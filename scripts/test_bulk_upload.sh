@@ -6,20 +6,25 @@
 #   ./scripts/test_bulk_upload.sh [COUNT] [SERVER]
 #
 # Environment:
-#   BULK_UPLOAD_SECRET  Shared HMAC secret (matches server's BULK_UPLOAD_SECRET)
-#   HOST                Host and port (default: localhost:9292)
+#   TS_API_KEY  API key from POST /account/key (format: ts_<account_id><secret>)
+#   HOST        Host and port (default: localhost:9292)
 #
 # Examples:
 #   ./scripts/test_bulk_upload.sh
 #   ./scripts/test_bulk_upload.sh 100 Coldeve
-#   BULK_UPLOAD_SECRET=mysecret HOST=localhost:9292 ./scripts/test_bulk_upload.sh 500
+#   TS_API_KEY=ts_... HOST=localhost:9292 ./scripts/test_bulk_upload.sh 500
+#
+# To generate a key:
+#   curl -s -X POST http://localhost:9292/account/key \
+#     -H 'Content-Type: application/json' \
+#     -d '{"name":"myaccount","password":"mypassword"}'
 
 set -euo pipefail
 
 COUNT="${1:-10}"
 SERVER="${2:-Coldeve}"
 HOST="${HOST:-localhost:9292}"
-SECRET="${BULK_UPLOAD_SECRET:-}"
+API_KEY="${TS_API_KEY:-}"
 
 # Generate synthetic NDJSON using Ruby (already a project dependency)
 BODY=$(ruby -r json -e "
@@ -39,21 +44,22 @@ BODY=$(ruby -r json -e "
   end.join(\"\n\")
 ")
 
-# Compute HMAC-SHA256 signature
-if [ -n "\$SECRET" ]; then
-  DIGEST=$(printf '%s' "\$BODY" | openssl dgst -sha256 -hmac "\$SECRET" | awk '{print \$NF}')
-  SIGNATURE="sha256=\${DIGEST}"
-else
-  echo "Warning: BULK_UPLOAD_SECRET not set, sending without a valid signature (will be accepted if server secret is also unset)"
-  SIGNATURE="sha256=nosecret"
+if [ -z "$API_KEY" ]; then
+  echo "Error: TS_API_KEY must be set."
+  echo "Generate a key with: curl -s -X POST http://${HOST}/account/key -H 'Content-Type: application/json' -d '{\"name\":\"myaccount\",\"password\":\"mypassword\"}'"
+  exit 1
 fi
 
-RECORD_COUNT=$(echo "\$BODY" | wc -l | tr -d ' ')
-echo "Uploading \${RECORD_COUNT} records to http://\${HOST}/characters ..."
+DIGEST=$(printf '%s' "$BODY" | openssl dgst -sha256 -hmac "$API_KEY" | awk '{print $NF}')
+SIGNATURE="sha256=${DIGEST}"
+
+RECORD_COUNT=$(echo "$BODY" | wc -l | tr -d ' ')
+echo "Uploading ${RECORD_COUNT} records to http://${HOST}/characters ..."
 
 curl -s -w "\nHTTP Status: %{http_code}\n" \
   -X POST \
   -H "Content-Type: application/x-ndjson" \
-  -H "X-TreeStats-Upload-Signature: \${SIGNATURE}" \
-  --data-binary "\$BODY" \
-  "http://\${HOST}/characters"
+  -H "X-TreeStats-Upload-Signature: ${SIGNATURE}" \
+  -H "X-TreeStats-Api-Key: ${API_KEY}" \
+  --data-binary "$BODY" \
+  "http://${HOST}/characters"

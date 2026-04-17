@@ -4,6 +4,7 @@ require_relative '../story_helper.rb'
 
 describe "AppStory" do
   before do
+    ApiKey.all.destroy
     Account.all.destroy
   end
 
@@ -51,4 +52,70 @@ describe "AppStory" do
     assert_equal last_response.body, "Login failed. Name/password not found."
   end
 
+end
+
+describe "ApiKeyStory" do
+  before do
+    ApiKey.all.destroy
+    Account.all.destroy
+    post('/account/create', '{"name":"TestUser","password":"passw0rd"}')
+  end
+
+  def request_key(name: "TestUser", password: "passw0rd")
+    post('/account/key',
+         JSON.generate({ "name" => name, "password" => password }),
+         { "CONTENT_TYPE" => "application/json" })
+  end
+
+  # ---------------------------------------------------------------------------
+  describe "happy path" do
+    it "returns 200" do
+      request_key
+      assert_equal 200, last_response.status
+    end
+
+    it "returns application/json" do
+      request_key
+      assert last_response.headers["Content-Type"].include?("application/json")
+    end
+
+    it "returns a key" do
+      request_key
+      body = JSON.parse(last_response.body)
+      refute_nil body["key"]
+    end
+
+    it "key starts with ts_" do
+      request_key
+      key = JSON.parse(last_response.body)["key"]
+      assert key.start_with?("ts_")
+    end
+
+    it "calling twice returns the same key" do
+      request_key
+      first  = JSON.parse(last_response.body)["key"]
+      request_key
+      second = JSON.parse(last_response.body)["key"]
+      assert_equal first, second
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  describe "account not found" do
+    it "returns 401 for a wrong password" do
+      request_key(password: "wrongpassword")
+      assert_equal 401, last_response.status
+    end
+
+    it "returns 401 for a non-existent account name" do
+      request_key(name: "NoSuchUser")
+      assert_equal 401, last_response.status
+    end
+
+    it "returns a JSON error body" do
+      request_key(password: "wrongpassword")
+      body = JSON.parse(last_response.body)
+      assert_equal "invalid credentials", body["error"]
+    end
+  end
 end

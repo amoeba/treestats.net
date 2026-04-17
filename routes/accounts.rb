@@ -53,6 +53,24 @@ module Sinatra
             end
           end
 
+          app.post '/account/key' do
+            body = request.body.read
+            fields = JSON.parse(body)
+
+            account = Account.where(name: fields["name"], password: fields["password"]).first
+            if account.nil?
+              status 401
+              content_type :json
+              return JSON.generate({ "error" => "invalid credentials" })
+            end
+
+            api_key = ApiKey.where(account_id: account.id).first || ApiKey.create!(account: account)
+
+            status 200
+            content_type :json
+            JSON.generate({ "key" => api_key.secret })
+          end
+
           app.get '/account/:account_name/?' do
             @characters = Character.where(account_name: params[:account_name])
                                     .all

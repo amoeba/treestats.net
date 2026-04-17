@@ -29,52 +29,62 @@ describe BulkUploadHelper do
 
     it "passes with a correct HMAC-SHA256 signature" do
       env = {
-        BulkUploadHelper::ACCOUNT_ID_HEADER => account.id.to_s,
-        BulkUploadHelper::SIGNATURE_HEADER  => sign(body, api_key.secret)
+        BulkUploadHelper::API_KEY_HEADER   => api_key.secret,
+        BulkUploadHelper::SIGNATURE_HEADER => sign(body, api_key.secret)
       }
       assert BulkUploadHelper.valid_signature?(fake_request(env), body)
     end
 
     it "fails when the signature does not match" do
       env = {
-        BulkUploadHelper::ACCOUNT_ID_HEADER => account.id.to_s,
-        BulkUploadHelper::SIGNATURE_HEADER  => "sha256=deadbeef00"
+        BulkUploadHelper::API_KEY_HEADER   => api_key.secret,
+        BulkUploadHelper::SIGNATURE_HEADER => "sha256=deadbeef00"
       }
       refute BulkUploadHelper.valid_signature?(fake_request(env), body)
     end
 
     it "fails when the signature header is missing" do
-      env = { BulkUploadHelper::ACCOUNT_ID_HEADER => account.id.to_s }
+      env = { BulkUploadHelper::API_KEY_HEADER => api_key.secret }
       refute BulkUploadHelper.valid_signature?(fake_request(env), body)
     end
 
-    it "fails when the account_id header is missing" do
+    it "fails when the api key header is missing" do
       env = { BulkUploadHelper::SIGNATURE_HEADER => sign(body, api_key.secret) }
       refute BulkUploadHelper.valid_signature?(fake_request(env), body)
     end
 
-    it "fails when no ApiKey exists for the account" do
-      other_account = Account.create!(name: "OtherUser", password: "pass")
+    it "fails when the token has the wrong prefix" do
+      bad_token = "xx_#{account.id}#{SecureRandom.hex(32)}"
       env = {
-        BulkUploadHelper::ACCOUNT_ID_HEADER => other_account.id.to_s,
-        BulkUploadHelper::SIGNATURE_HEADER  => "sha256=anything"
+        BulkUploadHelper::API_KEY_HEADER   => bad_token,
+        BulkUploadHelper::SIGNATURE_HEADER => "sha256=anything"
       }
       refute BulkUploadHelper.valid_signature?(fake_request(env), body)
     end
 
-    it "fails when the header uses the wrong prefix" do
+    it "fails when no ApiKey exists for the account encoded in the token" do
+      other_account = Account.create!(name: "OtherUser", password: "pass")
+      fake_token = "ts_#{other_account.id}#{SecureRandom.hex(32)}"
+      env = {
+        BulkUploadHelper::API_KEY_HEADER   => fake_token,
+        BulkUploadHelper::SIGNATURE_HEADER => "sha256=anything"
+      }
+      refute BulkUploadHelper.valid_signature?(fake_request(env), body)
+    end
+
+    it "fails when the signature uses the wrong prefix" do
       digest = OpenSSL::HMAC.hexdigest("SHA256", api_key.secret, body)
       env = {
-        BulkUploadHelper::ACCOUNT_ID_HEADER => account.id.to_s,
-        BulkUploadHelper::SIGNATURE_HEADER  => "md5=#{digest}"
+        BulkUploadHelper::API_KEY_HEADER   => api_key.secret,
+        BulkUploadHelper::SIGNATURE_HEADER => "md5=#{digest}"
       }
       refute BulkUploadHelper.valid_signature?(fake_request(env), body)
     end
 
     it "is sensitive to body content — a different body fails" do
       env = {
-        BulkUploadHelper::ACCOUNT_ID_HEADER => account.id.to_s,
-        BulkUploadHelper::SIGNATURE_HEADER  => sign(body, api_key.secret)
+        BulkUploadHelper::API_KEY_HEADER   => api_key.secret,
+        BulkUploadHelper::SIGNATURE_HEADER => sign(body, api_key.secret)
       }
       refute BulkUploadHelper.valid_signature?(fake_request(env), body + " ")
     end

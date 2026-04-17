@@ -1,14 +1,19 @@
 require "openssl"
 
 module BulkUploadHelper
-  SIGNATURE_HEADER  = "HTTP_X_TREESTATS_UPLOAD_SIGNATURE"
-  ACCOUNT_ID_HEADER = "HTTP_X_TREESTATS_ACCOUNT_ID"
-  INFLIGHT_KEY      = "bulk_upload:inflight"
-  RATE_LIMIT_KEY    = "bulk_upload:ratelimit"
+  SIGNATURE_HEADER = "HTTP_X_TREESTATS_UPLOAD_SIGNATURE"
+  API_KEY_HEADER   = "HTTP_X_TREESTATS_API_KEY"
+  TOKEN_PREFIX     = "ts_"
+  ACCOUNT_ID_LEN   = 24 # MongoDB ObjectId as hex
+  INFLIGHT_KEY     = "bulk_upload:inflight"
+  RATE_LIMIT_KEY   = "bulk_upload:ratelimit"
 
   def self.valid_signature?(request, body)
-    account_id_str = request.env[ACCOUNT_ID_HEADER]
-    return false if account_id_str.nil? || account_id_str.empty?
+    token = request.env[API_KEY_HEADER]
+    return false if token.nil? || !token.start_with?(TOKEN_PREFIX)
+
+    account_id_str = token[TOKEN_PREFIX.length, ACCOUNT_ID_LEN]
+    return false if account_id_str.nil? || account_id_str.length != ACCOUNT_ID_LEN
 
     api_key = ApiKey.where(account_id: account_id_str).first
     return false if api_key.nil?
@@ -16,10 +21,10 @@ module BulkUploadHelper
     header = request.env[SIGNATURE_HEADER]
     return false if header.nil?
 
-    prefix = "sha256="
-    return false unless header.start_with?(prefix)
+    sig_prefix = "sha256="
+    return false unless header.start_with?(sig_prefix)
 
-    provided = header[prefix.length..]
+    provided = header[sig_prefix.length..]
     expected = OpenSSL::HMAC.hexdigest("SHA256", api_key.secret, body)
 
     Rack::Utils.secure_compare(expected, provided)
