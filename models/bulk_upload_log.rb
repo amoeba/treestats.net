@@ -13,4 +13,6 @@ class BulkUploadLog
   field :skipped_count,   type: Integer
   field :error_count,     type: Integer
   field :status,          type: String, default: "queued"  # queued | processing | completed | failed
+
+  index({ submitted_at: -1 })
 end

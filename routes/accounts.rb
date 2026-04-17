@@ -77,7 +77,14 @@ module Sinatra
               return JSON.generate({ "error" => "invalid credentials" })
             end
 
-            api_key = ApiKey.where(account_id: account.id).first || ApiKey.create!(account: account)
+            api_key = ApiKey.where(account_id: account.id).first
+            if api_key.nil?
+              begin
+                api_key = ApiKey.create!(account: account)
+              rescue Mongo::Error::OperationFailure
+                api_key = ApiKey.where(account_id: account.id).first
+              end
+            end
 
             status 200
             content_type :json
