@@ -73,7 +73,7 @@ class BulkUploadJob
 
     if json_text.key?("server_population")
       server_pop = json_text.delete("server_population")
-      PlayerCount.create!(server: server, count: server_pop)
+      PlayerCount.where(server: server).find_one_and_update({ "$set" => { count: server_pop } }, upsert: true)
     end
 
     if json_text.key?("birth")
@@ -84,6 +84,8 @@ class BulkUploadJob
       logger.warn "BulkUploadJob: skipping #{name.inspect} on #{server.inspect} due to malformed patron name"
       return :skipped
     end
+
+    return :skipped if name.nil? || server.nil?
 
     character = Character.unscoped.find_or_create_by(name: name, server: server)
     character.assign_attributes(json_text)

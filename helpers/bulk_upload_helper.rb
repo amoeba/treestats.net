@@ -42,8 +42,10 @@ module BulkUploadHelper
     window = (ENV["BULK_UPLOAD_RATE_WINDOW"] || "60").to_i
     key    = "#{RATE_LIMIT_KEY}:#{ip}"
 
-    count = redis.incr(key)
-    redis.expire(key, window) if count == 1
+    count = redis.eval(
+      "local n = redis.call('INCR', KEYS[1]); if n == 1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end; return n",
+      keys: [key], argv: [window]
+    )
 
     count > max
   end

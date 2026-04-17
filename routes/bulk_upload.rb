@@ -55,7 +55,12 @@ module Sinatra
             end
 
             BulkUploadHelper.increment_inflight!(redis)
-            BulkUploadJob.perform_async(file_path, content_type_header, log.id.to_s)
+            begin
+              BulkUploadJob.perform_async(file_path, content_type_header, log.id.to_s)
+            rescue => e
+              BulkUploadHelper.decrement_inflight!(redis)
+              raise
+            end
 
             status 202
             content_type :json
