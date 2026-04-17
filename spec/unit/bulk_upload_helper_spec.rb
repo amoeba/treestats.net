@@ -8,11 +8,12 @@ describe BulkUploadHelper do
     redis.del(BulkUploadHelper::INFLIGHT_KEY)
     redis.del("#{BulkUploadHelper::RATE_LIMIT_KEY}:127.0.0.1")
     redis.del("#{BulkUploadHelper::RATE_LIMIT_KEY}:10.0.0.1")
+    ApiKey.all.destroy
+    Account.all.destroy
   end
 
   # Build a minimal request-like object with a fixed env hash
-  def fake_request(sig)
-    env = sig ? { BulkUploadHelper::SIGNATURE_HEADER => sig } : {}
+  def fake_request(env = {})
     Struct.new(:env).new(env)
   end
 
@@ -22,51 +23,60 @@ describe BulkUploadHelper do
 
   # ---------------------------------------------------------------------------
   describe ".valid_signature?" do
-    let(:secret) { "treestats-test-secret" }
-    let(:body)   { '{"name":"Stormwall","server":"Coldeve"}' }
-
-    it "passes when BULK_UPLOAD_SECRET is not set" do
-      without_env("BULK_UPLOAD_SECRET") do
-        assert BulkUploadHelper.valid_signature?(fake_request("sha256=anything"), body)
-      end
-    end
-
-    it "passes when BULK_UPLOAD_SECRET is empty" do
-      with_env("BULK_UPLOAD_SECRET" => "") do
-        assert BulkUploadHelper.valid_signature?(fake_request("sha256=anything"), body)
-      end
-    end
+    let(:body) { '{"name":"Stormwall","server":"Coldeve"}' }
+    let(:account) { Account.create!(name: "TestUser", password: "pass") }
+    let(:api_key) { ApiKey.create!(account: account) }
 
     it "passes with a correct HMAC-SHA256 signature" do
-      with_env("BULK_UPLOAD_SECRET" => secret) do
-        assert BulkUploadHelper.valid_signature?(fake_request(sign(body, secret)), body)
-      end
+      env = {
+        BulkUploadHelper::ACCOUNT_ID_HEADER => account.id.to_s,
+        BulkUploadHelper::SIGNATURE_HEADER  => sign(body, api_key.secret)
+      }
+      assert BulkUploadHelper.valid_signature?(fake_request(env), body)
     end
 
     it "fails when the signature does not match" do
-      with_env("BULK_UPLOAD_SECRET" => secret) do
-        refute BulkUploadHelper.valid_signature?(fake_request("sha256=deadbeef00"), body)
-      end
+      env = {
+        BulkUploadHelper::ACCOUNT_ID_HEADER => account.id.to_s,
+        BulkUploadHelper::SIGNATURE_HEADER  => "sha256=deadbeef00"
+      }
+      refute BulkUploadHelper.valid_signature?(fake_request(env), body)
     end
 
     it "fails when the signature header is missing" do
-      with_env("BULK_UPLOAD_SECRET" => secret) do
-        refute BulkUploadHelper.valid_signature?(fake_request(nil), body)
-      end
+      env = { BulkUploadHelper::ACCOUNT_ID_HEADER => account.id.to_s }
+      refute BulkUploadHelper.valid_signature?(fake_request(env), body)
+    end
+
+    it "fails when the account_id header is missing" do
+      env = { BulkUploadHelper::SIGNATURE_HEADER => sign(body, api_key.secret) }
+      refute BulkUploadHelper.valid_signature?(fake_request(env), body)
+    end
+
+    it "fails when no ApiKey exists for the account" do
+      other_account = Account.create!(name: "OtherUser", password: "pass")
+      env = {
+        BulkUploadHelper::ACCOUNT_ID_HEADER => other_account.id.to_s,
+        BulkUploadHelper::SIGNATURE_HEADER  => "sha256=anything"
+      }
+      refute BulkUploadHelper.valid_signature?(fake_request(env), body)
     end
 
     it "fails when the header uses the wrong prefix" do
-      with_env("BULK_UPLOAD_SECRET" => secret) do
-        digest = OpenSSL::HMAC.hexdigest("SHA256", secret, body)
-        refute BulkUploadHelper.valid_signature?(fake_request("md5=#{digest}"), body)
-      end
+      digest = OpenSSL::HMAC.hexdigest("SHA256", api_key.secret, body)
+      env = {
+        BulkUploadHelper::ACCOUNT_ID_HEADER => account.id.to_s,
+        BulkUploadHelper::SIGNATURE_HEADER  => "md5=#{digest}"
+      }
+      refute BulkUploadHelper.valid_signature?(fake_request(env), body)
     end
 
     it "is sensitive to body content — a different body fails" do
-      with_env("BULK_UPLOAD_SECRET" => secret) do
-        sig = sign(body, secret)
-        refute BulkUploadHelper.valid_signature?(fake_request(sig), body + " ")
-      end
+      env = {
+        BulkUploadHelper::ACCOUNT_ID_HEADER => account.id.to_s,
+        BulkUploadHelper::SIGNATURE_HEADER  => sign(body, api_key.secret)
+      }
+      refute BulkUploadHelper.valid_signature?(fake_request(env), body + " ")
     end
   end
 
@@ -145,14 +155,14 @@ describe BulkUploadHelper do
 
     it "decrements the counter" do
       redis.set(BulkUploadHelper::INFLIGHT_KEY, 3)
-      BulkUploadHelper.decrement_inflight!
+      BulkUploadHelper.decrement_inflight!(redis)
       assert_equal 2, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
     end
 
     it "round-trips correctly" do
       BulkUploadHelper.increment_inflight!(redis)
       BulkUploadHelper.increment_inflight!(redis)
-      BulkUploadHelper.decrement_inflight!
+      BulkUploadHelper.decrement_inflight!(redis)
       assert_equal 1, redis.get(BulkUploadHelper::INFLIGHT_KEY).to_i
     end
   end

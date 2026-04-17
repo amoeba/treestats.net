@@ -1,13 +1,17 @@
 require "openssl"
 
 module BulkUploadHelper
-  SIGNATURE_HEADER = "HTTP_X_TREESTATS_UPLOAD_SIGNATURE"
-  INFLIGHT_KEY     = "bulk_upload:inflight"
-  RATE_LIMIT_KEY   = "bulk_upload:ratelimit"
+  SIGNATURE_HEADER  = "HTTP_X_TREESTATS_UPLOAD_SIGNATURE"
+  ACCOUNT_ID_HEADER = "HTTP_X_TREESTATS_ACCOUNT_ID"
+  INFLIGHT_KEY      = "bulk_upload:inflight"
+  RATE_LIMIT_KEY    = "bulk_upload:ratelimit"
 
   def self.valid_signature?(request, body)
-    secret = ENV["BULK_UPLOAD_SECRET"]
-    return true if secret.nil? || secret.empty?
+    account_id_str = request.env[ACCOUNT_ID_HEADER]
+    return false if account_id_str.nil? || account_id_str.empty?
+
+    api_key = ApiKey.where(account_id: account_id_str).first
+    return false if api_key.nil?
 
     header = request.env[SIGNATURE_HEADER]
     return false if header.nil?
@@ -16,7 +20,7 @@ module BulkUploadHelper
     return false unless header.start_with?(prefix)
 
     provided = header[prefix.length..]
-    expected = OpenSSL::HMAC.hexdigest("SHA256", secret, body)
+    expected = OpenSSL::HMAC.hexdigest("SHA256", api_key.secret, body)
 
     Rack::Utils.secure_compare(expected, provided)
   end
@@ -46,9 +50,13 @@ module BulkUploadHelper
     redis.incr(INFLIGHT_KEY)
   end
 
-  # Called in the job's ensure block. Uses Sidekiq's connection pool —
-  # no separate Redis client needed in the worker process.
-  def self.decrement_inflight!
-    Sidekiq.redis { |conn| conn.call("DECR", INFLIGHT_KEY) }
+  # Called in the job's ensure block. Accepts an explicit redis client for
+  # testing; defaults to Sidekiq's connection pool in production.
+  def self.decrement_inflight!(redis = nil)
+    if redis
+      redis.decr(INFLIGHT_KEY)
+    else
+      Sidekiq.redis { |conn| conn.call("DECR", INFLIGHT_KEY) }
+    end
   end
 end
