@@ -53,7 +53,7 @@ $pass = 0
 $fail = 0
 
 def pass(label) = ($pass += 1; green("  \u2713 #{label}"))
-def fail(label) = ($fail += 1; red("  \u2717 #{label}"))
+def fail_check(label) = ($fail += 1; red("  \u2717 #{label}"))
 def abort!(msg) = (red("FATAL: #{msg}"); exit(1))
 
 # ── HTTP helpers ───────────────────────────────────────────────────────────────
@@ -90,7 +90,7 @@ def check_status(label, response, expected)
   if got == expected
     pass("#{label} → HTTP #{got}")
   else
-    fail("#{label} → expected HTTP #{expected}, got HTTP #{got}  body=#{response.body.inspect}")
+    fail_check("#{label} → expected HTTP #{expected}, got HTTP #{got}  body=#{response.body.inspect}")
   end
 end
 
@@ -100,7 +100,7 @@ def check_json(label, response, field, expected)
   if got == expected
     pass("  #{label} ('#{field}' = #{got.inspect})")
   else
-    fail("  #{label} — '#{field}': expected #{expected.inspect}, got #{got.inspect}")
+    fail_check("  #{label} — '#{field}': expected #{expected.inspect}, got #{got.inspect}")
   end
 end
 
@@ -226,7 +226,7 @@ abort!("Could not extract key from: #{res.body}") if API_KEY.nil? || API_KEY.emp
 if API_KEY.match?(/\Ats_[0-9a-f]{24}[0-9a-f]{64}\z/)
   pass("API key retrieved — correct format (ts_ + 24-char id + 64-char secret, len=#{API_KEY.length})")
 else
-  fail("API key format unexpected: '#{API_KEY[0, 20]}…' (len=#{API_KEY.length})")
+  fail_check("API key format unexpected: '#{API_KEY[0, 20]}…' (len=#{API_KEY.length})")
 end
 
 puts ""
@@ -455,7 +455,7 @@ hit_429 = false
   end
 end
 
-fail("Rate limit never triggered after 20 requests") unless hit_429
+fail_check("Rate limit never triggered after 20 requests") unless hit_429
 
 puts ""
 
@@ -486,7 +486,7 @@ if all_found
   pass("All #{EXPECTED_NAMES.length} expected characters in DB (waited #{waited}s)")
 else
   found = EXPECTED_NAMES.count { |n| Character.unscoped.where(name: n, server: "TestServer").exists? }
-  fail("Only #{found}/#{EXPECTED_NAMES.length} characters found after #{max_wait}s")
+  fail_check("Only #{found}/#{EXPECTED_NAMES.length} characters found after #{max_wait}s")
 end
 
 puts ""
@@ -589,7 +589,7 @@ check_json("body has status=queued", res, "status", "queued")
 
 allegiance_log_id = (JSON.parse(res.body)["log_id"] rescue nil)
 pass("Response includes log_id") if allegiance_log_id
-fail("Response missing log_id")  unless allegiance_log_id
+fail_check("Response missing log_id")  unless allegiance_log_id
 
 puts ""
 
@@ -624,18 +624,18 @@ if allegiance_log_id
     if audit_log.record_count == ALLEGIANCE_SIZE
       pass("record_count matches submitted (#{ALLEGIANCE_SIZE})")
     else
-      fail("record_count mismatch: expected #{ALLEGIANCE_SIZE}, got #{audit_log.record_count}")
+      fail_check("record_count mismatch: expected #{ALLEGIANCE_SIZE}, got #{audit_log.record_count}")
     end
 
     if audit_log.processed_count == ALLEGIANCE_SIZE
       pass("all #{ALLEGIANCE_SIZE} records processed")
     else
-      fail("processed_count=#{audit_log.processed_count} (expected #{ALLEGIANCE_SIZE})")
+      fail_check("processed_count=#{audit_log.processed_count} (expected #{ALLEGIANCE_SIZE})")
     end
   elsif audit_log&.status == "failed"
-    fail("Job status=failed after #{waited}s")
+    fail_check("Job status=failed after #{waited}s")
   else
-    fail("Job did not complete within #{max_wait}s (status=#{audit_log&.status || "not found"})")
+    fail_check("Job did not complete within #{max_wait}s (status=#{audit_log&.status || "not found"})")
   end
 else
   yellow("  Skipping audit log check — no log_id from upload response")
@@ -678,23 +678,23 @@ if res.code == "200"
           if actual == expected
             pass("  #{field} = #{expected.inspect}")
           else
-            fail("  #{field}: expected #{expected.inspect}, got #{actual.inspect}")
+            fail_check("  #{field}: expected #{expected.inspect}, got #{actual.inspect}")
           end
         end
 
         pass("  duration_ms present") if entry["duration_ms"].is_a?(Integer)
-        fail("  duration_ms missing or wrong type") unless entry["duration_ms"].is_a?(Integer)
+        fail_check("  duration_ms missing or wrong type") unless entry["duration_ms"].is_a?(Integer)
 
         pass("  submitted_at present") if entry["submitted_at"]
-        fail("  submitted_at missing")  unless entry["submitted_at"]
+        fail_check("  submitted_at missing")  unless entry["submitted_at"]
       else
-        fail("Allegiance upload log not found in response (id=#{allegiance_log_id})")
+        fail_check("Allegiance upload log not found in response (id=#{allegiance_log_id})")
       end
     else
       yellow("  Skipping per-entry checks — no allegiance_log_id available")
     end
   else
-    fail("Response is not a JSON array: #{res.body[0, 200]}")
+    fail_check("Response is not a JSON array: #{res.body[0, 200]}")
   end
 end
 

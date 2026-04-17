@@ -8,7 +8,7 @@ class BulkUploadJob
   sidekiq_options retry: 0
 
   def perform(file_path, content_type, log_id = nil)
-    log = log_id ? (BulkUploadLog.find(log_id) rescue nil) : nil
+    log = log_id ? (BulkUploadLog.find(log_id) rescue Mongoid::Errors::DocumentNotFound) : nil
     started_at = Time.now.utc
     log&.set(started_at: started_at, status: "processing")
 

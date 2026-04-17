@@ -29,7 +29,7 @@ module Sinatra
             end
 
             record_count = if content_type_header.include?("application/json")
-              parsed = JSON.parse(body_str) rescue nil
+              parsed = begin; JSON.parse(body_str); rescue JSON::ParserError; nil; end
               parsed.nil? ? 0 : (parsed.is_a?(Array) ? parsed.length : 1)
             else
               body_str.each_line.count { |l| !l.strip.empty? }
