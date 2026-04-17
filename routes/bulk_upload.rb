@@ -7,6 +7,13 @@ module Sinatra
       module BulkUpload
         def self.registered(app)
           app.post "/characters" do
+            max_bytes = (ENV["BULK_UPLOAD_MAX_BYTES"] || (10 * 1024 * 1024)).to_i
+            if request.content_length.to_i > max_bytes
+              status 413
+              content_type :json
+              return JSON.generate({ "error" => "request body too large" })
+            end
+
             body_str = request.body.read
             content_type_header = request.content_type.to_s
 
@@ -38,12 +45,14 @@ module Sinatra
             )
 
             unless BulkUploadHelper.try_increment_inflight!(redis)
-              log.set(status: "failed")
+              log.set(status: "rejected")
               status 503
               content_type :json
               return JSON.generate({ "error" => "too many jobs in flight, try again later" })
             end
 
+            # NOTE: web and worker processes must share the same filesystem for
+            # this path to be accessible. Single-host deployments only.
             file_path = "/tmp/bulk_upload_#{SecureRandom.uuid}"
 
             begin

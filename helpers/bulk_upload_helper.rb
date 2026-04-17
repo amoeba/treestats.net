@@ -50,18 +50,18 @@ module BulkUploadHelper
     count > max
   end
 
-  # Atomically increments the in-flight counter and returns true if the new
-  # value exceeds the cap (rolling back with DECR in that case).
+  # Atomically increments the in-flight counter only if below cap.
+  # Returns true if the slot was acquired, false if the cap was already reached.
+  # Uses a Lua script to ensure the check-and-increment is atomic.
   # Cap: BULK_UPLOAD_MAX_INFLIGHT concurrent jobs.
   def self.try_increment_inflight!(redis)
     max = (ENV["BULK_UPLOAD_MAX_INFLIGHT"] || "10").to_i
-    new_val = redis.incr(INFLIGHT_KEY)
-    if new_val > max
-      redis.decr(INFLIGHT_KEY)
-      false
-    else
-      true
-    end
+    # Returns 1 if incremented (slot acquired), 0 if cap already reached.
+    result = redis.eval(
+      "local n = redis.call('GET', KEYS[1]); n = tonumber(n) or 0; if n < tonumber(ARGV[1]) then redis.call('INCR', KEYS[1]); return 1 else return 0 end",
+      keys: [INFLIGHT_KEY], argv: [max]
+    )
+    result == 1
   end
 
   # Called in the job's ensure block. Accepts an explicit redis client for

@@ -81,7 +81,8 @@ module Sinatra
             if api_key.nil?
               begin
                 api_key = ApiKey.create!(account: account)
-              rescue Mongo::Error::OperationFailure
+              rescue Mongo::Error::OperationFailure => e
+                raise unless e.message.include?("E11000")
                 api_key = ApiKey.where(account_id: account.id).first
               end
             end

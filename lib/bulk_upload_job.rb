@@ -11,6 +11,7 @@ class BulkUploadJob
     started_at = Time.now.utc
     log&.set(started_at: started_at, status: "processing")
 
+    # NOTE: file_path is a local /tmp file; web and worker must share the same filesystem.
     body = File.read(file_path)
     records = parse_records(body, content_type)
 
