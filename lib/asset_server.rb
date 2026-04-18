@@ -89,9 +89,11 @@ class AssetServer
 
     ext = File.extname(path)
 
-    Dir.glob(File.join(@root, 'assets', '**', '*')).each do |file_path|
+    assets_root = File.join(@root, 'assets')
+    Dir.glob(File.join(assets_root, '**', '*')).each do |file_path|
       next if File.directory?(file_path)
-      next unless File.basename(file_path) == File.basename(path)
+      logical = '/' + file_path.sub("#{assets_root}/", '')
+      next unless logical == path
       body = File.binread(file_path)
       return [200, { 'content-type' => CONTENT_TYPES.fetch(ext, 'application/octet-stream'), 'cache-control' => 'no-cache', 'content-length' => body.bytesize.to_s }, [body]]
     end
@@ -118,4 +120,6 @@ class AssetServer
       manifest[logical] = fingerprinted
     end
   end
+
+  private_class_method :fingerprint, :copy_files
 end
