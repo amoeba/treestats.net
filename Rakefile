@@ -73,6 +73,14 @@ task :simulate do
   end
 end
 
+namespace :assets do
+  desc 'Compile and fingerprint assets to public/assets/'
+  task :precompile do
+    require_relative 'lib/asset_server'
+    AssetServer.precompile(File.dirname(__FILE__))
+  end
+end
+
 # Testing
 task :test do
   Dir['./spec/**/*_spec.rb'].each { |f| load f }

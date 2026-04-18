@@ -9,6 +9,7 @@ module Sinatra
       module Upload
         def self.registered(app)
           app.post '/' do
+            request.body.rewind
             text = request.body.read
             return if text.length <= 0
 

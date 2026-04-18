@@ -33,6 +33,8 @@ end
   lib/stats_job.rb
 ].each { |file| require_relative file }
 
+require_relative 'lib/asset_server'
+
 class TreeStats < Sinatra::Base
   configure :production do
     use Sentry::Rack::CaptureExceptions
@@ -40,11 +42,8 @@ class TreeStats < Sinatra::Base
 
   set :root, File.dirname(__FILE__)
 
-  set :sprockets, Sprockets::Environment.new(root)
-  set :precompile, [/\w+\.(?!js|css).+/, /application.(css|js)$/, /.+\.js/]
   set :assets_prefix, '/assets'
-  set :digest_assets, true
-  set(:assets_path) { File.join public_folder, assets_prefix }
+  set :asset_server, AssetServer.new(File.dirname(__FILE__))
 
   # Explicitly register Sinatra::Redis so the method `redis` is available
   # to other parts of our application like routes
@@ -90,24 +89,13 @@ class TreeStats < Sinatra::Base
     # Resque
     Resque.redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
 
-    # Setup Sprockets
-    sprockets.append_path File.join(root, 'assets', 'stylesheets')
-    sprockets.append_path File.join(root, 'assets', 'javascripts')
-    sprockets.append_path File.join(root, 'assets', 'images')
-
-    Sprockets::Helpers.configure do |config|
-      config.environment = sprockets
-      config.prefix = assets_prefix
-      config.digest = digest_assets
-      config.public_path = public_folder
-    end
-
     # CORS
     enable :cross_origin
   end
 
   helpers do
-    include Sprockets::Helpers
+    include Sinatra::TreeStats::AssetHelper
+    include RequestHelper
   end
 
   configure :production do
