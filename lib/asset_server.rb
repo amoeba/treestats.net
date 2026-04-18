@@ -98,6 +98,7 @@ class AssetServer
       else
         @manifest[basename_key] = logical
       end
+      @manifest[logical] = logical
       @dev_files[logical] = file_path
     end
   end
@@ -130,6 +131,9 @@ class AssetServer
       dest = File.join(output_dir, fingerprinted)
       FileUtils.mkdir_p(File.dirname(dest))
       File.binwrite(dest, body)
+      if manifest.key?(logical)
+        warn "Asset basename collision: #{logical} already mapped, overwriting with #{src}"
+      end
       manifest[logical] = fingerprinted
     end
   end
