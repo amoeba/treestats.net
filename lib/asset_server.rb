@@ -1,4 +1,4 @@
-require 'digest/md5'
+require 'digest/sha2'
 require 'json'
 
 class AssetServer
@@ -62,8 +62,13 @@ class AssetServer
     @manifest = JSON.parse(File.read(manifest_path))
 
     @production_assets = {}
+    safe_base = File.expand_path(File.join(@root, 'public', 'assets'))
     @manifest.each_value do |fingerprinted|
-      file_path = File.join(@root, 'public', 'assets', fingerprinted)
+      file_path = File.expand_path(File.join(safe_base, fingerprinted))
+      unless file_path.start_with?(safe_base + '/')
+        warn "manifest entry #{fingerprinted} outside of assets directory, skipping"
+        next
+      end
       unless File.exist?(file_path)
         warn "manifest entry #{fingerprinted} missing from disk"
         next
@@ -125,7 +130,7 @@ class AssetServer
 
       body          = File.binread(src)
       logical       = '/' + src.sub("#{dir}/", '')
-      digest        = Digest::MD5.hexdigest(body)
+      digest        = Digest::SHA256.hexdigest(body)[0, 16]
       fingerprinted = fingerprint(logical, digest)
 
       dest = File.join(output_dir, fingerprinted)

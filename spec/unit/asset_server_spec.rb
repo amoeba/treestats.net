@@ -136,5 +136,10 @@ describe AssetServer do
       server = development_server(@tmpdir)
       assert_equal '/images/icon.png', server.manifest['/icon.png']
     end
+
+    it 'rejects path traversal' do
+      status, _, _ = @server.call('PATH_INFO' => '/../../../etc/passwd')
+      assert_equal 404, status
+    end
   end
 end
