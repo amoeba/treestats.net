@@ -112,7 +112,7 @@ class AssetServer
     path = "/#{path.sub(%r{\A/+}, '')}"
     return [404, {}, ['Not found']] if path == '/'
 
-    file_path = @dev_files[path]
+    file_path = @dev_files[path] || @dev_files[@manifest[path]]
     return [404, {}, ['Not found']] unless file_path
 
     ext = File.extname(path)
