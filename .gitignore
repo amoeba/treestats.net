@@ -4,3 +4,4 @@ public/assets/
 .sass-cache/
 mongo-export
 mongodump
+public/assets
