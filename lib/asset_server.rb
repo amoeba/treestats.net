@@ -68,22 +68,22 @@ class AssetServer
         warn "manifest entry #{fingerprinted} missing from disk"
         next
       end
-      body = File.binread(file_path)
-      ext  = File.extname(fingerprinted)
-      @production_assets[fingerprinted] = [
-        200,
-        {
-          'content-type'   => CONTENT_TYPES.fetch(ext, 'application/octet-stream'),
-          'cache-control'  => 'public, max-age=31536000, immutable',
-          'content-length' => body.bytesize.to_s,
+      ext = File.extname(fingerprinted)
+      @production_assets[fingerprinted] = {
+        file_path: file_path,
+        headers: {
+          'content-type'  => CONTENT_TYPES.fetch(ext, 'application/octet-stream'),
+          'cache-control' => 'public, max-age=31536000, immutable',
         },
-        [body],
-      ]
+      }
     end
   end
 
   def serve_from_disk(fingerprinted_path)
-    @production_assets[fingerprinted_path] || [404, {}, ['Not found']]
+    entry = @production_assets[fingerprinted_path]
+    return [404, {}, ['Not found']] unless entry
+    body = File.binread(entry[:file_path])
+    [200, entry[:headers].merge('content-length' => body.bytesize.to_s), [body]]
   end
 
   def build_dev_manifest
