@@ -13,6 +13,8 @@ class AssetServer
     '.svg'  => 'image/svg+xml',
     '.woff' => 'font/woff',
     '.woff2'=> 'font/woff2',
+    '.ttf'  => 'font/ttf',
+    '.otf'  => 'font/otf',
   }.freeze
 
   # manifest maps logical path -> fingerprinted path
@@ -115,7 +117,7 @@ class AssetServer
     file_path = @dev_files[path] || @dev_files[@manifest[path]]
     return [404, {}, ['Not found']] unless file_path
 
-    ext = File.extname(path)
+    ext = File.extname(file_path)
     body = File.binread(file_path)
     [200, { 'content-type' => CONTENT_TYPES.fetch(ext, 'application/octet-stream'), 'cache-control' => 'no-cache', 'content-length' => body.bytesize.to_s }, [body]]
   end

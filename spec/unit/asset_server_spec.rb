@@ -141,5 +141,11 @@ describe AssetServer do
       status, _, _ = @server.call('PATH_INFO' => '/../../../etc/passwd')
       assert_equal 404, status
     end
+
+    it 'serves a file via basename shortcut' do
+      status, headers, _ = @server.call('PATH_INFO' => '/application.css')
+      assert_equal 200, status
+      assert_equal 'text/css', headers['content-type']
+    end
   end
 end
