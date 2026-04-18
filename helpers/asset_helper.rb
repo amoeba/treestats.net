@@ -20,6 +20,7 @@ module Sinatra
       def build_asset_path(name)
         name = "/#{name}" unless name.start_with?('/')
         raise ArgumentError, "unsafe asset name: #{name}" unless name.match?(%r{\A/[A-Za-z0-9._/-]+\z})
+        raise ArgumentError, "unsafe asset name: #{name}" if name.split('/').any? { |p| p == '..' || p == '.' }
         fingerprinted = settings.asset_server.manifest[name]
         "/assets#{fingerprinted || name}"
       end

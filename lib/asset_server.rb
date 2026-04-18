@@ -60,27 +60,30 @@ class AssetServer
   end
 
   def load_manifest
-    path = File.join(@root, 'public', 'assets', 'manifest.json')
-    raise "manifest.json not found — run rake assets:precompile" unless File.exist?(path)
-    @manifest = JSON.parse(File.read(path))
+    manifest_path = File.join(@root, 'public', 'assets', 'manifest.json')
+    raise "manifest.json not found — run rake assets:precompile" unless File.exist?(manifest_path)
+    @manifest = JSON.parse(File.read(manifest_path))
+
+    @production_assets = {}
+    @manifest.each_value do |fingerprinted|
+      file_path = File.join(@root, 'public', 'assets', fingerprinted)
+      next unless File.exist?(file_path)
+      body = File.binread(file_path)
+      ext  = File.extname(fingerprinted)
+      @production_assets[fingerprinted] = [
+        200,
+        {
+          'content-type'   => CONTENT_TYPES.fetch(ext, 'application/octet-stream'),
+          'cache-control'  => 'public, max-age=31536000, immutable',
+          'content-length' => body.bytesize.to_s,
+        },
+        [body],
+      ]
+    end
   end
 
   def serve_from_disk(fingerprinted_path)
-    return [404, {}, ['Not found']] if fingerprinted_path.downcase == '/manifest.json'
-
-    safe_base = File.expand_path(File.join(@root, 'public', 'assets'))
-    file_path = File.expand_path(File.join(safe_base, fingerprinted_path))
-    return [404, {}, ['Not found']] unless file_path.start_with?(safe_base + '/')
-    return [404, {}, ['Not found']] unless File.exist?(file_path)
-
-    body = File.binread(file_path)
-    ext  = File.extname(fingerprinted_path)
-    headers = {
-      'content-type'   => CONTENT_TYPES.fetch(ext, 'application/octet-stream'),
-      'cache-control'  => 'public, max-age=31536000, immutable',
-      'content-length' => body.bytesize.to_s,
-    }
-    [200, headers, [body]]
+    @production_assets[fingerprinted_path] || [404, {}, ['Not found']]
   end
 
   def build_dev_manifest
@@ -90,7 +93,11 @@ class AssetServer
       next if File.directory?(file_path)
       logical = '/' + file_path.sub("#{assets_root}/", '')
       basename_key = '/' + File.basename(logical)
-      @manifest[basename_key] ||= logical
+      if @manifest.key?(basename_key)
+        warn "Asset basename collision: #{basename_key} already maps to #{@manifest[basename_key]}, ignoring #{logical}"
+      else
+        @manifest[basename_key] = logical
+      end
       @dev_files[logical] = file_path
     end
   end
