@@ -24,4 +24,12 @@ describe "RequestHelperSpec" do
     @request.body.read  # simulate Sinatra/Rack having read it already
     assert_equal({"name" => "test"}, json_body)
   end
+
+  it "halts with 400 on invalid JSON" do
+    @request = request_with_body('not json')
+    halted_status = nil
+    define_singleton_method(:halt) { |status, _msg| halted_status = status; throw :halt }
+    catch(:halt) { json_body }
+    assert_equal 400, halted_status
+  end
 end
