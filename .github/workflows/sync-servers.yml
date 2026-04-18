@@ -38,7 +38,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          EXISTING=$(gh pr list --search "head:sync-servers/" --json number,headRefName --jq '.[0]')
+          EXISTING=$(gh pr list --json number,headRefName | jq '[.[] | select(.headRefName | startswith("sync-servers/"))] | .[0]')
           if [ -z "$EXISTING" ] || [ "$EXISTING" = "null" ]; then
             echo "duplicate=false" >> "$GITHUB_OUTPUT"
           else
