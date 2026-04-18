@@ -51,7 +51,6 @@ header .header-links-elsewhere {
 }
 
 header .title {
-  background-image: url('/assets/bg_top.jpg');
   border-bottom: 2px solid #af7a30;
   display: flex;
   height: 100px;

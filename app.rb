@@ -43,6 +43,7 @@ class TreeStats < Sinatra::Base
   set :root, File.dirname(__FILE__)
 
   set :assets_prefix, '/assets'
+  # RACK_ENV must already be set when this line executes (at require time, before configure blocks run).
   set :asset_server, AssetServer.new(File.dirname(__FILE__))
 
   # Explicitly register Sinatra::Redis so the method `redis` is available
