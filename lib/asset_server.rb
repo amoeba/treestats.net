@@ -64,7 +64,10 @@ class AssetServer
     @production_assets = {}
     @manifest.each_value do |fingerprinted|
       file_path = File.join(@root, 'public', 'assets', fingerprinted)
-      next unless File.exist?(file_path)
+      unless File.exist?(file_path)
+        warn "manifest entry #{fingerprinted} missing from disk"
+        next
+      end
       body = File.binread(file_path)
       ext  = File.extname(fingerprinted)
       @production_assets[fingerprinted] = [
@@ -86,7 +89,7 @@ class AssetServer
   def build_dev_manifest
     @dev_files = {}
     assets_root = File.join(@root, 'assets')
-    Dir.glob(File.join(assets_root, '**', '*')).each do |file_path|
+    Dir.glob(File.join(assets_root, '**', '*')).sort.each do |file_path|
       next if File.directory?(file_path)
       logical = '/' + file_path.sub("#{assets_root}/", '')
       basename_key = '/' + File.basename(logical)
