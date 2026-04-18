@@ -23,12 +23,13 @@ class AssetServer
   def initialize(root)
     @root = root
     @manifest = {}
-    production? ? load_manifest : build_dev_manifest
+    @production = ENV['RACK_ENV'] == 'production'
+    @production ? load_manifest : build_dev_manifest
   end
 
   def call(env)
     path = env['PATH_INFO'].to_s.split('?').first
-    production? ? serve_from_disk(path) : serve_dev(path)
+    @production ? serve_from_disk(path) : serve_dev(path)
   end
 
   def self.precompile(root)
@@ -48,10 +49,6 @@ class AssetServer
   end
 
   private
-
-  def production?
-    ENV['RACK_ENV'] == 'production'
-  end
 
   def self.fingerprint(logical_path, digest)
     ext  = File.extname(logical_path)

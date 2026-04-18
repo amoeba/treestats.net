@@ -14,7 +14,9 @@ describe AssetServer do
     before do
       @tmpdir = Dir.mktmpdir
       FileUtils.mkdir_p(File.join(@tmpdir, 'public', 'assets'))
-      File.write(File.join(@tmpdir, 'public', 'assets', 'manifest.json'), '{}')
+      File.write(File.join(@tmpdir, 'public', 'assets', 'app-abc123.css'), 'body{}')
+      File.write(File.join(@tmpdir, 'public', 'assets', 'manifest.json'),
+        JSON.generate({ '/app.css' => '/app-abc123.css' }))
       @server = production_server(@tmpdir)
     end
 
@@ -35,10 +37,7 @@ describe AssetServer do
     end
 
     it 'serves an existing asset' do
-      File.write(File.join(@tmpdir, 'public', 'assets', 'app-abc123.css'), 'body{}')
-      status, headers, body = with_env('RACK_ENV' => 'production') {
-        @server.call('PATH_INFO' => '/app-abc123.css')
-      }
+      status, headers, body = @server.call('PATH_INFO' => '/app-abc123.css')
       assert_equal 200, status
       assert_equal 'text/css', headers['content-type']
       assert_equal 'body{}', body.first
