@@ -130,7 +130,7 @@ describe AssetServer do
       assert_equal 'PNG', body.first
     end
 
-    it 'basename collision: manifest maps to first alphabetical path and warns' do
+    it 'basename collision: manifest maps to first alphabetical path' do
       # images/icon.png sorts before stylesheets/icon.png, so /icon.png resolves to images
       File.write(File.join(@tmpdir, 'assets', 'stylesheets', 'icon.png'), 'WRONG')
       server = development_server(@tmpdir)

@@ -72,10 +72,8 @@ class TreeStats < Sinatra::Base
     # Turn on logging
     enable :logging
 
-    # Disable Rack::Protection — Something started causing lots of 403s on GET
-    # and POST routes and this is the only thing I can think of that might be
-    # causing.
     set :protection, false
+    set :host_authorization, {}
 
     # Mongoid
     Mongoid.load!('./config/mongoid.yml')

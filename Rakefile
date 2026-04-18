@@ -1,13 +1,13 @@
 require 'bundler/setup'
 Bundler.require(:default)
 
-require './app'
 require 'resque/tasks'
 
 task default: :test
 
 # Resque
 task 'resque:setup' do
+  require './app'
   ENV['QUEUE'] = '*'
 end
 
@@ -60,6 +60,7 @@ end
 
 desc 'Simulate uploads'
 task :simulate do
+  require './app'
   puts 'hi'
 
   def rand_name
@@ -83,5 +84,6 @@ end
 
 # Testing
 task :test do
+  ENV['RACK_ENV'] = 'test'
   Dir['./spec/**/*_spec.rb'].each { |f| load f }
 end

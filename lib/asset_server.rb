@@ -47,7 +47,6 @@ class AssetServer
     copy_files(root, 'assets/images', nil, output_dir, manifest)
 
     File.write(File.join(output_dir, 'manifest.json'), JSON.generate(manifest))
-    puts "Wrote #{manifest.size} assets to #{output_dir}"
   end
 
   private
@@ -100,9 +99,7 @@ class AssetServer
       next if File.directory?(file_path)
       logical = '/' + file_path.sub("#{assets_root}/", '')
       basename_key = '/' + File.basename(logical)
-      if @manifest.key?(basename_key)
-        warn "Asset basename collision: #{basename_key} already maps to #{@manifest[basename_key]}, ignoring #{logical}"
-      else
+      unless @manifest.key?(basename_key)
         @manifest[basename_key] = logical
       end
       @manifest[logical] = logical
