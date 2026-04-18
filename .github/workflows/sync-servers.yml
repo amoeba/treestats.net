@@ -32,8 +32,29 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create pull request
+      - name: Check existing sync PRs
+        id: existing
         if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXISTING=$(gh pr list --search "head:sync-servers/" --json number,headRefName --jq '.[0]')
+          if [ -z "$EXISTING" ] || [ "$EXISTING" = "null" ]; then
+            echo "duplicate=false" >> "$GITHUB_OUTPUT"
+          else
+            EXISTING_NUM=$(echo "$EXISTING" | jq -r '.number')
+            EXISTING_BRANCH=$(echo "$EXISTING" | jq -r '.headRefName')
+            git fetch origin "$EXISTING_BRANCH"
+            if git diff --quiet "origin/$EXISTING_BRANCH" -- data/servers.rb; then
+              echo "duplicate=true" >> "$GITHUB_OUTPUT"
+            else
+              gh pr close "$EXISTING_NUM" --delete-branch || true
+              echo "duplicate=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Create pull request
+        if: steps.changes.outputs.changed == 'true' && steps.existing.outputs.duplicate != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
