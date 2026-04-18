@@ -43,7 +43,7 @@ class TreeStats < Sinatra::Base
   set :root, File.dirname(__FILE__)
 
   set :assets_prefix, '/assets'
-  set(:asset_server) { AssetServer.new(root) }
+  configure { set :asset_server, AssetServer.new(root) }
 
   # Explicitly register Sinatra::Redis so the method `redis` is available
   # to other parts of our application like routes

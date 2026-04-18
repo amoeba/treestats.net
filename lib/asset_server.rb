@@ -137,7 +137,7 @@ class AssetServer
       FileUtils.mkdir_p(File.dirname(dest))
       File.binwrite(dest, body)
       if manifest.key?(logical)
-        warn "Asset basename collision: #{logical} already mapped, overwriting with #{src}"
+        warn "Asset path collision: #{logical} already mapped, overwriting with #{src}"
       end
       manifest[logical] = fingerprinted
     end
