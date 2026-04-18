@@ -66,6 +66,8 @@ class AssetServer
   end
 
   def serve_from_disk(fingerprinted_path)
+    return [404, {}, ['Not found']] if fingerprinted_path == '/manifest.json'
+
     safe_base = File.expand_path(File.join(@root, 'public', 'assets'))
     file_path = File.expand_path(File.join(safe_base, fingerprinted_path))
     return [404, {}, ['Not found']] unless file_path.start_with?(safe_base + '/')
@@ -74,19 +76,24 @@ class AssetServer
     body = File.binread(file_path)
     ext  = File.extname(fingerprinted_path)
     headers = {
-      'content-type'  => CONTENT_TYPES.fetch(ext, 'application/octet-stream'),
-      'cache-control' => 'public, max-age=31536000, immutable',
+      'content-type'   => CONTENT_TYPES.fetch(ext, 'application/octet-stream'),
+      'cache-control'  => 'public, max-age=31536000, immutable',
+      'content-length' => body.bytesize.to_s,
     }
     [200, headers, [body]]
   end
 
   def serve_dev(path)
+    path = "/#{path.sub(%r{\A/+}, '')}"
+    return [404, {}, ['Not found']] if path == '/'
+
     ext = File.extname(path)
 
     Dir.glob(File.join(@root, 'assets', '**', '*')).each do |file_path|
       next if File.directory?(file_path)
-      next unless file_path.end_with?(path)
-      return [200, { 'content-type' => CONTENT_TYPES.fetch(ext, 'application/octet-stream'), 'cache-control' => 'no-cache' }, [File.binread(file_path)]]
+      next unless File.basename(file_path) == File.basename(path)
+      body = File.binread(file_path)
+      return [200, { 'content-type' => CONTENT_TYPES.fetch(ext, 'application/octet-stream'), 'cache-control' => 'no-cache', 'content-length' => body.bytesize.to_s }, [body]]
     end
 
     [404, {}, ['Not found']]
