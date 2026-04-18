@@ -66,14 +66,16 @@ class AssetServer
   end
 
   def serve_from_disk(fingerprinted_path)
-    file_path = File.join(@root, 'public', 'assets', fingerprinted_path)
+    safe_base = File.expand_path(File.join(@root, 'public', 'assets'))
+    file_path = File.expand_path(File.join(safe_base, fingerprinted_path))
+    return [404, {}, ['Not found']] unless file_path.start_with?(safe_base + '/')
     return [404, {}, ['Not found']] unless File.exist?(file_path)
 
     body = File.binread(file_path)
     ext  = File.extname(fingerprinted_path)
     headers = {
-      'Content-Type'  => CONTENT_TYPES.fetch(ext, 'application/octet-stream'),
-      'Cache-Control' => 'public, max-age=31536000, immutable',
+      'content-type'  => CONTENT_TYPES.fetch(ext, 'application/octet-stream'),
+      'cache-control' => 'public, max-age=31536000, immutable',
     }
     [200, headers, [body]]
   end
@@ -84,7 +86,7 @@ class AssetServer
     Dir.glob(File.join(@root, 'assets', '**', '*')).each do |file_path|
       next if File.directory?(file_path)
       next unless file_path.end_with?(path)
-      return [200, { 'Content-Type' => CONTENT_TYPES.fetch(ext, 'application/octet-stream'), 'Cache-Control' => 'no-cache' }, [File.binread(file_path)]]
+      return [200, { 'content-type' => CONTENT_TYPES.fetch(ext, 'application/octet-stream'), 'cache-control' => 'no-cache' }, [File.binread(file_path)]]
     end
 
     [404, {}, ['Not found']]
