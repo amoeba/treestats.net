@@ -51,7 +51,6 @@ header .header-links-elsewhere {
 }
 
 header .title {
-  background-image: image-url("bg_top.jpg");
   border-bottom: 2px solid #af7a30;
   display: flex;
   height: 100px;
@@ -238,8 +237,6 @@ h2.title {
   text-decoration: none;
   padding: 0.25em 0.5em;
 }
-
-// End Character Header
 
 #banner {
   background-color: gold;
@@ -823,7 +820,7 @@ pre {
   padding: 0.5em;
 }
 
-// Pagination
+/* Pagination */
 .pagination-controls {
   display: inline-flex;
   gap: 0.5em;

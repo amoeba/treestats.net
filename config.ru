@@ -11,7 +11,7 @@ Sidekiq.configure_client do |config|
 end
 
 map TreeStats.assets_prefix do
-  run TreeStats.sprockets
+  run TreeStats.asset_server
 end
 
 map "/sidekiq" do

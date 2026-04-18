@@ -17,8 +17,8 @@ def player_counts(servers = nil, range = nil)
       }
     }
   else
-    positive = servers.filter { |s| !s.starts_with?("-")}.map { |s| s.sub(/^+/, "")}
-    negative = servers.filter { |s| s.starts_with?("-")}.map { |s| s.sub(/^-/, "")}
+    positive = servers.filter { |s| !s.start_with?("-")}.map { |s| s.sub(/^+/, "")}
+    negative = servers.filter { |s| s.start_with?("-")}.map { |s| s.sub(/^-/, "")}
 
     filter = {}
 

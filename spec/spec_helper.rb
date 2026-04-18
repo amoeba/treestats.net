@@ -5,6 +5,22 @@ ENV['RACK_ENV'] = 'test'
 require 'bundler'
 Bundler.require :default, :test
 
+# Rack::MockRequest.env_for calls StringIO#set_encoding on the raw input string,
+# which mutates a literal string and triggers Ruby 3.4 frozen-string warnings.
+# Dup-ing the string before rack touches it prevents the mutation.
+module Rack
+  class MockRequest
+    class << self
+      prepend(Module.new {
+        def env_for(uri = "", opts = {})
+          opts = opts.merge(input: opts[:input].dup) if opts[:input].is_a?(String)
+          super
+        end
+      })
+    end
+  end
+end
+
 require 'minitest/autorun'
 require 'minitest/spec'
 

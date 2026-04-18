@@ -1,13 +1,13 @@
 require 'bundler/setup'
 Bundler.require(:default)
 
-require './app'
 require 'resque/tasks'
 
 task default: :test
 
 # Resque
 task 'resque:setup' do
+  require './app'
   ENV['QUEUE'] = '*'
 end
 
@@ -60,6 +60,7 @@ end
 
 desc 'Simulate uploads'
 task :simulate do
+  require './app'
   puts 'hi'
 
   def rand_name
@@ -73,7 +74,16 @@ task :simulate do
   end
 end
 
+namespace :assets do
+  desc 'Compile and fingerprint assets to public/assets/'
+  task :precompile do
+    require_relative 'lib/asset_server'
+    AssetServer.precompile(File.dirname(__FILE__))
+  end
+end
+
 # Testing
 task :test do
+  ENV['RACK_ENV'] = 'test'
   Dir['./spec/**/*_spec.rb'].each { |f| load f }
 end

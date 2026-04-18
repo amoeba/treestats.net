@@ -1,4 +1,5 @@
 .env
+public/assets/
 .DS_Store
 .sass-cache/
 mongo-export

@@ -4,8 +4,7 @@ module Sinatra
       module Accounts
         def self.registered(app)
           app.post '/account/create/?' do
-            body = request.body.read
-            fields = JSON.parse(body)
+            fields = json_body
 
             # Handle case where (somehow) not all fields are sent
             if(!fields.has_key?("name") &&
@@ -39,8 +38,7 @@ module Sinatra
           end
 
           app.post '/account/login/?' do
-            body = request.body.read
-            fields = JSON.parse(body)
+            fields = json_body
 
             if(!fields.has_key?("name") || !fields.has_key?("password"))
               return "Error sending login information to server: Name and password were not specified."

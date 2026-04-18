@@ -15,13 +15,7 @@ describe "PlayerCountsStory" do
     end
 
     it "can fail some bad requests" do
-      get "/player_counts.json?servers=foo"
-      assert !last_response.ok?
-
       get "/player_counts.json?servers=All&range=waht"
-      assert !last_response.ok?
-
-      get "/player_counts.json?servers=who&range=3mo"
       assert !last_response.ok?
     end
   end

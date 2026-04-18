@@ -71,19 +71,9 @@ module Sinatra
               servers = nil
             end
 
-            if servers && servers != "All"
-              # FIXME: Comment this out for now so players can request data from
-              #        unlisted servers. This is the case for private servers that
-              # no longer operate
-
-              # params[:servers].split(",").each do |server|
-              #   unless ServerHelper.all_servers.include?(server)
-              #     halt 400, "Invalid query parameters: #{server} is not a valid server name"
-              #   end
-              # end
-
-              # ENDFIXME
-
+            if servers == "All"
+              servers = nil
+            elsif servers
               # Special case: Replace keywords "retail" and "emulator" with their
               # respective servers
               servers = servers.sub("retail", @retail_servers.join(","))
