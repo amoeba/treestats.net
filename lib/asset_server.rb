@@ -84,12 +84,14 @@ class AssetServer
   end
 
   def build_dev_manifest
+    @dev_files = {}
     assets_root = File.join(@root, 'assets')
     Dir.glob(File.join(assets_root, '**', '*')).each do |file_path|
       next if File.directory?(file_path)
       logical = '/' + file_path.sub("#{assets_root}/", '')
       basename_key = '/' + File.basename(logical)
       @manifest[basename_key] ||= logical
+      @dev_files[logical] = file_path
     end
   end
 
@@ -97,18 +99,12 @@ class AssetServer
     path = "/#{path.sub(%r{\A/+}, '')}"
     return [404, {}, ['Not found']] if path == '/'
 
+    file_path = @dev_files[path]
+    return [404, {}, ['Not found']] unless file_path
+
     ext = File.extname(path)
-
-    assets_root = File.join(@root, 'assets')
-    Dir.glob(File.join(assets_root, '**', '*')).each do |file_path|
-      next if File.directory?(file_path)
-      logical = '/' + file_path.sub("#{assets_root}/", '')
-      next unless logical == path
-      body = File.binread(file_path)
-      return [200, { 'content-type' => CONTENT_TYPES.fetch(ext, 'application/octet-stream'), 'cache-control' => 'no-cache', 'content-length' => body.bytesize.to_s }, [body]]
-    end
-
-    [404, {}, ['Not found']]
+    body = File.binread(file_path)
+    [200, { 'content-type' => CONTENT_TYPES.fetch(ext, 'application/octet-stream'), 'cache-control' => 'no-cache', 'content-length' => body.bytesize.to_s }, [body]]
   end
 
   def self.copy_files(root, rel_dir, ext_filter, output_dir, manifest)

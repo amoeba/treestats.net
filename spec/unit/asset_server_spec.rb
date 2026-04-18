@@ -62,6 +62,50 @@ describe AssetServer do
     end
   end
 
+  describe 'precompile' do
+    it 'fingerprints files, copies them, and writes manifest.json' do
+      tmpdir = Dir.mktmpdir
+      FileUtils.mkdir_p(File.join(tmpdir, 'assets', 'stylesheets'))
+      FileUtils.mkdir_p(File.join(tmpdir, 'assets', 'javascripts'))
+      FileUtils.mkdir_p(File.join(tmpdir, 'assets', 'images'))
+      File.write(File.join(tmpdir, 'assets', 'stylesheets', 'application.css'), 'body{}')
+      File.write(File.join(tmpdir, 'assets', 'javascripts', 'app.js'), 'var x=1;')
+      File.write(File.join(tmpdir, 'assets', 'images', 'logo.png'), 'PNG')
+
+      AssetServer.precompile(tmpdir)
+
+      output_dir = File.join(tmpdir, 'public', 'assets')
+      manifest_path = File.join(output_dir, 'manifest.json')
+      assert File.exist?(manifest_path), 'manifest.json should exist'
+
+      manifest = JSON.parse(File.read(manifest_path))
+      assert manifest.key?('/application.css'), 'manifest should include application.css'
+      assert manifest.key?('/app.js'), 'manifest should include app.js'
+      assert manifest.key?('/logo.png'), 'manifest should include logo.png'
+
+      manifest.each_value do |fingerprinted|
+        assert File.exist?(File.join(output_dir, fingerprinted)), "#{fingerprinted} should exist on disk"
+      end
+    ensure
+      FileUtils.rm_rf(tmpdir)
+    end
+
+    it 'wipes only public/assets, not the whole public dir' do
+      tmpdir = Dir.mktmpdir
+      FileUtils.mkdir_p(File.join(tmpdir, 'assets', 'stylesheets'))
+      File.write(File.join(tmpdir, 'assets', 'stylesheets', 'application.css'), 'body{}')
+      FileUtils.mkdir_p(File.join(tmpdir, 'public'))
+      sentinel = File.join(tmpdir, 'public', 'favicon.ico')
+      File.write(sentinel, 'ico')
+
+      AssetServer.precompile(tmpdir)
+
+      assert File.exist?(sentinel), 'public/favicon.ico should be untouched'
+    ensure
+      FileUtils.rm_rf(tmpdir)
+    end
+  end
+
   describe 'serve_dev (development)' do
     before do
       @tmpdir = Dir.mktmpdir
