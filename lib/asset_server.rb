@@ -23,7 +23,7 @@ class AssetServer
   def initialize(root)
     @root = root
     @manifest = {}
-    load_manifest if production?
+    production? ? load_manifest : build_dev_manifest
   end
 
   def call(env)
@@ -66,7 +66,7 @@ class AssetServer
   end
 
   def serve_from_disk(fingerprinted_path)
-    return [404, {}, ['Not found']] if fingerprinted_path == '/manifest.json'
+    return [404, {}, ['Not found']] if fingerprinted_path.downcase == '/manifest.json'
 
     safe_base = File.expand_path(File.join(@root, 'public', 'assets'))
     file_path = File.expand_path(File.join(safe_base, fingerprinted_path))
@@ -81,6 +81,16 @@ class AssetServer
       'content-length' => body.bytesize.to_s,
     }
     [200, headers, [body]]
+  end
+
+  def build_dev_manifest
+    assets_root = File.join(@root, 'assets')
+    Dir.glob(File.join(assets_root, '**', '*')).each do |file_path|
+      next if File.directory?(file_path)
+      logical = '/' + file_path.sub("#{assets_root}/", '')
+      basename_key = '/' + File.basename(logical)
+      @manifest[basename_key] ||= logical
+    end
   end
 
   def serve_dev(path)

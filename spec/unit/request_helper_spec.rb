@@ -16,12 +16,12 @@ describe "RequestHelperSpec" do
 
   it "parses a JSON body" do
     @request = request_with_body('{"name":"test"}')
-    assert_equal json_body, {"name" => "test"}
+    assert_equal({"name" => "test"}, json_body)
   end
 
   it "rewinds before reading so it works even if the stream was already consumed" do
     @request = request_with_body('{"name":"test"}')
     @request.body.read  # simulate Sinatra/Rack having read it already
-    assert_equal json_body, {"name" => "test"}
+    assert_equal({"name" => "test"}, json_body)
   end
 end
