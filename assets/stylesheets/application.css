@@ -238,8 +238,6 @@ h2.title {
   padding: 0.25em 0.5em;
 }
 
-// End Character Header
-
 #banner {
   background-color: gold;
   color: black;
@@ -822,7 +820,7 @@ pre {
   padding: 0.5em;
 }
 
-// Pagination
+/* Pagination */
 .pagination-controls {
   display: inline-flex;
   gap: 0.5em;

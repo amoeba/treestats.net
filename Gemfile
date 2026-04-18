@@ -24,7 +24,6 @@ gem 'sidekiq-cron'
 gem 'connection_pool', '~> 2.4'
 
 gem 'haml'
-gem 'sassc'
 
 group :development do
   gem 'nokogiri'

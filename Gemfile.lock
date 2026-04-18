@@ -156,8 +156,6 @@ GEM
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.47.1, < 2.0)
     ruby-progressbar (1.13.0)
-    sassc (2.4.0)
-      ffi (~> 1.9)
     securerandom (0.4.1)
     sentry-resque (6.5.0)
       resque (>= 1.24)
@@ -243,13 +241,12 @@ DEPENDENCIES
   rake
   redis
   resque
-  sassc
   sentry-resque
   sentry-ruby
   sentry-sidekiq
   sidekiq
   sidekiq-cron
-  sinatra (>= 4.0)
+  sinatra
   sinatra-cross_origin
   sinatra-redis
   standardrb

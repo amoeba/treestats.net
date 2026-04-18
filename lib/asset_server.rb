@@ -1,6 +1,5 @@
 require 'digest/md5'
 require 'json'
-require 'sassc'
 
 class AssetServer
   CONTENT_TYPES = {
@@ -49,7 +48,7 @@ class AssetServer
 
     manifest = {}
 
-    compile_scss(root, output_dir, manifest)
+    copy_files(root, 'assets/stylesheets', '.css', output_dir, manifest)
     copy_files(root, 'assets/javascripts', '.js', output_dir, manifest)
     copy_files(root, 'assets/images', nil, output_dir, manifest)
 
@@ -90,7 +89,7 @@ class AssetServer
 
   def load_assets_into_memory
     @assets = {}
-    load_scss_into_memory
+    load_files_into_memory('assets/stylesheets', '.css')
     load_files_into_memory('assets/javascripts', '.js')
     load_files_into_memory('assets/images')
   end
@@ -104,17 +103,6 @@ class AssetServer
       'Cache-Control' => 'public, max-age=31536000, immutable',
     }
     [200, headers, [asset[:body]]]
-  end
-
-  def load_scss_into_memory
-    scss_path = File.join(@root, 'assets', 'stylesheets', 'application.css.scss')
-    return unless File.exist?(scss_path)
-
-    css = SassC::Engine.new(File.read(scss_path), style: :compressed, load_paths: [
-      File.join(@root, 'assets', 'stylesheets')
-    ]).render
-
-    register_in_memory('/application.css', css, '.css')
   end
 
   def load_files_into_memory(rel_dir, ext_filter = nil)
@@ -137,20 +125,6 @@ class AssetServer
     content_type  = CONTENT_TYPES.fetch(ext, 'application/octet-stream')
     @assets[fingerprinted] = { body: body, content_type: content_type }
     @manifest[logical_path] = fingerprinted
-  end
-
-  def self.compile_scss(root, output_dir, manifest)
-    scss_path = File.join(root, 'assets', 'stylesheets', 'application.css.scss')
-    return unless File.exist?(scss_path)
-
-    css    = SassC::Engine.new(File.read(scss_path), style: :compressed, load_paths: [
-      File.join(root, 'assets', 'stylesheets')
-    ]).render
-    digest       = Digest::MD5.hexdigest(css)
-    fingerprinted = fingerprint('/application.css', digest)
-
-    File.write(File.join(output_dir, fingerprinted), css)
-    manifest['/application.css'] = fingerprinted
   end
 
   def self.copy_files(root, rel_dir, ext_filter, output_dir, manifest)
