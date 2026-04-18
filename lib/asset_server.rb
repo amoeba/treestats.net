@@ -17,27 +17,18 @@ class AssetServer
 
   # manifest maps logical path -> fingerprinted path
   # e.g. "/application.css" -> "/application-abc123.css"
+  # Empty in development — helper falls back to the unfingerprinted path.
   attr_reader :manifest
 
   def initialize(root)
     @root = root
     @manifest = {}
-
-    if production?
-      load_manifest
-    else
-      load_assets_into_memory
-    end
+    load_manifest if production?
   end
 
   def call(env)
     path = env['PATH_INFO'].to_s.split('?').first
-
-    if production?
-      serve_from_disk(path)
-    else
-      serve_from_memory(path)
-    end
+    production? ? serve_from_disk(path) : serve_dev(path)
   end
 
   def self.precompile(root)
@@ -87,44 +78,16 @@ class AssetServer
     [200, headers, [body]]
   end
 
-  def load_assets_into_memory
-    @assets = {}
-    load_files_into_memory('assets/stylesheets', '.css')
-    load_files_into_memory('assets/javascripts', '.js')
-    load_files_into_memory('assets/images')
-  end
+  def serve_dev(path)
+    ext = File.extname(path)
 
-  def serve_from_memory(fingerprinted_path)
-    asset = @assets[fingerprinted_path]
-    return [404, {}, ['Not found']] unless asset
-
-    headers = {
-      'Content-Type'  => asset[:content_type],
-      'Cache-Control' => 'public, max-age=31536000, immutable',
-    }
-    [200, headers, [asset[:body]]]
-  end
-
-  def load_files_into_memory(rel_dir, ext_filter = nil)
-    dir = File.join(@root, rel_dir)
-    return unless File.directory?(dir)
-
-    Dir.glob(File.join(dir, '**', '*')).each do |path|
-      next if File.directory?(path)
-      next if ext_filter && File.extname(path) != ext_filter
-
-      body    = File.binread(path)
-      logical = '/' + path.sub("#{dir}/", '')
-      register_in_memory(logical, body, File.extname(path))
+    Dir.glob(File.join(@root, 'assets', '**', '*')).each do |file_path|
+      next if File.directory?(file_path)
+      next unless file_path.end_with?(path)
+      return [200, { 'Content-Type' => CONTENT_TYPES.fetch(ext, 'application/octet-stream'), 'Cache-Control' => 'no-cache' }, [File.binread(file_path)]]
     end
-  end
 
-  def register_in_memory(logical_path, body, ext)
-    digest       = Digest::MD5.hexdigest(body)
-    fingerprinted = AssetServer.fingerprint(logical_path, digest)
-    content_type  = CONTENT_TYPES.fetch(ext, 'application/octet-stream')
-    @assets[fingerprinted] = { body: body, content_type: content_type }
-    @manifest[logical_path] = fingerprinted
+    [404, {}, ['Not found']]
   end
 
   def self.copy_files(root, rel_dir, ext_filter, output_dir, manifest)
@@ -135,9 +98,9 @@ class AssetServer
       next if File.directory?(src)
       next if ext_filter && File.extname(src) != ext_filter
 
-      body         = File.binread(src)
-      logical      = '/' + src.sub("#{dir}/", '')
-      digest       = Digest::MD5.hexdigest(body)
+      body          = File.binread(src)
+      logical       = '/' + src.sub("#{dir}/", '')
+      digest        = Digest::MD5.hexdigest(body)
       fingerprinted = fingerprint(logical, digest)
 
       dest = File.join(output_dir, fingerprinted)
