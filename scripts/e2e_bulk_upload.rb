@@ -20,19 +20,23 @@ require "net/http"
 require "json"
 require "openssl"
 require "securerandom"
-require "open3"
 require "base64"
-
-# Load app models + Mongoid so we can query MongoDB directly at the end.
-require_relative "../app"
+require "set"
+require "optparse"
+require "sidekiq/api"
 
 # ── configuration ──────────────────────────────────────────────────────────────
 
-HOST     = ENV.fetch("HOST",     "localhost:3000")
-ACCOUNT  = ENV.fetch("ACCOUNT",  "BulkE Two E")
-PASSWORD = ENV.fetch("PASSWORD", "e2epassword")
-
-BASE_URI = URI("http://#{HOST}")
+DEFAULT_HOST = "localhost:3000"
+ACCOUNT = "BulkE Two E"
+PASSWORD = "e2epassword"
+DEFAULT_ALLEGIANCE_SERVER = "Testfall"
+DEFAULT_ALLEGIANCE_NAME = "Test Suite"
+DEFAULT_FLAT_UPLOAD_SIZE = 1000
+DEFAULT_TREE_SIZE = 1000
+DEFAULT_VASSALS_PER_PATRON = 10
+ENV["RACK_ENV"] = "development"
+RACK_ENV = ENV["RACK_ENV"]
 
 # ── output helpers ─────────────────────────────────────────────────────────────
 
@@ -55,6 +59,93 @@ $fail = 0
 def pass(label) = ($pass += 1; green("  \u2713 #{label}"))
 def fail_check(label) = ($fail += 1; red("  \u2717 #{label}"))
 def abort!(msg) = (red("FATAL: #{msg}"); exit(1))
+
+def help_text
+  <<~HELP
+    Usage:
+      ruby scripts/e2e_bulk_upload.rb --mode flat
+      ruby scripts/e2e_bulk_upload.rb --mode tree
+
+    Optional flags:
+      --clean                       Delete all existing characters and allegiances before the run
+      --host HOST                   App host and port, default #{DEFAULT_HOST}
+      --mode MODE                   Fixture mode: flat or tree
+      --size N                      Record count, default #{DEFAULT_FLAT_UPLOAD_SIZE} for flat and #{DEFAULT_TREE_SIZE} for tree
+      --vassals-per-patron N        Maximum tree branching factor, default #{DEFAULT_VASSALS_PER_PATRON}
+      -h, --help                    Show this help text
+
+    Notes:
+      Bare execution is disabled. You must pass --mode.
+      In tree mode, VASSALS_PER_PATRON is a maximum branching factor. The last level may be partially filled.
+
+    Examples:
+      ruby scripts/e2e_bulk_upload.rb --mode flat
+      ruby scripts/e2e_bulk_upload.rb --clean --mode tree
+      ruby scripts/e2e_bulk_upload.rb --host staging.local:3000 --mode flat
+      ruby scripts/e2e_bulk_upload.rb --mode tree
+      ruby scripts/e2e_bulk_upload.rb --mode tree --size 1093 --vassals-per-patron 3
+  HELP
+end
+
+def parse_options!
+  options = {
+    clean: false,
+    host: DEFAULT_HOST,
+    mode: nil,
+    size: nil,
+    vassals_per_patron: DEFAULT_VASSALS_PER_PATRON
+  }
+
+  parser = OptionParser.new do |opts|
+    opts.banner = help_text
+
+    opts.on("--clean", "Delete all existing characters and allegiances before the run") do
+      options[:clean] = true
+    end
+
+    opts.on("--host HOST", "App host and port") do |host|
+      options[:host] = host
+    end
+
+    opts.on("--mode MODE", "Fixture mode: flat or tree") do |mode|
+      unless %w[flat tree].include?(mode)
+        raise OptionParser::InvalidArgument, "mode must be 'flat' or 'tree'"
+      end
+
+      options[:mode] = mode
+    end
+
+    opts.on("--size N", Integer, "Record count") do |size|
+      options[:size] = size
+    end
+
+    opts.on("--vassals-per-patron N", Integer, "Exact tree branching factor") do |count|
+      options[:vassals_per_patron] = count
+    end
+
+    opts.on("-h", "--help", "Show this help text") do
+      puts help_text
+      exit 0
+    end
+  end
+
+  parser.parse!(ARGV)
+  abort!("Unknown positional arguments: #{ARGV.join(' ')}\n\n#{help_text}") if ARGV.any?
+  unless options[:mode]
+    puts help_text
+    exit 1
+  end
+  options[:size] ||= options[:mode] == "flat" ? DEFAULT_FLAT_UPLOAD_SIZE : DEFAULT_TREE_SIZE
+
+  options
+rescue OptionParser::ParseError => e
+  abort!("#{e.message}\n\n#{help_text}")
+end
+
+def ensure_safe_rack_env!
+  abort!("Refusing to run e2e bulk upload in production") if RACK_ENV == "production"
+  abort!("e2e bulk upload must force RACK_ENV to 'development'") unless RACK_ENV == "development"
+end
 
 # ── HTTP helpers ───────────────────────────────────────────────────────────────
 
@@ -110,6 +201,120 @@ def sign(key, body)
   OpenSSL::HMAC.hexdigest("SHA256", key, body)
 end
 
+def env_int(name, default)
+  Integer(ENV.fetch(name, default.to_s), 10)
+rescue ArgumentError
+  abort!("#{name} must be an integer")
+end
+
+def build_allegiance_tree_records(server:, allegiance_name:, total_nodes:, vassals_per_patron:)
+  abort!("ALLEGIANCE_SIZE must be >= 1") if total_nodes < 1
+  abort!("VASSALS_PER_PATRON must be between 1 and 10") unless (1..10).cover?(vassals_per_patron)
+
+  races = %w[1 2 3 4 5 6 7 8 9 10 11 12 13]
+  genders = %w[1 2]
+  ranks = (1..10).to_a
+
+  nodes = total_nodes.times.map do |i|
+    {
+      "name" => format("TreeMember%04d", i),
+      "race" => races[i % races.length],
+      "gender" => genders[i % genders.length],
+      "rank" => ranks[i % ranks.length],
+      "parent_name" => nil,
+      "child_names" => []
+    }
+  end
+
+  root = nodes.first
+  queue = [root]
+  next_idx = 1
+
+  while queue.any? && next_idx < nodes.length
+    parent = queue.shift
+    vassals_per_patron.times do
+      child = nodes[next_idx]
+      abort!("internal tree generation error: ran out of child nodes") if child.nil?
+
+      child["parent_name"] = parent["name"]
+      parent["child_names"] << child["name"]
+      queue << child
+      next_idx += 1
+      break if next_idx >= nodes.length
+    end
+  end
+
+  index = nodes.each_with_object({}) { |node, acc| acc[node["name"]] = node }
+  monarch_ref = {
+    "name" => root["name"],
+    "race" => root["race"],
+    "gender" => root["gender"],
+    "rank" => root["rank"]
+  }
+
+  records = nodes.map do |node|
+    record = {
+      "server" => server,
+      "name" => node["name"],
+      "race" => node["race"],
+      "gender" => node["gender"],
+      "rank" => node["rank"],
+      "allegiance_name" => allegiance_name,
+      "monarch" => monarch_ref
+    }
+
+    if node["parent_name"]
+      parent = index.fetch(node["parent_name"])
+      record["patron"] = {
+        "name" => parent["name"],
+        "race" => parent["race"],
+        "gender" => parent["gender"],
+        "rank" => parent["rank"]
+      }
+    end
+
+    if node["child_names"].any?
+      record["vassals"] = node["child_names"].map do |child_name|
+        child = index.fetch(child_name)
+        {
+          "name" => child["name"],
+          "race" => child["race"],
+          "gender" => child["gender"],
+          "rank" => child["rank"]
+        }
+      end
+    end
+
+    record
+  end
+
+  {
+    records: records,
+    root_name: root["name"],
+    name_index: records.each_with_object({}) { |record, acc| acc[record["name"]] = record }
+  }
+end
+
+def traverse_tree_records(root_name, index)
+  visited = Set.new
+  queue = [root_name]
+
+  until queue.empty?
+    current_name = queue.shift
+    next if visited.include?(current_name)
+
+    visited << current_name
+    record = index[current_name]
+    next unless record && record["vassals"]
+
+    record["vassals"].each do |vassal|
+      queue << vassal["name"]
+    end
+  end
+
+  visited
+end
+
 # ── rate-limit key flushing ────────────────────────────────────────────────────
 
 def flush_rate_limit
@@ -117,36 +322,36 @@ def flush_rate_limit
   redis.del("bulk_upload:ratelimit:127.0.0.1")
 end
 
-# ── sidekiq management ─────────────────────────────────────────────────────────
-
-$sidekiq_pid = nil
-
-def start_sidekiq_if_needed
-  running = system("pgrep -f 'sidekiq.*sidekiq_boot' > /dev/null 2>&1")
-  if running
-    pass("sidekiq already running")
-    return
-  end
-
-  dim("  Starting sidekiq…")
-  $sidekiq_pid = spawn(
-    "bundle exec sidekiq -r ./lib/sidekiq_boot.rb",
-    out: "/tmp/e2e_sidekiq.log", err: "/tmp/e2e_sidekiq.log"
-  )
-  sleep 2
-  begin
-    Process.kill(0, $sidekiq_pid)
-    pass("sidekiq started (pid #{$sidekiq_pid})")
-  rescue Errno::ESRCH
-    abort!("sidekiq failed to start — see /tmp/e2e_sidekiq.log")
-  end
+def flush_inflight
+  redis = Redis.new(url: ENV["REDIS_URL"] || "redis://localhost:6379")
+  redis.del(BulkUploadHelper::INFLIGHT_KEY)
 end
 
-at_exit do
-  if $sidekiq_pid
-    dim("  Stopping sidekiq (pid #{$sidekiq_pid})…")
-    Process.kill("TERM", $sidekiq_pid) rescue nil
+def flush_sidekiq_state
+  cleared = 0
+
+  Sidekiq::Queue.all.each do |queue|
+    cleared += queue.size
+    queue.clear
   end
+
+  [Sidekiq::RetrySet.new, Sidekiq::ScheduledSet.new, Sidekiq::DeadSet.new].each do |set|
+    set.each do |job|
+      job.delete
+      cleared += 1
+    end
+  end
+
+  pass("Cleared Sidekiq state (#{cleared} job#{'s' if cleared != 1})")
+end
+
+def maybe_clean_db!
+  return unless $cli_options[:clean]
+
+  dim("  Cleaning existing characters and allegiances...")
+  Character.unscoped.delete_all
+  Allegiance.delete_all
+  pass("Existing characters and allegiances removed")
 end
 
 # ── payloads ───────────────────────────────────────────────────────────────────
@@ -184,15 +389,26 @@ FORBIDDEN_NAMES = %w[RetailSkip BadPatron]
 # TEST SUITE
 # ══════════════════════════════════════════════════════════════════════════════
 
+$cli_options = parse_options!
+BASE_URI = URI("http://#{$cli_options[:host]}")
+
+# Load app models + Mongoid only after CLI gating so --help and bare execution
+# do not boot the Sinatra app.
+require_relative "../app"
+
 bold "=== Bulk Upload End-to-End Tests ==="
 puts "  host:    #{BASE_URI}"
 puts "  account: #{ACCOUNT}"
+puts "  rack env: #{RACK_ENV}"
 puts ""
 
 # ── 0. Infrastructure ──────────────────────────────────────────────────────────
 
 bold "0. Infrastructure"
-start_sidekiq_if_needed
+ensure_safe_rack_env!
+flush_sidekiq_state
+flush_inflight
+maybe_clean_db!
 puts ""
 
 # ── 1. Account setup ───────────────────────────────────────────────────────────
@@ -554,24 +770,53 @@ puts ""
 
 # ── 9. Large allegiance upload (30,000 partial records) ───────────────────────
 
-bold "9. Large allegiance upload (30,000 partial records)"
+bold "9. Large allegiance upload"
 
 flush_rate_limit
+flush_inflight
 
-ALLEGIANCE_SERVER = "Coldeve"
-ALLEGIANCE_SIZE   = 30_000
-RACES             = %w[1 2 3 4 5 6 7 8 9 10 11 12 13]
-GENDERS           = %w[1 2]
-RANKS             = (1..10).to_a
+ALLEGIANCE_MODE           = $cli_options[:mode]
+ALLEGIANCE_SERVER         = DEFAULT_ALLEGIANCE_SERVER
+ALLEGIANCE_NAME           = DEFAULT_ALLEGIANCE_NAME
+ALLEGIANCE_SIZE           = $cli_options[:size]
+VASSALS_PER_PATRON        = $cli_options[:vassals_per_patron]
 
-allegiance_records = ALLEGIANCE_SIZE.times.map do |i|
-  {
-    "server" => ALLEGIANCE_SERVER,
-    "name"   => "AllegMember#{i}",
-    "race"   => RACES[i % RACES.length],
-    "gender" => GENDERS[i % GENDERS.length],
-    "rank"   => RANKS[i % RANKS.length],
-  }
+tree_fixture = nil
+
+case ALLEGIANCE_MODE
+when "flat"
+  races = %w[1 2 3 4 5 6 7 8 9 10 11 12 13]
+  genders = %w[1 2]
+  ranks = (1..10).to_a
+
+  allegiance_records = DEFAULT_FLAT_UPLOAD_SIZE.times.map do |i|
+    {
+      "server" => ALLEGIANCE_SERVER,
+      "name"   => "AllegMember#{i}",
+      "race"   => races[i % races.length],
+      "gender" => genders[i % genders.length],
+      "rank"   => ranks[i % ranks.length],
+    }
+  end
+
+  puts "  mode: flat"
+  puts "  records: #{ALLEGIANCE_SIZE}"
+when "tree"
+  tree_fixture = build_allegiance_tree_records(
+    server: ALLEGIANCE_SERVER,
+    allegiance_name: ALLEGIANCE_NAME,
+    total_nodes: ALLEGIANCE_SIZE,
+    vassals_per_patron: VASSALS_PER_PATRON
+  )
+  allegiance_records = tree_fixture[:records]
+
+  puts "  mode: tree"
+  puts "  records: #{ALLEGIANCE_SIZE}"
+  puts "  allegiance: #{ALLEGIANCE_NAME}"
+  puts "  vassals_per_patron: #{VASSALS_PER_PATRON}"
+  puts "  root: #{tree_fixture[:root_name]}"
+else
+  abort!("Unsupported ALLEGIANCE_MODE=#{ALLEGIANCE_MODE.inspect}; expected 'flat' or 'tree'")
 end
 
 allegiance_body = allegiance_records.map(&:to_json).join("\n")
@@ -584,7 +829,7 @@ res = http_post("/characters",
     "X-TreeStats-Upload-Signature"    => "sha256=#{sign(API_KEY, allegiance_body)}",
   }
 )
-check_status("30,000-record allegiance NDJSON upload", res, 202)
+check_status("#{allegiance_records.length}-record allegiance NDJSON upload", res, 202)
 check_json("body has status=queued", res, "status", "queued")
 
 allegiance_log_id = (JSON.parse(res.body)["log_id"] rescue nil)
@@ -621,16 +866,16 @@ if allegiance_log_id
          "skipped=#{audit_log.skipped_count} " \
          "errors=#{audit_log.error_count}"
 
-    if audit_log.record_count == ALLEGIANCE_SIZE
-      pass("record_count matches submitted (#{ALLEGIANCE_SIZE})")
+    if audit_log.record_count == allegiance_records.length
+      pass("record_count matches submitted (#{allegiance_records.length})")
     else
-      fail_check("record_count mismatch: expected #{ALLEGIANCE_SIZE}, got #{audit_log.record_count}")
+      fail_check("record_count mismatch: expected #{allegiance_records.length}, got #{audit_log.record_count}")
     end
 
-    if audit_log.processed_count == ALLEGIANCE_SIZE
-      pass("all #{ALLEGIANCE_SIZE} records processed")
+    if audit_log.processed_count == allegiance_records.length
+      pass("all #{allegiance_records.length} records processed")
     else
-      fail_check("processed_count=#{audit_log.processed_count} (expected #{ALLEGIANCE_SIZE})")
+      fail_check("processed_count=#{audit_log.processed_count} (expected #{allegiance_records.length})")
     end
   elsif audit_log&.status == "failed"
     fail_check("Job status=failed after #{waited}s")
@@ -669,8 +914,8 @@ if res.code == "200"
 
         [
           ["status",          "completed"],
-          ["record_count",    ALLEGIANCE_SIZE],
-          ["processed_count", ALLEGIANCE_SIZE],
+          ["record_count",    allegiance_records.length],
+          ["processed_count", allegiance_records.length],
           ["skipped_count",   0],
           ["error_count",     0],
         ].each do |field, expected|
@@ -696,6 +941,108 @@ if res.code == "200"
   else
     fail_check("Response is not a JSON array: #{res.body[0, 200]}")
   end
+end
+
+puts ""
+
+# ── 12. Tree-mode relationship validation ─────────────────────────────────────
+
+if ALLEGIANCE_MODE == "tree"
+  bold "12. Tree-mode relationship validation"
+
+  rel_pass = 0
+  rel_fail = 0
+
+  rel_check = lambda do |label, ok|
+    if ok
+      rel_pass += 1
+      green("  \u2713 #{label}")
+    else
+      rel_fail += 1
+      red("  \u2717 #{label}")
+    end
+  end
+
+  tree_names = tree_fixture[:records].map { |record| record["name"] }
+  tree_name_set = tree_names.to_set
+  db_records = Character.unscoped.where(server: ALLEGIANCE_SERVER, :name.in => tree_names).to_a
+  db_index = db_records.each_with_object({}) { |record, acc| acc[record.name] = record }
+
+  rel_check.("all #{tree_names.length} tree characters persisted on #{ALLEGIANCE_SERVER}", db_records.length == tree_names.length)
+  rel_check.("all tree names are unique", db_index.keys.length == tree_names.length)
+
+  allegiance = Allegiance.find_by(server: ALLEGIANCE_SERVER, name: ALLEGIANCE_NAME) rescue nil
+  rel_check.("allegiance '#{ALLEGIANCE_NAME}' exists", !allegiance.nil?)
+
+  rootless = db_records.select { |record| record.patron.nil? }
+  rel_check.("exactly one root has no patron", rootless.length == 1)
+  rel_check.("root matches generated root #{tree_fixture[:root_name]}", rootless.first&.name == tree_fixture[:root_name])
+
+  db_records.each do |record|
+    expected = tree_fixture[:name_index].fetch(record.name)
+
+    rel_check.("#{record.name}: allegiance_name preserved", record.allegiance_name == ALLEGIANCE_NAME)
+    rel_check.("#{record.name}: monarch points to root", record.monarch && record.monarch["name"] == tree_fixture[:root_name])
+
+    expected_patron_name = expected.dig("patron", "name")
+    actual_patron_name = record.patron && record.patron["name"]
+    rel_check.("#{record.name}: patron matches expected", actual_patron_name == expected_patron_name)
+
+    expected_vassal_names = (expected["vassals"] || []).map { |vassal| vassal["name"] }.sort
+    actual_vassal_names = (record.vassals || []).map { |vassal| vassal["name"] }.sort
+    rel_check.("#{record.name}: vassal names match expected", actual_vassal_names == expected_vassal_names)
+
+    actual_vassal_names.each do |vassal_name|
+      rel_check.("#{record.name}: vassal #{vassal_name} exists", tree_name_set.include?(vassal_name) && db_index.key?(vassal_name))
+      reciprocal_patron = db_index[vassal_name]&.patron&.[]("name")
+      rel_check.("#{record.name}: vassal #{vassal_name} reciprocates patron", reciprocal_patron == record.name)
+    end
+
+    if actual_patron_name
+      rel_check.("#{record.name}: patron #{actual_patron_name} exists", tree_name_set.include?(actual_patron_name) && db_index.key?(actual_patron_name))
+      reciprocal_vassals = (db_index[actual_patron_name]&.vassals || []).map { |vassal| vassal["name"] }
+      rel_check.("#{record.name}: patron #{actual_patron_name} includes reciprocal vassal", reciprocal_vassals.include?(record.name))
+    end
+  end
+
+  expected_reachable = traverse_tree_records(tree_fixture[:root_name], tree_fixture[:name_index])
+  actual_index = db_records.each_with_object({}) do |record, acc|
+    acc[record.name] = {
+      "vassals" => (record.vassals || []).map { |vassal| { "name" => vassal["name"] } }
+    }
+  end
+  actual_reachable = traverse_tree_records(tree_fixture[:root_name], actual_index)
+
+  rel_check.("generated fixture reaches all #{tree_names.length} names", expected_reachable.length == tree_names.length)
+  rel_check.("persisted tree reaches all #{tree_names.length} names", actual_reachable.length == tree_names.length)
+  rel_check.("persisted connectivity matches generated connectivity", actual_reachable == expected_reachable)
+
+  chain_path = "/chain/#{URI.encode_www_form_component(ALLEGIANCE_SERVER)}/#{URI.encode_www_form_component(tree_fixture[:root_name])}"
+  res = http_get(chain_path, headers: { "Accept" => "application/json" })
+  check_status("GET #{chain_path}", res, 200)
+
+  chain = JSON.parse(res.body) rescue nil
+  chain_names = Set.new
+  if chain.is_a?(Hash)
+    queue = [chain]
+    until queue.empty?
+      node = queue.shift
+      next unless node.is_a?(Hash) && node["name"]
+
+      chain_names << node["name"]
+      (node["children"] || []).each { |child| queue << child }
+    end
+  end
+
+  rel_check.("chain response parsed as a tree", chain.is_a?(Hash))
+  rel_check.("chain root matches generated root", chain.is_a?(Hash) && chain["name"] == tree_fixture[:root_name])
+  rel_check.("chain traversal reaches all #{tree_names.length} names", chain_names == tree_name_set)
+
+  puts ""
+  puts "  Tree records validated: #{tree_names.length}"
+  puts "  Relationship assertions: #{rel_pass} passed, #{rel_fail} failed"
+  $pass += rel_pass
+  $fail += rel_fail
 end
 
 puts ""
