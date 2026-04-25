@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 ruby '3.4.7'
 
 gem 'json'
+gem 'oj'
 gem 'puma'
 gem 'puma_worker_killer'
 gem 'rack'

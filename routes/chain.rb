@@ -14,7 +14,7 @@ module Sinatra
               not_found
             end
 
-            AllegianceChain.new(server, name).get_chain.to_json
+            Oj.dump(AllegianceChain.new(server, name).get_chain)
           end
         end
       end

@@ -90,6 +90,9 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.2-x86_64-linux-gnu)
       racc (~> 1.4)
+    oj (3.17.0)
+      bigdecimal (>= 3.0)
+      ostruct (>= 0.2)
     ostruct (0.6.3)
     parallel (1.28.0)
     parser (3.3.11.1)
@@ -232,6 +235,7 @@ DEPENDENCIES
   mongoid
   newrelic_rpm
   nokogiri
+  oj
   ostruct (~> 0.6.1)
   pry
   puma
