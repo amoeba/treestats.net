@@ -235,6 +235,16 @@ var popchart_v2 = function (selector) {
 
         // Set up interactions
         setupHover();
+
+        // Show through-date derived from actual data max (always UTC)
+        const throughDate = d3.utcFormat("%b %d, %Y")(d3.max(allData, (d) => d.date));
+        container
+          .append("p")
+          .attr("class", "through-date")
+          .style("font-size", "11px")
+          .style("color", "rgba(220, 220, 220, 0.5)")
+          .style("margin", "2px 0 0 0")
+          .text("Data through " + throughDate + " (UTC)");
       })
       .catch((err) => {
         console.error(err);

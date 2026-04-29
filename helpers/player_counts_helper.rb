@@ -69,6 +69,11 @@ def player_counts(servers = nil, range = nil)
 
   range = "3mo" if range.nil?
 
+  # Use explicit UTC midnight so our date boundary aligns with how MongoDB
+  # groups dates (UTC). Date.today uses server local time, which can differ.
+  now_utc = Time.now.utc
+  today_utc = Time.utc(now_utc.year, now_utc.month, now_utc.day)
+
   if range && range != "All"
     range_map = {
       "3mo" => 93,
@@ -77,7 +82,12 @@ def player_counts(servers = nil, range = nil)
     }
 
     match["$match"]["c_at"] = {
-      "$gte" => Date.today - range_map[range]
+      "$gte" => today_utc - (range_map[range] * 86400),
+      "$lt" => today_utc
+    }
+  else
+    match["$match"]["c_at"] = {
+      "$lt" => today_utc
     }
   end
 

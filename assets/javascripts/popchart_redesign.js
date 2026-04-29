@@ -278,6 +278,16 @@ var popchart = function (selector, url) {
         .text("Total: " + total_pop);
     }
 
+    const throughDate = d3.utcFormat("%b %d, %Y")(d3.max(X));
+    svg
+      .append("text")
+      .attr("x", margin.left)
+      .attr("y", height - margin.bottom + 40)
+      .attr("font-family", "sans-serif")
+      .attr("font-size", 11)
+      .attr("fill", "rgba(220, 220, 220, 0.5)")
+      .text("Data through " + throughDate + " (UTC)");
+
     setTimeout(nudge, 150);
   };
 
