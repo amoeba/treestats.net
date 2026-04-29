@@ -1104,13 +1104,27 @@ var popchart_v2 = function (selector) {
         const dateStr = d3.utcFormat("%b %d, %Y")(nearestDate);
         const total = d3.sum(valuesAtDate, (v) => v.count);
         let html = `<div class="tt-date">${dateStr}</div>`;
-        if (valuesAtDate.length > 1) {
+
+        if (chartType === "area" && valuesAtDate.length > 1) {
+          // Stacked mode: show hovered server first, then rest, then total
+          const others = valuesAtDate.filter((v) => v.server !== closest.server);
+          html += `<div class="tt-hovered" style="color:${colorScale(closest.server)}">▶ ${escapeHTML(closest.server)}: ${closest.count}</div>`;
+          if (others.length > 0) {
+            html += `<div class="tt-separator"></div>`;
+            others.forEach((v) => {
+              html += `<div class="tt-other" style="color:${colorScale(v.server)}">${escapeHTML(v.server)}: ${v.count}</div>`;
+            });
+          }
           html += `<div class="tt-total">Total: ${total}</div>`;
+        } else {
+          if (valuesAtDate.length > 1) {
+            html += `<div class="tt-total">Total: ${total}</div>`;
+          }
+          valuesAtDate.forEach((v) => {
+            const highlight = v.server === closest.server ? "font-weight:bold;" : "";
+            html += `<div style="color:${colorScale(v.server)};${highlight}">${escapeHTML(v.server)}: ${v.count}</div>`;
+          });
         }
-        valuesAtDate.forEach((v) => {
-          const highlight = v.server === closest.server ? "font-weight:bold;" : "";
-          html += `<div style="color:${colorScale(v.server)};${highlight}">${escapeHTML(v.server)}: ${v.count}</div>`;
-        });
 
         tooltip.html(html);
 
