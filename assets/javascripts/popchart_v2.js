@@ -473,7 +473,7 @@ var popchart_v2 = function (selector) {
   //=== STACKED AREA CHART ===
   function renderAreas(data, servers, t) {
     const pivoted = pivotData(data, servers);
-    const stackGen = d3.stack().keys(servers).order(d3.stackOrderNone);
+    const stackGen = d3.stack().keys(servers).order(d3.stackOrderDescending);
     const layers = stackGen(pivoted);
     renderedStacked = { layers, pivoted, servers };
 
