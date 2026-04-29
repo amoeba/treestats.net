@@ -2,7 +2,11 @@ require_relative '../spec_helper'
 
 describe 'PlayerCountsHelper', :unit do
   before do
-    PlayerCount.all.destroy
+    PlayerCount.destroy_all
+  end
+
+  after do
+    PlayerCount.destroy_all
   end
 
   describe "date boundary" do
