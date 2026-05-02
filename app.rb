@@ -51,6 +51,7 @@ class TreeStats < Sinatra::Base
 
   # Routes (alpha order)
   register Sinatra::TreeStats::Routing::Accounts
+  register Sinatra::TreeStats::Routing::Admin
   register Sinatra::TreeStats::Routing::Allegiances
   register Sinatra::TreeStats::Routing::Chain
   register Sinatra::TreeStats::Routing::General
@@ -75,6 +76,14 @@ class TreeStats < Sinatra::Base
     set :protection, false
     set :host_authorization, {}
 
+    # Sessions (used by the admin login flow). The session cookie is signed
+    # with SESSION_SECRET; CSRF/timing checks live in AdminHelper.
+    set :session_secret, ENV.fetch(
+      'SESSION_SECRET',
+      'dev-only-secret-change-in-production-' + ('x' * 64)
+    )
+    set :sessions, same_site: :lax, httponly: true
+
     # Mongoid
     Mongoid.load!('./config/mongoid.yml')
     Mongo::Logger.logger.level = ::Logger::INFO
@@ -94,6 +103,7 @@ class TreeStats < Sinatra::Base
   helpers do
     include Sinatra::TreeStats::AssetHelper
     include RequestHelper
+    include AdminHelper
   end
 
   configure :production do

@@ -74,6 +74,29 @@ task :simulate do
   end
 end
 
+namespace :admin do
+  desc 'Create or reset the single site admin (prompts for name and password)'
+  task :create do
+    require './app'
+    require 'io/console'
+
+    print 'Admin name: '
+    name = $stdin.gets&.strip.to_s
+    abort 'Name is required.' if name.empty?
+
+    password = $stdin.getpass('Password: ')
+    confirm  = $stdin.getpass('Confirm:  ')
+    abort 'Passwords did not match.' unless password == confirm
+    abort 'Password must be at least 12 characters.' if password.length < 12
+
+    user = AdminUser.where(name: name).first || AdminUser.new(name: name)
+    user.password = password
+    user.save!
+
+    puts "Admin '#{name}' saved."
+  end
+end
+
 namespace :assets do
   desc 'Compile and fingerprint assets to public/assets/'
   task :precompile do

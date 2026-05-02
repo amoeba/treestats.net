@@ -1,6 +1,8 @@
 - if @character.nil?
   %span Couldn't find the requested character.
 - else
+  - if admin?
+    != haml :_admin_widget, locals: { character: @character }
   %div.character-header
     %div
       %div.character-header-server

@@ -14,6 +14,7 @@ gem 'sinatra'
 gem 'sinatra-cross_origin'
 gem 'sinatra-redis'
 
+gem 'bcrypt'
 gem 'mongoid'
 gem 'redis'
 

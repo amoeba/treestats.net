@@ -1,0 +1,20 @@
+!!!
+%html{:lang => 'en'}
+  %head
+    %meta{:charset => "utf-8"}
+    %meta{:name => "robots", :content => "noindex, nofollow, noarchive, nosnippet"}
+    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
+    %title Sign in
+    %link{:rel => "stylesheet", :href => stylesheet_path("admin")}
+  %body.admin-login-page
+    %main.admin-login
+      %form{:method => "post", :action => "/admin/login", :autocomplete => "off"}
+        %input{:type => "hidden", :name => "authenticity_token", :value => @csrf_token}
+        %div.admin-login-honeypot{"aria-hidden" => "true"}
+          %label{:for => "website"} Website
+          %input{:type => "text", :name => "website", :id => "website", :tabindex => "-1", :autocomplete => "off"}
+        %label{:for => "admin-name"} Name
+        %input{:type => "text", :name => "name", :id => "admin-name", :autocomplete => "off", :autofocus => true}
+        %label{:for => "admin-password"} Password
+        %input{:type => "password", :name => "password", :id => "admin-password", :autocomplete => "off"}
+        %button{:type => "submit"} Sign in

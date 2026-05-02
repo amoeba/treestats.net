@@ -1,0 +1,25 @@
+- character ||= @character
+- archived = !!character['ar']
+- target = archived ? 'false' : 'true'
+- label = archived ? 'Archived' : 'Active'
+
+%div.admin-widget{:id => "admin-widget"}
+  %div.admin-widget-frame
+    %div.admin-widget-header
+      %span.admin-widget-flourish-left ✦
+      %span.admin-widget-badge
+        -# https://phosphoricons.com/ — crown
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 256 256"><path d="M248,80a28,28,0,1,0-51.12,15.77l-26.79,33L146,73.4a28,28,0,1,0-36,0L85.91,128.74l-26.79-33a28,28,0,1,0-26.6,12L47.76,194.3A16,16,0,0,0,63.55,208h128.9a16,16,0,0,0,15.79-13.7l15.24-86.59A28,28,0,0,0,248,80ZM128,40a12,12,0,1,1-12,12A12,12,0,0,1,128,40ZM20,80A12,12,0,1,1,32,92,12,12,0,0,1,20,80ZM192.45,192H63.55L49.71,113.39a27.81,27.81,0,0,0,9-3.79l31.18,38.4a8,8,0,0,0,12.91-1.21l25.18-46.2,25.18,46.2a8,8,0,0,0,12.91,1.21l31.18-38.4a27.81,27.81,0,0,0,9,3.79ZM220,92a12,12,0,1,1,12-12A12,12,0,0,1,220,92Z"></path></svg>
+        ADMIN
+      %span.admin-widget-flourish-right ✦
+    %div.admin-widget-row
+      %span.admin-widget-status{:class => archived ? 'archived' : 'active'}= label
+      %button.admin-widget-action{
+        "hx-post" => "/admin/character/#{character['server']}/#{character['name']}/archive",
+        "hx-vals" => "{\"archived\":\"#{target}\",\"authenticity_token\":\"#{csrf_token}\"}",
+        "hx-target" => "#admin-widget",
+        "hx-swap" => "outerHTML"
+      }= archived ? 'Unarchive' : 'Archive'
+      %form.admin-widget-logout{:method => "post", :action => "/admin/logout"}
+        %input{:type => "hidden", :name => "authenticity_token", :value => csrf_token}
+        %button{:type => "submit"} Log out
