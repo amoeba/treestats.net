@@ -70,6 +70,15 @@ module Sinatra
             content_type :html
             haml :_admin_widget, layout: false, locals: { character: character.reload }
           end
+
+          # Catch anything else under /admin before the /:server catch-all
+          app.get '/admin/?' do
+            halt 404
+          end
+
+          app.get %r{\A/admin/} do
+            halt 404
+          end
         end
       end
     end
