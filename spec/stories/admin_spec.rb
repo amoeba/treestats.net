@@ -174,7 +174,7 @@ describe "AdminStory" do
     yield
   ensure
     Time.singleton_class.alias_method :now, :__real_now
-    Time.singleton_class.remove_method :__real_now
+    Time.singleton_class.remove_method :__real_now if Time.singleton_class.method_defined?(:__real_now)
   end
 
   def extract_csrf
