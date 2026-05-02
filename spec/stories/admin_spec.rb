@@ -31,8 +31,9 @@ describe "AdminStory" do
       assert_equal 200, last_response.status
 
       token = extract_csrf
-      sleep 1.6
-      post '/admin/login', authenticity_token: token, name: 'admin', password: 'correct-horse-battery'
+      with_time_advanced(2) do
+        post '/admin/login', authenticity_token: token, name: 'admin', password: 'correct-horse-battery'
+      end
       get '/admin/login'
       assert_equal 404, last_response.status
     end
@@ -68,8 +69,9 @@ describe "AdminStory" do
       create_admin
       get '/admin/login'
       token = extract_csrf
-      sleep 1.6
-      post '/admin/login', authenticity_token: token, name: 'admin', password: 'correct-horse-battery'
+      with_time_advanced(2) do
+        post '/admin/login', authenticity_token: token, name: 'admin', password: 'correct-horse-battery'
+      end
       assert_equal 302, last_response.status
       assert_equal 'http://example.org/', last_response.headers['Location']
     end
@@ -78,8 +80,9 @@ describe "AdminStory" do
       create_admin
       get '/admin/login'
       token = extract_csrf
-      sleep 1.6
-      post '/admin/login', authenticity_token: token, name: 'admin', password: 'WRONG'
+      with_time_advanced(2) do
+        post '/admin/login', authenticity_token: token, name: 'admin', password: 'WRONG'
+      end
       assert_equal 404, last_response.status
     end
 
@@ -91,8 +94,9 @@ describe "AdminStory" do
       end
       get '/admin/login'
       token = extract_csrf
-      sleep 1.6
-      post '/admin/login', authenticity_token: token, name: 'admin', password: 'correct-horse-battery'
+      with_time_advanced(2) do
+        post '/admin/login', authenticity_token: token, name: 'admin', password: 'correct-horse-battery'
+      end
       assert_equal 404, last_response.status
     end
   end
@@ -163,6 +167,16 @@ describe "AdminStory" do
 
   private
 
+  def with_time_advanced(seconds)
+    future = Time.now + seconds
+    Time.singleton_class.alias_method :__real_now, :now
+    Time.singleton_class.define_method(:now) { future }
+    yield
+  ensure
+    Time.singleton_class.alias_method :now, :__real_now
+    Time.singleton_class.remove_method :__real_now
+  end
+
   def extract_csrf
     last_response.body[/name="authenticity_token"[^>]*value="([^"]+)"/, 1] ||
       last_response.body[/value="([^"]+)"[^>]*name="authenticity_token"/, 1]
@@ -176,7 +190,8 @@ describe "AdminStory" do
     create_admin
     get '/admin/login'
     token = extract_csrf
-    sleep 1.6
-    post '/admin/login', authenticity_token: token, name: 'admin', password: 'correct-horse-battery'
+    with_time_advanced(2) do
+      post '/admin/login', authenticity_token: token, name: 'admin', password: 'correct-horse-battery'
+    end
   end
 end

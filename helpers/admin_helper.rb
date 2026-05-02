@@ -41,7 +41,13 @@ module AdminHelper
 
   def record_failed_login_attempt!
     key = admin_login_rate_limit_key
-    count = redis.incr(key)
-    redis.expire(key, LOGIN_RATE_LIMIT_WINDOW) if count == 1
+    lua = <<~LUA
+      local count = redis.call('INCR', KEYS[1])
+      if count == 1 then
+        redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1]))
+      end
+      return count
+    LUA
+    redis.eval(lua, keys: [key], argv: [LOGIN_RATE_LIMIT_WINDOW])
   end
 end
