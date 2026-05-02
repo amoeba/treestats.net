@@ -38,6 +38,7 @@ require_relative 'lib/asset_server'
 class TreeStats < Sinatra::Base
   configure :production do
     use Sentry::Rack::CaptureExceptions
+    raise "SESSION_SECRET must be set in production" unless ENV['SESSION_SECRET']
   end
 
   set :root, File.dirname(__FILE__)
@@ -82,7 +83,7 @@ class TreeStats < Sinatra::Base
       'SESSION_SECRET',
       'dev-only-secret-change-in-production-' + ('x' * 64)
     )
-    set :sessions, same_site: :lax, httponly: true
+    set :sessions, same_site: :lax, httponly: true, secure: (ENV['RACK_ENV'] == 'production')
 
     # Mongoid
     Mongoid.load!('./config/mongoid.yml')

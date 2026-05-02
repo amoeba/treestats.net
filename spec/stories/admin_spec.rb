@@ -30,7 +30,9 @@ describe "AdminStory" do
       get '/admin/login'
       assert_equal 200, last_response.status
 
-      post '/admin/login', authenticity_token: extract_csrf, name: 'admin', password: 'correct-horse-battery'
+      token = extract_csrf
+      sleep 1.6
+      post '/admin/login', authenticity_token: token, name: 'admin', password: 'correct-horse-battery'
       get '/admin/login'
       assert_equal 404, last_response.status
     end
@@ -167,7 +169,7 @@ describe "AdminStory" do
   end
 
   def extract_widget_csrf
-    last_response.body[/authenticity_token\\?":\\?"([a-f0-9]+)\\?"/, 1] || extract_csrf
+    last_response.body[/authenticity_token&quot;:&quot;([a-f0-9]+)&quot;/, 1] || extract_csrf
   end
 
   def sign_in_admin

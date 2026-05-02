@@ -41,9 +41,7 @@ module AdminHelper
 
   def record_failed_login_attempt!
     key = admin_login_rate_limit_key
-    redis.multi do |pipe|
-      pipe.incr(key)
-      pipe.expire(key, LOGIN_RATE_LIMIT_WINDOW)
-    end
+    count = redis.incr(key)
+    redis.expire(key, LOGIN_RATE_LIMIT_WINDOW) if count == 1
   end
 end

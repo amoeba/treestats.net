@@ -15,6 +15,6 @@ class StoryTest < UnitTest
   end
 
   def redis
-    Sinatra::RedisHelper.redis
+    TreeStats.redis
   end
 end

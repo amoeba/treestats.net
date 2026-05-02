@@ -76,7 +76,7 @@ module Sinatra
             halt 404
           end
 
-          app.get %r{\A/admin/} do
+          app.get %r{/admin/} do
             halt 404
           end
         end
