@@ -173,8 +173,10 @@ describe "AdminStory" do
     Time.singleton_class.define_method(:now) { future }
     yield
   ensure
-    Time.singleton_class.alias_method :now, :__real_now
-    Time.singleton_class.remove_method :__real_now if Time.singleton_class.method_defined?(:__real_now)
+    if Time.singleton_class.method_defined?(:__real_now)
+      Time.singleton_class.alias_method :now, :__real_now
+      Time.singleton_class.remove_method :__real_now
+    end
   end
 
   def extract_csrf

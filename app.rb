@@ -97,6 +97,16 @@ class TreeStats < Sinatra::Base
     # Resque
     Resque.redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
 
+    # Pre-load admin rate-limit Lua script so evalsha works on first call
+    begin
+      r = Redis.new(host: uri.host, port: uri.port, password: uri.password)
+      r.script(:load, AdminHelper::RATE_LIMIT_LUA)
+    rescue => e
+      warn "Rate-limit Lua pre-load failed: #{e.message}"
+    ensure
+      r&.close
+    end
+
     # CORS
     enable :cross_origin
   end
