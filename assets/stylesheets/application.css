@@ -37,6 +37,7 @@ header .header-links-group div:first-child {}
 
 header .header-links-group div:last-child {
   display: flex;
+  flex-wrap: wrap;
   gap: 1em;
 }
 
@@ -828,4 +829,3 @@ pre {
   border-radius: 0.25em;
   padding: 0.25em 0.5em;
 }
-
