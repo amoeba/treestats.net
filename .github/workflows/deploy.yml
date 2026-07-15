@@ -1,0 +1,20 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Push to Dokku production
+        uses: dokku/github-action@master
+        with:
+          git_remote_url: ${{ secrets.DOKKU_PRODUCTION_REMOTE }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
