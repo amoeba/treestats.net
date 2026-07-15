@@ -14,7 +14,12 @@ jobs:
           fetch-depth: 0
 
       - name: Push to Dokku production
-        uses: dokku/github-action@master
-        with:
-          git_remote_url: ${{ secrets.DOKKU_PRODUCTION_REMOTE }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          GIT_REMOTE_URL: ${{ secrets.DOKKU_PRODUCTION_REMOTE }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -t rsa treestats.net >> ~/.ssh/known_hosts
+          git push "$GIT_REMOTE_URL" main
