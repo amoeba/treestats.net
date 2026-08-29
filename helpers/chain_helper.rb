@@ -4,8 +4,7 @@ class AllegianceChain
     @name = name
   end
 
-  def get_chain
-    highest_patron = find_highest_patron
+  def get_chain(highest_patron = find_highest_patron)
     return "{}" if highest_patron.nil?
 
     walk_chain_it(highest_patron)

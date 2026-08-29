@@ -6,6 +6,8 @@ describe "CharacterStory" do
   describe "POST / characters" do
     before do
       Character.all.destroy
+      chain_keys = redis.keys("chain:*")
+      redis.del(*chain_keys) unless chain_keys.empty?
     end
 
     # chain scenarios involving mutating another character
@@ -161,6 +163,15 @@ describe "CharacterStory" do
 
       chain = JSON.parse(get('/chain/test/thepatron').body)
       assert_equal(chain, {"name"=>"thepatron", "children"=>[{"name"=>"a"}, {"name"=>"b"}, {"name"=>"c"}]})
+    end
+
+    it "caches a chain by its ultimate patron for five minutes" do
+      post('/', '{"name": "thepatron", "server": "test", "vassals": [{"name": "thevassal", "server":"test"}]}')
+
+      get('/chain/test/thepatron')
+
+      assert_operator redis.ttl("chain:test:thepatron"), :>, 0
+      assert_operator redis.ttl("chain:test:thepatron"), :<=, 300
     end
 
     it "removes monarch when an update comes in without one" do
