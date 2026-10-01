@@ -24,7 +24,7 @@ SERVERS = [{name: "ACPrime",
   port: "9050",
   website_url: "https://web.asheron4fun.com/",
   discord_url: "https://discord.gg/afnQNXj"},
- {name: "BartleskeetHG",
+ {name: "BartleSkeetHG",
   description:
    "Long running end-of-retail server with very few changed elements and some new additions. Jump to Discord to see the latest info.",
   type: "PvE",
