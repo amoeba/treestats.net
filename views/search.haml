@@ -4,16 +4,16 @@
   = @count
   = @count == 1 ? "result" : "results"
   != haml :_pagination
-  - if params && params[:character]
-    %ul
-      - @records.to_a.each do |r|
-        %li
-          %a{:href => "/#{r.server}/#{r.name}"}= "#{r.name} (#{r.server})"
-  - elsif params && params[:allegiance]
+  - if params.include?('allegiance')
     %ul
       - @records.to_a.each do |r|
         %li
           %a{:href => "/allegiances/#{r.server}-#{r.name}"}= "#{r.name} (#{r.server})"
+  - else
+    %ul
+      - @records.to_a.each do |r|
+        %li
+          %a{:href => "/#{r.server}/#{r.name}"}= "#{r.name} (#{r.server})"
   != haml :_pagination
 - else
   %span No records found.

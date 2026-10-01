@@ -20,19 +20,24 @@ module Sinatra
               criteria[:server] = params[:server]
             end
 
-            # Deal with whether we're searching players or allegiances
-            if(params && params[:character])
-              if(params[:character].length >= 0)
-                criteria.merge!(SearchHelper.process_search(params[:character]))
-              end
-
+            # Deal with whether we're searching players or allegiances.
+            # Use key existence (not value truthiness) so that an empty or
+            # nil value (e.g. ?character or ?character=) still triggers the
+            # character search path.
+            if params.include?('character')
+              character_query = params['character'] || ""
+              criteria.merge!(SearchHelper.process_search(character_query))
               @records = Character.asc(:name).where(criteria).limit(page_size).offset(offset)
-            elsif(params && params[:allegiance])
-              if(params[:allegiance].length >= 0)
-                criteria[:name] = /#{Regexp.escape(params[:allegiance])}/i
+            elsif params.include?('allegiance')
+              allegiance_query = params['allegiance']
+              if allegiance_query && allegiance_query.length >= 0
+                criteria[:name] = /#{Regexp.escape(allegiance_query)}/i
               end
 
               @records = Allegiance.where(criteria).asc(:server).limit(page_size)
+            else
+              # Default to character search when no search param is present
+              @records = Character.asc(:name).where(criteria).limit(page_size).offset(offset)
             end
 
             @count = @records.count
