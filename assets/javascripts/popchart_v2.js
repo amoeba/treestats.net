@@ -29,6 +29,7 @@ var popchart_v2 = function (selector) {
     classic: d3.schemeTableau10,
     mono: ["#fff", "#ccc", "#999", "#666", "#eee", "#aaa"],
     site: ["#3975a5", "#d6a33d", "#5e9bbd", "#bb7a24", "#8ab6cc", "#edc86c"],
+    viridis: d3.quantize(d3.interpolateViridis, 6),
   };
   const colorScale = d3.scaleOrdinal(palettes.classic);
   const colorAssignments = new Map();
@@ -273,7 +274,7 @@ var popchart_v2 = function (selector) {
     ordered.forEach((server, i) => {
       const previous = used[i - 1];
       let choice = 0;
-      if (paletteType === "site" && i > 0) {
+      if ((paletteType === "site" || paletteType === "viridis") && i > 0) {
         const prevColor = used[i - 1];
         choice = (prevColor + 1 + (i % (palette.length - 1))) % palette.length;
       } else {
@@ -1293,7 +1294,7 @@ var popchart_v2 = function (selector) {
         render({});
         d3.select(selector).selectAll(".server-swatch").style("background-color", (s) => seriesColor(s));
       });
-    [{ value: "classic", text: "Classic" }, { value: "mono", text: "Black & white" }, { value: "site", text: "Blue & gold" }].forEach((opt) => {
+    [{ value: "classic", text: "Classic" }, { value: "mono", text: "Black & white" }, { value: "site", text: "Blue & gold" }, { value: "viridis", text: "Viridis" }].forEach((opt) => {
       paletteSel.append("option").attr("value", opt.value).property("selected", opt.value === paletteType).text(opt.text);
     });
 
