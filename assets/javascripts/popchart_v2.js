@@ -265,18 +265,18 @@ var popchart_v2 = function (selector) {
   }
 
   // Color neighboring series differently by greedily coloring their current endpoint order.
-  function assignColors(servers) {
+  function assignColors(servers, preserveOrder = false) {
     const palette = palettes[paletteType];
     const latestDate = d3.max(allData, (d) => d.date);
     const latest = new Map(servers.map((s) => [s, (allData.find((d) => d.server === s && d.date === latestDate) || {}).count || 0]));
-    const ordered = servers.slice().sort((a, b) => latest.get(b) - latest.get(a));
+    const ordered = preserveOrder ? servers.slice() : servers.slice().sort((a, b) => latest.get(b) - latest.get(a));
     const used = [];
     ordered.forEach((server, i) => {
       const previous = used[i - 1];
       let choice = 0;
-      if ((paletteType === "site" || paletteType === "viridis") && i > 0) {
+      if ((paletteType === "site" || paletteType === "viridis" || chartType === "area") && i > 0) {
         const prevColor = used[i - 1];
-        choice = (prevColor + 1 + (i % (palette.length - 1))) % palette.length;
+        choice = (prevColor + 1) % palette.length;
       } else {
         choice = i % palette.length;
       }
@@ -419,6 +419,15 @@ var popchart_v2 = function (selector) {
     const data = fillGaps(aggregateData(rawData, bucket), bucket);
     renderedData = data;
     const servers = [...activeServers].sort();
+
+    if (chartType === "area") {
+      const stackOrder = d3.stack().keys(servers).order(d3.stackOrderDescending)(pivotData(data, servers)).map((layer) => layer.key);
+      assignColors(stackOrder, true);
+      renderContext();
+    } else {
+      assignColors(servers);
+    }
+    d3.select(selector).selectAll(".server-swatch").style("background-color", (s) => seriesColor(s));
 
     // Clear everything if no data
     if (data.length === 0 || servers.length === 0) {
@@ -1288,7 +1297,6 @@ var popchart_v2 = function (selector) {
     const paletteSel = paletteCtrl.append("select").attr("class", "control-select")
       .on("change", function () {
         paletteType = this.value;
-        assignColors([...new Set(allData.map((d) => d.server))]);
         updateURL();
         renderContext();
         render({});
