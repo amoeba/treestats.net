@@ -16,10 +16,11 @@ var popchart_v2 = function (selector) {
   const contextHeight = 80;
   const gapHeight = 30;
   const totalHeight = focusHeight + gapHeight + contextHeight;
-  const margin = { top: 30, right: 200, bottom: 30, left: 60 };
+  // Reserve a 20px gutter after the plot for series connectors before labels.
+  const margin = { top: 30, right: 220, bottom: 30, left: 60 };
   const ctxMargin = {
     top: focusHeight + gapHeight,
-    right: 200,
+    right: 220,
     bottom: 20,
     left: 60,
   };
@@ -665,7 +666,8 @@ var popchart_v2 = function (selector) {
   function labelAlgoForce(labelData) {
     const labelHeight = 13;
     const labelPad = 2;
-    const rightEdge = width - margin.right + 6;
+    const plotRight = width - margin.right;
+    const rightEdge = plotRight + 20;
     const minY = margin.top;
     const maxY = focusHeight - margin.bottom;
 
@@ -742,13 +744,28 @@ var popchart_v2 = function (selector) {
       n.y = Math.max(minY, Math.min(maxY, n.y));
     });
 
-    // Draw connector lines from data endpoint to label
+    // Extend shorter series horizontally to the shared latest-X boundary,
+    // then connect from that boundary through the gutter to its label.
+    labelGroup
+      .selectAll("line.connector-extension")
+      .data(nodes.filter((d) => d.x < plotRight), (d) => d.server)
+      .join("line")
+      .attr("class", "connector connector-extension")
+      .attr("x1", (d) => d.x)
+      .attr("y1", (d) => d.targetY)
+      .attr("x2", plotRight)
+      .attr("y2", (d) => d.targetY)
+      .attr("stroke", (d) => colorScale(d.server))
+      .attr("stroke-width", 0.8)
+      .attr("stroke-dasharray", "2,2")
+      .attr("opacity", 0.5);
+
     labelGroup
       .selectAll("line.connector")
       .data(nodes, (d) => d.server)
       .join("line")
       .attr("class", "connector")
-      .attr("x1", (d) => d.x)
+      .attr("x1", plotRight)
       .attr("y1", (d) => d.targetY)
       .attr("x2", rightEdge)
       .attr("y2", (d) => d.y)
@@ -876,7 +893,8 @@ var popchart_v2 = function (selector) {
 
   // Algorithm 4: Right column layout with leader lines
   function labelAlgoColumn(labelData) {
-    const rightEdge = width - margin.right + 10;
+    const plotRight = width - margin.right;
+    const rightEdge = plotRight + 20;
     const labelHeight = 14;
     const availableHeight = focusHeight - margin.top - margin.bottom;
 
@@ -896,14 +914,29 @@ var popchart_v2 = function (selector) {
       const labelY = startY + i * spacing;
 
       // Curved leader line using a bezier
-      const midX = (d.x + rightEdge) / 2 + 20;
+      if (d.x < plotRight) {
+        labelGroup
+          .append("line")
+          .datum(d)
+          .attr("class", "connector connector-extension")
+          .attr("x1", d.x)
+          .attr("y1", d.y)
+          .attr("x2", plotRight)
+          .attr("y2", d.y)
+          .attr("stroke", colorScale(d.server))
+          .attr("stroke-width", 0.8)
+          .attr("stroke-dasharray", "2,2")
+          .attr("opacity", 0.5);
+      }
+
+      const midX = (plotRight + rightEdge) / 2;
       labelGroup
         .append("path")
         .datum(d)
         .attr("class", "leader-line")
         .attr(
           "d",
-          `M${d.x},${d.y} C${midX},${d.y} ${midX},${labelY} ${rightEdge - 4},${labelY}`
+          `M${plotRight},${d.y} C${midX},${d.y} ${midX},${labelY} ${rightEdge - 4},${labelY}`
         )
         .attr("fill", "none")
         .attr("stroke", colorScale(d.server))
