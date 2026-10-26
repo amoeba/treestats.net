@@ -25,7 +25,14 @@ var popchart_v2 = function (selector) {
     left: 60,
   };
 
-  const colorScale = d3.scaleOrdinal(d3.schemeTableau10);
+  const palettes = {
+    classic: d3.schemeTableau10,
+    mono: ["#fff", "#ccc", "#999", "#666", "#eee", "#aaa"],
+    site: ["#3975a5", "#d6a33d", "#5e9bbd", "#bb7a24", "#8ab6cc", "#edc86c"],
+  };
+  const colorScale = d3.scaleOrdinal(palettes.classic);
+  const colorAssignments = new Map();
+  function seriesColor(server) { return colorAssignments.get(server) || colorScale(server); }
   const transitionDuration = 600;
 
   //=== STATE ===
@@ -48,6 +55,7 @@ var popchart_v2 = function (selector) {
   let chartType = urlParams.get("type") || "line";
   let labelAlgorithm = urlParams.get("labels") || "force";
   let curveType = urlParams.get("curve") || "monotoneX";
+  let paletteType = palettes[urlParams.get("palette")] ? urlParams.get("palette") : "classic";
   let activeServers = new Set();
   let focusXDomain = null; // set by brush
   let renderedData = []; // current chart data (aggregated, gap-filled)
@@ -73,6 +81,8 @@ var popchart_v2 = function (selector) {
     .attr("viewBox", [0, 0, width, totalHeight])
     .attr("preserveAspectRatio", "xMidYMid meet")
     .style("display", "none");
+
+  const patternDefs = svg.append("defs");
 
   // Clip path for the focus area
   svg
@@ -188,7 +198,7 @@ var popchart_v2 = function (selector) {
 
         // Initialize active servers
         const servers = [...new Set(allData.map((d) => d.server))].sort();
-        colorScale.domain(servers);
+        assignColors(servers);
 
         // Restore server selection from URL, or default to all
         if (urlServers) {
@@ -251,6 +261,37 @@ var popchart_v2 = function (selector) {
         console.error(err);
         loadingEl.text("Error loading data. " + (err.message || ""));
       });
+  }
+
+  // Color neighboring series differently by greedily coloring their current endpoint order.
+  function assignColors(servers) {
+    const palette = palettes[paletteType];
+    const latestDate = d3.max(allData, (d) => d.date);
+    const latest = new Map(servers.map((s) => [s, (allData.find((d) => d.server === s && d.date === latestDate) || {}).count || 0]));
+    const ordered = servers.slice().sort((a, b) => latest.get(b) - latest.get(a));
+    const used = [];
+    ordered.forEach((server, i) => {
+      const previous = used[i - 1];
+      let choice = 0;
+      if (paletteType === "site" && i > 0) {
+        const prevColor = used[i - 1];
+        choice = (prevColor + 1 + (i % (palette.length - 1))) % palette.length;
+      } else {
+        choice = i % palette.length;
+      }
+      used[i] = choice;
+      colorAssignments.set(server, palette[choice]);
+    });
+    patternDefs.selectAll("pattern").remove();
+    if (paletteType === "mono") {
+      const patterns = ["", "rotate(45)", "rotate(-45)", "rotate(90)", "rotate(30)", "rotate(-30)"];
+      servers.forEach((server, i) => {
+        const p = patternDefs.append("pattern").attr("id", instanceId + "-pattern-" + i).attr("width", 8).attr("height", 8).attr("patternUnits", "userSpaceOnUse");
+        p.append("rect").attr("width", 8).attr("height", 8).attr("fill", palette[i % palette.length]);
+        if (patterns[i % patterns.length]) p.append("path").attr("d", "M0,0 L0,8").attr("transform", patterns[i % patterns.length]).attr("stroke", "#222").attr("stroke-width", 2);
+        colorAssignments.set(server, "url(#" + instanceId + "-pattern-" + i + ")");
+      });
+    }
   }
 
   //=== DATA PROCESSING ===
@@ -475,7 +516,8 @@ var popchart_v2 = function (selector) {
 
     entered
       .merge(paths)
-      .attr("stroke", (d) => colorScale(d.server))
+      .attr("stroke", (d) => seriesColor(d.server))
+      .attr("stroke-dasharray", (d) => paletteType === "mono" ? ["", "5,2", "1,2", "7,2,1,2", "2,2", "9,3"][servers.indexOf(d.server) % 6] : null)
       .transition(t)
       .attr("opacity", 1)
       .attr("d", (d) => lineGen(d.values));
@@ -506,7 +548,8 @@ var popchart_v2 = function (selector) {
 
     entered
       .merge(paths)
-      .attr("fill", (d) => colorScale(d.key))
+      .attr("fill", (d) => seriesColor(d.key))
+      .attr("fill-opacity", paletteType === "mono" ? 0.35 : 0.85)
       .transition(t)
       .attr("opacity", 0.85)
       .attr("d", (d) => areaGen(d));
@@ -533,7 +576,7 @@ var popchart_v2 = function (selector) {
       ctxAreaGroup
         .append("path")
         .attr("fill", "none")
-        .attr("stroke", colorScale(s))
+        .attr("stroke", seriesColor(s))
         .attr("stroke-width", 0.8)
         .attr("opacity", 0.6)
         .attr("d", ctxLineGen(values));
@@ -658,7 +701,7 @@ var popchart_v2 = function (selector) {
       .attr("dy", "0.35em")
       .attr("font-size", 10)
       .attr("font-family", "sans-serif")
-      .attr("fill", (d) => colorScale(d.server))
+      .attr("fill", (d) => seriesColor(d.server))
       .text((d) => `${d.server}: ${d.count}`);
   }
 
@@ -755,7 +798,7 @@ var popchart_v2 = function (selector) {
       .attr("y1", (d) => d.targetY)
       .attr("x2", plotRight)
       .attr("y2", (d) => d.targetY)
-      .attr("stroke", (d) => colorScale(d.server))
+      .attr("stroke", (d) => seriesColor(d.server))
       .attr("stroke-width", 0.8)
       .attr("stroke-dasharray", "2,2")
       .attr("opacity", 0.5);
@@ -769,7 +812,7 @@ var popchart_v2 = function (selector) {
       .attr("y1", (d) => d.targetY)
       .attr("x2", rightEdge)
       .attr("y2", (d) => d.y)
-      .attr("stroke", (d) => colorScale(d.server))
+      .attr("stroke", (d) => seriesColor(d.server))
       .attr("stroke-width", 0.8)
       .attr("stroke-dasharray", "2,2")
       .attr("opacity", 0.5);
@@ -785,7 +828,7 @@ var popchart_v2 = function (selector) {
       .attr("dy", "0.35em")
       .attr("font-size", 10)
       .attr("font-family", "sans-serif")
-      .attr("fill", (d) => colorScale(d.server))
+      .attr("fill", (d) => seriesColor(d.server))
       .text((d) => `${d.server}: ${d.count}`);
   }
 
@@ -829,14 +872,14 @@ var popchart_v2 = function (selector) {
           .attr("dy", "0.35em")
           .attr("font-size", 10)
           .attr("font-family", "sans-serif")
-          .attr("fill", colorScale(d.server))
+          .attr("fill", seriesColor(d.server))
           .text(`${d.server}: ${d.count}`);
       } else {
         // Collapsed group — show circle marker
         const avgY =
           group.reduce((sum, d) => sum + d.y, 0) / group.length;
         const tooltipText = group
-          .map((d) => `<strong style="color:${colorScale(d.server)}">${escapeHTML(d.server)}</strong>: ${d.count}`)
+          .map((d) => `<strong style="color:${seriesColor(d.server)}">${escapeHTML(d.server)}</strong>: ${d.count}`)
           .join("<br>");
 
         const circle = labelGroup
@@ -872,7 +915,7 @@ var popchart_v2 = function (selector) {
             .attr("y1", d.y)
             .attr("x2", rightEdge + 4)
             .attr("y2", avgY)
-            .attr("stroke", colorScale(d.server))
+            .attr("stroke", seriesColor(d.server))
             .attr("stroke-width", 0.6)
             .attr("stroke-dasharray", "2,2")
             .attr("opacity", 0.4);
@@ -923,7 +966,7 @@ var popchart_v2 = function (selector) {
           .attr("y1", d.y)
           .attr("x2", plotRight)
           .attr("y2", d.y)
-          .attr("stroke", colorScale(d.server))
+          .attr("stroke", seriesColor(d.server))
           .attr("stroke-width", 0.8)
           .attr("stroke-dasharray", "2,2")
           .attr("opacity", 0.5);
@@ -939,7 +982,7 @@ var popchart_v2 = function (selector) {
           `M${plotRight},${d.y} C${midX},${d.y} ${midX},${labelY} ${rightEdge - 4},${labelY}`
         )
         .attr("fill", "none")
-        .attr("stroke", colorScale(d.server))
+        .attr("stroke", seriesColor(d.server))
         .attr("stroke-width", 0.8)
         .attr("opacity", 0.5);
 
@@ -950,7 +993,7 @@ var popchart_v2 = function (selector) {
         .attr("cx", d.x)
         .attr("cy", d.y)
         .attr("r", 2)
-        .attr("fill", colorScale(d.server));
+        .attr("fill", seriesColor(d.server));
 
       // Label text
       labelGroup
@@ -962,7 +1005,7 @@ var popchart_v2 = function (selector) {
         .attr("dy", "0.35em")
         .attr("font-size", 10)
         .attr("font-family", "sans-serif")
-        .attr("fill", colorScale(d.server))
+        .attr("fill", seriesColor(d.server))
         .text(`${d.server}: ${d.count}`);
     });
   }
@@ -1151,11 +1194,11 @@ var popchart_v2 = function (selector) {
         if (chartType === "area" && valuesAtDate.length > 1) {
           // Stacked mode: show hovered server first, then rest, then total
           const others = valuesAtDate.filter((v) => v.server !== closest.server);
-          html += `<div class="tt-hovered" style="color:${colorScale(closest.server)}">▶ ${escapeHTML(closest.server)}: ${closest.count}</div>`;
+          html += `<div class="tt-hovered" style="color:${seriesColor(closest.server)}">▶ ${escapeHTML(closest.server)}: ${closest.count}</div>`;
           if (others.length > 0) {
             html += `<div class="tt-separator"></div>`;
             others.forEach((v) => {
-              html += `<div class="tt-other" style="color:${colorScale(v.server)}">${escapeHTML(v.server)}: ${v.count}</div>`;
+              html += `<div class="tt-other" style="color:${seriesColor(v.server)}">${escapeHTML(v.server)}: ${v.count}</div>`;
             });
           }
           html += `<div class="tt-total">Total: ${total}</div>`;
@@ -1165,7 +1208,7 @@ var popchart_v2 = function (selector) {
           }
           valuesAtDate.forEach((v) => {
             const highlight = v.server === closest.server ? "font-weight:bold;" : "";
-            html += `<div style="color:${colorScale(v.server)};${highlight}">${escapeHTML(v.server)}: ${v.count}</div>`;
+            html += `<div style="color:${seriesColor(v.server)};${highlight}">${escapeHTML(v.server)}: ${v.count}</div>`;
           });
         }
 
@@ -1213,6 +1256,7 @@ var popchart_v2 = function (selector) {
     params.set("type", chartType);
     params.set("labels", labelAlgorithm);
     params.set("curve", curveType);
+    params.set("palette", paletteType);
 
     if (focusXDomain) {
       params.set("from", dateFmt(focusXDomain[0]));
@@ -1237,6 +1281,21 @@ var popchart_v2 = function (selector) {
       .select(selector)
       .insert("div", ":first-child")
       .attr("class", "chart-controls");
+
+    const paletteCtrl = controls.append("div").attr("class", "control-group");
+    paletteCtrl.append("span").attr("class", "control-label").text("Palette");
+    const paletteSel = paletteCtrl.append("select").attr("class", "control-select")
+      .on("change", function () {
+        paletteType = this.value;
+        assignColors([...new Set(allData.map((d) => d.server))]);
+        updateURL();
+        renderContext();
+        render({});
+        d3.select(selector).selectAll(".server-swatch").style("background-color", (s) => seriesColor(s));
+      });
+    [{ value: "classic", text: "Classic" }, { value: "mono", text: "Black & white" }, { value: "site", text: "Blue & gold" }].forEach((opt) => {
+      paletteSel.append("option").attr("value", opt.value).property("selected", opt.value === paletteType).text(opt.text);
+    });
 
     // Chart type toggle
     const typeCtrl = controls.append("div").attr("class", "control-group");
@@ -1391,7 +1450,8 @@ var popchart_v2 = function (selector) {
       lbl
         .append("span")
         .attr("class", "server-swatch")
-        .style("background-color", colorScale(s));
+        .datum(s)
+      .style("background-color", seriesColor(s));
 
       lbl.append("span").text(s);
     });
