@@ -1,4 +1,5 @@
-%table.dashboard.wide{"hx-get" => "/dashboard/uploads_latest", "hx-trigger" => "every 5s", "hx-swap" => "outerHTML"}
+-# Skip polling in background tabs; the next visible tick resumes updates.
+%table.dashboard.wide{"hx-get" => "/dashboard/uploads_latest", "hx-trigger" => "every 5s [!document.hidden]", "hx-swap" => "outerHTML"}
   %thead
     %tr
       %th Latest Uploads
