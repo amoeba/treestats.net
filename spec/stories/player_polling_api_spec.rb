@@ -7,8 +7,10 @@ describe "PlayerPollingApiStory" do
   it "keeps the original per-server JSON keys for legacy, plugin and server records" do
     [
       ["LegacyApi", {}],
-      ["PluginApi", {source: "plugin", received_at: Time.now.utc}],
-      ["ServerApi", {source: "server", received_at: Time.now.utc}]
+      ["PluginApi", {r: "p", received_at: Time.now.utc}],
+      ["ServerApi", {r: "s", received_at: Time.now.utc}],
+      ["LegacyPluginApi", {source: "plugin"}],
+      ["LegacyServerApi", {source: "server"}]
     ].each do |server, internal|
       PlayerCount.collection.insert_one({s: server, c: 4, c_at: Time.now.utc}.merge(internal))
       get "/player_counts/#{server}.json"

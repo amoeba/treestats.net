@@ -30,7 +30,7 @@ require_relative "../models/player_count"
 
 # Job files
 require_relative "probe_job"
-require_relative "population_poller"
+require_relative "data_poller"
 require_relative "sidekiq_job_metadata_middleware"
 
 redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
@@ -47,9 +47,9 @@ Sidekiq.configure_server do |config|
         "cron" => "*/5 * * * *",
         "class" => "ProbeJob"
       },
-      "population_poll_dispatch" => {
-        "cron" => "*/15 * * * *",
-        "class" => "DispatchPopulationPollsJob"
+      "data_poll_dispatch" => {
+        "cron" => DataPoller.cron_expression,
+        "class" => "DispatchDataPollsJob"
       }
     )
   end

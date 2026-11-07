@@ -1,6 +1,6 @@
 # Server population polling plan — issue #275
 
-Implementation status: issue #275 is implemented in this branch, with operator feeds disabled by default. This document retains the agreed design and research record; see `docs/population-polling.md` for setup and manual testing.
+Implementation status: issue #275 is implemented in this branch, with operator feeds disabled by default. This document retains the agreed design and research record; see `docs/data-polling.md` for setup and manual testing.
 
 Issue: https://github.com/amoeba/treestats.net/issues/275
 
@@ -9,7 +9,7 @@ Issue: https://github.com/amoeba/treestats.net/issues/275
 - Add operator-hosted population polling, initially for Hollowtide, without requiring players to run Decal or impersonating plugin uploads.
 - Start with **one poll every 15 minutes per server**. Faster polling is not part of the initial rollout.
 - **Polling is additive.** A server with polling and Decal users contributes both/all streams of population observations to the same history. Neither source replaces or suppresses the other.
-- **Store provenance on each new population observation as `source: "plugin"` or `source: "server"`.** Plugin uploads use `"plugin"`; operator polling uses `"server"`. Existing records without `source` are treated as `"plugin"` when read; no bulk backfill is needed. **This PR stores provenance internally only: do not expose it in UI, public APIs, or other public outputs.** Future provenance presentation would concern latest counts only; daily-maximum calculations and historical charts do not need provenance.
+- **Store provenance on each new population observation as a compact internal source code.** The implementation stores the code under the short Mongo key `r` (aliased as `source`): `r: "p"` for plugin and `r: "s"` for operator polling; plugin observations omit the field entirely. Existing records without `source` and legacy `"plugin"`/`"server"` values are read as their friendly equivalents; no bulk backfill is needed. **This PR stores provenance internally only: do not expose it in UI, public APIs, or other public outputs.** Future provenance presentation would concern latest counts only; daily-maximum calculations and historical charts do not need provenance.
 - **Polling failure is publicly unobtrusive, even if the entire polling system stops.** Do not add public failure badges, synthesize zero counts, remove otherwise eligible servers, or interfere with Decal ingestion. Latest-count presentation continues using accepted observations and their truthful as-of time, without exposing source in this PR. Do not renew timestamps to conceal a lack of new data. Operational failure visibility is separate from public presentation.
 - The endpoint response is a JSON object requiring only **`count`** (a nonnegative integer) and **`updated_at`** (an integer Unix timestamp in UTC seconds representing when the population was measured/refreshed). **Allow and ignore additional fields.** Server identity comes from the approved registration, not response fields; provenance is assigned by TreeStats.
 - **Use the same population definition as the game/plugin:** connected, in-world player characters, including bots, multiboxed characters, staff, and test characters. Do not count unique humans/accounts or apply operator-specific exclusions. A measured empty world is valid zero; inability to measure is not zero and must not refresh an old measurement's timestamp.
@@ -71,13 +71,13 @@ This demonstrates bursty sampling: regular polling fills long silences but is co
 
 ## Implementation design and outcome
 
-Core behavior below is agreed where noted. The implementation uses a separate empty-by-default YAML registration map, Sidekiq dispatch and independent poll jobs, and MongoDB-backed mutable per-feed state. See `docs/population-polling.md` for operational details.
+Core behavior below is agreed where noted. The implementation uses a separate empty-by-default YAML registration map, Sidekiq dispatch and independent poll jobs, and MongoDB-backed mutable per-feed state. See `docs/data-polling.md` for operational details.
 
 ### Endpoint and population definition
 
 - Explicitly registered HTTPS GET URL; suggest `/population.json` without requiring that path.
 - `Content-Type: application/json`, UTF-8.
-- Agreed response contract: a JSON object requiring only nonnegative integer `count` and integer Unix-second `updated_at`. Allow and ignore additional fields; do not require `schema_version`, `server_id`, or `server`. Bind identity from the approved registration and assign `source: "server"` internally. Extra fields must not override identity/provenance or be mass-assigned into stored observations.
+- Agreed response contract: a JSON object requiring only nonnegative integer `count` and integer Unix-second `updated_at`. Allow and ignore additional fields; do not require `schema_version`, `server_id`, or `server`. Bind identity from the approved registration and assign the compact server source code internally. Extra fields must not override identity/provenance or be mass-assigned into stored observations.
 - Agreed: count connected in-world player characters using the same definition as the game/plugin, including bots, multiboxed characters, staff, and test characters. Do not count unique humans/accounts or apply operator-specific exclusions. A genuinely measured empty world may report zero; inability to measure must not be represented as zero.
 - `updated_at` denotes measurement time, not the last time the number changed. A new measurement may have the same count. This contract needs to be explicit with operators: merely re-serving an old count must not renew its timestamp.
 - A dynamic endpoint or atomically replaced static snapshot can work. An exporter unable to measure the game must not invent zero or renew an old measurement's timestamp.
@@ -126,7 +126,7 @@ Core behavior below is agreed where noted. The implementation uses a separate em
 - Agreed: do not catch up missed polling intervals after downtime; resume with a current fetch rather than replaying history. Skip obsolete queued polling slots rather than allowing an old backlog to run.
 - Use idempotent persistence. Agreed: no automatic polling-job retries; disable Sidekiq's default retries, record failures, and wait for the next scheduled poll. Duplicate, regressive, future-dated, and invalid responses likewise do not trigger retries. An old but advancing timestamp is not rejected solely for age.
 - Recheck enabled configuration when a job runs.
-- HTTPS certificate verification, public-address/DNS validation against SSRF, no redirects initially, response-size bounds, and strict request deadlines are necessary.
+- HTTPS certificate verification, no redirects initially, response-size bounds, and strict request deadlines are necessary. Public-address/DNS validation against SSRF was considered but removed because the target list is maintainer-controlled.
 - Do not convert request failures into zero population or expose new public polling-health indicators. A failed feed and an old displayed population are different: Decal may still supply fresh observations. If all polling stops, existing population readers and Decal ingestion continue normally; existing age-based eligibility rules still apply.
 - Maintain the agreed bounded per-server polling-state record for operational diagnosis, not public population-feed badges. Detailed errors go to application logs, with no permanent per-attempt database history. Measurement age is derivable from the last accepted timestamp; latency logging and monitoring that detects a stopped dispatcher/worker remain operational recommendations.
 - Decide whether to invalidate/refresh current-count caches or accept their additional five-to-six-minute delay. Fifteen-minute polling alone does not guarantee fifteen-minute-fresh UI data.
@@ -153,7 +153,7 @@ Core behavior below is agreed where noted. The implementation uses a separate em
 
 ## Rollout
 
-1. Maintainers review and register a verified HTTPS feed in `config/population_feeds.yml`.
-2. Validate the feed behavior using the manual test steps in `docs/population-polling.md` before enabling it.
+1. Maintainers review and register a verified HTTPS target in `config/polling_targets.yml`.
+2. Validate the target behavior using the manual test steps in `docs/data-polling.md` before enabling it.
 3. Enable only when a working endpoint is supplied; Hollowtide remains disabled because the previously suggested URL returned 404.
 4. Measure storage/query cost and reporting reliability before onboarding more servers or considering rollups.
