@@ -59,7 +59,7 @@ module Sinatra
             # Only save a PlayerCount if this message contains one
             if(json_text.has_key?("server_population"))
               json_text = json_text.tap { |h| h.delete('server_population')}
-              PlayerCount.create(server: server, count: server_pop)
+              PlayerCount.create(server: server, count: server_pop, source: "plugin")
             end
 
             # Character
