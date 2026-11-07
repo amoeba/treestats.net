@@ -3,7 +3,6 @@ require_relative '../../lib/population_poller'
 require_relative '../../lib/sidekiq_job_metadata_middleware'
 require 'open3'
 require 'rbconfig'
-require 'minitest/mock'
 
 describe "PopulationPoller", :unit do
   before do
@@ -18,9 +17,16 @@ describe "PopulationPoller", :unit do
     @test_slot += 1
   end
 
+  def with_test_slot(slot)
+    original = PopulationPoller.method(:current_slot)
+    PopulationPoller.define_singleton_method(:current_slot) { slot }
+    yield
+  ensure
+    PopulationPoller.define_singleton_method(:current_slot, original)
+  end
+
   def poll_for(server, transport, slot: next_slot)
-    @test_current_slot ||= PopulationPoller.current_slot
-    PopulationPoller.stub(:current_slot, slot) do
+    with_test_slot(slot) do
       PopulationPoller.poll(server, "https://population.example.test/x", slot: slot, transport: transport)
     end
   end
