@@ -1,8 +1,8 @@
-require_relative '../spec_helper'
-require_relative '../../lib/data_poller'
-require_relative '../../lib/sidekiq_job_metadata_middleware'
-require 'open3'
-require 'rbconfig'
+require_relative "../spec_helper"
+require_relative "../../lib/data_poller"
+require_relative "../../lib/sidekiq_job_metadata_middleware"
+require "open3"
+require "rbconfig"
 
 describe "DataPoller", :unit do
   before do
@@ -27,8 +27,12 @@ describe "DataPoller", :unit do
 
   def poll_for(server, transport, slot: next_slot)
     with_test_slot(slot) do
-      DataPoller.poll(server, "https://population.example.test/x", slot: slot, transport: transport)
+      DataPoller::Poll.new(server: server, url: "https://population.example.test/x", slot: slot, transport: transport).call
     end
+  end
+
+  def read_response(url, **options)
+    DataPoller::Poll.new(server: "Test", url: url).read_response(**options)
   end
 
   def transport_for(data)
@@ -65,7 +69,7 @@ describe "DataPoller", :unit do
     now = Time.now.to_i
     assert_equal :failure, poll_for("PollTest", transport_for(count: 1, updated_at: now + 60))
     assert_nil DataPollState.collection.find(server: "PollTest").first["last_accepted_updated_at"]
-    [ {count: -1, updated_at: now}, {count: 1.5, updated_at: now}, {count: 1, updated_at: "#{now}"}, {updated_at: now} ].each do |data|
+    [{count: -1, updated_at: now}, {count: 1.5, updated_at: now}, {count: 1, updated_at: now.to_s}, {updated_at: now}].each do |data|
       assert_equal :failure, poll_for("PollTest", transport_for(data))
     end
     assert_equal 0, PlayerCount.where(s: "PollTest").count
@@ -102,14 +106,14 @@ describe "DataPoller", :unit do
 
   it "recovers a durable observation if writing the cursor fails after insert" do
     timestamp = Time.now.to_i - 30
-    original = DataPoller.method(:record_acceptance)
+    original = DataPoller::Poll.instance_method(:record_acceptance)
     failed_once = false
-    DataPoller.define_singleton_method(:record_acceptance) do |server, updated_at, lease|
+    DataPoller::Poll.define_method(:record_acceptance) do |updated_at, lease|
       unless failed_once
         failed_once = true
         raise "simulated cursor-write crash"
       end
-      original.call(server, updated_at, lease)
+      original.bind_call(self, updated_at, lease)
     end
 
     response = transport_for(count: 5, updated_at: timestamp)
@@ -124,18 +128,19 @@ describe "DataPoller", :unit do
     assert_equal 1, PlayerCount.where(s: "CrashCase").count
     assert_equal timestamp, DataPollState.collection.find(server: "CrashCase").first["last_accepted_updated_at"]
   ensure
-    DataPoller.define_singleton_method(:record_acceptance, original)
+    DataPoller::Poll.define_method(:record_acceptance, original)
+    DataPoller::Poll.send(:private, :record_acceptance)
   end
 
   it "records one poll per slot, allows queue delay within slot, and rejects stale slots" do
     slot = DataPoller.current_slot
     timestamp = Time.now.to_i - 10
     transport = transport_for(count: 3, updated_at: timestamp)
-    assert_equal :accepted, DataPoller.poll("SlotTest", "https://population.example.test/x", slot: slot, transport: transport)
-    assert_equal :already_polled, DataPoller.poll("SlotTest", "https://population.example.test/x", slot: slot, transport: transport)
-    assert_equal :obsolete, DataPoller.poll("SlotTest", "https://population.example.test/x", slot: slot - 1, transport: transport)
+    assert_equal :accepted, DataPoller::Poll.new(server: "SlotTest", url: "https://population.example.test/x", slot: slot, transport: transport).call
+    assert_equal :already_polled, DataPoller::Poll.new(server: "SlotTest", url: "https://population.example.test/x", slot: slot, transport: transport).call
+    assert_equal :obsolete, DataPoller::Poll.new(server: "SlotTest", url: "https://population.example.test/x", slot: slot - 1, transport: transport).call
     # A normal short queue delay in the same interval slot still runs.
-    assert_equal :accepted, DataPoller.poll("DelayedQueue", "https://population.example.test/x", slot: slot, transport: transport)
+    assert_equal :accepted, DataPoller::Poll.new(server: "DelayedQueue", url: "https://population.example.test/x", slot: slot, transport: transport).call
   end
 
   it "records ordinary and whole-job timeouts as failures without observations" do
@@ -180,7 +185,6 @@ describe "DataPoller", :unit do
     end
     thread = Thread.new { poll_for("LeaseTest", transport) }
     Timeout.timeout(5) { started.pop }
-    state = DataPollState.collection.find(server: "LeaseTest").first
     DataPollState.collection.update_one({server: "LeaseTest"}, {"$set" => {lease_until: Time.now.utc - 1, lease_id: "new-owner"}})
     continue << true
     assert_equal :overlap, thread.value
@@ -202,7 +206,7 @@ describe "DataPoller", :unit do
     PlayerCount.collection.insert_one({s: "Mixed", c: 80, c_at: yesterday + 3600})
     PlayerCount.collection.insert_one({s: "Mixed", c: 100, c_at: yesterday + 7200, source: "server", received_at: today})
     historical = JSON.parse(player_counts(["Mixed"], "All"))
-    point = historical.find { |row| row["date"] == (yesterday.strftime("%Y%m%d")) }
+    point = historical.find { |row| row["date"] == yesterday.strftime("%Y%m%d") }
     assert_equal 100, point["count"]
   end
 
@@ -299,8 +303,13 @@ describe "DataPoller", :unit do
     %i[use_ssl verify_mode open_timeout read_timeout write_timeout max_retries].each do |name|
       client.define_singleton_method("#{name}=") { |value| options[name] = value }
     end
-    result = DataPoller.read_response("https://public.example.test/population.json",
-      http_factory: ->(host, port, proxy) { options[:host] = host; options[:port] = port; options[:proxy] = proxy; client })
+    result = read_response("https://public.example.test/population.json",
+      http_factory: ->(host, port, proxy) {
+        options[:host] = host
+        options[:port] = port
+        options[:proxy] = proxy
+        client
+      })
     assert_equal "{\"count\":1,\"updated_at\":1}", result.first
     assert_equal "public.example.test", options[:host]
     assert_equal true, options[:use_ssl]
@@ -316,16 +325,19 @@ describe "DataPoller", :unit do
     oversized.define_singleton_method(:read_body) { |&block| block.call("x" * (DataPoller::MAX_BODY_BYTES + 1)) }
     client.define_singleton_method(:request) { |_request, &block| block.call(oversized) }
     assert_raises(DataPoller::Error) do
-      DataPoller.read_response("https://public.example.test/", http_factory: ->(*) { client })
+      read_response("https://public.example.test/", http_factory: ->(*) { client })
     end
 
-    client.define_singleton_method(:start) { |&block| sleep 0.05; block.call(client) }
+    client.define_singleton_method(:start) do |&block|
+      sleep 0.05
+      block.call(client)
+    end
     assert_raises(Timeout::Error) do
-      DataPoller.read_response("https://public.example.test/", http_factory: ->(*) { client }, total_timeout: 0.01)
+      read_response("https://public.example.test/", http_factory: ->(*) { client }, total_timeout: 0.01)
     end
   end
 
   it "rejects non-HTTPS responses" do
-    assert_raises(DataPoller::Error) { DataPoller.read_response("http://example.com/") }
+    assert_raises(DataPoller::Error) { read_response("http://example.com/") }
   end
 end

@@ -116,20 +116,6 @@ module DataPoller
     nil
   end
 
-  def self.record_failure(server, lease_id, error)
-    update = lambda do
-      DataPollState.collection.update_one({server: server, lease_id: lease_id}, {"$set" => {last_checked_at: Time.now.utc, last_outcome: "failure", error_summary: "#{error.class}: #{error.message}".byteslice(0, 240)}, "$inc" => {consecutive_failures: 1}, "$unset" => {lease_until: "", lease_id: ""}})
-    end
-    Timeout.timeout(3) { update.call }
-  rescue => state_error
-    warn("Could not record data poll failure for #{server}: #{state_error.class}: #{state_error.message}")
-  end
-
-  def self.record_acceptance(server, timestamp, lease_id)
-    result = DataPollState.collection.update_one({server: server, lease_id: lease_id}, {"$set" => {last_checked_at: Time.now.utc, last_outcome: "accepted", error_summary: nil, consecutive_failures: 0}, "$max" => {last_accepted_updated_at: timestamp}, "$unset" => {lease_until: "", lease_id: ""}})
-    raise Error, "poll lease lost before cursor update" unless result.matched_count == 1
-  end
-
   def self.dispatch(slot = current_slot)
     return :obsolete if slot < current_slot
     return :invalid_slot if slot > current_slot
@@ -137,128 +123,161 @@ module DataPoller
     :dispatched
   end
 
-  def self.read_response(url, transport: nil, http_factory: nil, total_timeout: TOTAL_TIMEOUT_SECONDS)
-    uri = URI.parse(url)
-    raise Error, "target URL must be HTTPS without credentials or fragment" unless uri.is_a?(URI::HTTPS) && uri.host && !uri.userinfo && !uri.fragment
-    injected_transport = transport || http_factory
-    raise Error, "target URL may not use a proxy" if !injected_transport && (ENV["https_proxy"] || ENV["HTTPS_PROXY"])
-    body = +""
-    response = if transport
-      stub = transport.call(uri)
-      body = stub.body.to_s
-      stub
-    else
-      http = http_factory ? http_factory.call(uri.host, uri.port, nil) : Net::HTTP.new(uri.host, uri.port, nil)
-      http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-      http.open_timeout = OPEN_TIMEOUT_SECONDS
-      http.read_timeout = READ_TIMEOUT_SECONDS
-      http.write_timeout = WRITE_TIMEOUT_SECONDS if http.respond_to?(:write_timeout=)
-We're in the middle of a pull request      http.max_retries = 0 if http.respond_to?(:max_retries=)
-      req = Net::HTTP::Get.new(uri.request_uri, {"Accept" => "application/json"})
-      Timeout.timeout(total_timeout) do
-        http.start do |connection|
-          connection.request(req) do |res|
-            res.read_body do |chunk|
-              raise Error, "response body exceeds #{MAX_BODY_BYTES} bytes" if body.bytesize + chunk.bytesize > MAX_BODY_BYTES
-              body << chunk
+  # Polls one server for one interval slot. The instance owns the lease,
+  # request, and persistence state for that single poll.
+  class Poll
+    def initialize(server:, url:, slot: DataPoller.current_slot, transport: nil)
+      @server = server
+      @url = url
+      @slot = slot
+      @transport = transport
+    end
+
+    def call
+      return :obsolete if @slot < DataPoller.current_slot
+      return :invalid_slot if @slot > DataPoller.current_slot
+
+      DataPoller.ensure_indexes!
+      now = Time.now.utc
+      lease_id = SecureRandom.uuid
+      begin
+        state = DataPollState.collection.find_one_and_update(
+          {"server" => @server, "$and" => [
+            {"$or" => [{lease_until: {"$lte" => now}}, {lease_until: {"$exists" => false}}]},
+            {"$or" => [{last_poll_slot: {"$lt" => @slot}}, {last_poll_slot: {"$exists" => false}}]}
+          ]},
+          {"$setOnInsert" => {server: @server, consecutive_failures: 0}, "$set" => {lease_until: now + LEASE_SECONDS, lease_id: lease_id, last_poll_slot: @slot}},
+          upsert: true, return_document: :after
+        )
+      rescue Mongo::Error::OperationFailure => error
+        if error.code == 11000
+          existing = DataPollState.collection.find(server: @server).first
+          return :already_polled if existing && existing["last_poll_slot"] == @slot
+          return :overlap
+        end
+        raise
+      end
+      return :overlap unless state && state["lease_until"] && state["lease_until"] > Time.now.utc + JOB_TIMEOUT_SECONDS + 2
+
+      begin
+        body, received_at = read_response
+        payload = JSON.parse(body)
+        raise Error, "response must be an object" unless payload.is_a?(Hash)
+        count = payload["count"]
+        timestamp = payload["updated_at"]
+        raise Error, "count must be a nonnegative integer" unless count.is_a?(Integer) && count >= 0
+        raise Error, "updated_at must be an integer Unix timestamp" unless timestamp.is_a?(Integer) && timestamp >= 0
+        raise Error, "updated_at is in the future" if timestamp > received_at.floor
+
+        lease = DataPollState.collection.find(server: @server, lease_id: lease_id).first
+        return :overlap unless lease && lease["lease_until"] > Time.now.utc + 2
+
+        # The observation write and state update are deliberately separate (Mongo
+        # standalone has no transactions). Rebuild the high-water mark from the
+        # durable uniquely-indexed observations before comparing this response.
+        latest_observation = PlayerCount.collection.find({s: @server}.merge(DataPoller.server_source_filter)).sort(c_at: -1).limit(1).first
+        durable_cursor = latest_observation && latest_observation["c_at"].to_i
+        cursor = [state["last_accepted_updated_at"], durable_cursor].compact.max
+        if cursor && cursor > state.fetch("last_accepted_updated_at", 0)
+          DataPollState.collection.update_one({server: @server, lease_id: lease_id}, {"$max" => {last_accepted_updated_at: cursor}})
+        end
+        if cursor && timestamp <= cursor
+          existing = PlayerCount.collection.find({s: @server, c_at: Time.at(timestamp).utc}.merge(DataPoller.server_source_filter)).first
+          if existing && existing["c"] == count
+            # Recover the only crash window: observation insert succeeded, state update did not.
+            DataPollState.collection.update_one({server: @server, lease_id: lease_id}, {"$max" => {last_accepted_updated_at: timestamp}, "$set" => {last_checked_at: Time.now.utc, last_outcome: "duplicate", error_summary: nil, consecutive_failures: 0}, "$unset" => {lease_until: "", lease_id: ""}})
+            return :duplicate
+          end
+          raise Error, existing ? "conflicting measurement timestamp" : "measurement timestamp did not advance"
+        end
+
+        lease = DataPollState.collection.find(server: @server, lease_id: lease_id).first
+        return :overlap unless lease && lease["lease_until"] > Time.now.utc + 2
+        measured_at = Time.at(timestamp).utc
+        begin
+          PlayerCount.create!(
+            server: @server,
+            count: count,
+            c_at: measured_at,
+            received_at: Time.at(received_at).utc,
+            source: PlayerCount::SERVER_SOURCE
+          )
+        rescue Mongo::Error::OperationFailure => error
+          raise unless error.code == 11000
+          existing = PlayerCount.collection.find({s: @server, c_at: measured_at}.merge(DataPoller.server_source_filter)).first
+          raise Error, "conflicting measurement timestamp" unless existing && existing["c"] == count
+        end
+        record_acceptance(timestamp, lease_id)
+        :accepted
+      rescue JobDeadlineExceeded => error
+        warn("Data poll job exceeded its execution bound for #{@server}")
+        record_failure(lease_id, error)
+        raise
+      rescue => error
+        warn("Data poll failed for #{@server}: #{error.class}: #{error.message}")
+        record_failure(lease_id, error)
+        :failure
+      end
+    end
+
+    def read_response(transport: @transport, http_factory: nil, total_timeout: TOTAL_TIMEOUT_SECONDS)
+      uri = URI.parse(@url)
+      raise Error, "target URL must be HTTPS without credentials or fragment" unless uri.is_a?(URI::HTTPS) && uri.host && !uri.userinfo && !uri.fragment
+      injected_transport = transport || http_factory
+      raise Error, "target URL may not use a proxy" if !injected_transport && (ENV["https_proxy"] || ENV["HTTPS_PROXY"])
+      body = +""
+      response = if transport
+        stub = transport.call(uri)
+        body = stub.body.to_s
+        stub
+      else
+        http = http_factory ? http_factory.call(uri.host, uri.port, nil) : Net::HTTP.new(uri.host, uri.port, nil)
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        http.open_timeout = OPEN_TIMEOUT_SECONDS
+        http.read_timeout = READ_TIMEOUT_SECONDS
+        http.write_timeout = WRITE_TIMEOUT_SECONDS if http.respond_to?(:write_timeout=)
+        http.max_retries = 0 if http.respond_to?(:max_retries=)
+        req = Net::HTTP::Get.new(uri.request_uri, {"Accept" => "application/json"})
+        Timeout.timeout(total_timeout) do
+          http.start do |connection|
+            connection.request(req) do |res|
+              res.read_body do |chunk|
+                raise Error, "response body exceeds #{MAX_BODY_BYTES} bytes" if body.bytesize + chunk.bytesize > MAX_BODY_BYTES
+                body << chunk
+              end
+              res
             end
-            res
           end
         end
       end
+      response_time = Time.now.to_f
+      raise Error, "HTTP status #{response.code}" unless response.code.to_i == 200
+      raise Error, "response body exceeds #{MAX_BODY_BYTES} bytes" if body.bytesize > MAX_BODY_BYTES
+      [body, response_time]
     end
-    response_time = Time.now.to_f
-    raise Error, "HTTP status #{response.code}" unless response.code.to_i == 200
-    raise Error, "response body exceeds #{MAX_BODY_BYTES} bytes" if body.bytesize > MAX_BODY_BYTES
-    [body, response_time]
-  end
 
-  def self.poll(server, url, slot: current_slot, transport: nil)
-    return :obsolete if slot < current_slot
-    return :invalid_slot if slot > current_slot
-    ensure_indexes!
-    now = Time.now.utc
-    lease_id = SecureRandom.uuid
-    begin
-      state = DataPollState.collection.find_one_and_update(
-        {server: server, "$and" => [
-          {"$or" => [{lease_until: {"$lte" => now}}, {lease_until: {"$exists" => false}}]},
-          {"$or" => [{last_poll_slot: {"$lt" => slot}}, {last_poll_slot: {"$exists" => false}}]}
-        ]},
-        {"$setOnInsert" => {server: server, consecutive_failures: 0}, "$set" => {lease_until: now + LEASE_SECONDS, lease_id: lease_id, last_poll_slot: slot}},
-        upsert: true, return_document: :after
-      )
-    rescue Mongo::Error::OperationFailure => error
-      if error.code == 11000
-        existing = DataPollState.collection.find(server: server).first
-        return :already_polled if existing && existing["last_poll_slot"] == slot
-        return :overlap
+    private
+
+    def record_failure(lease_id, error)
+      update = lambda do
+        DataPollState.collection.update_one({server: @server, lease_id: lease_id}, {"$set" => {last_checked_at: Time.now.utc, last_outcome: "failure", error_summary: "#{error.class}: #{error.message}".byteslice(0, 240)}, "$inc" => {consecutive_failures: 1}, "$unset" => {lease_until: "", lease_id: ""}})
       end
-      raise
+      Timeout.timeout(3) { update.call }
+    rescue => state_error
+      warn("Could not record data poll failure for #{@server}: #{state_error.class}: #{state_error.message}")
     end
-    return :overlap unless state && state["lease_until"] && state["lease_until"] > Time.now.utc + JOB_TIMEOUT_SECONDS + 2
 
-    begin
-      body, received_at = read_response(url, transport: transport)
-      payload = JSON.parse(body)
-      raise Error, "response must be an object" unless payload.is_a?(Hash)
-      count = payload["count"]
-      timestamp = payload["updated_at"]
-      raise Error, "count must be a nonnegative integer" unless count.is_a?(Integer) && count >= 0
-      raise Error, "updated_at must be an integer Unix timestamp" unless timestamp.is_a?(Integer) && timestamp >= 0
-      raise Error, "updated_at is in the future" if timestamp > received_at.floor
-
-      lease = DataPollState.collection.find(server: server, lease_id: lease_id).first
-      return :overlap unless lease && lease["lease_until"] > Time.now.utc + 2
-
-      # The observation write and state update are deliberately separate (Mongo
-      # standalone has no transactions). Rebuild the high-water mark from the
-      # durable uniquely-indexed observations before comparing this response.
-      latest_observation = PlayerCount.collection.find({s: server}.merge(server_source_filter)).sort(c_at: -1).limit(1).first
-      durable_cursor = latest_observation && latest_observation["c_at"].to_i
-      cursor = [state["last_accepted_updated_at"], durable_cursor].compact.max
-      if cursor && cursor > state.fetch("last_accepted_updated_at", 0)
-        DataPollState.collection.update_one({server: server, lease_id: lease_id}, {"$max" => {last_accepted_updated_at: cursor}})
-      end
-      if cursor && timestamp <= cursor
-        existing = PlayerCount.collection.find({s: server, c_at: Time.at(timestamp).utc}.merge(server_source_filter)).first
-        if existing && existing["c"] == count
-          # Recover the only crash window: observation insert succeeded, state update did not.
-          DataPollState.collection.update_one({server: server, lease_id: lease_id}, {"$max" => {last_accepted_updated_at: timestamp}, "$set" => {last_checked_at: Time.now.utc, last_outcome: "duplicate", error_summary: nil, consecutive_failures: 0}, "$unset" => {lease_until: "", lease_id: ""}})
-          return :duplicate
-        end
-        raise Error, existing ? "conflicting measurement timestamp" : "measurement timestamp did not advance"
-      end
-
-      lease = DataPollState.collection.find(server: server, lease_id: lease_id).first
-      return :overlap unless lease && lease["lease_until"] > Time.now.utc + 2
-      measured_at = Time.at(timestamp).utc
-      begin
-        observation = {s: server, c: count, c_at: measured_at, received_at: Time.at(received_at).utc}
-        observation[PlayerCount::SOURCE_FIELD] = PlayerCount::SERVER_SOURCE
-        PlayerCount.collection.insert_one(observation)
-      rescue Mongo::Error::OperationFailure => error
-        raise unless error.code == 11000
-        existing = PlayerCount.collection.find({s: server, c_at: measured_at}.merge(server_source_filter)).first
-        raise Error, "conflicting measurement timestamp" unless existing && existing["c"] == count
-      end
-      record_acceptance(server, timestamp, lease_id)
-      :accepted
-    rescue JobDeadlineExceeded => error
-      warn("Data poll job exceeded its execution bound for #{server}")
-      record_failure(server, lease_id, error)
-      raise
-    rescue => error
-      warn("Data poll failed for #{server}: #{error.class}: #{error.message}")
-      record_failure(server, lease_id, error)
-      :failure
+    def record_acceptance(timestamp, lease_id)
+      result = DataPollState.collection.update_one({server: @server, lease_id: lease_id}, {"$set" => {last_checked_at: Time.now.utc, last_outcome: "accepted", error_summary: nil, consecutive_failures: 0}, "$max" => {last_accepted_updated_at: timestamp}, "$unset" => {lease_until: "", lease_id: ""}})
+      raise Error, "poll lease lost before cursor update" unless result.matched_count == 1
     end
   end
 end
 
 class DataPollState
   include Mongoid::Document
+
   store_in collection: "data_poll_states"
   field :server, type: String
   field :last_checked_at, type: Time
@@ -270,6 +289,7 @@ end
 
 class PollDataJob
   include Sidekiq::Worker
+
   sidekiq_options retry: false, queue: :default
 
   def perform(server, slot = DataPoller.current_slot)
@@ -277,7 +297,7 @@ class PollDataJob
     url = DataPoller.targets[server]
     return unless url
     Timeout.timeout(DataPoller::JOB_TIMEOUT_SECONDS, DataPoller::JobDeadlineExceeded) do
-      DataPoller.poll(server, url, slot: slot.to_i)
+      DataPoller::Poll.new(server: server, url: url, slot: slot.to_i).call
     end
   rescue DataPoller::JobDeadlineExceeded
     :failure
@@ -286,6 +306,7 @@ end
 
 class DispatchDataPollsJob
   include Sidekiq::Worker
+
   sidekiq_options retry: false, queue: :default
 
   def perform(scheduled_at = nil)
