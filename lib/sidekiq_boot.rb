@@ -25,19 +25,31 @@ Bundler.require(:default)
 Mongoid.load!(File.expand_path("../config/mongoid.yml", __dir__))
 Mongo::Logger.logger.level = ::Logger::INFO
 
+# Standalone worker model dependencies (app.rb is intentionally not loaded).
+require_relative "../models/player_count"
+
 # Job files
 require_relative "probe_job"
+require_relative "data_poller"
+require_relative "sidekiq_job_metadata_middleware"
 
 redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
 
 Sidekiq.configure_server do |config|
   config.redis = {url: redis_url}
+  config.server_middleware do |chain|
+    chain.add SidekiqJobMetadataMiddleware
+  end
 
   config.on(:startup) do
     Sidekiq::Cron::Job.load_from_hash(
       "probe_job" => {
         "cron" => "*/5 * * * *",
         "class" => "ProbeJob"
+      },
+      "data_poll_dispatch" => {
+        "cron" => DataPoller.cron_expression,
+        "class" => "DispatchDataPollsJob"
       }
     )
   end
