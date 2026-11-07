@@ -26,7 +26,6 @@ class PlayerCount
   field :s, as: :server, type: String
   field :c, as: :count,  type: Integer
   field SOURCE_FIELD, as: :source, type: String
-  field :received_at, type: Time
 
   validates :source, inclusion: {in: SOURCE_NAMES.keys}, allow_nil: true
 

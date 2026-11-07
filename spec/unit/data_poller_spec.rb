@@ -41,7 +41,7 @@ describe "DataPoller", :unit do
     end
   end
 
-  it "accepts zero, extra fields ignored; stores measurement time, provenance and receipt separately" do
+  it "accepts zero and ignores extra fields while storing measurement time and provenance" do
     timestamp = Time.now.to_i - 60
     result = poll_for("PollTest", transport_for({count: 0, updated_at: timestamp, server: "wrong", source: "plugin"}))
     assert_equal :accepted, result
@@ -50,9 +50,7 @@ describe "DataPoller", :unit do
     assert_equal PlayerCount::SERVER_SOURCE, observation.source
     assert_equal "server", observation.effective_source
     assert_equal timestamp, observation.c_at.to_i
-    refute_nil observation.received_at
     refute_includes observation.serializable_hash({}).keys, "source"
-    refute_includes observation.serializable_hash({}).keys, "received_at"
   end
 
   it "accepts an old but advancing measurement and suppresses duplicate/conflicting/regressive timestamps" do
@@ -101,7 +99,6 @@ describe "DataPoller", :unit do
     assert_equal 2, PlayerCount.where(s: "PollTest").count
     serialized = PlayerCount.where(s: "PollTest", source: PlayerCount::SERVER_SOURCE).first.serializable_hash({})
     refute_includes serialized.keys, "source"
-    refute_includes serialized.keys, "received_at"
   end
 
   it "recovers a durable observation if writing the cursor fails after insert" do
@@ -197,14 +194,14 @@ describe "DataPoller", :unit do
     today = Time.now.utc
     poll_time = today - 120
     plugin_time = today - 60
-    PlayerCount.collection.insert_one({s: "Mixed", c: 40, c_at: poll_time, r: PlayerCount::SERVER_SOURCE, received_at: today})
+    PlayerCount.collection.insert_one({s: "Mixed", c: 40, c_at: poll_time, r: PlayerCount::SERVER_SOURCE})
     PlayerCount.collection.insert_one({s: "Mixed", c: 12, c_at: plugin_time, r: "p"})
     latest = JSON.parse(latest_player_counts).find { |item| item["server"] == "Mixed" }
     assert_equal 12, latest["count"]
 
     yesterday = Time.utc(today.year, today.month, today.day) - 86_400
     PlayerCount.collection.insert_one({s: "Mixed", c: 80, c_at: yesterday + 3600})
-    PlayerCount.collection.insert_one({s: "Mixed", c: 100, c_at: yesterday + 7200, source: "server", received_at: today})
+    PlayerCount.collection.insert_one({s: "Mixed", c: 100, c_at: yesterday + 7200, source: "server"})
     historical = JSON.parse(player_counts(["Mixed"], "All"))
     point = historical.find { |row| row["date"] == yesterday.strftime("%Y%m%d") }
     assert_equal 100, point["count"]

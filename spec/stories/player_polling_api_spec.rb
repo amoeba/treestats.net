@@ -7,8 +7,8 @@ describe "PlayerPollingApiStory" do
   it "keeps the original per-server JSON keys for legacy, plugin and server records" do
     [
       ["LegacyApi", {}],
-      ["PluginApi", {r: "p", received_at: Time.now.utc}],
-      ["ServerApi", {r: "s", received_at: Time.now.utc}],
+      ["PluginApi", {r: "p"}],
+      ["ServerApi", {r: "s"}],
       ["LegacyPluginApi", {source: "plugin"}],
       ["LegacyServerApi", {source: "server"}]
     ].each do |server, internal|
@@ -18,7 +18,6 @@ describe "PlayerPollingApiStory" do
       payload = JSON.parse(last_response.body)
       assert_equal %w[age count created_at server], payload.keys.sort
       refute payload.key?("source")
-      refute payload.key?("received_at")
     end
   end
 end

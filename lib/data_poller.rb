@@ -199,7 +199,6 @@ module DataPoller
             server: @server,
             count: count,
             c_at: measured_at,
-            received_at: Time.at(received_at).utc,
             source: PlayerCount::SERVER_SOURCE
           )
         rescue Mongo::Error::OperationFailure => error
