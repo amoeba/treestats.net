@@ -199,7 +199,7 @@ SERVERS = [{name: "ACPrime",
   port: "9010",
   website_url: "gdleac.com",
   discord_url: "https://discord.gg/jd3dEJf"},
- {name: "Hollowtide",
+ {name: "Hollowtide PK",
   description:
    "End of retail with Darktide rules, plus our own client with VTank-style automation built in (any OS, or play in the browser at hollowtide.org). Retired events revived on a yearly calendar.",
   type: "PvP",
