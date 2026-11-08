@@ -16,7 +16,8 @@ describe "ServerStory" do
       PlayerCount.collection.insert_one({
         s: recent_counts_server,
         c: 100 + index,
-        c_at: now - (50 - index)
+        c_at: now - (50 - index),
+        r: index.even? ? PlayerCount::PLUGIN_SOURCE : PlayerCount::SERVER_SOURCE
       })
     end
 
@@ -24,8 +25,14 @@ describe "ServerStory" do
 
     assert last_response.ok?
     assert_includes last_response.body, "Recent Player Counts"
+    assert_includes last_response.body, '<table class="listing auto">'
+    assert_includes last_response.body, "<th>Source</th>"
+    assert_includes last_response.body, "Plugin"
+    assert_includes last_response.body, "Server poll"
     refute_includes last_response.body, "<td>100</td>"
     assert_operator last_response.body.index("<td>150</td>"), :<, last_response.body.index("<td>149</td>")
+    assert_operator last_response.body.index("No characters to display"), :<,
+      last_response.body.index("Recent Player Counts")
   end
 
   private
