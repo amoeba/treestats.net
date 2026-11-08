@@ -29,28 +29,78 @@ module DataPoller
   RFC3339_LEAP_SECOND = /[Tt\s]\d{2}:\d{2}:60/
   class JobDeadlineExceeded < Timeout::Error; end
 
-  # Returns [count, epoch_seconds] for a standard population document, or nil
-  # when the document is valid but does not publish a population.
+  # Parsed standard server document. Timestamps are epoch seconds.
+  Document = Struct.new(
+    :count, :measured_at, :document_updated_at, :name,
+    :emulator_name, :emulator_version, :schema_url, :document_version
+  )
+
+  # Parses the standard server document. All fields are optional. A count
+  # without a measurement time (population.updated_at, falling back to the
+  # document's updated_at) can be stored as a result but not as an observation.
   def self.parse_population(payload)
     raise Error, "response must be an object" unless payload.is_a?(Hash)
 
-    unless payload.key?("population")
-      # A document without population is valid; validate its optional timestamp
-      # so a malformed document is still rejected.
-      parse_rfc3339(payload["updated_at"], "updated_at") if payload.key?("updated_at")
-      return nil
+    document_updated_at = parse_rfc3339(payload["updated_at"], "updated_at") unless payload["updated_at"].nil?
+    schema_url = optional_string(payload, "schema")
+    document_version = optional_integer(payload, "version", minimum: 1)
+    name = optional_string(payload, "name")
+    emulator_name, emulator_version = parse_emulator(payload["emulator"])
+
+    if payload.key?("population")
+      population = payload["population"]
+      raise Error, "population must be an object" unless population.is_a?(Hash)
+
+      count = population["count"]
+      valid_count = count.nil? || (count.is_a?(Integer) && count >= 0)
+      raise Error, "count must be a nonnegative integer" unless valid_count
+      measured_at = if population["updated_at"].nil?
+        document_updated_at
+      else
+        parse_rfc3339(population["updated_at"], "population.updated_at")
+      end
+    else
+      count = nil
+      measured_at = nil
     end
 
-    population = payload["population"]
-    raise Error, "population must be an object" unless population.is_a?(Hash)
+    Document.new(
+      count: count,
+      measured_at: measured_at,
+      document_updated_at: document_updated_at,
+      name: name,
+      emulator_name: emulator_name,
+      emulator_version: emulator_version,
+      schema_url: schema_url,
+      document_version: document_version
+    )
+  end
 
-    # A population document carries two timestamps: when the document was
-    # generated and when the population was measured. Require both.
-    parse_rfc3339(payload["updated_at"], "updated_at")
-    count = population["count"]
-    timestamp = parse_rfc3339(population["updated_at"], "population.updated_at")
-    raise Error, "count must be a nonnegative integer" unless count.is_a?(Integer) && count >= 0
-    [count, timestamp]
+  def self.optional_string(payload, key)
+    value = payload[key]
+    raise Error, "#{key} must be a string" unless value.nil? || value.is_a?(String)
+    value
+  end
+
+  def self.optional_integer(payload, key, minimum: nil)
+    value = payload[key]
+    return value if value.nil?
+
+    valid = value.is_a?(Integer) && (minimum.nil? || value >= minimum)
+    message = minimum ? "#{key} must be an integer >= #{minimum}" : "#{key} must be an integer"
+    raise Error, message unless valid
+    value
+  end
+
+  def self.parse_emulator(emulator)
+    return [nil, nil] if emulator.nil?
+    raise Error, "emulator must be an object" unless emulator.is_a?(Hash)
+
+    name = emulator["name"]
+    version = emulator["version"]
+    raise Error, "emulator.name must be a string" unless name.nil? || name.is_a?(String)
+    raise Error, "emulator.version must be a string" unless version.nil? || version.is_a?(String)
+    [name, version]
   end
 
   def self.parse_rfc3339(value, field = "updated_at")
@@ -81,6 +131,7 @@ module DataPoller
   def self.ensure_indexes!
     create_polled_measurement_index!
     DataPollState.collection.indexes.create_one({server: 1}, unique: true, name: "unique_poll_state_server")
+    ServerInfo.collection.indexes.create_one({server: 1}, unique: true, name: "unique_server_info_server")
   end
 
   def self.create_polled_measurement_index!
@@ -163,9 +214,12 @@ module DataPoller
 
       begin
         body, received_at = read_response_with_fallback
-        parsed = DataPoller.parse_population(JSON.parse(body))
-        return record_empty(lease_id) unless parsed
-        count, timestamp = parsed
+        result = DataPoller.parse_population(JSON.parse(body))
+        if result.count.nil? || result.measured_at.nil?
+          return record_unmeasured(result, received_at, lease_id)
+        end
+        count = result.count
+        timestamp = result.measured_at
         raise Error, "updated_at is in the future" if timestamp > received_at.floor
 
         lease = DataPollState.collection.find(server: @server, lease_id: lease_id).first
@@ -185,6 +239,7 @@ module DataPoller
           if existing && existing["c"] == count
             # Recover the only crash window: observation insert succeeded, state update did not.
             DataPollState.collection.update_one({server: @server, lease_id: lease_id}, {"$max" => {last_accepted_updated_at: timestamp}, "$set" => {last_checked_at: Time.now.utc, last_outcome: "duplicate", error_summary: nil, consecutive_failures: 0}, "$unset" => {lease_until: "", lease_id: ""}})
+            record_server_info(result, "duplicate", received_at)
             return :duplicate
           end
           raise Error, existing ? "conflicting measurement timestamp" : "measurement timestamp did not advance"
@@ -206,6 +261,7 @@ module DataPoller
           raise Error, "conflicting measurement timestamp" unless existing && existing["c"] == count
         end
         record_acceptance(timestamp, lease_id)
+        record_server_info(result, "accepted", received_at)
         :accepted
       rescue JobDeadlineExceeded => error
         warn("Data poll job exceeded its execution bound for #{@server}")
@@ -274,17 +330,41 @@ module DataPoller
       end
     end
 
-    def record_empty(lease_id)
+    def record_unmeasured(result, received_at, lease_id)
       lease = DataPollState.collection.find(server: @server, lease_id: lease_id).first
       return :overlap unless lease && lease["lease_until"] > Time.now.utc + 2
 
-      result = DataPollState.collection.update_one(
+      outcome = result.count.nil? ? "empty" : "no_timestamp"
+      updated = DataPollState.collection.update_one(
         {server: @server, lease_id: lease_id},
-        {"$set" => {last_checked_at: Time.now.utc, last_outcome: "empty", error_summary: nil, consecutive_failures: 0}, "$unset" => {lease_until: "", lease_id: ""}}
+        {"$set" => {last_checked_at: Time.now.utc, last_outcome: outcome, error_summary: nil, consecutive_failures: 0}, "$unset" => {lease_until: "", lease_id: ""}}
       )
-      return :empty if result.matched_count == 1
+      return :overlap unless updated.matched_count == 1
 
-      :overlap
+      record_server_info(result, outcome, received_at)
+      outcome.to_sym
+    end
+
+    def record_server_info(result, outcome, received_at)
+      ServerInfo.collection.update_one(
+        {server: @server},
+        {"$set" => {
+          server: @server,
+          fetched_at: Time.at(received_at).utc,
+          outcome: outcome,
+          count: result.count,
+          measured_at: result.measured_at && Time.at(result.measured_at).utc,
+          document_updated_at: result.document_updated_at && Time.at(result.document_updated_at).utc,
+          name: result.name,
+          emulator_name: result.emulator_name,
+          emulator_version: result.emulator_version,
+          schema_url: result.schema_url,
+          document_version: result.document_version
+        }},
+        upsert: true
+      )
+    rescue => error
+      warn("Could not record server info for #{@server}: #{error.class}: #{error.message}")
     end
 
     def record_failure(lease_id, error)

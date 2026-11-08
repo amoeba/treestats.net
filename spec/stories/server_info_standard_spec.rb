@@ -8,7 +8,10 @@ describe "ServerInfoStandardStory" do
     schema = JSON.parse(last_response.body)
     assert_equal "https://treestats.net/schemas/asherons-call-server/v1/schema.json", schema["$id"]
     assert_equal "object", schema["type"]
-    assert_equal %w[count updated_at], schema.dig("properties", "population", "required").sort
-    assert_equal ["updated_at"], schema.dig("dependentRequired", "population")
+    refute schema.key?("required")
+    refute schema.key?("dependentRequired")
+    refute schema.dig("properties", "population").key?("required")
+    refute schema.dig("properties", "emulator").key?("required")
+    assert_equal %w[count updated_at], schema.dig("properties", "population", "properties").keys.sort
   end
 end

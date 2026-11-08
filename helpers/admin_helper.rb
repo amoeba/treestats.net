@@ -56,8 +56,11 @@ module AdminHelper
       states = DataPollState.in(server: targets.keys).to_a.each_with_object({}) do |state, result|
         result[state.server] = state
       end
+      infos = ServerInfo.in(server: targets.keys).to_a.each_with_object({}) do |info, result|
+        result[info.server] = info
+      end
       @poll_targets = targets.map do |server, target|
-        {server: server, url: target.url, fallback_url: target.fallback_url, state: states[server]}
+        {server: server, url: target.url, fallback_url: target.fallback_url, state: states[server], info: infos[server]}
       end
     rescue DataPoller::Error, Psych::SyntaxError => error
       @poll_config_error = error.message

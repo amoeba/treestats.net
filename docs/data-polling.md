@@ -50,10 +50,11 @@ Targets respond with the standard document:
 }
 ```
 
-When `population` is present, the top-level `updated_at` is required as well. A document without `population` is valid: TreeStats records no observation and shows the poll as `empty` in the admin dashboard.
+All fields are optional. `population.updated_at` is the measurement time; when it is absent, the document's `updated_at` is used instead. A document without a count, or without either timestamp, is valid: TreeStats stores the last result but creates no historical observation.
 
-- `count` is a nonnegative integer counting connected, in-world player characters, including bots, multiboxed characters, staff, and test characters. Do not count unique people/accounts or exclude operator-defined categories. A measured empty world is `0`; inability to measure must be an error, not a fabricated zero.
-- `updated_at` is when the population was measured, not when the document was served, and is an RFC3339 string with an explicit offset. Advance it for a new measurement even if the count did not change. Re-serving an old snapshot must not renew it.
+- `count` is a nonnegative integer counting connected, in-world player characters, including bots, multiboxed characters, staff, and test characters. Do not count unique people/accounts or exclude operator-defined categories. A measured empty world is `0`; when absent, no observation is recorded. Inability to measure must be an error, not a fabricated zero.
+- `updated_at` is when the population was measured, not when the document was served, and is an RFC3339 string with an explicit offset. It falls back to the document's top-level `updated_at` when absent. Advance it for a new measurement even if the count did not change. Re-serving an old snapshot must not renew it.
+- The last successfully parsed document is stored per server and shown in the admin dashboard. A document with no count is recorded as `empty`; a count without a measurement time is recorded as `no_timestamp`.
 - Other JSON fields, including `schema`, `version`, `name`, and `emulator`, are ignored for now. TreeStats binds the server identity from reviewed configuration; do not rely on identity or provenance fields in the document.
 - Keep the game/exporter clock synchronized. A measurement timestamp must not exceed response receipt time. Old but previously unaccepted measurements can be accepted; there is no age cutoff.
 - HTTP and HTTPS are both accepted. Redirects are not followed.

@@ -28,6 +28,9 @@
                 %th{:scope => "col"} Endpoint
                 %th{:scope => "col"} Last check
                 %th{:scope => "col"} Outcome
+                %th{:scope => "col"} Last count
+                %th{:scope => "col"} Measured at
+                %th{:scope => "col"} Document updated at
                 %th{:scope => "col"} Consecutive failures
                 %th{:scope => "col"} Error
             %tbody
@@ -40,6 +43,9 @@
                       %div= "fallback: #{target[:fallback_url]}"
                   %td= target[:state]&.last_checked_at || "Never"
                   %td= target[:state]&.last_outcome || "Never"
+                  %td= target[:info]&.count || "-"
+                  %td= target[:info]&.measured_at&.utc&.iso8601 || "-"
+                  %td= target[:info]&.document_updated_at&.utc&.iso8601 || "-"
                   %td= target[:state]&.consecutive_failures || 0
                   %td= target[:state]&.error_summary || "-"
 

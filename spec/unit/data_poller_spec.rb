@@ -8,6 +8,7 @@ describe "DataPoller", :unit do
   before do
     PlayerCount.destroy_all
     DataPollState.collection.delete_many
+    ServerInfo.collection.delete_many
     DataPoller.ensure_indexes!
   end
 
@@ -133,24 +134,28 @@ describe "DataPoller", :unit do
     documents = [
       {updated_at: valid_time, population: nil},
       {updated_at: valid_time, population: []},
-      standard.call({count: 1}),
-      standard.call({updated_at: valid_time}),
       standard.call({count: -1, updated_at: valid_time}),
       standard.call({count: 1.0, updated_at: valid_time}),
       standard.call({count: "1", updated_at: valid_time}),
       standard.call({count: 1, updated_at: (now - 60).to_i}),
       standard.call({count: 1, updated_at: (now - 60).strftime("%Y-%m-%dT%H:%M:%S")}),
       standard.call({count: 1, updated_at: (now + 60).strftime("%Y-%m-%dT%H:%M:%SZ")}),
-      {population: {count: 1, updated_at: valid_time}},
-      standard.call({count: 1, updated_at: valid_time}, nil),
       standard.call({count: 1, updated_at: valid_time}, "not a timestamp"),
-      standard.call({count: 1, updated_at: valid_time}, (now - 60).to_i)
+      standard.call({count: 1, updated_at: valid_time}, (now - 60).to_i),
+      {updated_at: valid_time, name: 123},
+      {updated_at: valid_time, version: "1"},
+      {updated_at: valid_time, version: 0},
+      {updated_at: valid_time, schema: 1},
+      {updated_at: valid_time, emulator: "ACE"},
+      {updated_at: valid_time, emulator: {name: 1}},
+      {updated_at: valid_time, emulator: {version: 1}}
     ]
 
     documents.each do |document|
       assert_equal :failure, poll_for("InvalidStandard", transport_for(document)), document.inspect
     end
     assert_equal 0, PlayerCount.where(s: "InvalidStandard").count
+    assert_equal 0, ServerInfo.where(server: "InvalidStandard").count
   end
 
   it "records a valid document without population as empty" do
@@ -169,6 +174,12 @@ describe "DataPoller", :unit do
     assert_equal 0, state["consecutive_failures"]
     assert_nil state["lease_id"]
     assert_nil state["last_accepted_updated_at"]
+
+    info = ServerInfo.where(server: "EmptyPopulation").first
+    assert_equal "empty", info.outcome
+    assert_nil info.count
+    assert_equal "Example World", info.name
+    assert_equal Time.iso8601(updated_at).to_i, info.document_updated_at.to_i
   end
 
   it "treats an empty document as empty and resets consecutive failures" do
@@ -180,6 +191,10 @@ describe "DataPoller", :unit do
     assert_equal "empty", state["last_outcome"]
     assert_equal 0, state["consecutive_failures"]
     assert_nil state["error_summary"]
+
+    info = ServerInfo.where(server: "EmptyReset").first
+    assert_equal "empty", info.outcome
+    assert_nil info.count
   end
 
   it "rejects a malformed optional timestamp on an empty document" do
@@ -187,6 +202,93 @@ describe "DataPoller", :unit do
       assert_equal :failure, poll_for("EmptyInvalid", transport_for(updated_at: value))
     end
     assert_equal 0, PlayerCount.where(s: "EmptyInvalid").count
+    assert_equal 0, ServerInfo.where(server: "EmptyInvalid").count
+  end
+
+  it "falls back to the document timestamp when population.updated_at is absent" do
+    timestamp = Time.now.utc - 60
+    document = {updated_at: timestamp.iso8601, population: {count: 5}}
+
+    assert_equal :accepted, poll_for("FallbackTime", transport_for(document))
+    observation = PlayerCount.where(s: "FallbackTime").first
+    assert_equal 5, observation.c
+    assert_equal timestamp.to_i, observation.c_at.to_i
+
+    info = ServerInfo.where(server: "FallbackTime").first
+    assert_equal "accepted", info.outcome
+    assert_equal 5, info.count
+    assert_equal timestamp.to_i, info.measured_at.to_i
+    assert_equal timestamp.to_i, info.document_updated_at.to_i
+  end
+
+  it "stores a result without a measurement time and skips the observation" do
+    document = {population: {count: 3}}
+
+    assert_equal :no_timestamp, poll_for("NoTimestamp", transport_for(document))
+    assert_equal 0, PlayerCount.where(s: "NoTimestamp").count
+    state = DataPollState.collection.find(server: "NoTimestamp").first
+    assert_equal "no_timestamp", state["last_outcome"]
+    assert_equal 0, state["consecutive_failures"]
+
+    info = ServerInfo.where(server: "NoTimestamp").first
+    assert_equal "no_timestamp", info.outcome
+    assert_equal 3, info.count
+    assert_nil info.measured_at
+    assert_nil info.document_updated_at
+  end
+
+  it "stores a population without a count as empty" do
+    updated_at = (Time.now.utc - 60).iso8601
+    document = {updated_at: updated_at, population: {updated_at: updated_at}}
+
+    assert_equal :empty, poll_for("NoCount", transport_for(document))
+    assert_equal 0, PlayerCount.where(s: "NoCount").count
+
+    info = ServerInfo.where(server: "NoCount").first
+    assert_equal "empty", info.outcome
+    assert_nil info.count
+    assert_equal Time.iso8601(updated_at).to_i, info.measured_at.to_i
+    assert_equal Time.iso8601(updated_at).to_i, info.document_updated_at.to_i
+  end
+
+  it "stores metadata from the last accepted document" do
+    timestamp = Time.now.to_i - 60
+    document = standard_document(count: 4, updated_at: timestamp).merge(
+      schema: "https://treestats.net/schemas/asherons-call-server/v1/schema.json",
+      version: 1,
+      name: "Example World",
+      emulator: {name: "ACE", version: "1.2.3"}
+    )
+
+    assert_equal :accepted, poll_for("Metadata", transport_for(document))
+    info = ServerInfo.where(server: "Metadata").first
+    assert_equal "accepted", info.outcome
+    assert_equal 4, info.count
+    assert_equal timestamp, info.measured_at.to_i
+    assert_equal timestamp, info.document_updated_at.to_i
+    assert_equal "Example World", info.name
+    assert_equal "ACE", info.emulator_name
+    assert_equal "1.2.3", info.emulator_version
+    assert_equal "https://treestats.net/schemas/asherons-call-server/v1/schema.json", info.schema_url
+    assert_equal 1, info.document_version
+  end
+
+  it "updates the last result on a duplicate but keeps the last good result on failure" do
+    timestamp = Time.now.to_i - 30
+    document = standard_document(count: 2, updated_at: timestamp)
+
+    assert_equal :accepted, poll_for("LastGood", transport_for(document))
+    info = ServerInfo.where(server: "LastGood").first
+    assert_equal "accepted", info.outcome
+
+    assert_equal :duplicate, poll_for("LastGood", transport_for(document))
+    info = ServerInfo.where(server: "LastGood").first
+    assert_equal "duplicate", info.outcome
+
+    assert_equal :failure, poll_for("LastGood", transport_for(standard_document(count: 3, updated_at: timestamp)))
+    info = ServerInfo.where(server: "LastGood").first
+    assert_equal "duplicate", info.outcome
+    assert_equal 2, info.count
   end
 
   it "tries HTTP first and falls back to HTTPS when the primary request fails" do
@@ -324,7 +426,7 @@ describe "DataPoller", :unit do
       standard_document(count: -1, updated_at: now),
       standard_document(count: 1.5, updated_at: now),
       {updated_at: valid_time, population: {count: 1, updated_at: now}},
-      {updated_at: valid_time, population: {updated_at: valid_time}}
+      {updated_at: valid_time, population: {count: 1, updated_at: "not a timestamp"}}
     ].each do |data|
       assert_equal :failure, poll_for("PollTest", transport_for(data))
     end
