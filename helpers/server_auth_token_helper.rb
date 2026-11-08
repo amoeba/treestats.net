@@ -7,15 +7,6 @@ module ServerAuthTokenHelper
   RATE_LIMIT_WINDOW = 3600
   RATE_LIMIT_MAX = 1000
 
-  RATE_LIMIT_LUA = <<~LUA
-    local count = redis.call('INCR', KEYS[1])
-    if count == 1 then
-      redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1]))
-    end
-    return {count, redis.call('TTL', KEYS[1])}
-  LUA
-  RATE_LIMIT_LUA_SHA = Digest::SHA1.hexdigest(RATE_LIMIT_LUA)
-
   def self.generate
     "#{TOKEN_PREFIX}#{SecureRandom.urlsafe_base64(32, false)}"
   end
@@ -35,16 +26,7 @@ module ServerAuthTokenHelper
   end
 
   def self.record_request!(redis, token)
-    key = "uploads:server-token:#{digest(token)}"
-    count, ttl = begin
-      redis.evalsha(RATE_LIMIT_LUA_SHA, keys: [key], argv: [RATE_LIMIT_WINDOW])
-    rescue Redis::CommandError => e
-      raise unless e.message.include?('NOSCRIPT')
-
-      redis.eval(RATE_LIMIT_LUA, keys: [key], argv: [RATE_LIMIT_WINDOW])
-    end
-
-    {count: count.to_i, reset_in: [ttl.to_i, 0].max}
+    RateLimiter.record!(redis, "uploads:server-token:#{digest(token)}", RATE_LIMIT_WINDOW)
   end
 
   def self.apply_rate_limit_headers(headers, limit)

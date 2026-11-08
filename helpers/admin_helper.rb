@@ -1,19 +1,9 @@
 require 'securerandom'
-require 'digest'
 
 module AdminHelper
   LOGIN_MIN_FILL_SECONDS = 1.5
   LOGIN_RATE_LIMIT_WINDOW = 3600
   LOGIN_RATE_LIMIT_MAX = 8
-
-  RATE_LIMIT_LUA = <<~LUA
-    local count = redis.call('INCR', KEYS[1])
-    if count == 1 then
-      redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1]))
-    end
-    return count
-  LUA
-  RATE_LIMIT_LUA_SHA = Digest::SHA1.hexdigest(RATE_LIMIT_LUA)
 
   def admin?
     !!session[:admin_user_id]
@@ -53,13 +43,7 @@ module AdminHelper
   end
 
   def record_failed_login_attempt!
-    key = admin_login_rate_limit_key
-    begin
-      redis.evalsha(RATE_LIMIT_LUA_SHA, keys: [key], argv: [LOGIN_RATE_LIMIT_WINDOW])
-    rescue Redis::CommandError => e
-      raise unless e.message.include?('NOSCRIPT')
-      redis.eval(RATE_LIMIT_LUA, keys: [key], argv: [LOGIN_RATE_LIMIT_WINDOW])
-    end
+    RateLimiter.record!(redis, admin_login_rate_limit_key, LOGIN_RATE_LIMIT_WINDOW)
   end
 
   def render_admin_dashboard
