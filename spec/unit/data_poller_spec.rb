@@ -74,6 +74,16 @@ describe "DataPoller", :unit do
     assert_equal PlayerCount::SERVER_SOURCE, observation.source
   end
 
+  it "does not require schema or version" do
+    timestamp = Time.now.utc - 60
+    population = {count: 3, updated_at: timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")}
+    [{}, {"version" => 1}, {"schema" => "https://treestats.net/schemas/asherons-call-server/v1/schema.json"}].each_with_index do |metadata, index|
+      server = "Metadata#{index}"
+      assert_equal :accepted, poll_for(server, transport_for(metadata.merge("population" => population)))
+      assert_equal 3, PlayerCount.where(s: server).first.c
+    end
+  end
+
   it "rejects malformed standard population documents" do
     now = Time.now.utc
     valid_time = (now - 60).strftime("%Y-%m-%dT%H:%M:%SZ")
