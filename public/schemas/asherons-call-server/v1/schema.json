@@ -23,7 +23,7 @@
     "updated_at": {
       "type": "string",
       "format": "date-time",
-      "description": "When this document was generated, as an RFC3339 timestamp with an explicit offset."
+      "description": "When this document was generated, as an RFC3339 timestamp with an explicit offset, e.g. \"2026-11-07T18:00:00Z\"."
     },
     "population": {
       "type": "object",
