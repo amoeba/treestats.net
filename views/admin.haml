@@ -39,14 +39,7 @@
 
       %section
         %h2 Server upload tokens
-        %p Generate one token per server. Reissuing or revoking a token immediately invalidates the previous token.
-
-        - if @issued_token
-          %section
-            %h3 Token for #{@issued_server}
-            %p Copy this value now. It cannot be shown again.
-            %pre= @issued_token
-            %p Send it with each direct upload in the <code>X-TreeStats-Server-Token</code> HTTP header.
+        %p Generate one token per server. Reissuing or revoking a token immediately invalidates the previous token. The new token is shown on its own page.
 
         %form{:method => "post", :action => "/admin/upload-tokens"}
           %input{:type => "hidden", :name => "authenticity_token", :value => csrf_token}

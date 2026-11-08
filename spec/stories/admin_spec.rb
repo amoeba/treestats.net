@@ -175,19 +175,51 @@ describe "AdminStory" do
       sign_in_admin
 
       get '/admin'
-      token = extract_csrf
-      post '/admin/upload-tokens', server: server, authenticity_token: token
+      post '/admin/upload-tokens', server: server, authenticity_token: extract_csrf
+
+      assert_equal 302, last_response.status
+      assert_equal '/admin/token', URI(last_response.location).path
+
+      follow_redirect!
 
       assert_equal 200, last_response.status
       issued_token = last_response.body[/<pre>([^<]+)<\/pre>/, 1]&.strip
       refute_nil issued_token
       assert_match(/\Ats_/, issued_token)
+      assert_includes last_response.body, "Token for #{server}"
+      assert_includes last_response.body, 'X-TreeStats-Server-Token'
+      assert_includes last_response.headers['Cache-Control'], 'no-store'
+
       record = ServerAuthToken.find_by(server: server)
       refute_equal issued_token, record.token_digest
       assert_equal ServerAuthTokenHelper.digest(issued_token), record.token_digest
+
+      get '/admin'
       assert_includes last_response.body, record.updated_at.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
       assert_includes last_response.body, 'admin-utc-time'
       assert_includes last_response.headers['Cache-Control'], 'no-store'
+    end
+
+    it "shows the issued token exactly once" do
+      server = ServerHelper.servers.first
+      sign_in_admin
+
+      issued_token = issue_token(server)
+      refute_nil issued_token
+      assert_equal 1, ServerAuthToken.where(server: server).count
+
+      get '/admin/token'
+
+      assert_equal 302, last_response.status
+      assert_equal '/admin', URI(last_response.location).path
+      assert_equal 1, ServerAuthToken.where(server: server).count
+      refute_nil ServerAuthTokenHelper.authenticate(server, issued_token)
+    end
+
+    it "hides the issued token page from anonymous visitors" do
+      get '/admin/token'
+
+      assert_equal 404, last_response.status
     end
 
     it "creates unique indexes for server tokens" do
@@ -207,13 +239,8 @@ describe "AdminStory" do
       server = ServerHelper.servers.first
       sign_in_admin
 
-      get '/admin'
-      post '/admin/upload-tokens', server: server, authenticity_token: extract_csrf
-      first_token = last_response.body[/<pre>([^<]+)<\/pre>/, 1]&.strip
-
-      get '/admin'
-      post '/admin/upload-tokens', server: server, authenticity_token: extract_csrf
-      second_token = last_response.body[/<pre>([^<]+)<\/pre>/, 1]&.strip
+      first_token = issue_token(server)
+      second_token = issue_token(server)
 
       refute_nil first_token
       refute_nil second_token
@@ -309,6 +336,13 @@ describe "AdminStory" do
 
   def extract_widget_csrf
     last_response.body[/authenticity_token&quot;:&quot;([a-f0-9]+)&quot;/, 1] || extract_csrf
+  end
+
+  def issue_token(server)
+    get '/admin'
+    post '/admin/upload-tokens', server: server, authenticity_token: extract_csrf
+    follow_redirect!
+    last_response.body[/<pre>([^<]+)<\/pre>/, 1]&.strip
   end
 
   def sign_in_admin

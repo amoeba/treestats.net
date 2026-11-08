@@ -78,6 +78,15 @@ module Sinatra
             render_admin_dashboard
           end
 
+          app.get '/admin/token/?' do
+            require_admin!
+
+            @issued = session.delete(:issued_token)
+            redirect '/admin' unless @issued
+
+            haml :admin_token, layout: false
+          end
+
           app.post '/admin/upload-tokens/?' do
             require_admin!
             verify_csrf!

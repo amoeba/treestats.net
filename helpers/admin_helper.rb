@@ -83,8 +83,9 @@ module AdminHelper
     token = ServerAuthTokenHelper.generate
     ServerAuthToken.issue!(server, ServerAuthTokenHelper.digest(token))
 
-    @issued_server = server
-    @issued_token = token
-    render_admin_dashboard
+    # Show the plaintext token once, on its own page. Keeping it in the signed
+    # session for a single redirect avoids re-issuing on a page reload.
+    session[:issued_token] = {'server' => server, 'token' => token}
+    redirect '/admin/token'
   end
 end
