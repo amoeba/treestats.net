@@ -15,9 +15,8 @@ module DataPoller
   INTERVAL_PATTERN = /\A\s*(\d+)\s*([a-z]+)\s*\z/i
   class Error < StandardError; end
   # A poll target. `fallback_url` is only set for discovered roots, which are
-  # tried over HTTP first and HTTPS second. `format` is :standard unless the
-  # target explicitly opts into the legacy flat document shape.
-  Target = Struct.new(:url, :fallback_url, :format, keyword_init: true)
+  # tried over HTTP first and HTTPS second.
+  Target = Struct.new(:url, :fallback_url)
 
   def self.config
     YAML.safe_load_file(File.expand_path("../config/polling_targets.yml", __dir__)) || {}
@@ -64,8 +63,7 @@ module DataPoller
       configured_url = settings["url"]
       raise Error, "invalid target URL for #{server}" unless configured_url.nil? || configured_url.is_a?(String)
 
-      configured_format = settings["format"]
-      raise Error, "invalid target format for #{server}" unless configured_format.nil? || configured_format.is_a?(String)
+      raise Error, "legacy target formats are no longer supported for #{server}" if settings.key?("format")
       next unless enabled
 
       raise Error, "unknown polling target #{server.inspect}; add it to data/servers.rb" unless known_servers.include?(server)
@@ -76,17 +74,11 @@ module DataPoller
         parse_http_url(url)
       end
 
-      target_format = case configured_format
-      when nil then :standard
-      when "legacy_flat" then :legacy_flat
-      else raise Error, "invalid target format for #{server}: #{configured_format.inspect}; use legacy_flat"
-      end
-
       result[server] = if configured_url
-        Target.new(url: url, format: target_format)
+        Target.new(url: url)
       else
         root = roots[server] || raise(Error, "polling target #{server.inspect} has no host or port in data/servers.rb; give a URL")
-        Target.new(url: root.url, fallback_url: root.fallback_url, format: target_format)
+        Target.new(url: root.url, fallback_url: root.fallback_url)
       end
     end
   end

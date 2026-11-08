@@ -322,8 +322,7 @@ describe "AdminStory" do
       DataPoller.define_singleton_method(:targets) do
         {
           'Hollowtide PK' => DataPoller::Target.new(
-            url: 'http://hollowtide.org/population.json',
-            fallback_url: 'https://hollowtide.org/population.json'
+            url: 'https://hollowtide.org/server.json'
           )
         }
       end
@@ -337,7 +336,7 @@ describe "AdminStory" do
       assert_includes last_response.body, 'Hollowtide PK'
       assert_includes last_response.body, 'failure'
       assert_includes last_response.body, 'HTTP status 500'
-      assert_includes last_response.body, 'fallback: https://hollowtide.org/population.json'
+      assert_includes last_response.body, 'https://hollowtide.org/server.json'
       assert_includes last_response.body, '<td>7</td>'
       assert_includes last_response.body, '2026-11-07T22:00:00Z'
       assert_includes last_response.body, '2026-11-07T22:01:00Z'
