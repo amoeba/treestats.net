@@ -104,18 +104,6 @@ module Sinatra
             redirect '/admin'
           end
 
-          app.get '/admin/server-tokens/?' do
-            require_admin!
-            redirect '/admin'
-          end
-
-          app.post '/admin/server-tokens/?' do
-            require_admin!
-            verify_csrf!
-
-            generate_upload_token
-          end
-
           # Catch anything else under /admin before the /:server catch-all
           app.get '/admin/*' do
             halt 404
