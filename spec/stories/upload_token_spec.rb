@@ -3,9 +3,10 @@ require_relative '../story_helper.rb'
 describe "UploadTokenStory" do
   before do
     ServerAuthToken.all.destroy
-    # Upload callbacks create patron/monarch characters, so clear the whole server.
-    Character.unscoped.in(server: ['Token Server', 'Other Server']).destroy
-    PlayerCount.in(server: ['Token Server', 'Other Server']).destroy
+    # Upload callbacks create patron/monarch characters, so clear whole servers.
+    Character.unscoped.in(server: ['Token Server', 'Other Server', 'Example Server']).destroy
+    PlayerCount.in(server: ['Token Server', 'Other Server', 'Example Server']).destroy
+    Allegiance.in(server: ['Token Server', 'Other Server', 'Example Server']).destroy
     redis.keys('uploads:server-token:*').each { |key| redis.del(key) }
   end
 
@@ -126,6 +127,29 @@ describe "UploadTokenStory" do
         assert_includes last_response.body, 'JSON object'
       end
     end
+  end
+
+  it "accepts the minimal and maximal examples from the docs" do
+    token = create_server_token('Example Server')
+    docs = File.read(File.expand_path('../../docs/direct-upload.md', __dir__))
+
+    %w[minimal maximal].each do |name|
+      body = docs[/<!-- example:#{name} -->\s*```json\n(.*?)```/m, 1]
+      refute_nil body, "docs are missing the #{name} example"
+
+      post '/characters', body, 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+      assert_equal 200, last_response.status, "#{name} example was rejected: #{last_response.body}"
+      assert_nil last_response.headers['X-Upload-Ignored-Fields'],
+        "#{name} example contains fields the uploader ignores"
+    end
+
+    character = Character.unscoped.find_by(server: 'Example Server', name: 'Maximal Example')
+    assert_equal 275, character.level
+    refute_nil character.birth
+    assert_equal 'Example Patron', character.patron['name']
+    assert_equal ['Example Vassal'], character.vassals.map { |vassal| vassal['name'] }
+    assert_equal 123, PlayerCount.find_by(server: 'Example Server').count
   end
 
   it "ignores unknown fields and reports them without failing" do
