@@ -83,6 +83,13 @@ module UploadHelper
       return "Upload failed for an unknown reason. Please report this as a bug at https://github.com/amoeba/treestats."
     end
 
+    unless json_text.is_a?(Hash)
+      status 400
+      print_and_maybe_sentry("Upload payload is not a JSON object: #{text}")
+
+      return "Upload payload must be a JSON object."
+    end
+
     if token_required
       token_record = ServerAuthTokenHelper.authenticate(json_text['server'], server_token)
       unless token_record

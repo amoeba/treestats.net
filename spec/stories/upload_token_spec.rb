@@ -3,7 +3,9 @@ require_relative '../story_helper.rb'
 describe "UploadTokenStory" do
   before do
     ServerAuthToken.all.destroy
-    Character.unscoped.where(server: 'Token Server', name: 'Token User').destroy
+    # Upload callbacks create patron/monarch characters, so clear the whole server.
+    Character.unscoped.where(server: 'Token Server').destroy
+    PlayerCount.where(server: 'Token Server').destroy
     redis.keys('uploads:server-token:*').each { |key| redis.del(key) }
   end
 
@@ -77,6 +79,31 @@ describe "UploadTokenStory" do
     post '/characters', upload_body('Token Server')
 
     assert_equal 401, last_response.status
+  end
+
+  it "rejects valid JSON that is not an object" do
+    token = create_server_token('Token Server')
+
+    ['null', '[]', '"string"', '5', 'true'].each do |body|
+      post '/characters', body, 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+      assert_equal 400, last_response.status, "expected 400 for #{body}"
+      assert_includes last_response.body, 'JSON object'
+    end
+
+    assert_equal 0, Character.unscoped.where(server: 'Token Server').count
+    assert_equal 0, PlayerCount.where(server: 'Token Server').count
+  end
+
+  it "rejects valid JSON that is not an object on the legacy endpoint" do
+    without_env('TREESTATS_SECRET') do
+      ['null', '[]', '5'].each do |body|
+        post '/', body
+
+        assert_equal 400, last_response.status, "expected 400 for #{body}"
+        assert_includes last_response.body, 'JSON object'
+      end
+    end
   end
 
   it "rejects an oversized direct upload before reading it" do
