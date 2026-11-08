@@ -78,4 +78,22 @@ describe "UploadTokenStory" do
 
     assert_equal 401, last_response.status
   end
+
+  it "rejects an oversized direct upload before reading it" do
+    oversized = 'x' * (UploadHelper::MAX_UPLOAD_BYTES + 1)
+
+    post '/characters', oversized, 'HTTP_X_TREESTATS_SERVER_TOKEN' => 'ts_whatever'
+
+    assert_equal 413, last_response.status
+  end
+
+  it "rejects an oversized legacy upload before reading it" do
+    oversized = 'x' * (UploadHelper::MAX_UPLOAD_BYTES + 1)
+
+    without_env('TREESTATS_SECRET') do
+      post '/', oversized
+    end
+
+    assert_equal 413, last_response.status
+  end
 end

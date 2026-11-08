@@ -1,6 +1,9 @@
 require "digest"
 
 module UploadHelper
+  # Character payloads are a few KB; anything this large is a bug or abuse.
+  MAX_UPLOAD_BYTES = 1024 * 1024
+
   def self.validate(text)
     return false if text.nil? or text.length <= 0
 
@@ -37,9 +40,26 @@ module UploadHelper
   end
 
   def process_character_upload(token_required:)
+    if request.content_length.to_i > MAX_UPLOAD_BYTES
+      status 413
+      return "Upload too large."
+    end
+
+    server_token = request.env[ServerAuthTokenHelper::HEADER].to_s
+    if token_required && server_token.empty?
+      status 401
+      return "Server upload token is required."
+    end
+
     request.body.rewind
-    text = request.body.read
-    return if text.length <= 0
+    # Read one byte past the limit so chunked bodies (no Content-Length) are capped too.
+    text = request.body.read(MAX_UPLOAD_BYTES + 1)
+    return if text.empty?
+
+    if text.bytesize > MAX_UPLOAD_BYTES
+      status 413
+      return "Upload too large."
+    end
 
     unless token_required
       # Legacy plugin uploads authenticate their signed request body.
@@ -64,12 +84,6 @@ module UploadHelper
     end
 
     if token_required
-      server_token = request.env[ServerAuthTokenHelper::HEADER].to_s
-      if server_token.empty?
-        status 401
-        return "Server upload token is required."
-      end
-
       token_record = ServerAuthTokenHelper.authenticate(json_text['server'], server_token)
       unless token_record
         status 403
