@@ -77,6 +77,32 @@ class Character
 
   field :lo,  as: :location,          type: String
 
+  # Upload payload groups, by the shape each field expects. UploadPayload
+  # validates according to these groups; anything not listed is never set from
+  # a payload. Every model field must appear in exactly one group or in
+  # UPLOAD_INTERNAL_FIELDS - spec/unit/character_upload_fields_spec.rb enforces
+  # that, and that each group matches the field's declared type.
+  UPLOAD_REQUIRED_FIELDS = %w[name server].freeze
+  UPLOAD_SCALAR_FIELDS = %w[race gender birth allegiance_name account_name location].freeze
+  UPLOAD_INTEGER_FIELDS = %w[
+    level rank followers deaths total_xp unassigned_xp skill_credits
+    luminance_earned luminance_total version current_title
+  ].freeze
+  UPLOAD_OBJECT_FIELDS = %w[properties attribs vitals skills].freeze
+  # Objects whose `name` is used to find or create another character.
+  UPLOAD_PERSON_FIELDS = %w[monarch patron].freeze
+  UPLOAD_ARRAY_FIELDS = %w[titles].freeze
+  # Array of objects whose `name` is used to find or create another character.
+  UPLOAD_VASSAL_FIELDS = %w[vassals].freeze
+  # Server-managed: never accepted from a payload.
+  UPLOAD_INTERNAL_FIELDS = %w[ip_address archived upload_source].freeze
+
+  UPLOAD_FIELDS = (
+    UPLOAD_REQUIRED_FIELDS + UPLOAD_SCALAR_FIELDS + UPLOAD_INTEGER_FIELDS +
+    UPLOAD_OBJECT_FIELDS + UPLOAD_PERSON_FIELDS + UPLOAD_ARRAY_FIELDS +
+    UPLOAD_VASSAL_FIELDS
+  ).freeze
+
   after_save do |document|
     self_race = RaceHelper::get_race_name(self.race.to_i)
     self_gender = GenderHelper::get_gender_name(self.gender.to_i)

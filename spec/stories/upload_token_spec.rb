@@ -133,7 +133,7 @@ describe "UploadTokenStory" do
     token = create_server_token('Example Server')
     docs = File.read(File.expand_path('../../docs/direct-upload.md', __dir__))
 
-    allowed = UploadPayload::KNOWN_FIELDS + %w[server name server_population]
+    allowed = Character::UPLOAD_FIELDS + %w[server_population]
 
     %w[minimal maximal].each do |name|
       body = docs[/<!-- example:#{name} -->\s*```json\n(.*?)```/m, 1]

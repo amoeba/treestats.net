@@ -1,22 +1,11 @@
 # Normalizes an upload body before it reaches the database. Unknown top-level
-# keys are ignored (and reported back) so clients can send extra metadata such
-# as Mongo's `_id` without failing. Fields that drive queries must be strings so
-# a JSON object can never be interpreted as a Mongo operator.
+# keys are ignored so clients can send extra metadata such as Mongo's `_id`
+# without failing. Fields that drive queries must be strings so a JSON object
+# can never be interpreted as a Mongo operator.
+#
+# Field groups live on Character (UPLOAD_*_FIELDS); this module only enforces the
+# shape of each group.
 module UploadPayload
-  SCALAR_FIELDS = %w[
-    race gender birth allegiance_name account_name location
-  ].freeze
-  INTEGER_FIELDS = %w[
-    level rank followers deaths total_xp unassigned_xp skill_credits
-    luminance_earned luminance_total version current_title
-  ].freeze
-  HASH_FIELDS = %w[properties attribs vitals skills].freeze
-  # These contain a `name` that is used to find or create another character.
-  PERSON_FIELDS = %w[monarch patron].freeze
-  ARRAY_FIELDS = %w[titles].freeze
-  KNOWN_FIELDS = (SCALAR_FIELDS + INTEGER_FIELDS + HASH_FIELDS + PERSON_FIELDS +
-    ARRAY_FIELDS + %w[vassals]).freeze
-
   class Invalid < StandardError
     attr_reader :field
 
@@ -38,15 +27,13 @@ module UploadPayload
 
     raw.each do |key, value|
       case key
-      when "server"
-        payload[key] = require_string(key, value, allow_empty: false)
-      when "name"
+      when *Character::UPLOAD_REQUIRED_FIELDS
         # An empty name is allowed so the level-1 message is preserved.
-        payload[key] = require_string(key, value, allow_empty: true)
+        payload[key] = require_string(key, value, allow_empty: key == "name")
       when "server_population"
         population = population_value(value) unless value.nil?
       else
-        next unless KNOWN_FIELDS.include?(key)
+        next unless Character::UPLOAD_FIELDS.include?(key)
 
         # A JSON null clears the field, matching how an omitted value behaves.
         payload[key] = value.nil? ? nil : coerce(key, value)
@@ -60,18 +47,21 @@ module UploadPayload
   end
 
   def self.coerce(key, value)
-    if SCALAR_FIELDS.include?(key)
+    case key
+    when *Character::UPLOAD_SCALAR_FIELDS
       scalar(key, value)
-    elsif INTEGER_FIELDS.include?(key)
+    when *Character::UPLOAD_INTEGER_FIELDS
       integer(key, value)
-    elsif HASH_FIELDS.include?(key)
+    when *Character::UPLOAD_OBJECT_FIELDS
       hash(key, value)
-    elsif PERSON_FIELDS.include?(key)
+    when *Character::UPLOAD_PERSON_FIELDS
       person(key, value)
-    elsif key == "vassals"
+    when *Character::UPLOAD_VASSAL_FIELDS
       vassals(value)
-    else
+    when *Character::UPLOAD_ARRAY_FIELDS
       array(key, value)
+    else
+      raise Invalid.new(key, "is not an uploadable field")
     end
   end
   private_class_method :coerce
