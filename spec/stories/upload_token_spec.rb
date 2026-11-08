@@ -4,8 +4,8 @@ describe "UploadTokenStory" do
   before do
     ServerAuthToken.all.destroy
     # Upload callbacks create patron/monarch characters, so clear the whole server.
-    Character.unscoped.where(server: 'Token Server').destroy
-    PlayerCount.where(server: 'Token Server').destroy
+    Character.unscoped.in(server: ['Token Server', 'Other Server']).destroy
+    PlayerCount.in(server: ['Token Server', 'Other Server']).destroy
     redis.keys('uploads:server-token:*').each { |key| redis.del(key) }
   end
 
@@ -36,12 +36,34 @@ describe "UploadTokenStory" do
     assert last_response.headers['RateLimit-Reset'].to_i.between?(1, 3600)
   end
 
-  it "rejects a token issued for another server" do
+  it "rejects a token issued for another server without writing anything" do
     token = create_server_token('Token Server')
 
     post '/characters', upload_body('Other Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
 
     assert_equal 403, last_response.status
+    assert_nil Character.unscoped.where(server: 'Other Server', name: 'Token User').first
+    assert_equal 0, PlayerCount.where(server: 'Other Server').count
+  end
+
+  it "rejects a revoked token" do
+    token = create_server_token('Token Server')
+    ServerAuthToken.find_by(server: 'Token Server').destroy
+
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 403, last_response.status
+    assert_nil Character.unscoped.where(server: 'Token Server', name: 'Token User').first
+  end
+
+  it "falls back to EVAL when the rate-limit script is not cached" do
+    token = create_server_token('Token Server')
+    redis.script(:flush)
+
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    assert last_response.headers['RateLimit-Remaining'].to_i.between?(0, 999)
   end
 
   it "returns 429 after 1,000 token-authenticated uploads in an hour" do

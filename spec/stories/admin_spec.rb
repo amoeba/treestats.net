@@ -285,6 +285,14 @@ describe "AdminStory" do
   end
 
   describe "GET /admin" do
+    it "returns 404 for unknown admin paths" do
+      sign_in_admin
+
+      get '/admin/nope'
+
+      assert_equal 404, last_response.status
+    end
+
     it "does not let caches store the dashboard" do
       sign_in_admin
 
