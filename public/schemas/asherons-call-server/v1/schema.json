@@ -12,8 +12,8 @@
     },
     "version": {
       "type": "integer",
-      "minimum": 1,
-      "description": "Version of the server information document format."
+      "const": 1,
+      "description": "Version of the server information document format. This schema describes version 1."
     },
     "name": {
       "type": "string",

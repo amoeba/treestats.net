@@ -44,6 +44,7 @@ module DataPoller
     document_updated_at = parse_rfc3339(payload["updated_at"], "updated_at") unless payload["updated_at"].nil?
     schema_url = optional_string(payload, "schema")
     document_version = optional_integer(payload, "version", minimum: 1)
+    raise Error, "unsupported document version #{document_version}" if document_version && document_version != 1
     name = optional_string(payload, "name")
     emulator_name, emulator_version = parse_emulator(payload["emulator"])
 

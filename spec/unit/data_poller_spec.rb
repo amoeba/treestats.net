@@ -198,6 +198,15 @@ describe "DataPoller", :unit do
     assert_nil info.count
   end
 
+  it "rejects unsupported document versions" do
+    timestamp = (Time.now.utc - 60).iso8601
+    document = {updated_at: timestamp, version: 2, population: {count: 1, updated_at: timestamp}}
+
+    assert_equal :failure, poll_for("BadVersion", transport_for(document))
+    assert_equal 0, PlayerCount.where(s: "BadVersion").count
+    assert_equal 0, ServerInfo.where(server: "BadVersion").count
+  end
+
   it "rejects a malformed optional timestamp on an empty document" do
     ["not a timestamp", 1760000000].each do |value|
       assert_equal :failure, poll_for("EmptyInvalid", transport_for(updated_at: value))

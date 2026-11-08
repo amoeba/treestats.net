@@ -12,6 +12,7 @@ describe "ServerInfoStandardStory" do
     refute schema.key?("dependentRequired")
     refute schema.dig("properties", "population").key?("required")
     refute schema.dig("properties", "emulator").key?("required")
+    assert_equal 1, schema.dig("properties", "version", "const")
     assert_equal %w[count updated_at], schema.dig("properties", "population", "properties").keys.sort
   end
 end

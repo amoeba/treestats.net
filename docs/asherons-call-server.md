@@ -44,7 +44,7 @@ Consumers must ignore unknown fields. All timestamps are RFC3339 strings with an
 ### Fields
 
 - `schema` (optional, string): URL of the schema for this document.
-- `version` (optional, integer): Document format version. This document describes version `1`.
+- `version` (optional, integer): Document format version. This document describes version `1`. Consumers should reject versions they do not support; TreeStats rejects versions other than `1`.
 - `name` (optional, string): The server or world name as configured by the operator.
 - `updated_at` (optional, string): When the document was generated. Used as the measurement time when `population.updated_at` is absent.
 - `population` (optional, object): Current in-world player population. All nested fields are optional.
@@ -55,6 +55,8 @@ Consumers must ignore unknown fields. All timestamps are RFC3339 strings with an
   - `version` (optional, string): e.g. `1.2.3`.
 
 If neither `population.updated_at` nor the top-level `updated_at` is present, TreeStats stores the last result but does not create a historical population observation.
+
+A measurement timestamp (the population's `updated_at`, or the document's `updated_at` when used as the fallback) must not be in the future relative to when the document is served. TreeStats rejects future measurement times.
 
 ## Reference implementation
 
