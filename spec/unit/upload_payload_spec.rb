@@ -20,7 +20,7 @@ describe UploadPayload do
     assert_equal "", result.payload["name"]
   end
 
-  it "ignores unknown keys and reports them" do
+  it "ignores unknown keys" do
     result = sanitize(
       "server" => "s",
       "name" => "n",
@@ -29,10 +29,7 @@ describe UploadPayload do
       "plugin_version" => "3"
     )
 
-    assert_equal %w[_id ip_address plugin_version], result.ignored
-    refute result.payload.key?("_id")
-    refute result.payload.key?("ip_address")
-    refute result.payload.key?("plugin_version")
+    assert_equal({"server" => "s", "name" => "n"}, result.payload)
   end
 
   it "coerces numeric scalars and integer strings" do
@@ -82,11 +79,5 @@ describe UploadPayload do
 
     assert_nil result.payload["patron"]
     assert_nil result.payload["level"]
-  end
-
-  it "sanitizes ignored keys for the response header" do
-    header = UploadPayload.ignored_header(["ok_key", "bad key", "newline\nkey"])
-
-    assert_equal "ok_key,bad?key,newline?key", header
   end
 end

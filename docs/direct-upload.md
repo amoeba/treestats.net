@@ -30,8 +30,7 @@ If the payload contains `server_population`, a player count sample is recorded i
 addition to the character. It must be an integer between 0 and 100000.
 
 Unknown fields are ignored, not rejected, so extra metadata (including Mongo's
-`_id`) is harmless; ignored keys are listed in the `X-Upload-Ignored-Fields`
-response header. Known fields are type-checked — integers must be integers or
+`_id`) is harmless. Known fields are type-checked — integers must be integers or
 numeric strings, and object/array fields must have the expected shape — and a
 payload with a bad known field returns `400` with a message naming it.
 

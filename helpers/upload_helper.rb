@@ -97,11 +97,6 @@ module UploadHelper
       return "Invalid upload payload: #{e}."
     end
 
-    if upload.ignored.any?
-      headers['X-Upload-Ignored-Fields'] = UploadPayload.ignored_header(upload.ignored)
-      puts "Upload ignored fields: #{upload.ignored.join(', ')}" unless ENV['RACK_ENV'] == 'test'
-    end
-
     json_text = upload.payload
 
     if token_required

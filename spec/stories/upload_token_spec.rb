@@ -133,15 +133,18 @@ describe "UploadTokenStory" do
     token = create_server_token('Example Server')
     docs = File.read(File.expand_path('../../docs/direct-upload.md', __dir__))
 
+    allowed = UploadPayload::KNOWN_FIELDS + %w[server name server_population]
+
     %w[minimal maximal].each do |name|
       body = docs[/<!-- example:#{name} -->\s*```json\n(.*?)```/m, 1]
       refute_nil body, "docs are missing the #{name} example"
 
+      payload = JSON.parse(body)
+      assert_empty payload.keys - allowed, "#{name} example contains fields the uploader ignores"
+
       post '/characters', body, 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
 
       assert_equal 200, last_response.status, "#{name} example was rejected: #{last_response.body}"
-      assert_nil last_response.headers['X-Upload-Ignored-Fields'],
-        "#{name} example contains fields the uploader ignores"
     end
 
     character = Character.unscoped.find_by(server: 'Example Server', name: 'Maximal Example')
@@ -152,15 +155,13 @@ describe "UploadTokenStory" do
     assert_equal 123, PlayerCount.find_by(server: 'Example Server').count
   end
 
-  it "ignores unknown fields and reports them without failing" do
+  it "ignores unknown fields without failing" do
     token = create_server_token('Token Server')
     payload = JSON.parse(upload_body('Token Server')).merge('_id' => '0' * 24, 'plugin_version' => '3')
 
     post '/characters', JSON.generate(payload), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
 
     assert_equal 200, last_response.status
-    assert_includes last_response.headers['X-Upload-Ignored-Fields'], '_id'
-    assert_includes last_response.headers['X-Upload-Ignored-Fields'], 'plugin_version'
     character = Character.unscoped.where(server: 'Token Server', name: 'Token User').first
     refute_nil character
     refute_equal '0' * 24, character.id.to_s

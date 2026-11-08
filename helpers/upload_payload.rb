@@ -32,11 +32,10 @@ module UploadPayload
     end
   end
 
-  Result = Struct.new(:payload, :ignored, :population, keyword_init: true)
+  Result = Struct.new(:payload, :population, keyword_init: true)
 
   def self.sanitize(raw)
     payload = {}
-    ignored = []
     population = nil
 
     raw.each do |key, value|
@@ -49,10 +48,7 @@ module UploadPayload
       when "server_population"
         population = population_value(value) unless value.nil?
       else
-        unless KNOWN_FIELDS.include?(key)
-          ignored << key
-          next
-        end
+        next unless KNOWN_FIELDS.include?(key)
 
         # A JSON null clears the field, matching how an omitted value behaves.
         payload[key] = value.nil? ? nil : coerce(key, value)
@@ -62,12 +58,7 @@ module UploadPayload
     raise Invalid.new("server", "is required") unless payload.key?("server")
     raise Invalid.new("name", "is required") unless payload.key?("name")
 
-    Result.new(payload: payload, ignored: ignored, population: population)
-  end
-
-  # Safe to place in a response header: JSON keys can contain anything.
-  def self.ignored_header(keys)
-    keys.first(20).map { |key| key.to_s.gsub(/[^A-Za-z0-9_.-]/, "?") }.join(",")[0, 200]
+    Result.new(payload: payload, population: population)
   end
 
   def self.coerce(key, value)
