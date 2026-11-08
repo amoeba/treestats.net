@@ -20,6 +20,8 @@ interval: 15m
 #   "Not Ready Yet":
 #     enabled: false
 targets:
+  Coldeve:
+    enabled: true
   "Hollowtide PK":
     enabled: true
     url: https://hollowtide.org/server.json
