@@ -5,6 +5,7 @@ describe "AdminStory" do
     AdminUser.all.destroy
     ServerAuthToken.all.destroy
     DataPollState.collection.delete_many
+    ServerInfo.collection.delete_many
     Character.all.destroy
     Character.unscoped.where(server: 'test', name: 'archived_char').destroy
     redis.del("admin:login:attempts:127.0.0.1")
@@ -310,6 +311,22 @@ describe "AdminStory" do
         consecutive_failures: 2,
         error_summary: 'HTTP status 500'
       )
+      ServerInfo.create!(
+        server: 'Hollowtide PK',
+        outcome: 'accepted',
+        count: 7,
+        population_updated_at: Time.utc(2026, 11, 7, 22, 0),
+        document_updated_at: Time.utc(2026, 11, 7, 22, 1)
+      )
+      original_targets = DataPoller.method(:targets)
+      DataPoller.define_singleton_method(:targets) do
+        {
+          'Hollowtide PK' => DataPoller::Target.new(
+            url: 'http://hollowtide.org/population.json',
+            fallback_url: 'https://hollowtide.org/population.json'
+          )
+        }
+      end
       sign_in_admin
 
       get '/admin'
@@ -320,6 +337,26 @@ describe "AdminStory" do
       assert_includes last_response.body, 'Hollowtide PK'
       assert_includes last_response.body, 'failure'
       assert_includes last_response.body, 'HTTP status 500'
+      assert_includes last_response.body, 'fallback: https://hollowtide.org/population.json'
+      assert_includes last_response.body, '<td>7</td>'
+      assert_includes last_response.body, '2026-11-07T22:00:00Z'
+      assert_includes last_response.body, '2026-11-07T22:01:00Z'
+    ensure
+      DataPoller.define_singleton_method(:targets, original_targets) if original_targets
+    end
+
+    it "shows a poll configuration error instead of failing" do
+      original_targets = DataPoller.method(:targets)
+      DataPoller.define_singleton_method(:targets) { raise DataPoller::Error, 'unknown polling target' }
+      sign_in_admin
+
+      get '/admin'
+
+      assert_equal 200, last_response.status
+      assert_includes last_response.body, 'Poll configuration error'
+      assert_includes last_response.body, 'unknown polling target'
+    ensure
+      DataPoller.define_singleton_method(:targets, original_targets) if original_targets
     end
   end
 

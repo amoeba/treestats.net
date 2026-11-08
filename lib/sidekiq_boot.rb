@@ -28,6 +28,7 @@ Mongo::Logger.logger.level = ::Logger::INFO
 # Standalone worker model dependencies (app.rb is intentionally not loaded).
 require_relative "../models/player_count"
 require_relative "../models/data_poll_state"
+require_relative "../models/server_info"
 
 # Job files
 require_relative "probe_job"
@@ -43,6 +44,9 @@ Sidekiq.configure_server do |config|
   end
 
   config.on(:startup) do
+    # Fail fast on invalid polling config instead of surfacing it on the first
+    # dispatch or the admin dashboard.
+    DataPoller.targets
     Sidekiq::Cron::Job.load_from_hash(
       "probe_job" => {
         "cron" => "*/5 * * * *",

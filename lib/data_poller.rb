@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require "date"
 require "json"
 require "net/http"
 require "openssl"
+require "time"
 require "uri"
 require "timeout"
 require "securerandom"
@@ -17,7 +19,154 @@ module DataPoller
   TOTAL_TIMEOUT_SECONDS = 12
   JOB_TIMEOUT_SECONDS = 90
   LEASE_SECONDS = 120
+  # RFC3339 requires an explicit Z or ±HH:MM offset. DateTime.rfc3339 and
+  # Time.iso8601 normalize out-of-range components (2026-02-30 -> 2026-03-02,
+  # 24:00 -> next day), so reject those explicitly. The checks mirror
+  # json_schemer's date-time format validation (MIT):
+  # https://github.com/davishmcclurg/json_schemer/blob/v2.5.0/lib/json_schemer/format.rb
+  RFC3339_OFFSET = /(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])\z/i
+  RFC3339_HOUR_24 = /[Tt\s]24:/
+  RFC3339_LEAP_SECOND = /[Tt\s]\d{2}:\d{2}:60/
   class JobDeadlineExceeded < Timeout::Error; end
+
+  # Parsed standard server document. Timestamps are epoch seconds.
+  Emulator = Struct.new(
+    :name, :version, :server_version, :database_version, :dat_iterations,
+    keyword_init: true
+  )
+  Document = Struct.new(
+    :count, :measured_at, :document_updated_at, :name,
+    :emulator, :schema_url, :document_version
+  )
+
+  # Parses the standard server document. All fields are optional. A count
+  # without a measurement time (population.updated_at, falling back to the
+  # document's updated_at) can be stored as a result but not as an observation.
+  # Targets explicitly configured with the legacy flat format skip the
+  # population object but still validate the shared metadata fields.
+  def self.parse_population(payload, format: :standard)
+    raise Error, "response must be an object" unless payload.is_a?(Hash)
+
+    schema_url = optional_string(payload, "schema")
+    document_version = optional_integer(payload, "version", minimum: 1)
+    raise Error, "unsupported document version #{document_version}" if document_version && document_version != 1
+    name = optional_string(payload, "name")
+    emulator = parse_emulator(payload["emulator"])
+
+    if format == :legacy_flat
+      count = payload["count"]
+      raise Error, "count must be a nonnegative integer" unless count.is_a?(Integer) && count >= 0
+
+      measured_at = payload["updated_at"]
+      raise Error, "updated_at must be an integer Unix timestamp" unless measured_at.is_a?(Integer) && measured_at >= 0
+
+      return Document.new(
+        count: count,
+        measured_at: measured_at,
+        document_updated_at: nil,
+        name: name,
+        emulator: emulator,
+        schema_url: schema_url,
+        document_version: document_version
+      )
+    end
+    raise Error, "unsupported document format #{format.inspect}" unless format == :standard
+
+    document_updated_at = parse_rfc3339(payload["updated_at"], "updated_at") unless payload["updated_at"].nil?
+
+    if payload.key?("population")
+      population = payload["population"]
+      raise Error, "population must be an object" unless population.is_a?(Hash)
+
+      count = population["count"]
+      valid_count = count.nil? || (count.is_a?(Integer) && count >= 0)
+      raise Error, "count must be a nonnegative integer" unless valid_count
+      measured_at = if population["updated_at"].nil?
+        document_updated_at
+      else
+        parse_rfc3339(population["updated_at"], "population.updated_at")
+      end
+    else
+      count = nil
+      measured_at = nil
+    end
+
+    Document.new(
+      count: count,
+      measured_at: measured_at,
+      document_updated_at: document_updated_at,
+      name: name,
+      emulator: emulator,
+      schema_url: schema_url,
+      document_version: document_version
+    )
+  end
+
+  def self.optional_string(payload, key)
+    value = payload[key]
+    raise Error, "#{key} must be a string" unless value.nil? || value.is_a?(String)
+    value
+  end
+
+  def self.optional_integer(payload, key, minimum: nil)
+    value = payload[key]
+    return value if value.nil?
+
+    valid = value.is_a?(Integer) && (minimum.nil? || value >= minimum)
+    message = minimum ? "#{key} must be an integer >= #{minimum}" : "#{key} must be an integer"
+    raise Error, message unless valid
+    value
+  end
+
+  def self.parse_emulator(emulator)
+    return nil if emulator.nil?
+    raise Error, "emulator must be an object" unless emulator.is_a?(Hash)
+
+    name = emulator["name"]
+    version = emulator["version"]
+    server_version = emulator["server_version"]
+    database_version = emulator["database_version"]
+    dat_iterations = emulator["dat_iterations"]
+
+    %w[name version server_version database_version].each do |key|
+      value = emulator[key]
+      raise Error, "emulator.#{key} must be a string" unless value.nil? || value.is_a?(String)
+    end
+    valid_dat_iterations = dat_iterations.nil? || (
+      dat_iterations.is_a?(Hash) &&
+      dat_iterations.values.all? { |value| value.is_a?(Integer) && value >= 0 }
+    )
+    raise Error, "emulator.dat_iterations must be an object of nonnegative integers" unless valid_dat_iterations
+
+    Emulator.new(
+      name: name,
+      version: version,
+      server_version: server_version,
+      database_version: database_version,
+      dat_iterations: dat_iterations
+    )
+  end
+
+  def self.parse_rfc3339(value, field = "updated_at")
+    raise Error, "#{field} must be an RFC3339 timestamp" unless valid_rfc3339?(value)
+
+    Time.iso8601(value).to_i
+  rescue ArgumentError, RangeError, TypeError
+    raise Error, "#{field} must be an RFC3339 timestamp"
+  end
+
+  def self.valid_rfc3339?(value)
+    return false unless value.is_a?(String)
+    return false if RFC3339_HOUR_24.match?(value)
+
+    datetime = DateTime.rfc3339(value)
+    return false if RFC3339_LEAP_SECOND.match?(value) && datetime.new_offset.strftime("%H:%M") != "23:59"
+
+    RFC3339_OFFSET.match?(value)
+  rescue ArgumentError
+    false
+  end
+  private_class_method :valid_rfc3339?
 
   def self.server_source_filter
     {"$or" => [{PlayerCount::SOURCE_FIELD => PlayerCount::SERVER_SOURCE}, {"source" => "server"}]}
@@ -26,6 +175,7 @@ module DataPoller
   def self.ensure_indexes!
     create_polled_measurement_index!
     DataPollState.collection.indexes.create_one({server: 1}, unique: true, name: "unique_poll_state_server")
+    ServerInfo.collection.indexes.create_one({server: 1}, unique: true, name: "unique_server_info_server")
   end
 
   def self.create_polled_measurement_index!
@@ -72,9 +222,11 @@ module DataPoller
   # Polls one server for one interval slot. The instance owns the lease,
   # request, and persistence state for that single poll.
   class Poll
-    def initialize(server:, url:, slot: DataPoller.current_slot, transport: nil)
+    def initialize(server:, url:, fallback_url: nil, format: :standard, slot: DataPoller.current_slot, transport: nil)
       @server = server
       @url = url
+      @fallback_url = fallback_url
+      @format = format
       @slot = slot
       @transport = transport
     end
@@ -106,13 +258,13 @@ module DataPoller
       return :overlap unless state && state["lease_until"] && state["lease_until"] > Time.now.utc + JOB_TIMEOUT_SECONDS + 2
 
       begin
-        body, received_at = read_response
-        payload = JSON.parse(body)
-        raise Error, "response must be an object" unless payload.is_a?(Hash)
-        count = payload["count"]
-        timestamp = payload["updated_at"]
-        raise Error, "count must be a nonnegative integer" unless count.is_a?(Integer) && count >= 0
-        raise Error, "updated_at must be an integer Unix timestamp" unless timestamp.is_a?(Integer) && timestamp >= 0
+        body, received_at = read_response_with_fallback
+        result = DataPoller.parse_population(JSON.parse(body), format: @format)
+        if result.count.nil? || result.measured_at.nil?
+          return record_unmeasured(result, received_at, lease_id)
+        end
+        count = result.count
+        timestamp = result.measured_at
         raise Error, "updated_at is in the future" if timestamp > received_at.floor
 
         lease = DataPollState.collection.find(server: @server, lease_id: lease_id).first
@@ -132,6 +284,7 @@ module DataPoller
           if existing && existing["c"] == count
             # Recover the only crash window: observation insert succeeded, state update did not.
             DataPollState.collection.update_one({server: @server, lease_id: lease_id}, {"$max" => {last_accepted_updated_at: timestamp}, "$set" => {last_checked_at: Time.now.utc, last_outcome: "duplicate", error_summary: nil, consecutive_failures: 0}, "$unset" => {lease_until: "", lease_id: ""}})
+            record_server_info(result, "duplicate")
             return :duplicate
           end
           raise Error, existing ? "conflicting measurement timestamp" : "measurement timestamp did not advance"
@@ -153,6 +306,7 @@ module DataPoller
           raise Error, "conflicting measurement timestamp" unless existing && existing["c"] == count
         end
         record_acceptance(timestamp, lease_id)
+        record_server_info(result, "accepted")
         :accepted
       rescue JobDeadlineExceeded => error
         warn("Data poll job exceeded its execution bound for #{@server}")
@@ -165,19 +319,18 @@ module DataPoller
       end
     end
 
-    def read_response(transport: @transport, http_factory: nil, total_timeout: TOTAL_TIMEOUT_SECONDS)
-      uri = URI.parse(@url)
-      raise Error, "target URL must be HTTPS without credentials or fragment" unless uri.is_a?(URI::HTTPS) && uri.host && !uri.userinfo && !uri.fragment
-      injected_transport = transport || http_factory
-      raise Error, "target URL may not use a proxy" if !injected_transport && (ENV["https_proxy"] || ENV["HTTPS_PROXY"])
+    def read_response(url: @url, transport: @transport, http_factory: nil, total_timeout: TOTAL_TIMEOUT_SECONDS)
+      uri = DataPoller.parse_http_url(url)
       body = +""
       response = if transport
         stub = transport.call(uri)
         body = stub.body.to_s
         stub
       else
+        # Pass nil as the proxy address so Net::HTTP connects directly even when
+        # http_proxy/HTTP_PROXY/https_proxy/HTTPS_PROXY are set.
         http = http_factory ? http_factory.call(uri.host, uri.port, nil) : Net::HTTP.new(uri.host, uri.port, nil)
-        http.use_ssl = true
+        http.use_ssl = uri.is_a?(URI::HTTPS)
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         http.open_timeout = OPEN_TIMEOUT_SECONDS
         http.read_timeout = READ_TIMEOUT_SECONDS
@@ -204,6 +357,66 @@ module DataPoller
 
     private
 
+    def read_response_with_fallback
+      return read_response unless @fallback_url
+
+      begin
+        read_response
+      rescue JobDeadlineExceeded
+        raise
+      rescue => primary_error
+        begin
+          read_response(url: @fallback_url)
+        rescue => fallback_error
+          raise Error, "both endpoints failed: #{@url} (#{primary_error.class}: #{primary_error.message}); #{@fallback_url} (#{fallback_error.class}: #{fallback_error.message})"
+        end
+      end
+    end
+
+    def record_unmeasured(result, received_at, lease_id)
+      lease = DataPollState.collection.find(server: @server, lease_id: lease_id).first
+      return :overlap unless lease && lease["lease_until"] > Time.now.utc + 2
+
+      outcome = result.count.nil? ? "empty" : "no_timestamp"
+      updated = DataPollState.collection.update_one(
+        {server: @server, lease_id: lease_id},
+        {"$set" => {last_checked_at: Time.now.utc, last_outcome: outcome, error_summary: nil, consecutive_failures: 0}, "$unset" => {lease_until: "", lease_id: ""}}
+      )
+      return :overlap unless updated.matched_count == 1
+
+      record_server_info(result, outcome)
+      outcome.to_sym
+    end
+
+    def record_server_info(result, outcome)
+      now = Time.now.utc
+      ServerInfo.collection.update_one(
+        {server: @server},
+        {
+          "$set" => {
+            server: @server,
+            updated_at: now,
+            outcome: outcome,
+            count: result.count,
+            population_updated_at: result.measured_at && Time.at(result.measured_at).utc,
+            document_updated_at: result.document_updated_at && Time.at(result.document_updated_at).utc,
+            name: result.name,
+            emulator_name: result.emulator&.name,
+            emulator_version: result.emulator&.version,
+            emulator_server_version: result.emulator&.server_version,
+            emulator_database_version: result.emulator&.database_version,
+            emulator_dat_iterations: result.emulator&.dat_iterations,
+            schema_url: result.schema_url,
+            document_version: result.document_version
+          },
+          "$setOnInsert" => {created_at: now}
+        },
+        upsert: true
+      )
+    rescue => error
+      warn("Could not record server info for #{@server}: #{error.class}: #{error.message}")
+    end
+
     def record_failure(lease_id, error)
       update = lambda do
         DataPollState.collection.update_one({server: @server, lease_id: lease_id}, {"$set" => {last_checked_at: Time.now.utc, last_outcome: "failure", error_summary: "#{error.class}: #{error.message}".byteslice(0, 240)}, "$inc" => {consecutive_failures: 1}, "$unset" => {lease_until: "", lease_id: ""}})
@@ -227,10 +440,10 @@ class PollDataJob
 
   def perform(server, slot = DataPoller.current_slot)
     return :obsolete if slot.to_i < DataPoller.current_slot
-    url = DataPoller.targets[server]
-    return unless url
+    target = DataPoller.targets[server]
+    return unless target
     Timeout.timeout(DataPoller::JOB_TIMEOUT_SECONDS, DataPoller::JobDeadlineExceeded) do
-      DataPoller::Poll.new(server: server, url: url, slot: slot.to_i).call
+      DataPoller::Poll.new(server: server, url: target.url, fallback_url: target.fallback_url, format: target.format || :standard, slot: slot.to_i).call
     end
   rescue DataPoller::JobDeadlineExceeded
     :failure
@@ -253,6 +466,9 @@ class DispatchDataPollsJob
     end
     return :invalid_slot unless slot
     DataPoller.dispatch(slot)
+  rescue DataPoller::Error => error
+    warn("Data poll dispatch failed: #{error.class}: #{error.message}")
+    :invalid_config
   rescue ArgumentError, TypeError
     :invalid_slot
   end

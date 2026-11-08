@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://treestats.net/schemas/asherons-call-server/v1/schema.json",
+  "title": "Asheron's Call Server Information",
+  "description": "A document served at the root of an Asheron's Call server's public game endpoint. All fields are optional; unknown fields are ignored by consumers.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "type": "string",
+      "format": "uri",
+      "description": "Canonical URL of the JSON Schema describing this document."
+    },
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Version of the server information document format. This schema describes version 1."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The server or world name as configured by the operator."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this document was generated, as an RFC3339 timestamp with an explicit offset. Used as the measurement time when population.updated_at is absent."
+    },
+    "population": {
+      "type": "object",
+      "description": "Current in-world player population. All nested fields are optional.",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of connected, in-world player characters, including bots and multiboxed characters. When absent, no population count is recorded."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the population was measured, as an RFC3339 timestamp with an explicit offset. Falls back to the document's updated_at when absent."
+        }
+      }
+    },
+    "emulator": {
+      "type": "object",
+      "description": "Server emulator software and versions. All nested fields are optional.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "server_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Emulator server build version."
+        },
+        "database_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Emulator database version."
+        },
+        "dat_iterations": {
+          "type": "object",
+          "description": "Iteration counts keyed by DAT filename. Values are nonnegative integers.",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

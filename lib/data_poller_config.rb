@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "uri"
 require "yaml"
 
 # Polling configuration lives apart from the poll jobs so the web process can
@@ -13,16 +14,100 @@ module DataPoller
   }.freeze
   INTERVAL_PATTERN = /\A\s*(\d+)\s*([a-z]+)\s*\z/i
   class Error < StandardError; end
+  # A poll target. `fallback_url` is only set for discovered roots, which are
+  # tried over HTTP first and HTTPS second. `format` is :standard unless the
+  # target explicitly opts into the legacy flat document shape.
+  Target = Struct.new(:url, :fallback_url, :format, keyword_init: true)
 
   def self.config
     YAML.safe_load_file(File.expand_path("../config/polling_targets.yml", __dir__)) || {}
   end
 
-  def self.targets
-    config.fetch("targets", {}).each_with_object({}) do |(server, url), result|
-      raise Error, "invalid target mapping for #{server}" unless server.is_a?(String) && url.is_a?(String)
-      result[server] = url
+  # Servers may serve their info document at the root of the public game
+  # endpoint, e.g. http://play.example.net:9000/. That is the default target.
+  def self.discovered_targets
+    server_list.each_with_object({}) do |server, result|
+      name = server[:name].to_s
+      host = server[:host].to_s.strip
+      port = server[:port].to_s.strip
+      next if name.empty? || host.empty? || !port.match?(/\A\d+\z/)
+      next unless (1..65_535).cover?(port.to_i)
+
+      begin
+        result[name] = Target.new(
+          url: URI::HTTP.build(host: host, port: port, path: "/").to_s,
+          fallback_url: URI::HTTPS.build(host: host, port: port, path: "/").to_s
+        )
+      rescue URI::Error
+        next
+      end
     end
+  end
+
+  # Polling is opt-in. Servers enabled in config/polling_targets.yml are
+  # polled; an omitted URL means the standard root endpoint from data/servers.rb,
+  # tried over HTTP first with HTTPS as a fallback. Explicit URLs are used as-is.
+  def self.targets
+    targets_from(config.fetch("targets", {}) || {})
+  end
+
+  def self.targets_from(configured)
+    roots = discovered_targets
+    known_servers = server_list.map { |server| server[:name].to_s }
+    configured.each_with_object({}) do |(server, settings), result|
+      raise Error, "invalid target name for #{server.inspect}" unless server.is_a?(String) && !server.strip.empty?
+      raise Error, "invalid target settings for #{server}" unless settings.is_a?(Hash)
+
+      enabled = settings["enabled"]
+      raise Error, "enabled must be true or false for #{server}" unless [true, false].include?(enabled)
+
+      configured_url = settings["url"]
+      raise Error, "invalid target URL for #{server}" unless configured_url.nil? || configured_url.is_a?(String)
+
+      configured_format = settings["format"]
+      raise Error, "invalid target format for #{server}" unless configured_format.nil? || configured_format.is_a?(String)
+      next unless enabled
+
+      raise Error, "unknown polling target #{server.inspect}; add it to data/servers.rb" unless known_servers.include?(server)
+
+      url = configured_url&.strip
+      if configured_url
+        raise Error, "invalid target URL for #{server}: URL must not be blank" if url.empty?
+        parse_http_url(url)
+      end
+
+      target_format = case configured_format
+      when nil then :standard
+      when "legacy_flat" then :legacy_flat
+      else raise Error, "invalid target format for #{server}: #{configured_format.inspect}; use legacy_flat"
+      end
+
+      result[server] = if configured_url
+        Target.new(url: url, format: target_format)
+      else
+        root = roots[server] || raise(Error, "polling target #{server.inspect} has no host or port in data/servers.rb; give a URL")
+        Target.new(url: root.url, fallback_url: root.fallback_url, format: target_format)
+      end
+    end
+  end
+
+  # Parses and validates an absolute HTTP(S) URL with no credentials or fragment.
+  def self.parse_http_url(value)
+    uri = URI.parse(value.to_s.strip)
+    raise Error, "target URL must use HTTP or HTTPS" unless uri.is_a?(URI::HTTP)
+    raise Error, "target URL must include a host" unless uri.host
+    raise Error, "target URL may not include credentials or a fragment" if uri.userinfo || uri.fragment
+    raise Error, "target URL port must be between 1 and 65535" unless (1..65_535).cover?(uri.port)
+    uri
+  rescue URI::InvalidURIError, TypeError
+    raise Error, "target URL must be an absolute HTTP or HTTPS URL"
+  end
+
+  def self.server_list
+    require_relative "../data/servers"
+    SERVERS
+  rescue LoadError
+    []
   end
 
   # Accepts friendly intervals such as "15m", "30 mins", "1hr", "6 hours", "1d".
