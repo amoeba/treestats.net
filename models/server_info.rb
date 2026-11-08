@@ -17,14 +17,13 @@ class ServerInfo
   # Not a document field: the outcome of the poll that wrote this result.
   field :outcome, type: String
 
-  # JSON: population.count (legacy flat: count)
+  # JSON: population.count
   field :count, type: Integer
 
   # JSON: population.updated_at, falling back to updated_at when absent
-  # (legacy flat: updated_at)
   field :population_updated_at, type: Time
 
-  # JSON: updated_at (standard documents only)
+  # JSON: updated_at
   field :document_updated_at, type: Time
 
   # JSON: name. Remote metadata, not the TreeStats server identity.

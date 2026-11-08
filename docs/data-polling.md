@@ -25,8 +25,6 @@ targets:
     enabled: false
 ```
 
-Targets that still serve the legacy flat document must opt in with `format: legacy_flat`.
-
 When `url` is omitted, TreeStats polls the server's public game endpoint root, trying HTTP first and falling back to HTTPS if the HTTP request fails:
 
 ```
@@ -53,8 +51,6 @@ Targets respond with the standard document:
   }
 }
 ```
-
-TreeStats also accepts the legacy flat `{"count": 42, "updated_at": 1794121021}` shape for targets explicitly configured with `format: legacy_flat`, such as Hollowtide. Its `updated_at` is a Unix epoch. This is a temporary compatibility exception to the standard document.
 
 All fields are optional. `population.updated_at` is the measurement time; when it is absent, the document's `updated_at` is used instead. A document without a count, or without either timestamp, is valid: TreeStats stores the last result but creates no historical observation.
 

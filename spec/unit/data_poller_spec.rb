@@ -27,9 +27,9 @@ describe "DataPoller", :unit do
     DataPoller.define_singleton_method(:current_slot, original)
   end
 
-  def poll_for(server, transport, slot: next_slot, url: "https://population.example.test/x", fallback_url: nil, format: :standard)
+  def poll_for(server, transport, slot: next_slot, url: "https://population.example.test/x", fallback_url: nil)
     with_test_slot(slot) do
-      DataPoller::Poll.new(server: server, url: url, fallback_url: fallback_url, format: format, slot: slot, transport: transport).call
+      DataPoller::Poll.new(server: server, url: url, fallback_url: fallback_url, slot: slot, transport: transport).call
     end
   end
 
@@ -58,55 +58,6 @@ describe "DataPoller", :unit do
     assert_equal "server", observation.effective_source
     assert_equal timestamp, observation.c_at.to_i
     refute_includes observation.serializable_hash({}).keys, "source"
-  end
-
-  it "accepts the legacy flat document used by explicitly configured targets" do
-    timestamp = Time.now.to_i - 60
-    document = {
-      schema: "https://treestats.net/schemas/asherons-call-server/v1/schema.json",
-      version: 1,
-      name: "Hollowtide PK",
-      count: 7,
-      updated_at: timestamp,
-      emulator: {name: "ACE", server_version: "1.2.3"}
-    }
-
-    assert_equal :accepted, poll_for("LegacyFlat", transport_for(document), format: :legacy_flat)
-    observation = PlayerCount.where(s: "LegacyFlat").first
-    assert_equal 7, observation.c
-    assert_equal timestamp, observation.c_at.to_i
-
-    info = ServerInfo.where(server: "LegacyFlat").first
-    assert_equal 7, info.count
-    assert_equal timestamp, info.population_updated_at.to_i
-    assert_nil info.document_updated_at
-    assert_equal "Hollowtide PK", info.name
-    assert_equal "ACE", info.emulator_name
-    assert_equal "1.2.3", info.emulator_server_version
-    assert_equal 1, info.document_version
-  end
-
-  it "rejects malformed legacy flat documents" do
-    timestamp = Time.now.to_i - 60
-    [
-      {count: -1, updated_at: timestamp},
-      {count: "1", updated_at: timestamp},
-      {count: 1, updated_at: "not a timestamp"},
-      {count: 1},
-      {count: 1, updated_at: timestamp, version: 2},
-      {count: 1, updated_at: timestamp, name: 123},
-      {count: 1, updated_at: timestamp, emulator: "ACE"}
-    ].each do |document|
-      assert_equal :failure, poll_for("LegacyFlatInvalid", transport_for(document), format: :legacy_flat), document.inspect
-    end
-    assert_equal 0, PlayerCount.where(s: "LegacyFlatInvalid").count
-    assert_equal 0, ServerInfo.where(server: "LegacyFlatInvalid").count
-  end
-
-  it "rejects a future legacy flat timestamp" do
-    assert_equal :failure, poll_for("LegacyFlatFuture", transport_for(count: 1, updated_at: Time.now.to_i + 60), format: :legacy_flat)
-    assert_equal 0, PlayerCount.where(s: "LegacyFlatFuture").count
-    assert_equal 0, ServerInfo.where(server: "LegacyFlatFuture").count
   end
 
   it "does not treat a standard document with a top-level count as legacy" do
@@ -462,20 +413,18 @@ describe "DataPoller", :unit do
     first, second = DataPoller.server_list
     targets = DataPoller.targets_from({
       first[:name] => {"enabled" => true},
-      second[:name] => {"enabled" => true, "url" => "https://example.test/data.json", "format" => "legacy_flat"},
+      second[:name] => {"enabled" => true, "url" => "https://example.test/data.json"},
       "Disabled" => {"enabled" => false}
     })
     assert_equal "http://#{first[:host]}:#{first[:port]}/", targets[first[:name]].url
     assert_equal "https://#{first[:host]}:#{first[:port]}/", targets[first[:name]].fallback_url
-    assert_equal :standard, targets[first[:name]].format
     assert_equal "https://example.test/data.json", targets[second[:name]].url
     assert_nil targets[second[:name]].fallback_url
-    assert_equal :legacy_flat, targets[second[:name]].format
     assert_equal 2, targets.size
 
     # The checked-in config must parse; enabled targets may change over time.
     assert_kind_of Hash, DataPoller.targets
-    assert_equal :legacy_flat, DataPoller.targets["Hollowtide PK"].format
+    assert_equal "https://hollowtide.org/server.json", DataPoller.targets["Hollowtide PK"].url
   end
 
   it "requires enabled servers to have a valid config and known name" do
@@ -484,8 +433,7 @@ describe "DataPoller", :unit do
     assert_raises(DataPoller::Error) { DataPoller.targets_from({"Not a Server" => {"enabled" => true, "url" => "https://example.test/"}}) }
     assert_raises(DataPoller::Error) { DataPoller.targets_from({"Server" => {"enabled" => "yes"}}) }
     assert_raises(DataPoller::Error) { DataPoller.targets_from({"Server" => nil}) }
-    assert_raises(DataPoller::Error) { DataPoller.targets_from({server => {"enabled" => true, "format" => "bogus"}}) }
-    assert_raises(DataPoller::Error) { DataPoller.targets_from({server => {"enabled" => true, "format" => 1}}) }
+    assert_raises(DataPoller::Error) { DataPoller.targets_from({server => {"enabled" => true, "format" => "legacy_flat"}}) }
     assert_empty DataPoller.targets_from({"Not a Server" => {"enabled" => false}})
   end
 
