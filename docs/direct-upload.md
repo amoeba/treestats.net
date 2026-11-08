@@ -27,7 +27,83 @@ may be at most 1 MiB. Direct uploads are authenticated by the token instead of
 the plugin's `TREESTATS_SECRET` body check.
 
 If the payload contains `server_population`, a player count sample is recorded in
-addition to the character.
+addition to the character. It is best effort: only a positive integer is
+recorded, and anything else (0, negative, non-numeric) is ignored so the
+character upload still succeeds.
+
+Unknown fields are ignored, not rejected, so extra metadata (including Mongo's
+`_id`) is harmless. Known fields are type-checked — integers must be integers or
+numeric strings, and object/array fields must have the expected shape — and a
+payload with a bad known field returns `400` with a message naming it.
+
+## Example payloads
+
+Only `name` and `server` are required. This is the smallest useful upload:
+
+<!-- example:minimal -->
+```json
+{
+  "name": "Minimal Example",
+  "server": "Example Server"
+}
+```
+
+Every accepted field, with the shapes and types they expect. `server` must match
+the server the token was issued for:
+
+<!-- example:maximal -->
+```json
+{
+  "name": "Maximal Example",
+  "server": "Example Server",
+  "race": 1,
+  "gender": 1,
+  "level": 275,
+  "rank": 10,
+  "followers": 42,
+  "deaths": 3,
+  "birth": "01/15/2000 08:30:00 PM",
+  "total_xp": 1234567890,
+  "unassigned_xp": 0,
+  "skill_credits": 12,
+  "luminance_earned": 5000,
+  "luminance_total": 7500,
+  "properties": {
+    "times_enlightened": 2,
+    "augmentations": {
+      "critical_frequency": 5
+    }
+  },
+  "attribs": {
+    "strength": {"creation": 100, "base": 100, "buffed": 100},
+    "endurance": {"creation": 100, "base": 100, "buffed": 100},
+    "coordination": {"creation": 100, "base": 100, "buffed": 100},
+    "quickness": {"creation": 100, "base": 100, "buffed": 100},
+    "focus": {"creation": 100, "base": 100, "buffed": 100},
+    "self": {"creation": 100, "base": 100, "buffed": 100}
+  },
+  "vitals": {
+    "health": {"creation": 100, "base": 100, "buffed": 100},
+    "stamina": {"creation": 100, "base": 100, "buffed": 100},
+    "mana": {"creation": 100, "base": 100, "buffed": 100}
+  },
+  "skills": {
+    "alchemy": {"training": "Specialized", "base": 500, "buffed": 500}
+  },
+  "allegiance_name": "Example Allegiance",
+  "monarch": {"name": "Example Monarch", "race": 1, "gender": 1, "rank": 10},
+  "patron": {"name": "Example Patron", "race": 1, "gender": 1, "rank": 9},
+  "vassals": [
+    {"name": "Example Vassal", "race": 1, "gender": 1, "rank": 9}
+  ],
+  "version": 1,
+  "current_title": 0,
+  "titles": [1, 2, 3],
+  "account_name": "example-account",
+  "location": "Holtburg",
+  "server_population": 123
+}
+```
 
 ## Responses
 

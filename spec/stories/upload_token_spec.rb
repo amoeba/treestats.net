@@ -3,9 +3,10 @@ require_relative '../story_helper.rb'
 describe "UploadTokenStory" do
   before do
     ServerAuthToken.all.destroy
-    # Upload callbacks create patron/monarch characters, so clear the whole server.
-    Character.unscoped.in(server: ['Token Server', 'Other Server']).destroy
-    PlayerCount.in(server: ['Token Server', 'Other Server']).destroy
+    # Upload callbacks create patron/monarch characters, so clear whole servers.
+    Character.unscoped.in(server: ['Token Server', 'Other Server', 'Example Server']).destroy
+    PlayerCount.in(server: ['Token Server', 'Other Server', 'Example Server']).destroy
+    Allegiance.in(server: ['Token Server', 'Other Server', 'Example Server']).destroy
     redis.keys('uploads:server-token:*').each { |key| redis.del(key) }
   end
 
@@ -126,6 +127,98 @@ describe "UploadTokenStory" do
         assert_includes last_response.body, 'JSON object'
       end
     end
+  end
+
+  it "accepts the minimal and maximal examples from the docs" do
+    token = create_server_token('Example Server')
+    docs = File.read(File.expand_path('../../docs/direct-upload.md', __dir__))
+
+    allowed = Character::UPLOAD_FIELDS + %w[server_population]
+
+    %w[minimal maximal].each do |name|
+      body = docs[/<!-- example:#{name} -->\s*```json\n(.*?)```/m, 1]
+      refute_nil body, "docs are missing the #{name} example"
+
+      payload = JSON.parse(body)
+      assert_empty payload.keys - allowed, "#{name} example contains fields the uploader ignores"
+
+      post '/characters', body, 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+      assert_equal 200, last_response.status, "#{name} example was rejected: #{last_response.body}"
+    end
+
+    character = Character.unscoped.find_by(server: 'Example Server', name: 'Maximal Example')
+    assert_equal 275, character.level
+    refute_nil character.birth
+    assert_equal 'Example Patron', character.patron['name']
+    assert_equal ['Example Vassal'], character.vassals.map { |vassal| vassal['name'] }
+    assert_equal 123, PlayerCount.find_by(server: 'Example Server').count
+  end
+
+  it "ignores unknown fields without failing" do
+    token = create_server_token('Token Server')
+    payload = JSON.parse(upload_body('Token Server')).merge('_id' => '0' * 24, 'plugin_version' => '3')
+
+    post '/characters', JSON.generate(payload), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    character = Character.unscoped.where(server: 'Token Server', name: 'Token User').first
+    refute_nil character
+    refute_equal '0' * 24, character.id.to_s
+  end
+
+  it "ignores an ip_address supplied in a direct upload" do
+    token = create_server_token('Token Server')
+    payload = JSON.parse(upload_body('Token Server')).merge('ip_address' => '9.9.9.9')
+
+    post '/characters', JSON.generate(payload), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    assert_nil Character.unscoped.find_by(server: 'Token Server', name: 'Token User').ip
+  end
+
+  it "rejects a non-string server instead of treating it as a query" do
+    token = create_server_token('Token Server')
+    victim = Character.unscoped.create!(name: 'Token User', server: 'Other Server', level: 7)
+
+    post '/characters', JSON.generate('server' => {'$ne' => nil}, 'name' => 'Token User', 'level' => 50),
+      'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 400, last_response.status
+    victim.reload
+    assert_equal 7, victim.level
+    assert_equal 'Other Server', victim.server
+  end
+
+  it "rejects a non-string name instead of treating it as a query" do
+    token = create_server_token('Token Server')
+
+    post '/characters', JSON.generate('server' => 'Token Server', 'name' => {'$ne' => nil}, 'level' => 50),
+      'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 400, last_response.status
+  end
+
+  it "ignores an invalid server_population and still saves the character" do
+    token = create_server_token('Token Server')
+
+    post '/characters', JSON.generate(server: 'Token Server', name: 'Token User', server_population: -5),
+      'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    assert_equal 0, PlayerCount.where(server: 'Token Server').count
+    refute_nil Character.unscoped.where(server: 'Token Server', name: 'Token User').first
+  end
+
+  it "drops malformed vassal entries instead of crashing" do
+    token = create_server_token('Token Server')
+    payload = JSON.parse(upload_body('Token Server')).merge('vassals' => ['x', {'name' => 'Real Vassal'}])
+
+    post '/characters', JSON.generate(payload), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    character = Character.unscoped.find_by(server: 'Token Server', name: 'Token User')
+    assert_equal ['Real Vassal'], character.vassals.map { |vassal| vassal['name'] }
   end
 
   it "does not record the caller address as the character's IP on direct uploads" do
