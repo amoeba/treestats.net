@@ -76,10 +76,11 @@ describe "DataPoller", :unit do
 
   it "does not require schema or version" do
     timestamp = Time.now.utc - 60
-    population = {count: 3, updated_at: timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")}
+    updated_at = timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")
+    document = {"updated_at" => updated_at, "population" => {count: 3, updated_at: updated_at}}
     [{}, {"version" => 1}, {"schema" => "https://treestats.net/schemas/asherons-call-server/v1/schema.json"}].each_with_index do |metadata, index|
       server = "Metadata#{index}"
-      assert_equal :accepted, poll_for(server, transport_for(metadata.merge("population" => population)))
+      assert_equal :accepted, poll_for(server, transport_for(document.merge(metadata)))
       assert_equal 3, PlayerCount.where(s: server).first.c
     end
   end
@@ -93,17 +94,22 @@ describe "DataPoller", :unit do
   it "rejects malformed standard population documents" do
     now = Time.now.utc
     valid_time = (now - 60).strftime("%Y-%m-%dT%H:%M:%SZ")
+    standard = ->(population, updated_at = valid_time) { {updated_at: updated_at, population: population} }
     documents = [
-      {population: nil},
-      {population: []},
-      {population: {count: 1}},
-      {population: {updated_at: valid_time}},
-      {population: {count: -1, updated_at: valid_time}},
-      {population: {count: 1.0, updated_at: valid_time}},
-      {population: {count: "1", updated_at: valid_time}},
-      {population: {count: 1, updated_at: (now - 60).to_i}},
-      {population: {count: 1, updated_at: (now - 60).strftime("%Y-%m-%dT%H:%M:%S")}},
-      {population: {count: 1, updated_at: (now + 60).strftime("%Y-%m-%dT%H:%M:%SZ")}}
+      {updated_at: valid_time, population: nil},
+      {updated_at: valid_time, population: []},
+      standard.call({count: 1}),
+      standard.call({updated_at: valid_time}),
+      standard.call({count: -1, updated_at: valid_time}),
+      standard.call({count: 1.0, updated_at: valid_time}),
+      standard.call({count: "1", updated_at: valid_time}),
+      standard.call({count: 1, updated_at: (now - 60).to_i}),
+      standard.call({count: 1, updated_at: (now - 60).strftime("%Y-%m-%dT%H:%M:%S")}),
+      standard.call({count: 1, updated_at: (now + 60).strftime("%Y-%m-%dT%H:%M:%SZ")}),
+      {population: {count: 1, updated_at: valid_time}},
+      standard.call({count: 1, updated_at: valid_time}, nil),
+      standard.call({count: 1, updated_at: valid_time}, "not a timestamp"),
+      standard.call({count: 1, updated_at: valid_time}, (now - 60).to_i)
     ]
 
     documents.each do |document|

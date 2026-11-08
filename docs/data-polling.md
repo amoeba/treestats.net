@@ -41,12 +41,15 @@ Targets may respond with the standard nested document:
 
 ```json
 {
+  "updated_at": "2026-11-07T18:00:00Z",
   "population": {
     "count": 42,
     "updated_at": "2026-11-07T18:00:00Z"
   }
 }
 ```
+
+When `population` is present, the top-level `updated_at` is required as well.
 
 Explicit overrides may also use the legacy flat shape:
 

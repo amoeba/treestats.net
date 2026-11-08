@@ -58,5 +58,8 @@
       "required": ["name", "version"]
     }
   },
+  "dependentRequired": {
+    "population": ["updated_at"]
+  },
   "additionalProperties": true
 }

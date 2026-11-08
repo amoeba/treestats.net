@@ -9,5 +9,6 @@ describe "ServerInfoStandardStory" do
     assert_equal "https://treestats.net/schemas/asherons-call-server/v1/schema.json", schema["$id"]
     assert_equal "object", schema["type"]
     assert_equal %w[count updated_at], schema.dig("properties", "population", "required").sort
+    assert_equal ["updated_at"], schema.dig("dependentRequired", "population")
   end
 end

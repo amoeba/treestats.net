@@ -34,8 +34,11 @@ module DataPoller
       population = payload["population"]
       raise Error, "population must be an object" unless population.is_a?(Hash)
 
+      # A population document carries two timestamps: when the document was
+      # generated and when the population was measured. Require both.
+      parse_rfc3339(payload["updated_at"], "updated_at")
       count = population["count"]
-      timestamp = parse_rfc3339(population["updated_at"])
+      timestamp = parse_rfc3339(population["updated_at"], "population.updated_at")
     else
       count = payload["count"]
       timestamp = payload["updated_at"]
@@ -46,15 +49,15 @@ module DataPoller
     [count, timestamp]
   end
 
-  def self.parse_rfc3339(value)
+  def self.parse_rfc3339(value, field = "updated_at")
     parts = value.is_a?(String) && Date._iso8601(value)
     unless parts && RFC3339_PARTS.all? { |key| parts.key?(key) }
-      raise Error, "population.updated_at must be an RFC3339 timestamp"
+      raise Error, "#{field} must be an RFC3339 timestamp"
     end
 
     Time.iso8601(value).to_i
   rescue ArgumentError, RangeError, TypeError
-    raise Error, "population.updated_at must be an RFC3339 timestamp"
+    raise Error, "#{field} must be an RFC3339 timestamp"
   end
 
   def self.server_source_filter

@@ -18,7 +18,7 @@ There is no required path component. HTTP and HTTPS are both acceptable; HTTPS i
 
 ## Document
 
-The response must be a JSON object. No top-level fields are required.
+The response must be a JSON object. No top-level fields are required, except that a document containing `population` must also contain `updated_at`.
 
 ```json
 {
@@ -46,7 +46,7 @@ Consumers must ignore unknown fields. All timestamps are RFC3339 strings with an
 - `schema` (optional, string): URL of the schema for this document.
 - `version` (optional, integer): Document format version. This document describes version `1`.
 - `name` (optional, string): The server or world name as configured by the operator.
-- `updated_at` (optional, string): When the document was generated.
+- `updated_at` (string): When the document was generated. Required when `population` is present.
 - `population` (optional, object): Current in-world player population. When present, both nested fields are required.
   - `count` (required, integer): Number of connected, in-world player characters, including bots, multiboxed characters, staff, and test characters. Count characters, not unique people or accounts. A measured empty world is `0`; inability to measure must be an error or an omitted `population`, not a fabricated zero.
   - `updated_at` (required, string): When the population was measured. Advance this for each new measurement even if the count did not change. Re-serving an old snapshot must not renew it.
