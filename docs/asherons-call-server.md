@@ -56,4 +56,4 @@ Consumers must ignore unknown fields. All timestamps are RFC3339 strings with an
 
 ## Reference implementation
 
-The ACE mod `ACE.Mods.Treestats` serves a document of this shape from the game endpoint. TreeStats polls opted-in servers at the root `/`. Servers that serve the document elsewhere can be listed with an explicit URL in `config/polling_targets.yml`.
+The ACE mod `ACE.Mods.Treestats` serves a document of this shape from the game endpoint. TreeStats polls opted-in servers at the root `/`. Registered servers that serve the document elsewhere can be listed with an explicit URL in `config/polling_targets.yml`.

@@ -270,16 +270,16 @@ describe "DataPoller", :unit do
   end
 
   it "polls only enabled servers and resolves an omitted URL to the standard root" do
-    first = DataPoller.server_list.first
+    first, second = DataPoller.server_list
     targets = DataPoller.targets_from({
       first[:name] => {"enabled" => true},
-      "Other" => {"enabled" => true, "url" => "https://example.test/data.json"},
+      second[:name] => {"enabled" => true, "url" => "https://example.test/data.json"},
       "Disabled" => {"enabled" => false}
     })
     assert_equal "http://#{first[:host]}:#{first[:port]}/", targets[first[:name]].url
     assert_equal "https://#{first[:host]}:#{first[:port]}/", targets[first[:name]].fallback_url
-    assert_equal "https://example.test/data.json", targets["Other"].url
-    assert_nil targets["Other"].fallback_url
+    assert_equal "https://example.test/data.json", targets[second[:name]].url
+    assert_nil targets[second[:name]].fallback_url
     assert_equal 2, targets.size
 
     # The checked-in config must parse; enabled targets may change over time.
@@ -288,8 +288,21 @@ describe "DataPoller", :unit do
 
   it "requires enabled servers to have a valid config and known name" do
     assert_raises(DataPoller::Error) { DataPoller.targets_from({"Not a Server" => {"enabled" => true}}) }
+    assert_raises(DataPoller::Error) { DataPoller.targets_from({"Not a Server" => {"enabled" => true, "url" => "https://example.test/"}}) }
     assert_raises(DataPoller::Error) { DataPoller.targets_from({"Server" => {"enabled" => "yes"}}) }
     assert_raises(DataPoller::Error) { DataPoller.targets_from({"Server" => nil}) }
+    assert_empty DataPoller.targets_from({"Not a Server" => {"enabled" => false}})
+  end
+
+  it "allows a registered server without a host or port only with an explicit URL" do
+    original = DataPoller.method(:server_list)
+    DataPoller.define_singleton_method(:server_list) { [{name: "No Host", host: "", port: ""}] }
+
+    assert_raises(DataPoller::Error) { DataPoller.targets_from({"No Host" => {"enabled" => true}}) }
+    target = DataPoller.targets_from({"No Host" => {"enabled" => true, "url" => "https://example.test/"}})["No Host"]
+    assert_equal "https://example.test/", target.url
+  ensure
+    DataPoller.define_singleton_method(:server_list, original) if original
   end
 
   it "accepts an old but advancing measurement and suppresses duplicate/conflicting/regressive timestamps" do

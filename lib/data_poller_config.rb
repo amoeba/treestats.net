@@ -46,8 +46,9 @@ module DataPoller
 
   def self.targets_from(configured)
     roots = discovered_targets
+    known_servers = server_list.map { |server| server[:name].to_s }
     configured.each_with_object({}) do |(server, settings), result|
-      raise Error, "invalid target name for #{server.inspect}" unless server.is_a?(String)
+      raise Error, "invalid target name for #{server.inspect}" unless server.is_a?(String) && !server.strip.empty?
       raise Error, "invalid target settings for #{server}" unless settings.is_a?(Hash)
 
       enabled = settings["enabled"]
@@ -56,11 +57,12 @@ module DataPoller
 
       url = settings["url"]
       raise Error, "invalid target URL for #{server}" unless url.nil? || url.is_a?(String)
+      raise Error, "unknown polling target #{server.inspect}; add it to data/servers.rb" unless known_servers.include?(server)
 
       result[server] = if url
         Target.new(url: url)
       else
-        roots[server] || raise(Error, "unknown polling target #{server.inspect}; add it to data/servers.rb or give a URL")
+        roots[server] || raise(Error, "polling target #{server.inspect} has no host or port in data/servers.rb; give a URL")
       end
     end
   end
