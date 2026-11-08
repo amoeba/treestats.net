@@ -21,6 +21,8 @@ interval: 15m
 #     enabled: false
 targets:
   # Hollowtide still serves the legacy flat {"count", "updated_at"} document.
+  # format: legacy_flat opts this target into the compatibility parser.
   "Hollowtide PK":
     enabled: true
     url: https://hollowtide.org/population.json
+    format: legacy_flat

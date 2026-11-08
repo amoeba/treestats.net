@@ -42,28 +42,37 @@ module DataPoller
   # Parses the standard server document. All fields are optional. A count
   # without a measurement time (population.updated_at, falling back to the
   # document's updated_at) can be stored as a result but not as an observation.
-  def self.parse_population(payload)
+  # Targets explicitly configured with the legacy flat format skip the
+  # population object but still validate the shared metadata fields.
+  def self.parse_population(payload, format: :standard)
     raise Error, "response must be an object" unless payload.is_a?(Hash)
 
-    # Temporary compatibility for targets such as Hollowtide that still serve
-    # the legacy flat {"count", "updated_at"} shape. A standard document without
-    # a population object does not have a top-level count.
-    if !payload.key?("population") && payload.key?("count")
+    schema_url = optional_string(payload, "schema")
+    document_version = optional_integer(payload, "version", minimum: 1)
+    raise Error, "unsupported document version #{document_version}" if document_version && document_version != 1
+    name = optional_string(payload, "name")
+    emulator = parse_emulator(payload["emulator"])
+
+    if format == :legacy_flat
       count = payload["count"]
       raise Error, "count must be a nonnegative integer" unless count.is_a?(Integer) && count >= 0
 
       measured_at = payload["updated_at"]
       raise Error, "updated_at must be an integer Unix timestamp" unless measured_at.is_a?(Integer) && measured_at >= 0
 
-      return Document.new(count: count, measured_at: measured_at)
+      return Document.new(
+        count: count,
+        measured_at: measured_at,
+        document_updated_at: nil,
+        name: name,
+        emulator: emulator,
+        schema_url: schema_url,
+        document_version: document_version
+      )
     end
+    raise Error, "unsupported document format #{format.inspect}" unless format == :standard
 
     document_updated_at = parse_rfc3339(payload["updated_at"], "updated_at") unless payload["updated_at"].nil?
-    schema_url = optional_string(payload, "schema")
-    document_version = optional_integer(payload, "version", minimum: 1)
-    raise Error, "unsupported document version #{document_version}" if document_version && document_version != 1
-    name = optional_string(payload, "name")
-    emulator = parse_emulator(payload["emulator"])
 
     if payload.key?("population")
       population = payload["population"]
@@ -213,10 +222,11 @@ module DataPoller
   # Polls one server for one interval slot. The instance owns the lease,
   # request, and persistence state for that single poll.
   class Poll
-    def initialize(server:, url:, fallback_url: nil, slot: DataPoller.current_slot, transport: nil)
+    def initialize(server:, url:, fallback_url: nil, format: :standard, slot: DataPoller.current_slot, transport: nil)
       @server = server
       @url = url
       @fallback_url = fallback_url
+      @format = format
       @slot = slot
       @transport = transport
     end
@@ -249,7 +259,7 @@ module DataPoller
 
       begin
         body, received_at = read_response_with_fallback
-        result = DataPoller.parse_population(JSON.parse(body))
+        result = DataPoller.parse_population(JSON.parse(body), format: @format)
         if result.count.nil? || result.measured_at.nil?
           return record_unmeasured(result, received_at, lease_id)
         end
@@ -433,7 +443,7 @@ class PollDataJob
     target = DataPoller.targets[server]
     return unless target
     Timeout.timeout(DataPoller::JOB_TIMEOUT_SECONDS, DataPoller::JobDeadlineExceeded) do
-      DataPoller::Poll.new(server: server, url: target.url, fallback_url: target.fallback_url, slot: slot.to_i).call
+      DataPoller::Poll.new(server: server, url: target.url, fallback_url: target.fallback_url, format: target.format || :standard, slot: slot.to_i).call
     end
   rescue DataPoller::JobDeadlineExceeded
     :failure
