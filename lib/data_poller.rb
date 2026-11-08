@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "date"
 require "json"
 require "net/http"
 require "openssl"
@@ -18,10 +19,10 @@ module DataPoller
   TOTAL_TIMEOUT_SECONDS = 12
   JOB_TIMEOUT_SECONDS = 90
   LEASE_SECONDS = 120
-  # RFC3339 requires an explicit offset; Time.iso8601 alone also accepts naive
-  # timestamps by assuming local time, which would make measurement times
-  # depend on the worker's time zone.
-  RFC3339_PATTERN = /\A\d{4}-\d{2}-\d{2}[Tt]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[Zz]|[+-]\d{2}:\d{2})\z/
+  # RFC3339 requires an explicit offset. Time.iso8601 alone accepts naive
+  # timestamps by assuming local time, so require every component from Date's
+  # ISO8601 parser, including the offset.
+  RFC3339_PARTS = %i[year mon mday hour min sec offset].freeze
   class JobDeadlineExceeded < Timeout::Error; end
 
   # Accepts both the standard nested document and the legacy flat shape used by
@@ -46,12 +47,13 @@ module DataPoller
   end
 
   def self.parse_rfc3339(value)
-    unless value.is_a?(String) && RFC3339_PATTERN.match?(value)
+    parts = value.is_a?(String) && Date._iso8601(value)
+    unless parts && RFC3339_PARTS.all? { |key| parts.key?(key) }
       raise Error, "population.updated_at must be an RFC3339 timestamp"
     end
 
     Time.iso8601(value).to_i
-  rescue ArgumentError, RangeError
+  rescue ArgumentError, RangeError, TypeError
     raise Error, "population.updated_at must be an RFC3339 timestamp"
   end
 

@@ -84,6 +84,12 @@ describe "DataPoller", :unit do
     end
   end
 
+  it "accepts an explicit RFC3339 offset and rejects a naive timestamp" do
+    timestamp = (Time.now.utc - 60).getlocal("+02:00")
+    assert_equal timestamp.to_i, DataPoller.parse_rfc3339(timestamp.iso8601)
+    assert_raises(DataPoller::Error) { DataPoller.parse_rfc3339(timestamp.strftime("%Y-%m-%dT%H:%M:%S")) }
+  end
+
   it "rejects malformed standard population documents" do
     now = Time.now.utc
     valid_time = (now - 60).strftime("%Y-%m-%dT%H:%M:%SZ")
