@@ -106,6 +106,36 @@ describe "UploadTokenStory" do
     end
   end
 
+  it "does not record the caller address as the character's IP on direct uploads" do
+    token = create_server_token('Token Server')
+
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    character = Character.unscoped.find_by(server: 'Token Server', name: 'Token User')
+    refute_nil character
+    assert_nil character.ip
+  end
+
+  it "does not overwrite an IP recorded by the plugin on direct uploads" do
+    token = create_server_token('Token Server')
+    Character.unscoped.create!(name: 'Token User', server: 'Token Server', ip: '10.0.0.1')
+
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    assert_equal '10.0.0.1', Character.unscoped.find_by(server: 'Token Server', name: 'Token User').ip
+  end
+
+  it "records the caller address for plugin uploads" do
+    without_env('TREESTATS_SECRET') do
+      post '/', upload_body('Token Server')
+    end
+
+    assert_equal 200, last_response.status
+    assert_equal '127.0.0.1', Character.unscoped.find_by(server: 'Token Server', name: 'Token User').ip
+  end
+
   it "rejects an oversized direct upload before reading it" do
     oversized = 'x' * (UploadHelper::MAX_UPLOAD_BYTES + 1)
 

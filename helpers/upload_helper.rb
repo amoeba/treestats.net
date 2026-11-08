@@ -192,7 +192,10 @@ module UploadHelper
     end
 
     # IP Address
-    character.ip = request.ip
+    # Plugin uploads originate from the player's machine, so request.ip is the
+    # player's address. Direct server uploads speak for many players, so the
+    # caller's address is the game server and must not overwrite a player IP.
+    character.ip = request.ip unless token_required
 
     character.save
     character.touch
