@@ -197,19 +197,49 @@ describe "CharacterStory" do
   end
 
   describe "Character.to_json" do
-    it "filters out id and ip_address" do
+    it "filters out id, ip_address and upload_source" do
       post('/', '{"name" : "player", "server" : "test", "ip_address": "127.0.0.1"}')
 
       c = Character.find_by(name: "player", server: "test")
+      c.set(upload_source: Character::SERVER_SOURCE)
+      c.reload
       json = c.to_json
 
       assert !json.include?("_id")
       assert !json.include?("ip_address")
+      assert !json.include?("upload_source")
 
       resp = get("/test/player.json")
 
       assert resp.body.include?("player")
-      assert !resp.body.include?("ip_adderss")
+      assert !resp.body.include?("upload_source")
+    end
+  end
+
+  describe "upload provenance" do
+    before do
+      Character.all.destroy
+      @character = Character.unscoped.create!(name: "Prov", server: "ProvServer")
+    end
+
+    it "labels documents without a recorded source as plugin uploads" do
+      get "/ProvServer/Prov"
+
+      assert_equal 200, last_response.status
+      section = last_response.body[/<div class="last_updated">.*?<\/div>/m]
+      assert_includes section, "Decal Plugin"
+      refute_includes section, "Direct Upload"
+    end
+
+    it "labels server-sourced documents as direct uploads" do
+      @character.set(upload_source: Character::SERVER_SOURCE)
+
+      get "/ProvServer/Prov"
+
+      assert_equal 200, last_response.status
+      section = last_response.body[/<div class="last_updated">.*?<\/div>/m]
+      assert_includes section, "Direct Upload"
+      refute_includes section, "Decal Plugin"
     end
   end
 end

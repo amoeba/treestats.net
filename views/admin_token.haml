@@ -1,0 +1,20 @@
+!!!
+%html{:lang => "en"}
+  %head
+    %meta{:charset => "utf-8"}
+    %meta{:name => "robots", :content => "noindex, nofollow, noarchive, nosnippet"}
+    %meta{:name => "referrer", :content => "no-referrer"}
+    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
+    %title Server upload token
+    %link{:rel => "stylesheet", :href => stylesheet_path("admin")}
+  %body.admin-panel-page
+    %main.admin-panel
+      %h1= "Token for #{@issued['server']}"
+      %p Copy this value now. It cannot be shown again.
+      %pre= @issued['token']
+      %p
+        Send it with each direct upload in the
+        %code X-TreeStats-Server-Token
+        HTTP header.
+      %p
+        %a{:href => "/admin"} Back to administration

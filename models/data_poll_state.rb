@@ -9,4 +9,8 @@ class DataPollState
   field :error_summary, type: String
   field :last_accepted_updated_at, type: Integer
   field :consecutive_failures, type: Integer, default: 0
+  # Lease fields are written by DataPoller::Poll through the raw collection.
+  field :last_poll_slot, type: Integer
+  field :lease_id, type: String
+  field :lease_until, type: Time
 end

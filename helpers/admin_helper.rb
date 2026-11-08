@@ -1,19 +1,9 @@
 require 'securerandom'
-require 'digest'
 
 module AdminHelper
   LOGIN_MIN_FILL_SECONDS = 1.5
   LOGIN_RATE_LIMIT_WINDOW = 3600
   LOGIN_RATE_LIMIT_MAX = 8
-
-  RATE_LIMIT_LUA = <<~LUA
-    local count = redis.call('INCR', KEYS[1])
-    if count == 1 then
-      redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1]))
-    end
-    return count
-  LUA
-  RATE_LIMIT_LUA_SHA = Digest::SHA1.hexdigest(RATE_LIMIT_LUA)
 
   def admin?
     !!session[:admin_user_id]
@@ -26,6 +16,9 @@ module AdminHelper
 
   def require_admin!
     halt 404 unless admin?
+    # Admin responses can contain bearer tokens (e.g. a freshly issued upload
+    # token), so they must never be stored by a browser or intermediary cache.
+    headers['Cache-Control'] = 'no-store, private'
   end
 
   def csrf_token
@@ -50,13 +43,7 @@ module AdminHelper
   end
 
   def record_failed_login_attempt!
-    key = admin_login_rate_limit_key
-    begin
-      redis.evalsha(RATE_LIMIT_LUA_SHA, keys: [key], argv: [LOGIN_RATE_LIMIT_WINDOW])
-    rescue Redis::CommandError => e
-      raise unless e.message.include?('NOSCRIPT')
-      redis.eval(RATE_LIMIT_LUA, keys: [key], argv: [LOGIN_RATE_LIMIT_WINDOW])
-    end
+    RateLimiter.record!(redis, admin_login_rate_limit_key, LOGIN_RATE_LIMIT_WINDOW)
   end
 
   def render_admin_dashboard
@@ -78,12 +65,11 @@ module AdminHelper
     halt 422, 'Server must be registered.' unless ServerHelper.servers.include?(server)
 
     token = ServerAuthTokenHelper.generate
-    record = ServerAuthToken.where(server: server).first || ServerAuthToken.new(server: server)
-    record.token_digest = ServerAuthTokenHelper.digest(token)
-    record.save!
+    ServerAuthToken.issue!(server, ServerAuthTokenHelper.digest(token))
 
-    @issued_server = server
-    @issued_token = token
-    render_admin_dashboard
+    # Show the plaintext token once, on its own page. Keeping it in the signed
+    # session for a single redirect avoids re-issuing on a page reload.
+    session[:issued_token] = {'server' => server, 'token' => token}
+    redirect '/admin/token'
   end
 end

@@ -28,9 +28,10 @@ end
 
 %w[
   lib/clock.rb
-  lib/data_poller.rb
+  lib/data_poller_config.rb
   lib/graph_job.rb
   lib/query_cache_job.rb
+  lib/rate_limiter.rb
   lib/stats_job.rb
 ].each { |file| require_relative file }
 
@@ -98,12 +99,10 @@ class TreeStats < Sinatra::Base
     # Resque
     Resque.redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
 
-    # Pre-load admin rate-limit Lua script so evalsha works on first call
+    # Pre-load the rate-limit Lua script so evalsha works on first call
     begin
       r = Redis.new(host: uri.host, port: uri.port, password: uri.password)
-      r.script(:load, AdminHelper::RATE_LIMIT_LUA)
-    rescue => e
-      warn "Rate-limit Lua pre-load failed: #{e.message}"
+      RateLimiter.preload!(r)
     ensure
       r&.close
     end

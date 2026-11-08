@@ -1,6 +1,9 @@
 require "digest"
 
 module UploadHelper
+  # Character payloads are a few KB; anything this large is a bug or abuse.
+  MAX_UPLOAD_BYTES = 1024 * 1024
+
   def self.validate(text)
     return false if text.nil? or text.length <= 0
 
@@ -37,9 +40,26 @@ module UploadHelper
   end
 
   def process_character_upload(token_required:)
+    if request.content_length.to_i > MAX_UPLOAD_BYTES
+      status 413
+      return "Upload too large."
+    end
+
+    server_token = request.env[ServerAuthTokenHelper::RACK_HEADER].to_s
+    if token_required && server_token.empty?
+      status 401
+      return "Server upload token is required."
+    end
+
     request.body.rewind
-    text = request.body.read
-    return if text.length <= 0
+    # Read one byte past the limit so chunked bodies (no Content-Length) are capped too.
+    text = request.body.read(MAX_UPLOAD_BYTES + 1)
+    return if text.empty?
+
+    if text.bytesize > MAX_UPLOAD_BYTES
+      status 413
+      return "Upload too large."
+    end
 
     unless token_required
       # Legacy plugin uploads authenticate their signed request body.
@@ -63,15 +83,15 @@ module UploadHelper
       return "Upload failed for an unknown reason. Please report this as a bug at https://github.com/amoeba/treestats."
     end
 
-    if token_required
-      server_token = request.env[ServerAuthTokenHelper::HEADER].to_s
-      if server_token.empty?
-        status 401
-        return "Server upload token is required."
-      end
+    unless json_text.is_a?(Hash)
+      status 400
+      print_and_maybe_sentry("Upload payload is not a JSON object: #{text}")
 
-      token_record = ServerAuthTokenHelper.authenticate(json_text['server'], server_token)
-      unless token_record
+      return "Upload payload must be a JSON object."
+    end
+
+    if token_required
+      unless ServerAuthTokenHelper.authenticate(json_text['server'], server_token)
         status 403
         return "Failed to verify server upload token. Character was not saved."
       end
@@ -170,8 +190,15 @@ module UploadHelper
       character.vassals = nil
     end
 
+    # Provenance of the most recent upload, set after assign_attributes so a
+    # payload cannot claim its own source. nil means the plugin.
+    character[:us] = token_required ? Character::SERVER_SOURCE : nil
+
     # IP Address
-    character.ip = request.ip
+    # Plugin uploads originate from the player's machine, so request.ip is the
+    # player's address. Direct server uploads speak for many players, so the
+    # caller's address is the game server and must not overwrite a player IP.
+    character.ip = request.ip unless token_required
 
     character.save
     character.touch

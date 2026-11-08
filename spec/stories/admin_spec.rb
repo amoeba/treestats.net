@@ -25,6 +25,8 @@ describe "AdminStory" do
       assert_includes last_response.body, 'name="password"'
       assert_includes last_response.body, 'name="authenticity_token"'
       assert_includes last_response.body, 'noindex'
+      assert_includes last_response.body, 'no-referrer'
+      assert_includes last_response.headers['Cache-Control'], 'no-store'
     end
 
     it "is hidden when already logged in" do
@@ -173,18 +175,79 @@ describe "AdminStory" do
       sign_in_admin
 
       get '/admin'
-      token = extract_csrf
-      post '/admin/upload-tokens', server: server, authenticity_token: token
+      post '/admin/upload-tokens', server: server, authenticity_token: extract_csrf
+
+      assert_equal 302, last_response.status
+      assert_equal '/admin/token', URI(last_response.location).path
+
+      follow_redirect!
 
       assert_equal 200, last_response.status
       issued_token = last_response.body[/<pre>([^<]+)<\/pre>/, 1]&.strip
       refute_nil issued_token
       assert_match(/\Ats_/, issued_token)
+      assert_includes last_response.body, "Token for #{server}"
+      assert_includes last_response.body, 'X-TreeStats-Server-Token'
+      assert_includes last_response.headers['Cache-Control'], 'no-store'
+
       record = ServerAuthToken.find_by(server: server)
       refute_equal issued_token, record.token_digest
       assert_equal ServerAuthTokenHelper.digest(issued_token), record.token_digest
+
+      get '/admin'
       assert_includes last_response.body, record.updated_at.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
       assert_includes last_response.body, 'admin-utc-time'
+      assert_includes last_response.headers['Cache-Control'], 'no-store'
+    end
+
+    it "shows the issued token exactly once" do
+      server = ServerHelper.servers.first
+      sign_in_admin
+
+      issued_token = issue_token(server)
+      refute_nil issued_token
+      assert_equal 1, ServerAuthToken.where(server: server).count
+
+      get '/admin/token'
+
+      assert_equal 302, last_response.status
+      assert_equal '/admin', URI(last_response.location).path
+      assert_equal 1, ServerAuthToken.where(server: server).count
+      refute_nil ServerAuthTokenHelper.authenticate(server, issued_token)
+    end
+
+    it "hides the issued token page from anonymous visitors" do
+      get '/admin/token'
+
+      assert_equal 404, last_response.status
+    end
+
+    it "creates unique indexes for server tokens" do
+      sign_in_admin
+      get '/admin'
+      post '/admin/upload-tokens', server: ServerHelper.servers.first, authenticity_token: extract_csrf
+
+      indexes = ServerAuthToken.collection.indexes.to_a
+      server_index = indexes.find { |index| index['name'] == 'unique_server_auth_token_server' }
+      digest_index = indexes.find { |index| index['name'] == 'unique_server_auth_token_digest' }
+
+      assert server_index && server_index['unique'], 'expected a unique index on server'
+      assert digest_index && digest_index['unique'], 'expected a unique index on token_digest'
+    end
+
+    it "reissues a token in place, invalidating the previous one" do
+      server = ServerHelper.servers.first
+      sign_in_admin
+
+      first_token = issue_token(server)
+      second_token = issue_token(server)
+
+      refute_nil first_token
+      refute_nil second_token
+      refute_equal first_token, second_token
+      assert_equal 1, ServerAuthToken.where(server: server).count
+      assert_nil ServerAuthTokenHelper.authenticate(server, first_token), 'old token should be invalid'
+      refute_nil ServerAuthTokenHelper.authenticate(server, second_token)
     end
 
     it "requires an authenticated admin and CSRF token" do
@@ -222,6 +285,23 @@ describe "AdminStory" do
   end
 
   describe "GET /admin" do
+    it "returns 404 for unknown admin paths" do
+      sign_in_admin
+
+      get '/admin/nope'
+
+      assert_equal 404, last_response.status
+    end
+
+    it "does not let caches store the dashboard" do
+      sign_in_admin
+
+      get '/admin'
+
+      assert_equal 200, last_response.status
+      assert_includes last_response.headers['Cache-Control'], 'no-store'
+    end
+
     it "shows configured poll target status" do
       DataPollState.create!(
         server: 'Hollowtide PK',
@@ -264,6 +344,13 @@ describe "AdminStory" do
 
   def extract_widget_csrf
     last_response.body[/authenticity_token&quot;:&quot;([a-f0-9]+)&quot;/, 1] || extract_csrf
+  end
+
+  def issue_token(server)
+    get '/admin'
+    post '/admin/upload-tokens', server: server, authenticity_token: extract_csrf
+    follow_redirect!
+    last_response.body[/<pre>([^<]+)<\/pre>/, 1]&.strip
   end
 
   def sign_in_admin

@@ -12,7 +12,16 @@ class Character
     Hash[original_hash.map {|k, v| [self.aliased_fields.invert[k] || k , v] }]
   end
 
-  FILTERED_FIELDS = [ "id", "ip_address" ]
+  FILTERED_FIELDS = [ "id", "ip_address", "upload_source" ]
+
+  # The most recent upload's source. nil means the Decal plugin, which is the
+  # historical default and the shape of every document written before this field
+  # existed.
+  SERVER_SOURCE = "s"
+
+  def uploaded_by_server?
+    upload_source == SERVER_SOURCE
+  end
 
   def to_json
     JSON.pretty_generate(serializable_hash({}).tap { |h| Character::FILTERED_FIELDS.each { |f| h.delete(f) }})
@@ -62,6 +71,7 @@ class Character
 
   field :acc, as: :account_name,      type: String
   field :ip,  as: :ip_address,        type: String
+  field :us,  as: :upload_source,     type: String
 
   field :ar,  as: :archived,          type: Boolean, default: -> { false }
 

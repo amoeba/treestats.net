@@ -6,6 +6,7 @@ module Sinatra
           app.get '/admin/login/?' do
             halt 404 if admin?
 
+            headers['Cache-Control'] = 'no-store, private'
             @csrf_token = csrf_token
             session[:login_form_rendered_at] = Time.now.to_f
 
@@ -77,6 +78,15 @@ module Sinatra
             render_admin_dashboard
           end
 
+          app.get '/admin/token/?' do
+            require_admin!
+
+            @issued = session.delete(:issued_token)
+            redirect '/admin' unless @issued
+
+            haml :admin_token, layout: false
+          end
+
           app.post '/admin/upload-tokens/?' do
             require_admin!
             verify_csrf!
@@ -92,18 +102,6 @@ module Sinatra
             halt 404 unless token
             token.destroy
             redirect '/admin'
-          end
-
-          app.get '/admin/server-tokens/?' do
-            require_admin!
-            redirect '/admin'
-          end
-
-          app.post '/admin/server-tokens/?' do
-            require_admin!
-            verify_csrf!
-
-            generate_upload_token
           end
 
           # Catch anything else under /admin before the /:server catch-all

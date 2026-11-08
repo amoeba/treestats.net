@@ -3,7 +3,9 @@ require_relative '../story_helper.rb'
 describe "UploadTokenStory" do
   before do
     ServerAuthToken.all.destroy
-    Character.unscoped.where(server: 'Token Server', name: 'Token User').destroy
+    # Upload callbacks create patron/monarch characters, so clear the whole server.
+    Character.unscoped.in(server: ['Token Server', 'Other Server']).destroy
+    PlayerCount.in(server: ['Token Server', 'Other Server']).destroy
     redis.keys('uploads:server-token:*').each { |key| redis.del(key) }
   end
 
@@ -34,12 +36,34 @@ describe "UploadTokenStory" do
     assert last_response.headers['RateLimit-Reset'].to_i.between?(1, 3600)
   end
 
-  it "rejects a token issued for another server" do
+  it "rejects a token issued for another server without writing anything" do
     token = create_server_token('Token Server')
 
     post '/characters', upload_body('Other Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
 
     assert_equal 403, last_response.status
+    assert_nil Character.unscoped.where(server: 'Other Server', name: 'Token User').first
+    assert_equal 0, PlayerCount.where(server: 'Other Server').count
+  end
+
+  it "rejects a revoked token" do
+    token = create_server_token('Token Server')
+    ServerAuthToken.find_by(server: 'Token Server').destroy
+
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 403, last_response.status
+    assert_nil Character.unscoped.where(server: 'Token Server', name: 'Token User').first
+  end
+
+  it "falls back to EVAL when the rate-limit script is not cached" do
+    token = create_server_token('Token Server')
+    redis.script(:flush)
+
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    assert last_response.headers['RateLimit-Remaining'].to_i.between?(0, 999)
   end
 
   it "returns 429 after 1,000 token-authenticated uploads in an hour" do
@@ -77,5 +101,104 @@ describe "UploadTokenStory" do
     post '/characters', upload_body('Token Server')
 
     assert_equal 401, last_response.status
+  end
+
+  it "rejects valid JSON that is not an object" do
+    token = create_server_token('Token Server')
+
+    ['null', '[]', '"string"', '5', 'true'].each do |body|
+      post '/characters', body, 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+      assert_equal 400, last_response.status, "expected 400 for #{body}"
+      assert_includes last_response.body, 'JSON object'
+    end
+
+    assert_equal 0, Character.unscoped.where(server: 'Token Server').count
+    assert_equal 0, PlayerCount.where(server: 'Token Server').count
+  end
+
+  it "rejects valid JSON that is not an object on the legacy endpoint" do
+    without_env('TREESTATS_SECRET') do
+      ['null', '[]', '5'].each do |body|
+        post '/', body
+
+        assert_equal 400, last_response.status, "expected 400 for #{body}"
+        assert_includes last_response.body, 'JSON object'
+      end
+    end
+  end
+
+  it "does not record the caller address as the character's IP on direct uploads" do
+    token = create_server_token('Token Server')
+
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    character = Character.unscoped.find_by(server: 'Token Server', name: 'Token User')
+    refute_nil character
+    assert_nil character.ip
+  end
+
+  it "does not overwrite an IP recorded by the plugin on direct uploads" do
+    token = create_server_token('Token Server')
+    Character.unscoped.create!(name: 'Token User', server: 'Token Server', ip: '10.0.0.1')
+
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    assert_equal '10.0.0.1', Character.unscoped.find_by(server: 'Token Server', name: 'Token User').ip
+  end
+
+  it "records the caller address for plugin uploads" do
+    without_env('TREESTATS_SECRET') do
+      post '/', upload_body('Token Server')
+    end
+
+    assert_equal 200, last_response.status
+    assert_equal '127.0.0.1', Character.unscoped.find_by(server: 'Token Server', name: 'Token User').ip
+  end
+
+  it "records direct uploads as server-sourced" do
+    token = create_server_token('Token Server')
+
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    character = Character.unscoped.find_by(server: 'Token Server', name: 'Token User')
+    assert_equal Character::SERVER_SOURCE, character.upload_source
+    assert character.uploaded_by_server?
+  end
+
+  it "clears server provenance when the plugin uploads next" do
+    token = create_server_token('Token Server')
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+    assert_equal Character::SERVER_SOURCE, Character.unscoped.find_by(server: 'Token Server', name: 'Token User').upload_source
+
+    without_env('TREESTATS_SECRET') do
+      post '/', upload_body('Token Server')
+    end
+
+    assert_equal 200, last_response.status
+    character = Character.unscoped.find_by(server: 'Token Server', name: 'Token User')
+    assert_nil character.upload_source
+    refute character.uploaded_by_server?
+  end
+
+  it "rejects an oversized direct upload before reading it" do
+    oversized = 'x' * (UploadHelper::MAX_UPLOAD_BYTES + 1)
+
+    post '/characters', oversized, 'HTTP_X_TREESTATS_SERVER_TOKEN' => 'ts_whatever'
+
+    assert_equal 413, last_response.status
+  end
+
+  it "rejects an oversized legacy upload before reading it" do
+    oversized = 'x' * (UploadHelper::MAX_UPLOAD_BYTES + 1)
+
+    without_env('TREESTATS_SECRET') do
+      post '/', oversized
+    end
+
+    assert_equal 413, last_response.status
   end
 end
