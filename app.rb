@@ -28,7 +28,7 @@ end
 
 %w[
   lib/clock.rb
-  lib/data_poller.rb
+  lib/data_poller_config.rb
   lib/graph_job.rb
   lib/query_cache_job.rb
   lib/rate_limiter.rb
