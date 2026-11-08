@@ -407,6 +407,68 @@ describe "DataPoller", :unit do
     DataPoller.define_singleton_method(:server_list, original) if original
   end
 
+  it "validates explicit target URLs at config load" do
+    server = DataPoller.server_list.first[:name]
+    [
+      "",
+      "   ",
+      "ftp://example.test/",
+      "not a url",
+      "example.test/path",
+      "http://user:pass@example.test/",
+      "http://example.test/#frag",
+      "http://example.test:0/",
+      "http://example.test:70000/"
+    ].each do |url|
+      assert_raises(DataPoller::Error, url) do
+        DataPoller.targets_from({server => {"enabled" => true, "url" => url}})
+      end
+    end
+  end
+
+  it "accepts and strips valid explicit target URLs" do
+    server = DataPoller.server_list.first[:name]
+    ["https://example.test/data.json", " http://example.test:9000/path?q=1 "].each do |url|
+      target = DataPoller.targets_from({server => {"enabled" => true, "url" => url}})[server]
+      assert_equal url.strip, target.url
+      assert_nil target.fallback_url
+    end
+  end
+
+  it "validates disabled target URL types but does not require a valid URL" do
+    server = DataPoller.server_list.first[:name]
+    assert_raises(DataPoller::Error) do
+      DataPoller.targets_from({server => {"enabled" => false, "url" => 123}})
+    end
+    assert_empty DataPoller.targets_from({server => {"enabled" => false, "url" => ""}})
+  end
+
+  it "builds root URLs safely, including IPv6, and skips invalid server entries" do
+    original = DataPoller.method(:server_list)
+    DataPoller.define_singleton_method(:server_list) do
+      [
+        {name: "Normal", host: "play.example.net", port: "9000"},
+        {name: "IPv6", host: "2001:db8::1", port: "9000"},
+        {name: "PathHost", host: "play.example.net/path", port: "9000"},
+        {name: "BadPort", host: "play.example.net", port: "abc"},
+        {name: "ZeroPort", host: "play.example.net", port: "0"},
+        {name: "HighPort", host: "play.example.net", port: "70000"},
+        {name: "EmptyHost", host: "", port: "9000"}
+      ]
+    end
+
+    targets = DataPoller.discovered_targets
+    assert_equal "http://play.example.net:9000/", targets["Normal"].url
+    assert_equal "https://play.example.net:9000/", targets["Normal"].fallback_url
+    assert_equal "http://[2001:db8::1]:9000/", targets["IPv6"].url
+    assert_equal "https://[2001:db8::1]:9000/", targets["IPv6"].fallback_url
+    %w[PathHost BadPort ZeroPort HighPort EmptyHost].each do |name|
+      refute targets.key?(name), name
+    end
+  ensure
+    DataPoller.define_singleton_method(:server_list, original) if original
+  end
+
   it "accepts an old but advancing measurement and suppresses duplicate/conflicting/regressive timestamps" do
     start = Time.now.to_i - 7200
     assert_equal :accepted, poll_for("PollTest", transport_for(standard_document(count: 2, updated_at: start)))
@@ -715,7 +777,19 @@ describe "DataPoller", :unit do
     end
   end
 
-  it "rejects non-HTTP response targets" do
-    assert_raises(DataPoller::Error) { read_response("ftp://example.com/") }
+  it "rejects invalid response URLs" do
+    [
+      "ftp://example.com/",
+      "",
+      "   ",
+      "not a url",
+      "example.test/path",
+      "http://user:pass@example.test/",
+      "http://example.test/#frag",
+      "http://example.test:0/",
+      "http://example.test:70000/"
+    ].each do |url|
+      assert_raises(DataPoller::Error, url) { read_response(url) }
+    end
   end
 end

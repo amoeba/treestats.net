@@ -275,8 +275,7 @@ module DataPoller
     end
 
     def read_response(url: @url, transport: @transport, http_factory: nil, total_timeout: TOTAL_TIMEOUT_SECONDS)
-      uri = URI.parse(url)
-      raise Error, "target URL must use HTTP or HTTPS without credentials or fragment" unless uri.is_a?(URI::HTTP) && uri.host && !uri.userinfo && !uri.fragment
+      uri = DataPoller.parse_http_url(url)
       injected_transport = transport || http_factory
       proxy_env = ENV["http_proxy"] || ENV["HTTP_PROXY"] || ENV["https_proxy"] || ENV["HTTPS_PROXY"]
       raise Error, "target URL may not use a proxy" if !injected_transport && proxy_env

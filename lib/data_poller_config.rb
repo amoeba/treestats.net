@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "uri"
 require "yaml"
 
 # Polling configuration lives apart from the poll jobs so the web process can
@@ -28,12 +29,17 @@ module DataPoller
       name = server[:name].to_s
       host = server[:host].to_s.strip
       port = server[:port].to_s.strip
-      next if name.empty? || host.empty? || port.empty?
+      next if name.empty? || host.empty? || !port.match?(/\A\d+\z/)
+      next unless (1..65_535).cover?(port.to_i)
 
-      result[name] = Target.new(
-        url: "http://#{host}:#{port}/",
-        fallback_url: "https://#{host}:#{port}/"
-      )
+      begin
+        result[name] = Target.new(
+          url: URI::HTTP.build(host: host, port: port, path: "/").to_s,
+          fallback_url: URI::HTTPS.build(host: host, port: port, path: "/").to_s
+        )
+      rescue URI::Error
+        next
+      end
     end
   end
 
@@ -53,18 +59,37 @@ module DataPoller
 
       enabled = settings["enabled"]
       raise Error, "enabled must be true or false for #{server}" unless [true, false].include?(enabled)
+
+      configured_url = settings["url"]
+      raise Error, "invalid target URL for #{server}" unless configured_url.nil? || configured_url.is_a?(String)
       next unless enabled
 
-      url = settings["url"]
-      raise Error, "invalid target URL for #{server}" unless url.nil? || url.is_a?(String)
       raise Error, "unknown polling target #{server.inspect}; add it to data/servers.rb" unless known_servers.include?(server)
 
-      result[server] = if url
+      url = configured_url&.strip
+      if configured_url
+        raise Error, "invalid target URL for #{server}: URL must not be blank" if url.empty?
+        parse_http_url(url)
+      end
+
+      result[server] = if configured_url
         Target.new(url: url)
       else
         roots[server] || raise(Error, "polling target #{server.inspect} has no host or port in data/servers.rb; give a URL")
       end
     end
+  end
+
+  # Parses and validates an absolute HTTP(S) URL with no credentials or fragment.
+  def self.parse_http_url(value)
+    uri = URI.parse(value.to_s.strip)
+    raise Error, "target URL must use HTTP or HTTPS" unless uri.is_a?(URI::HTTP)
+    raise Error, "target URL must include a host" unless uri.host
+    raise Error, "target URL may not include credentials or a fragment" if uri.userinfo || uri.fragment
+    raise Error, "target URL port must be between 1 and 65535" unless (1..65_535).cover?(uri.port)
+    uri
+  rescue URI::InvalidURIError, TypeError
+    raise Error, "target URL must be an absolute HTTP or HTTPS URL"
   end
 
   def self.server_list

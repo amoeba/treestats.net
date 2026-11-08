@@ -2,7 +2,8 @@
 # and declares whether it is enabled. An omitted url polls the standard root
 # endpoint, e.g. http://play.example.net:9000/, over HTTP first with HTTPS as
 # a fallback. A url overrides that default and is used as-is, but the name
-# must still appear in data/servers.rb.
+# must still appear in data/servers.rb. The url must be an absolute http(s)
+# URL without credentials, a fragment, or a port outside 1-65535.
 #
 # How often each target is polled. Friendly units: 15m, 1hr, 6 hours, 1d.
 # Minute intervals must divide an hour evenly; hour intervals must divide a day.

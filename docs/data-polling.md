@@ -31,7 +31,7 @@ https://<server-host>:<game-port>/
 ```
 
 The document served there is described by the [Asheron's Call Server Information](./asherons-call-server.md) standard.
-A `url` overrides the root endpoints and is used as-is, with no fallback. The server name must match an entry in `./data/servers.rb` even when `url` is set. Disabled entries can stay in the file without being polled.
+A `url` overrides the root endpoints and is used as-is, with no fallback. It must be an absolute HTTP or HTTPS URL without credentials, a fragment, or a port outside 1–65535; leading and trailing whitespace is stripped, and a blank `url` is rejected. The server name must match an entry in `./data/servers.rb` even when `url` is set. Disabled entries can stay in the file without being polled.
 
 The `interval` field is global for all targets and defines how often we poll all of them.
 `interval` accepts friendly units such as `15m`, `30 mins`, `1hr`, `6 hours`, or `1d`. Minute intervals must divide an hour evenly (1, 2, 3, 4, 5, 6, 10, 12, 15, 20, or 30), and hour intervals must divide a day evenly (1, 2, 3, 4, 6, 8, 12, or 24). The process fails fast at boot on an unsupported interval or an invalid target configuration. Changing the interval requires restarting the Sidekiq worker so the cron schedule is reloaded.
