@@ -35,4 +35,169 @@ module UploadHelper
 
     result
   end
+
+  def process_character_upload(token_required:)
+    request.body.rewind
+    text = request.body.read
+    return if text.length <= 0
+
+    unless token_required
+      # Legacy plugin uploads authenticate their signed request body.
+      valid = UploadHelper.validate(text)
+      if !valid
+        status 403
+
+        print_and_maybe_sentry("Failed to verify: #{text}")
+        puts "Upload failed with text: #{text}"
+
+        return "Failed to verify character update. Character was not saved."
+      end
+    end
+
+    begin
+      json_text = JSON.parse(text)
+    rescue JSON::ParserError
+      status 400
+      print_and_maybe_sentry("Upload failed due to JSON parse exception")
+
+      return "Upload failed for an unknown reason. Please report this as a bug at https://github.com/amoeba/treestats."
+    end
+
+    if token_required
+      server_token = request.env[ServerAuthTokenHelper::HEADER].to_s
+      if server_token.empty?
+        status 401
+        return "Server upload token is required."
+      end
+
+      token_record = ServerAuthTokenHelper.authenticate(json_text['server'], server_token)
+      unless token_record
+        status 403
+        return "Failed to verify server upload token. Character was not saved."
+      end
+
+      rate_limit = ServerAuthTokenHelper.record_request!(redis, server_token)
+      ServerAuthTokenHelper.apply_rate_limit_headers(headers, rate_limit)
+      if rate_limit[:count] > ServerAuthTokenHelper::RATE_LIMIT_MAX
+        status 429
+        return "Server upload rate limit exceeded. Please try again later."
+      end
+    end
+
+    # Disallow uploads from retail servers
+    if AppHelper.retail_servers.include?(json_text['server'])
+      status 403
+      print_and_maybe_sentry("Upload of characters from retail servers blocked: #{json_text}")
+
+      return "Not allowed."
+    end
+
+    # Remove verification key if it exists
+    if (json_text.has_key?("key"))
+      json_text = json_text.tap { |h| h.delete("key") }
+    end
+
+    # Extract information for later in this method
+    name = json_text['name']
+    server = json_text['server']
+    server_pop = json_text['server_population']
+    allegiance_name = json_text['allegiance_name']
+
+    # PlayerCount
+    # Only save a PlayerCount if this message contains one
+    if(json_text.has_key?("server_population"))
+      json_text = json_text.tap { |h| h.delete('server_population')}
+      # No source field: an absent source is the compact plugin default.
+      PlayerCount.create(server: server, count: server_pop)
+    end
+
+    # Character
+    # Convert "birth" field so it's stored as DateTime with GMT-5
+    if(json_text.has_key?("birth"))
+      json_text["birth"] = CharacterHelper::parse_birth(json_text["birth"])
+    end
+
+    # Log extra debug info if birth ends up being nil
+    if json_text["birth"].nil? && ENV['RACK_ENV'] != 'test'
+      print_and_maybe_sentry("Failed to parse birth field with the following JSON: #{json_text}")
+    end
+
+    # Maybe temporary maybe not: Reject updates from that have
+    # patron.name set to ??
+    #
+    # e.g.
+    #   "patron" => {"name" => "??", "race" => 11, "rank" => 4, "gender" => 1}
+    #
+    # I've only seen this on Whiting so far with one account / machine
+    begin
+      if json_text["patron"]["name"] == "??"
+        status 400
+
+        print_and_maybe_sentry("Character updated failed due to \"??\" patron bug: #{json_text}")
+
+        return "Malformed patron name. Ignoring your update."
+      end
+    rescue
+      # And just continue
+    end
+
+    character = Character.unscoped.find_or_create_by(name: name, server: server)
+
+    # Assign attributes then touch
+    # We do this instead of just using update_attributes
+    # because I'd like to update timestamps even when the character
+    # update contains no new information.
+    character.assign_attributes(json_text)
+
+    # Removed archived flag
+    character[:archived] = false if character[:archived]
+
+    # Remove location if it wasnt sent (i.e., the user disabled it after initially sending it)
+    if !json_text["location"]
+      character.location = nil
+    end
+
+    # Remove monarch, patron, vassal if necessary
+    if !json_text["monarch"]
+      character.monarch = nil
+    end
+
+    if !json_text["patron"]
+      character.patron = nil
+    end
+
+    if !json_text["vassals"]
+      character.vassals = nil
+    end
+
+    # IP Address
+    character.ip = request.ip
+
+    character.save
+    character.touch
+
+    # Allegiance
+    Allegiance.find_or_create_by(server: server, name: allegiance_name)
+
+    # Statistics
+    redis.incr "uploads:daily:#{Time.now.utc.strftime("%Y%m%d")}"
+    redis.incr "uploads:monthly:#{Time.now.utc.strftime("%Y%m")}"
+
+    if(character.valid?)
+      "Character was updated successfully."
+    else
+      status 400
+
+      if ENV['RACK_ENV'] != 'test'
+        puts 'Character updated failed...'
+        puts json_text
+      end
+
+      if name == ""
+        "Level 1 characters can't be uploaded with PhatAC currently. Sorry!"
+      else
+        "Character update failed."
+      end
+    end
+  end
 end

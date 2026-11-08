@@ -1,0 +1,81 @@
+require_relative '../story_helper.rb'
+
+describe "UploadTokenStory" do
+  before do
+    ServerAuthToken.all.destroy
+    Character.unscoped.where(server: 'Token Server', name: 'Token User').destroy
+    redis.keys('uploads:server-token:*').each { |key| redis.del(key) }
+  end
+
+  def create_server_token(server)
+    token = ServerAuthTokenHelper.generate
+    ServerAuthToken.create!(server: server, token_digest: ServerAuthTokenHelper.digest(token))
+    token
+  end
+
+  def upload_body(server)
+    JSON.generate(
+      name: 'Token User',
+      server: server,
+      patron: {'name' => 'Patron', 'race' => 1, 'gender' => 1, 'rank' => 1}
+    )
+  end
+
+  it "accepts a matching server token without calling the legacy validator" do
+    token = create_server_token('Token Server')
+
+    with_env('TREESTATS_SECRET' => 'x == "legacy"') do
+      post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+    end
+
+    assert_equal 200, last_response.status
+    assert_equal '1000', last_response.headers['RateLimit-Limit']
+    assert_equal '999', last_response.headers['RateLimit-Remaining']
+    assert last_response.headers['RateLimit-Reset'].to_i.between?(1, 3600)
+  end
+
+  it "rejects a token issued for another server" do
+    token = create_server_token('Token Server')
+
+    post '/characters', upload_body('Other Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 403, last_response.status
+  end
+
+  it "returns 429 after 1,000 token-authenticated uploads in an hour" do
+    token = create_server_token('Token Server')
+    redis.set(
+      "uploads:server-token:#{ServerAuthTokenHelper.digest(token)}",
+      ServerAuthTokenHelper::RATE_LIMIT_MAX,
+      ex: ServerAuthTokenHelper::RATE_LIMIT_WINDOW
+    )
+
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 429, last_response.status
+    assert_equal '0', last_response.headers['RateLimit-Remaining']
+    assert last_response.headers['RateLimit-Reset'].to_i.between?(1, 3600)
+  end
+
+  it "uses the legacy validator when no server token header is sent" do
+    with_env('TREESTATS_SECRET' => 'x == "legacy"') do
+      post '/', 'other'
+    end
+
+    assert_equal 403, last_response.status
+  end
+
+  it "accepts a legacy plugin upload at the root endpoint" do
+    without_env('TREESTATS_SECRET') do
+      post '/', upload_body('Token Server')
+    end
+
+    assert_equal 200, last_response.status
+  end
+
+  it "requires a server token on the direct upload endpoint" do
+    post '/characters', upload_body('Token Server')
+
+    assert_equal 401, last_response.status
+  end
+end

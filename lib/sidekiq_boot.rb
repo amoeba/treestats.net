@@ -27,6 +27,7 @@ Mongo::Logger.logger.level = ::Logger::INFO
 
 # Standalone worker model dependencies (app.rb is intentionally not loaded).
 require_relative "../models/player_count"
+require_relative "../models/data_poll_state"
 
 # Job files
 require_relative "probe_job"

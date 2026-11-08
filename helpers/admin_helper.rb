@@ -58,4 +58,32 @@ module AdminHelper
       redis.eval(RATE_LIMIT_LUA, keys: [key], argv: [LOGIN_RATE_LIMIT_WINDOW])
     end
   end
+
+  def render_admin_dashboard
+    states = DataPollState.in(server: DataPoller.targets.keys).to_a.each_with_object({}) do |state, result|
+      result[state.server] = state
+    end
+    @poll_interval = DataPoller.config.fetch("interval", DataPoller::DEFAULT_INTERVAL)
+    @poll_targets = DataPoller.targets.map do |server, url|
+      {server: server, url: url, state: states[server]}
+    end
+    @tokens = ServerAuthToken.asc(:server).to_a
+    @registered_servers = ServerHelper.servers.sort
+    haml :admin, layout: false
+  end
+
+  def generate_upload_token
+    server = params['server'].to_s.strip
+    halt 400, 'Server name is required.' if server.empty?
+    halt 422, 'Server must be registered.' unless ServerHelper.servers.include?(server)
+
+    token = ServerAuthTokenHelper.generate
+    record = ServerAuthToken.where(server: server).first || ServerAuthToken.new(server: server)
+    record.token_digest = ServerAuthTokenHelper.digest(token)
+    record.save!
+
+    @issued_server = server
+    @issued_token = token
+    render_admin_dashboard
+  end
 end

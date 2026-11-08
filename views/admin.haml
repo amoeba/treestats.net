@@ -1,0 +1,79 @@
+!!!
+%html{:lang => "en"}
+  %head
+    %meta{:charset => "utf-8"}
+    %meta{:name => "robots", :content => "noindex, nofollow, noarchive, nosnippet"}
+    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
+    %title Administration
+    %link{:rel => "stylesheet", :href => stylesheet_path("admin")}
+  %body.admin-panel-page
+    %main.admin-panel
+      %h1 Administration
+
+      %section
+        %h2 Poll targets
+        %p= "Configured interval: #{@poll_interval}"
+        - if @poll_targets.empty?
+          %p No poll targets are configured.
+        - else
+          %table
+            %thead
+              %tr
+                %th Server
+                %th Endpoint
+                %th Last check
+                %th Outcome
+                %th Consecutive failures
+                %th Error
+            %tbody
+              - @poll_targets.each do |target|
+                %tr
+                  %td= target[:server]
+                  %td
+                    %a{:href => target[:url]}= target[:url]
+                  %td= target[:state]&.last_checked_at || "Never"
+                  %td= target[:state]&.last_outcome || "Never"
+                  %td= target[:state]&.consecutive_failures || 0
+                  %td= target[:state]&.error_summary || "-"
+
+      %section
+        %h2 Server upload tokens
+        %p Generate one token per server. Reissuing or revoking a token immediately invalidates the previous token.
+
+        - if @issued_token
+          %section
+            %h3 Token for #{@issued_server}
+            %p Copy this value now. It cannot be shown again.
+            %pre= @issued_token
+            %p Send it with each direct upload in the <code>X-TreeStats-Server-Token</code> HTTP header.
+
+        %form{:method => "post", :action => "/admin/upload-tokens"}
+          %input{:type => "hidden", :name => "authenticity_token", :value => csrf_token}
+          %label{:for => "server-token-server"} Server name
+          %select{:name => "server", :id => "server-token-server", :required => true}
+            - @registered_servers.each do |server|
+              %option{:value => server}= server
+          %button{:type => "submit"} Generate token
+
+        - unless @tokens.empty?
+          %table
+            %thead
+              %tr
+                %th Server
+                %th Last issued
+                %th
+            %tbody
+              - @tokens.each do |token|
+                %tr
+                  %td= token.server
+                  %td
+                    %time.admin-utc-time{:datetime => token.updated_at.utc.iso8601}
+                      = token.updated_at.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
+                  %td
+                    %form{:method => "post", :action => "/admin/upload-tokens/#{token.id}/revoke"}
+                      %input{:type => "hidden", :name => "authenticity_token", :value => csrf_token}
+                      %button{:type => "submit"} Revoke
+    :javascript
+      document.querySelectorAll(".admin-utc-time").forEach((time) => {
+        time.title = new Date(time.dateTime).toLocaleString();
+      });

@@ -71,11 +71,42 @@ module Sinatra
             haml :_admin_widget, layout: false, locals: { character: character.reload }
           end
 
-          # Catch anything else under /admin before the /:server catch-all
           app.get '/admin/?' do
-            halt 404
+            require_admin!
+
+            render_admin_dashboard
           end
 
+          app.post '/admin/upload-tokens/?' do
+            require_admin!
+            verify_csrf!
+
+            generate_upload_token
+          end
+
+          app.post '/admin/upload-tokens/:id/revoke/?' do |id|
+            require_admin!
+            verify_csrf!
+
+            token = ServerAuthToken.where(id: id).first
+            halt 404 unless token
+            token.destroy
+            redirect '/admin'
+          end
+
+          app.get '/admin/server-tokens/?' do
+            require_admin!
+            redirect '/admin'
+          end
+
+          app.post '/admin/server-tokens/?' do
+            require_admin!
+            verify_csrf!
+
+            generate_upload_token
+          end
+
+          # Catch anything else under /admin before the /:server catch-all
           app.get '/admin/*' do
             halt 404
           end

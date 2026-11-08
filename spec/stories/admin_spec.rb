@@ -3,6 +3,8 @@ require_relative '../story_helper.rb'
 describe "AdminStory" do
   before do
     AdminUser.all.destroy
+    ServerAuthToken.all.destroy
+    DataPollState.collection.delete_many
     Character.all.destroy
     Character.unscoped.where(server: 'test', name: 'archived_char').destroy
     redis.del("admin:login:attempts:127.0.0.1")
@@ -162,6 +164,82 @@ describe "AdminStory" do
       assert_equal 200, last_response.status
       character = Character.unscoped.find_by(server: 'test', name: 'admin_char')
       assert_equal false, character.archived
+    end
+  end
+
+  describe "server upload tokens" do
+    it "allows an admin to generate a server token" do
+      server = ServerHelper.servers.first
+      sign_in_admin
+
+      get '/admin'
+      token = extract_csrf
+      post '/admin/upload-tokens', server: server, authenticity_token: token
+
+      assert_equal 200, last_response.status
+      issued_token = last_response.body[/<pre>([^<]+)<\/pre>/, 1]&.strip
+      refute_nil issued_token
+      assert_match(/\Ats_/, issued_token)
+      record = ServerAuthToken.find_by(server: server)
+      refute_equal issued_token, record.token_digest
+      assert_equal ServerAuthTokenHelper.digest(issued_token), record.token_digest
+      assert_includes last_response.body, record.updated_at.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
+      assert_includes last_response.body, 'admin-utc-time'
+    end
+
+    it "requires an authenticated admin and CSRF token" do
+      post '/admin/upload-tokens', server: 'Test Server'
+      assert_equal 404, last_response.status
+
+      sign_in_admin
+      post '/admin/upload-tokens', server: 'Test Server', authenticity_token: 'wrong'
+      assert_equal 403, last_response.status
+    end
+
+    it "rejects an unregistered server" do
+      sign_in_admin
+
+      get '/admin'
+      post '/admin/upload-tokens', server: 'Unregistered Server', authenticity_token: extract_csrf
+
+      assert_equal 422, last_response.status
+      assert_nil ServerAuthToken.where(server: 'Unregistered Server').first
+    end
+
+    it "revokes a token" do
+      token = ServerAuthToken.create!(
+        server: ServerHelper.servers.first,
+        token_digest: ServerAuthTokenHelper.digest('test-token')
+      )
+      sign_in_admin
+
+      get '/admin'
+      post "/admin/upload-tokens/#{token.id}/revoke", authenticity_token: extract_csrf
+
+      assert_equal 302, last_response.status
+      assert_nil ServerAuthToken.where(id: token.id).first
+    end
+  end
+
+  describe "GET /admin" do
+    it "shows configured poll target status" do
+      DataPollState.create!(
+        server: 'Hollowtide PK',
+        last_checked_at: Time.utc(2026, 11, 7, 23, 0),
+        last_outcome: 'failure',
+        consecutive_failures: 2,
+        error_summary: 'HTTP status 500'
+      )
+      sign_in_admin
+
+      get '/admin'
+
+      assert_equal 200, last_response.status
+      assert_includes last_response.body, '<body class="admin-panel-page">'
+      refute_includes last_response.body, 'TreeStats Network'
+      assert_includes last_response.body, 'Hollowtide PK'
+      assert_includes last_response.body, 'failure'
+      assert_includes last_response.body, 'HTTP status 500'
     end
   end
 

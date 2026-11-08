@@ -199,3 +199,81 @@ main.admin-login button {
   height: 1px;
   overflow: hidden;
 }
+
+/* Admin dashboard */
+body.admin-panel-page {
+  min-width: 0;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #000022;
+  color: #fff;
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+}
+
+.admin-panel {
+  box-sizing: border-box;
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.admin-panel section {
+  margin-top: 2rem;
+}
+
+.admin-panel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-panel th,
+.admin-panel td {
+  padding: 0.5rem;
+  border: 1px solid #444;
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-panel th {
+  color: #f3e6c5;
+  background-color: rgba(175, 122, 48, 0.2);
+}
+
+.admin-panel a {
+  color: #d8a85c;
+}
+
+.admin-panel form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-panel select,
+.admin-panel button {
+  padding: 0.4rem 0.6rem;
+  border-radius: 3px;
+  font: inherit;
+}
+
+.admin-panel select {
+  border: 1px solid #444;
+  background-color: #000;
+  color: #fff;
+}
+
+.admin-panel button {
+  border: 1px solid #af7a30;
+  background-color: #af7a30;
+  color: #fff;
+  cursor: pointer;
+}
+
+.admin-panel pre {
+  overflow-x: auto;
+  padding: 0.75rem;
+  background-color: #000;
+  border: 1px solid #444;
+}

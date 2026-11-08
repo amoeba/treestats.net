@@ -274,18 +274,6 @@ module DataPoller
   end
 end
 
-class DataPollState
-  include Mongoid::Document
-
-  store_in collection: "data_poll_states"
-  field :server, type: String
-  field :last_checked_at, type: Time
-  field :last_outcome, type: String
-  field :error_summary, type: String
-  field :last_accepted_updated_at, type: Integer
-  field :consecutive_failures, type: Integer, default: 0
-end
-
 class PollDataJob
   include Sidekiq::Worker
 
