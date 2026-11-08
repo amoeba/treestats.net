@@ -4,6 +4,48 @@ This is the TreeStats proposal for a small, standard document that any Asheron's
 
 It is a follow-on to [treestats.net#278](https://github.com/amoeba/treestats.net/issues/278) and is related to [ACEmulator/ACE#718](https://github.com/ACEmulator/ACE/issues/718).
 
+## Quick start for server operators
+
+TreeStats only polls servers that have opted in, but you can make the document available first.
+
+1. **Serve the JSON at the root of your public game endpoint.**
+
+   ```text
+   GET http://<server-host>:<game-port>/
+   ```
+
+   For example, `http://play.example.net:9000/` should return the JSON document, not an HTML page. Use the same host and port you publish in the [community server list](https://github.com/acresources/serverslist).
+
+2. **If your game server cannot serve HTTP on that host and port, use a separate web host.**
+
+   Host the same JSON at any public HTTP or HTTPS URL, for example:
+
+   ```text
+   https://status.example.net/example-world.json
+   ```
+
+   Give TreeStats that exact URL. Any static web host works; the document does not need to be served by the game server. The URL must be publicly reachable, must not require authentication, and must not redirect.
+
+3. **Verify it from outside your network.**
+
+   ```sh
+   curl -i http://play.example.net:9000/
+   ```
+
+   You want an HTTP 200 response with a JSON body. HTTP and HTTPS are both accepted; HTTPS is preferred when available.
+
+4. **Keep the measurement time current.**
+
+   Update `population.updated_at` every time you measure the population, even if the count did not change. Do not serve an old cached snapshot with an old timestamp; TreeStats rejects future timestamps and will not accept a re-served old snapshot as a new observation.
+
+5. **Ask TreeStats to enable polling.**
+
+   Your server must appear in `data/servers.rb`, and TreeStats must enable it in `config/polling_targets.yml`. If you are not the TreeStats operator, open an [issue](https://github.com/amoeba/treestats.net/issues) or pull request with your server name and document URL.
+
+6. **ACE servers.**
+
+   The intended ACE reference implementation is [`ACEmulator/ACE.Mods.TreeStats`](https://github.com/ACEmulator/ACE.Mods.TreeStats). It serves this document from the game endpoint; see that project for current installation and configuration instructions.
+
 ## Location
 
 Serve the document at the root of the server's public game endpoint:
@@ -69,4 +111,4 @@ A measurement timestamp (the population's `updated_at`, or the document's `updat
 
 ## Reference implementation
 
-The ACE mod `ACE.Mods.Treestats` serves a document of this shape from the game endpoint. TreeStats polls opted-in servers at the root `/`. Registered servers that serve the document elsewhere can be listed with an explicit URL in `config/polling_targets.yml`.
+The ACE mod [`ACE.Mods.TreeStats`](https://github.com/ACEmulator/ACE.Mods.TreeStats) is the intended reference implementation and serves a document of this shape from the game endpoint. TreeStats polls opted-in servers at the root `/`. Registered servers that serve the document elsewhere can be listed with an explicit URL in `config/polling_targets.yml`.

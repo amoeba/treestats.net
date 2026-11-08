@@ -9,6 +9,8 @@ At this time, polling records population count observations and stores the last 
 
 ## Polling Targets
 
+If you run an AC server and want to be polled, start with the [server operator quick start](./asherons-call-server.md#quick-start-for-server-operators).
+
 Polling is opt-in. Each server is listed in `./config/polling_targets.yml` by its name from `./data/servers.rb` and declares whether it is enabled:
 
 ```yaml
