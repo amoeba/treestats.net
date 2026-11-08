@@ -37,7 +37,7 @@ The `interval` field is global for all targets and defines how often we poll all
 
 ## Target Response
 
-Targets may respond with the standard nested document:
+Targets respond with the standard document:
 
 ```json
 {
@@ -49,18 +49,10 @@ Targets may respond with the standard nested document:
 }
 ```
 
-When `population` is present, the top-level `updated_at` is required as well.
-
-Explicit overrides may also use the legacy flat shape:
-
-```json
-{"count": 42, "updated_at": 1760000000}
-```
-
-In both cases:
+When `population` is present, the top-level `updated_at` is required as well. A document without `population` is valid: TreeStats records no observation and shows the poll as `empty` in the admin dashboard.
 
 - `count` is a nonnegative integer counting connected, in-world player characters, including bots, multiboxed characters, staff, and test characters. Do not count unique people/accounts or exclude operator-defined categories. A measured empty world is `0`; inability to measure must be an error, not a fabricated zero.
-- `updated_at` is when the population was measured, not when the document was served. In the standard document it is an RFC3339 string with an explicit offset; the legacy shape uses an integer Unix timestamp in UTC seconds. Advance it for a new measurement even if the count did not change. Re-serving an old snapshot must not renew it.
+- `updated_at` is when the population was measured, not when the document was served, and is an RFC3339 string with an explicit offset. Advance it for a new measurement even if the count did not change. Re-serving an old snapshot must not renew it.
 - Other JSON fields, including `schema`, `version`, `name`, and `emulator`, are ignored for now. TreeStats binds the server identity from reviewed configuration; do not rely on identity or provenance fields in the document.
 - Keep the game/exporter clock synchronized. A measurement timestamp must not exceed response receipt time. Old but previously unaccepted measurements can be accepted; there is no age cutoff.
 - HTTP and HTTPS are both accepted. Redirects are not followed.

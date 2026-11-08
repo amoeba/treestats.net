@@ -41,9 +41,14 @@ describe "DataPoller", :unit do
     end
   end
 
+  def standard_document(count:, updated_at:, **extra)
+    timestamp = Time.at(updated_at.to_i).utc.iso8601
+    {updated_at: timestamp, population: {count: count, updated_at: timestamp}}.merge(extra)
+  end
+
   it "accepts zero and ignores extra fields while storing measurement time and provenance" do
     timestamp = Time.now.to_i - 60
-    result = poll_for("PollTest", transport_for({count: 0, updated_at: timestamp, server: "wrong", source: "plugin"}))
+    result = poll_for("PollTest", transport_for(standard_document(count: 0, updated_at: timestamp, server: "wrong", source: "plugin")))
     assert_equal :accepted, result
     observation = PlayerCount.where(s: "PollTest").first
     assert_equal 0, observation.c
@@ -148,6 +153,42 @@ describe "DataPoller", :unit do
     assert_equal 0, PlayerCount.where(s: "InvalidStandard").count
   end
 
+  it "records a valid document without population as empty" do
+    updated_at = (Time.now.utc - 60).strftime("%Y-%m-%dT%H:%M:%SZ")
+    document = {
+      schema: "https://treestats.net/schemas/asherons-call-server/v1/schema.json",
+      version: 1,
+      name: "Example World",
+      updated_at: updated_at
+    }
+
+    assert_equal :empty, poll_for("EmptyPopulation", transport_for(document))
+    assert_equal 0, PlayerCount.where(s: "EmptyPopulation").count
+    state = DataPollState.collection.find(server: "EmptyPopulation").first
+    assert_equal "empty", state["last_outcome"]
+    assert_equal 0, state["consecutive_failures"]
+    assert_nil state["lease_id"]
+    assert_nil state["last_accepted_updated_at"]
+  end
+
+  it "treats an empty document as empty and resets consecutive failures" do
+    assert_equal :failure, poll_for("EmptyReset", transport_for(standard_document(count: -1, updated_at: Time.now.to_i - 20)))
+    assert_equal 1, DataPollState.collection.find(server: "EmptyReset").first["consecutive_failures"]
+
+    assert_equal :empty, poll_for("EmptyReset", transport_for({}))
+    state = DataPollState.collection.find(server: "EmptyReset").first
+    assert_equal "empty", state["last_outcome"]
+    assert_equal 0, state["consecutive_failures"]
+    assert_nil state["error_summary"]
+  end
+
+  it "rejects a malformed optional timestamp on an empty document" do
+    ["not a timestamp", 1760000000].each do |value|
+      assert_equal :failure, poll_for("EmptyInvalid", transport_for(updated_at: value))
+    end
+    assert_equal 0, PlayerCount.where(s: "EmptyInvalid").count
+  end
+
   it "polls only enabled servers and resolves an omitted URL to the standard root" do
     first = DataPoller.server_list.first
     targets = DataPoller.targets_from({
@@ -159,8 +200,8 @@ describe "DataPoller", :unit do
     assert_equal "https://example.test/data.json", targets["Other"]
     assert_equal 2, targets.size
 
-    assert_equal ["Hollowtide PK"], DataPoller.targets.keys
-    assert_equal "https://hollowtide.org/population.json", DataPoller.targets["Hollowtide PK"]
+    # The checked-in config must parse; enabled targets may change over time.
+    assert_kind_of Hash, DataPoller.targets
   end
 
   it "requires enabled servers to have a valid config and known name" do
@@ -171,19 +212,25 @@ describe "DataPoller", :unit do
 
   it "accepts an old but advancing measurement and suppresses duplicate/conflicting/regressive timestamps" do
     start = Time.now.to_i - 7200
-    assert_equal :accepted, poll_for("PollTest", transport_for(count: 2, updated_at: start))
-    assert_equal :accepted, poll_for("PollTest", transport_for(count: 2, updated_at: start + 1))
-    assert_equal :duplicate, poll_for("PollTest", transport_for(count: 2, updated_at: start + 1))
-    assert_equal :failure, poll_for("PollTest", transport_for(count: 3, updated_at: start + 1))
-    assert_equal :failure, poll_for("PollTest", transport_for(count: 4, updated_at: start))
+    assert_equal :accepted, poll_for("PollTest", transport_for(standard_document(count: 2, updated_at: start)))
+    assert_equal :accepted, poll_for("PollTest", transport_for(standard_document(count: 2, updated_at: start + 1)))
+    assert_equal :duplicate, poll_for("PollTest", transport_for(standard_document(count: 2, updated_at: start + 1)))
+    assert_equal :failure, poll_for("PollTest", transport_for(standard_document(count: 3, updated_at: start + 1)))
+    assert_equal :failure, poll_for("PollTest", transport_for(standard_document(count: 4, updated_at: start)))
     assert_equal 2, PlayerCount.where(s: "PollTest").count
   end
 
   it "rejects future/invalid data without inserting observations or moving cursor" do
     now = Time.now.to_i
-    assert_equal :failure, poll_for("PollTest", transport_for(count: 1, updated_at: now + 60))
+    valid_time = Time.at(now - 60).utc.iso8601
+    assert_equal :failure, poll_for("PollTest", transport_for(standard_document(count: 1, updated_at: now + 60)))
     assert_nil DataPollState.collection.find(server: "PollTest").first["last_accepted_updated_at"]
-    [{count: -1, updated_at: now}, {count: 1.5, updated_at: now}, {count: 1, updated_at: now.to_s}, {updated_at: now}].each do |data|
+    [
+      standard_document(count: -1, updated_at: now),
+      standard_document(count: 1.5, updated_at: now),
+      {updated_at: valid_time, population: {count: 1, updated_at: now}},
+      {updated_at: valid_time, population: {updated_at: valid_time}}
+    ].each do |data|
       assert_equal :failure, poll_for("PollTest", transport_for(data))
     end
     assert_equal 0, PlayerCount.where(s: "PollTest").count
@@ -194,7 +241,7 @@ describe "DataPoller", :unit do
     timestamp = request_started + 1
     result = poll_for("PollTest", lambda { |_uri|
       sleep 1.1
-      Struct.new(:code, :body).new("200", JSON.generate(count: 6, updated_at: timestamp))
+      Struct.new(:code, :body).new("200", JSON.generate(standard_document(count: 6, updated_at: timestamp)))
     })
     assert_equal :accepted, result
     assert_equal 6, PlayerCount.where(s: "PollTest").first.c
@@ -211,7 +258,7 @@ describe "DataPoller", :unit do
   it "allows simultaneous plugin observations and keeps internal fields out of public serialization" do
     time = Time.now.utc - 20
     PlayerCount.create!(server: "PollTest", count: 8)
-    assert_equal :accepted, poll_for("PollTest", transport_for(count: 9, updated_at: time.to_i))
+    assert_equal :accepted, poll_for("PollTest", transport_for(standard_document(count: 9, updated_at: time.to_i)))
     assert_equal 2, PlayerCount.where(s: "PollTest").count
     serialized = PlayerCount.where(s: "PollTest", source: PlayerCount::SERVER_SOURCE).first.serializable_hash({})
     refute_includes serialized.keys, "source"
@@ -229,12 +276,12 @@ describe "DataPoller", :unit do
       original.bind_call(self, updated_at, lease)
     end
 
-    response = transport_for(count: 5, updated_at: timestamp)
+    response = transport_for(standard_document(count: 5, updated_at: timestamp))
     assert_equal :failure, poll_for("CrashCase", response)
     assert_equal 1, PlayerCount.where(s: "CrashCase").count
     assert_nil DataPollState.collection.find(server: "CrashCase").first["last_accepted_updated_at"]
     # A later value between the old cursor (nil) and the durable insert must be rejected.
-    assert_equal :failure, poll_for("CrashCase", transport_for(count: 4, updated_at: timestamp - 1))
+    assert_equal :failure, poll_for("CrashCase", transport_for(standard_document(count: 4, updated_at: timestamp - 1)))
     assert_equal timestamp, DataPollState.collection.find(server: "CrashCase").first["last_accepted_updated_at"]
     assert_equal 1, PlayerCount.where(s: "CrashCase").count
     assert_equal :duplicate, poll_for("CrashCase", response)
@@ -248,7 +295,7 @@ describe "DataPoller", :unit do
   it "records one poll per slot, allows queue delay within slot, and rejects stale slots" do
     slot = DataPoller.current_slot
     timestamp = Time.now.to_i - 10
-    transport = transport_for(count: 3, updated_at: timestamp)
+    transport = transport_for(standard_document(count: 3, updated_at: timestamp))
     assert_equal :accepted, DataPoller::Poll.new(server: "SlotTest", url: "https://population.example.test/x", slot: slot, transport: transport).call
     assert_equal :already_polled, DataPoller::Poll.new(server: "SlotTest", url: "https://population.example.test/x", slot: slot, transport: transport).call
     assert_equal :obsolete, DataPoller::Poll.new(server: "SlotTest", url: "https://population.example.test/x", slot: slot - 1, transport: transport).call
@@ -276,14 +323,14 @@ describe "DataPoller", :unit do
 
   it "resets consecutive failures after a valid duplicate or accepted measurement" do
     timestamp = Time.now.to_i - 20
-    assert_equal :failure, poll_for("FailureCount", transport_for(count: -1, updated_at: timestamp))
+    assert_equal :failure, poll_for("FailureCount", transport_for(standard_document(count: -1, updated_at: timestamp)))
     assert_equal 1, DataPollState.collection.find(server: "FailureCount").first["consecutive_failures"]
-    assert_equal :accepted, poll_for("FailureCount", transport_for(count: 2, updated_at: timestamp))
+    assert_equal :accepted, poll_for("FailureCount", transport_for(standard_document(count: 2, updated_at: timestamp)))
     assert_equal 0, DataPollState.collection.find(server: "FailureCount").first["consecutive_failures"]
-    assert_equal :failure, poll_for("FailureCount", transport_for(count: 2, updated_at: timestamp - 1))
+    assert_equal :failure, poll_for("FailureCount", transport_for(standard_document(count: 2, updated_at: timestamp - 1)))
     assert_equal 1, DataPollState.collection.find(server: "FailureCount").first["consecutive_failures"]
     # Same measurement at a later slot is a valid duplicate.
-    assert_equal :duplicate, poll_for("FailureCount", transport_for(count: 2, updated_at: timestamp))
+    assert_equal :duplicate, poll_for("FailureCount", transport_for(standard_document(count: 2, updated_at: timestamp)))
     assert_equal 0, DataPollState.collection.find(server: "FailureCount").first["consecutive_failures"]
   end
 
@@ -294,7 +341,7 @@ describe "DataPoller", :unit do
     transport = lambda do |_uri|
       started << true
       continue.pop
-      Struct.new(:code, :body).new("200", JSON.generate(count: 2, updated_at: timestamp))
+      Struct.new(:code, :body).new("200", JSON.generate(standard_document(count: 2, updated_at: timestamp)))
     end
     thread = Thread.new { poll_for("LeaseTest", transport) }
     Timeout.timeout(5) { started.pop }

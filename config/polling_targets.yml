@@ -17,6 +17,8 @@ interval: 15m
 #   "Not Ready Yet":
 #     enabled: false
 targets:
+  # Hollowtide still serves the old flat {"count", "updated_at"} document.
+  # Re-enable once its endpoint serves the standard document.
   "Hollowtide PK":
-    enabled: true
+    enabled: false
     url: https://hollowtide.org/population.json

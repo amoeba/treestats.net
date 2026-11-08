@@ -29,26 +29,26 @@ module DataPoller
   RFC3339_LEAP_SECOND = /[Tt\s]\d{2}:\d{2}:60/
   class JobDeadlineExceeded < Timeout::Error; end
 
-  # Accepts both the standard nested document and the legacy flat shape used by
-  # explicit config overrides. Returns [count, epoch_seconds].
+  # Returns [count, epoch_seconds] for a standard population document, or nil
+  # when the document is valid but does not publish a population.
   def self.parse_population(payload)
     raise Error, "response must be an object" unless payload.is_a?(Hash)
 
-    if payload.key?("population")
-      population = payload["population"]
-      raise Error, "population must be an object" unless population.is_a?(Hash)
-
-      # A population document carries two timestamps: when the document was
-      # generated and when the population was measured. Require both.
-      parse_rfc3339(payload["updated_at"], "updated_at")
-      count = population["count"]
-      timestamp = parse_rfc3339(population["updated_at"], "population.updated_at")
-    else
-      count = payload["count"]
-      timestamp = payload["updated_at"]
-      raise Error, "updated_at must be an integer Unix timestamp" unless timestamp.is_a?(Integer) && timestamp >= 0
+    unless payload.key?("population")
+      # A document without population is valid; validate its optional timestamp
+      # so a malformed document is still rejected.
+      parse_rfc3339(payload["updated_at"], "updated_at") if payload.key?("updated_at")
+      return nil
     end
 
+    population = payload["population"]
+    raise Error, "population must be an object" unless population.is_a?(Hash)
+
+    # A population document carries two timestamps: when the document was
+    # generated and when the population was measured. Require both.
+    parse_rfc3339(payload["updated_at"], "updated_at")
+    count = population["count"]
+    timestamp = parse_rfc3339(population["updated_at"], "population.updated_at")
     raise Error, "count must be a nonnegative integer" unless count.is_a?(Integer) && count >= 0
     [count, timestamp]
   end
@@ -162,7 +162,9 @@ module DataPoller
 
       begin
         body, received_at = read_response
-        count, timestamp = DataPoller.parse_population(JSON.parse(body))
+        parsed = DataPoller.parse_population(JSON.parse(body))
+        return record_empty(lease_id) unless parsed
+        count, timestamp = parsed
         raise Error, "updated_at is in the future" if timestamp > received_at.floor
 
         lease = DataPollState.collection.find(server: @server, lease_id: lease_id).first
@@ -254,6 +256,19 @@ module DataPoller
     end
 
     private
+
+    def record_empty(lease_id)
+      lease = DataPollState.collection.find(server: @server, lease_id: lease_id).first
+      return :overlap unless lease && lease["lease_until"] > Time.now.utc + 2
+
+      result = DataPollState.collection.update_one(
+        {server: @server, lease_id: lease_id},
+        {"$set" => {last_checked_at: Time.now.utc, last_outcome: "empty", error_summary: nil, consecutive_failures: 0}, "$unset" => {lease_until: "", lease_id: ""}}
+      )
+      return :empty if result.matched_count == 1
+
+      :overlap
+    end
 
     def record_failure(lease_id, error)
       update = lambda do

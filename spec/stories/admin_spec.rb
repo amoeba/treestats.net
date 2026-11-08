@@ -310,6 +310,8 @@ describe "AdminStory" do
         consecutive_failures: 2,
         error_summary: 'HTTP status 500'
       )
+      original_targets = DataPoller.method(:targets)
+      DataPoller.define_singleton_method(:targets) { {'Hollowtide PK' => 'https://hollowtide.org/population.json'} }
       sign_in_admin
 
       get '/admin'
@@ -320,6 +322,8 @@ describe "AdminStory" do
       assert_includes last_response.body, 'Hollowtide PK'
       assert_includes last_response.body, 'failure'
       assert_includes last_response.body, 'HTTP status 500'
+    ensure
+      DataPoller.define_singleton_method(:targets, original_targets) if original_targets
     end
   end
 
