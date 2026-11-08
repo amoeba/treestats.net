@@ -24,8 +24,11 @@ describe "ServerStory" do
 
     assert last_response.ok?
     assert_includes last_response.body, "Recent Player Counts"
+    assert_includes last_response.body, '<table class="listing auto">'
     refute_includes last_response.body, "<td>100</td>"
     assert_operator last_response.body.index("<td>150</td>"), :<, last_response.body.index("<td>149</td>")
+    assert_operator last_response.body.index("No characters to display"), :<,
+      last_response.body.index("Recent Player Counts")
   end
 
   private
