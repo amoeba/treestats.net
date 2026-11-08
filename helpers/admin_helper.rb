@@ -78,9 +78,7 @@ module AdminHelper
     halt 422, 'Server must be registered.' unless ServerHelper.servers.include?(server)
 
     token = ServerAuthTokenHelper.generate
-    record = ServerAuthToken.where(server: server).first || ServerAuthToken.new(server: server)
-    record.token_digest = ServerAuthTokenHelper.digest(token)
-    record.save!
+    ServerAuthToken.issue!(server, ServerAuthTokenHelper.digest(token))
 
     @issued_server = server
     @issued_token = token

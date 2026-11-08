@@ -187,6 +187,39 @@ describe "AdminStory" do
       assert_includes last_response.body, 'admin-utc-time'
     end
 
+    it "creates unique indexes for server tokens" do
+      sign_in_admin
+      get '/admin'
+      post '/admin/upload-tokens', server: ServerHelper.servers.first, authenticity_token: extract_csrf
+
+      indexes = ServerAuthToken.collection.indexes.to_a
+      server_index = indexes.find { |index| index['name'] == 'unique_server_auth_token_server' }
+      digest_index = indexes.find { |index| index['name'] == 'unique_server_auth_token_digest' }
+
+      assert server_index && server_index['unique'], 'expected a unique index on server'
+      assert digest_index && digest_index['unique'], 'expected a unique index on token_digest'
+    end
+
+    it "reissues a token in place, invalidating the previous one" do
+      server = ServerHelper.servers.first
+      sign_in_admin
+
+      get '/admin'
+      post '/admin/upload-tokens', server: server, authenticity_token: extract_csrf
+      first_token = last_response.body[/<pre>([^<]+)<\/pre>/, 1]&.strip
+
+      get '/admin'
+      post '/admin/upload-tokens', server: server, authenticity_token: extract_csrf
+      second_token = last_response.body[/<pre>([^<]+)<\/pre>/, 1]&.strip
+
+      refute_nil first_token
+      refute_nil second_token
+      refute_equal first_token, second_token
+      assert_equal 1, ServerAuthToken.where(server: server).count
+      assert_nil ServerAuthTokenHelper.authenticate(server, first_token), 'old token should be invalid'
+      refute_nil ServerAuthTokenHelper.authenticate(server, second_token)
+    end
+
     it "requires an authenticated admin and CSRF token" do
       post '/admin/upload-tokens', server: 'Test Server'
       assert_equal 404, last_response.status
