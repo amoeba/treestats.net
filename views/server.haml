@@ -56,6 +56,21 @@
             %td
               %a{:href => @details[:discord_url]}= @details[:discord_url]
 
+- unless @recent_player_counts.empty?
+  %h3 Recent Player Counts
+  %table.listing
+    %thead
+      %tr
+        %th Time
+        %th Players
+    %tbody
+      - @recent_player_counts.each do |player_count|
+        %tr
+          %td
+            %time{:datetime => player_count.created_at.utc.iso8601}
+              = player_count.created_at.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
+          %td= AppHelper.add_commas(player_count.count)
+
 - if @characters.count == 0
   %span No characters to display for this server which means no one is running TreeStats on the server :(.
 - else

@@ -49,6 +49,7 @@ module Sinatra
             @uploaded = Character.unscoped.where(server: server).count
 
             @online = PlayerCount.where(s: server).desc(:c_at).limit(1).first
+            @recent_player_counts = PlayerCount.where(s: server).desc(:c_at).limit(50).to_a
             @details = ServerHelper.server_details.filter { |s| s[:name] == server }.first
             @softwares = ServerHelper.softwares
 
