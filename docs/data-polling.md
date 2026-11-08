@@ -50,6 +50,8 @@ Targets respond with the standard document:
 }
 ```
 
+TreeStats also accepts the legacy flat `{"count": 42, "updated_at": 1794121021}` shape for explicit targets such as Hollowtide. Its `updated_at` is a Unix epoch. This is a temporary compatibility exception to the standard document.
+
 All fields are optional. `population.updated_at` is the measurement time; when it is absent, the document's `updated_at` is used instead. A document without a count, or without either timestamp, is valid: TreeStats stores the last result but creates no historical observation.
 
 - `count` is a nonnegative integer counting connected, in-world player characters, including bots, multiboxed characters, staff, and test characters. Do not count unique people/accounts or exclude operator-defined categories. A measured empty world is `0`; when absent, no observation is recorded. Inability to measure must be an error or an omitted `count`/`population`, not a fabricated zero.

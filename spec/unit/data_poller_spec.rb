@@ -60,6 +60,34 @@ describe "DataPoller", :unit do
     refute_includes observation.serializable_hash({}).keys, "source"
   end
 
+  it "accepts the legacy flat document used by explicit targets" do
+    timestamp = Time.now.to_i - 60
+
+    assert_equal :accepted, poll_for("LegacyFlat", transport_for(count: 7, updated_at: timestamp))
+    observation = PlayerCount.where(s: "LegacyFlat").first
+    assert_equal 7, observation.c
+    assert_equal timestamp, observation.c_at.to_i
+
+    info = ServerInfo.where(server: "LegacyFlat").first
+    assert_equal 7, info.count
+    assert_equal timestamp, info.population_updated_at.to_i
+    assert_nil info.document_updated_at
+  end
+
+  it "rejects malformed legacy flat documents" do
+    timestamp = Time.now.to_i - 60
+    [
+      {count: -1, updated_at: timestamp},
+      {count: "1", updated_at: timestamp},
+      {count: 1, updated_at: "not a timestamp"},
+      {count: 1}
+    ].each do |document|
+      assert_equal :failure, poll_for("LegacyFlatInvalid", transport_for(document)), document.inspect
+    end
+    assert_equal 0, PlayerCount.where(s: "LegacyFlatInvalid").count
+    assert_equal 0, ServerInfo.where(server: "LegacyFlatInvalid").count
+  end
+
   it "accepts the standard population document with an RFC3339 measurement time" do
     timestamp = Time.now.utc - 60
     document = {

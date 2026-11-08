@@ -45,6 +45,19 @@ module DataPoller
   def self.parse_population(payload)
     raise Error, "response must be an object" unless payload.is_a?(Hash)
 
+    # Temporary compatibility for targets such as Hollowtide that still serve
+    # the legacy flat {"count", "updated_at"} shape. A standard document without
+    # a population object does not have a top-level count.
+    if !payload.key?("population") && payload.key?("count")
+      count = payload["count"]
+      raise Error, "count must be a nonnegative integer" unless count.is_a?(Integer) && count >= 0
+
+      measured_at = payload["updated_at"]
+      raise Error, "updated_at must be an integer Unix timestamp" unless measured_at.is_a?(Integer) && measured_at >= 0
+
+      return Document.new(count: count, measured_at: measured_at)
+    end
+
     document_updated_at = parse_rfc3339(payload["updated_at"], "updated_at") unless payload["updated_at"].nil?
     schema_url = optional_string(payload, "schema")
     document_version = optional_integer(payload, "version", minimum: 1)
