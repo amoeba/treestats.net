@@ -32,6 +32,8 @@
                   %td= target[:server]
                   %td
                     %a{:href => target[:url]}= target[:url]
+                    - if target[:fallback_url]
+                      %div= "fallback: #{target[:fallback_url]}"
                   %td= target[:state]&.last_checked_at || "Never"
                   %td= target[:state]&.last_outcome || "Never"
                   %td= target[:state]&.consecutive_failures || 0

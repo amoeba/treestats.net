@@ -51,8 +51,8 @@ module AdminHelper
       result[state.server] = state
     end
     @poll_interval = DataPoller.config.fetch("interval", DataPoller::DEFAULT_INTERVAL)
-    @poll_targets = DataPoller.targets.map do |server, url|
-      {server: server, url: url, state: states[server]}
+    @poll_targets = DataPoller.targets.map do |server, target|
+      {server: server, url: target.url, fallback_url: target.fallback_url, state: states[server]}
     end
     @tokens = ServerAuthToken.asc(:server).to_a
     @registered_servers = ServerHelper.servers.sort

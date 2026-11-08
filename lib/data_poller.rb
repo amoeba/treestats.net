@@ -127,9 +127,10 @@ module DataPoller
   # Polls one server for one interval slot. The instance owns the lease,
   # request, and persistence state for that single poll.
   class Poll
-    def initialize(server:, url:, slot: DataPoller.current_slot, transport: nil)
+    def initialize(server:, url:, fallback_url: nil, slot: DataPoller.current_slot, transport: nil)
       @server = server
       @url = url
+      @fallback_url = fallback_url
       @slot = slot
       @transport = transport
     end
@@ -161,7 +162,7 @@ module DataPoller
       return :overlap unless state && state["lease_until"] && state["lease_until"] > Time.now.utc + JOB_TIMEOUT_SECONDS + 2
 
       begin
-        body, received_at = read_response
+        body, received_at = read_response_with_fallback
         parsed = DataPoller.parse_population(JSON.parse(body))
         return record_empty(lease_id) unless parsed
         count, timestamp = parsed
@@ -217,8 +218,8 @@ module DataPoller
       end
     end
 
-    def read_response(transport: @transport, http_factory: nil, total_timeout: TOTAL_TIMEOUT_SECONDS)
-      uri = URI.parse(@url)
+    def read_response(url: @url, transport: @transport, http_factory: nil, total_timeout: TOTAL_TIMEOUT_SECONDS)
+      uri = URI.parse(url)
       raise Error, "target URL must use HTTP or HTTPS without credentials or fragment" unless uri.is_a?(URI::HTTP) && uri.host && !uri.userinfo && !uri.fragment
       injected_transport = transport || http_factory
       proxy_env = ENV["http_proxy"] || ENV["HTTP_PROXY"] || ENV["https_proxy"] || ENV["HTTPS_PROXY"]
@@ -257,6 +258,22 @@ module DataPoller
 
     private
 
+    def read_response_with_fallback
+      return read_response unless @fallback_url
+
+      begin
+        read_response
+      rescue JobDeadlineExceeded
+        raise
+      rescue => primary_error
+        begin
+          read_response(url: @fallback_url)
+        rescue => fallback_error
+          raise Error, "both endpoints failed: #{@url} (#{primary_error.class}: #{primary_error.message}); #{@fallback_url} (#{fallback_error.class}: #{fallback_error.message})"
+        end
+      end
+    end
+
     def record_empty(lease_id)
       lease = DataPollState.collection.find(server: @server, lease_id: lease_id).first
       return :overlap unless lease && lease["lease_until"] > Time.now.utc + 2
@@ -293,10 +310,10 @@ class PollDataJob
 
   def perform(server, slot = DataPoller.current_slot)
     return :obsolete if slot.to_i < DataPoller.current_slot
-    url = DataPoller.targets[server]
-    return unless url
+    target = DataPoller.targets[server]
+    return unless target
     Timeout.timeout(DataPoller::JOB_TIMEOUT_SECONDS, DataPoller::JobDeadlineExceeded) do
-      DataPoller::Poll.new(server: server, url: url, slot: slot.to_i).call
+      DataPoller::Poll.new(server: server, url: target.url, fallback_url: target.fallback_url, slot: slot.to_i).call
     end
   rescue DataPoller::JobDeadlineExceeded
     :failure

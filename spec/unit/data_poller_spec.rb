@@ -189,6 +189,86 @@ describe "DataPoller", :unit do
     assert_equal 0, PlayerCount.where(s: "EmptyInvalid").count
   end
 
+  it "tries HTTP first and falls back to HTTPS when the primary request fails" do
+    document = standard_document(count: 4, updated_at: Time.now.to_i - 60)
+    urls = []
+    transport = lambda do |uri|
+      urls << uri.to_s
+      raise Errno::ECONNREFUSED, uri.host if uri.scheme == "http"
+
+      Struct.new(:code, :body).new("200", JSON.generate(document))
+    end
+
+    outcome = DataPoller::Poll.new(
+      server: "Fallback",
+      url: "http://fallback.example.test/",
+      fallback_url: "https://fallback.example.test/",
+      slot: DataPoller.current_slot,
+      transport: transport
+    ).call
+
+    assert_equal :accepted, outcome
+    assert_equal ["http://fallback.example.test/", "https://fallback.example.test/"], urls
+    assert_equal 4, PlayerCount.where(s: "Fallback").first.c
+  end
+
+  it "falls back to HTTPS when HTTP returns a redirect status" do
+    document = standard_document(count: 2, updated_at: Time.now.to_i - 60)
+    http_response = Struct.new(:code, :body).new("301", "")
+    https_response = Struct.new(:code, :body).new("200", JSON.generate(document))
+    transport = ->(uri) { (uri.scheme == "http") ? http_response : https_response }
+
+    outcome = DataPoller::Poll.new(
+      server: "RedirectFallback",
+      url: "http://redirect.example.test/",
+      fallback_url: "https://redirect.example.test/",
+      slot: DataPoller.current_slot,
+      transport: transport
+    ).call
+
+    assert_equal :accepted, outcome
+    assert_equal 2, PlayerCount.where(s: "RedirectFallback").first.c
+  end
+
+  it "does not fall back after a successful HTTP response with invalid data" do
+    urls = []
+    document = standard_document(count: "bad", updated_at: Time.now.to_i - 60)
+    transport = lambda do |uri|
+      urls << uri.to_s
+      Struct.new(:code, :body).new("200", JSON.generate(document))
+    end
+
+    outcome = DataPoller::Poll.new(
+      server: "NoDataFallback",
+      url: "http://nodata.example.test/",
+      fallback_url: "https://nodata.example.test/",
+      slot: DataPoller.current_slot,
+      transport: transport
+    ).call
+
+    assert_equal :failure, outcome
+    assert_equal ["http://nodata.example.test/"], urls
+    assert_equal 0, PlayerCount.where(s: "NoDataFallback").count
+  end
+
+  it "records both failures when HTTP and its HTTPS fallback fail" do
+    transport = ->(uri) { raise Errno::ECONNREFUSED, uri.host }
+
+    outcome = DataPoller::Poll.new(
+      server: "BothFail",
+      url: "http://bothfail.example.test/",
+      fallback_url: "https://bothfail.example.test/",
+      slot: DataPoller.current_slot,
+      transport: transport
+    ).call
+
+    assert_equal :failure, outcome
+    state = DataPollState.collection.find(server: "BothFail").first
+    assert_match(/both endpoints failed/, state["error_summary"])
+    assert_match(/bothfail.example.test/, state["error_summary"])
+    assert_equal 0, PlayerCount.where(s: "BothFail").count
+  end
+
   it "polls only enabled servers and resolves an omitted URL to the standard root" do
     first = DataPoller.server_list.first
     targets = DataPoller.targets_from({
@@ -196,8 +276,10 @@ describe "DataPoller", :unit do
       "Other" => {"enabled" => true, "url" => "https://example.test/data.json"},
       "Disabled" => {"enabled" => false}
     })
-    assert_equal "http://#{first[:host]}:#{first[:port]}/", targets[first[:name]]
-    assert_equal "https://example.test/data.json", targets["Other"]
+    assert_equal "http://#{first[:host]}:#{first[:port]}/", targets[first[:name]].url
+    assert_equal "https://#{first[:host]}:#{first[:port]}/", targets[first[:name]].fallback_url
+    assert_equal "https://example.test/data.json", targets["Other"].url
+    assert_nil targets["Other"].fallback_url
     assert_equal 2, targets.size
 
     # The checked-in config must parse; enabled targets may change over time.

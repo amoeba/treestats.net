@@ -14,7 +14,7 @@ http(s)://<server-host>:<game-port>/
 
 For example, `http://play.example.net:9000/`. The host and port should match the server's entry in the [community server list](https://github.com/acresources/serverslist).
 
-There is no required path component. HTTP and HTTPS are both acceptable; HTTPS is preferred when available. TreeStats currently probes HTTP at the root and does not follow redirects, so serve the document directly there.
+There is no required path component. HTTP and HTTPS are both acceptable; HTTPS is preferred when available. TreeStats tries HTTP at the root first and falls back to HTTPS if the HTTP request fails. It does not follow redirects, but an HTTP-to-HTTPS redirect still triggers the HTTPS fallback. To force HTTPS, serve only HTTPS at the root or give TreeStats an explicit HTTPS URL.
 
 ## Document
 

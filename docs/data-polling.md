@@ -23,14 +23,15 @@ targets:
     enabled: false
 ```
 
-When `url` is omitted, TreeStats polls the server's public game endpoint root:
+When `url` is omitted, TreeStats polls the server's public game endpoint root, trying HTTP first and falling back to HTTPS if the HTTP request fails:
 
 ```
 http://<server-host>:<game-port>/
+https://<server-host>:<game-port>/
 ```
 
 The document served there is described by the [Asheron's Call Server Information](./asherons-call-server.md) standard.
-A `url` overrides the root endpoint for servers that serve the document elsewhere. Disabled entries can stay in the file without being polled.
+A `url` overrides the root endpoints and is used as-is, with no fallback. Disabled entries can stay in the file without being polled.
 
 The `interval` field is global for all targets and defines how often we poll all of them.
 `interval` accepts friendly units such as `15m`, `30 mins`, `1hr`, `6 hours`, or `1d`. Minute intervals must divide an hour evenly (1, 2, 3, 4, 5, 6, 10, 12, 15, 20, or 30), and hour intervals must divide a day evenly (1, 2, 3, 4, 6, 8, 12, or 24). The process fails fast at boot on an unsupported value, and changing it requires restarting the Sidekiq worker so the cron schedule is reloaded.

@@ -13,6 +13,9 @@ module DataPoller
   }.freeze
   INTERVAL_PATTERN = /\A\s*(\d+)\s*([a-z]+)\s*\z/i
   class Error < StandardError; end
+  # A poll target. `fallback_url` is only set for discovered roots, which are
+  # tried over HTTP first and HTTPS second.
+  Target = Struct.new(:url, :fallback_url)
 
   def self.config
     YAML.safe_load_file(File.expand_path("../config/polling_targets.yml", __dir__)) || {}
@@ -27,12 +30,16 @@ module DataPoller
       port = server[:port].to_s.strip
       next if name.empty? || host.empty? || port.empty?
 
-      result[name] = "http://#{host}:#{port}/"
+      result[name] = Target.new(
+        url: "http://#{host}:#{port}/",
+        fallback_url: "https://#{host}:#{port}/"
+      )
     end
   end
 
   # Polling is opt-in. Servers enabled in config/polling_targets.yml are
-  # polled; an omitted URL means the standard root endpoint from data/servers.rb.
+  # polled; an omitted URL means the standard root endpoint from data/servers.rb,
+  # tried over HTTP first with HTTPS as a fallback. Explicit URLs are used as-is.
   def self.targets
     targets_from(config.fetch("targets", {}) || {})
   end
@@ -50,7 +57,11 @@ module DataPoller
       url = settings["url"]
       raise Error, "invalid target URL for #{server}" unless url.nil? || url.is_a?(String)
 
-      result[server] = url || roots[server] || raise(Error, "unknown polling target #{server.inspect}; add it to data/servers.rb or give a URL")
+      result[server] = if url
+        Target.new(url: url)
+      else
+        roots[server] || raise(Error, "unknown polling target #{server.inspect}; add it to data/servers.rb or give a URL")
+      end
     end
   end
 

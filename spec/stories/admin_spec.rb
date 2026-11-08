@@ -311,7 +311,14 @@ describe "AdminStory" do
         error_summary: 'HTTP status 500'
       )
       original_targets = DataPoller.method(:targets)
-      DataPoller.define_singleton_method(:targets) { {'Hollowtide PK' => 'https://hollowtide.org/population.json'} }
+      DataPoller.define_singleton_method(:targets) do
+        {
+          'Hollowtide PK' => DataPoller::Target.new(
+            url: 'http://hollowtide.org/population.json',
+            fallback_url: 'https://hollowtide.org/population.json'
+          )
+        }
+      end
       sign_in_admin
 
       get '/admin'
@@ -322,6 +329,7 @@ describe "AdminStory" do
       assert_includes last_response.body, 'Hollowtide PK'
       assert_includes last_response.body, 'failure'
       assert_includes last_response.body, 'HTTP status 500'
+      assert_includes last_response.body, 'fallback: https://hollowtide.org/population.json'
     ensure
       DataPoller.define_singleton_method(:targets, original_targets) if original_targets
     end
