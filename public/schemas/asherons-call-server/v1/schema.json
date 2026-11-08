@@ -43,15 +43,29 @@
     },
     "emulator": {
       "type": "object",
-      "description": "Server emulator software and version. All nested fields are optional.",
+      "description": "Server emulator software and versions. All nested fields are optional.",
       "properties": {
         "name": {
           "type": "string",
           "minLength": 1
         },
-        "version": {
+        "server_version": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "description": "Emulator server build version."
+        },
+        "database_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Emulator database version."
+        },
+        "dat_iterations": {
+          "type": "object",
+          "description": "Iteration counts keyed by DAT filename. Values are nonnegative integers.",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
         }
       }
     }

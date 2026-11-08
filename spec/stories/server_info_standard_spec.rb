@@ -16,5 +16,9 @@ describe "ServerInfoStandardStory" do
     refute schema.dig("properties", "emulator").key?("required")
     assert_equal 1, schema.dig("properties", "version", "const")
     assert_equal %w[count updated_at], schema.dig("properties", "population", "properties").keys.sort
+    assert_equal %w[dat_iterations database_version name server_version],
+      schema.dig("properties", "emulator", "properties").keys.sort
+    assert_equal "integer", schema.dig("properties", "emulator", "properties", "dat_iterations", "additionalProperties", "type")
+    assert_equal 0, schema.dig("properties", "emulator", "properties", "dat_iterations", "additionalProperties", "minimum")
   end
 end

@@ -32,7 +32,14 @@ The response must be a JSON object. All fields are optional.
   },
   "emulator": {
     "name": "ACE",
-    "version": "1.2.3"
+    "server_version": "1.78.4832.20261104180934-master-402a24e",
+    "database_version": "v0.9.296",
+    "dat_iterations": {
+      "client_portal.dat": 2072,
+      "client_cell_1.dat": 982,
+      "client_local_english.dat": 994,
+      "client_hires.dat": 0
+    }
   }
 }
 ```
@@ -52,7 +59,9 @@ Consumers must ignore unknown fields. All timestamps are RFC3339 strings with an
   - `updated_at` (optional, string): When the population was measured. Falls back to the document's `updated_at` when absent. Advance this for each new measurement even if the count did not change. Re-serving an old snapshot must not renew it.
 - `emulator` (optional, object): Server emulator software. All nested fields are optional.
   - `name` (optional, string): e.g. `ACE` or `GDLE`.
-  - `version` (optional, string): e.g. `1.2.3`.
+  - `server_version` (optional, string): Emulator server build version, e.g. `1.78.4832.20261104180934-master-402a24e`.
+  - `database_version` (optional, string): Emulator database version, e.g. `v0.9.296`.
+  - `dat_iterations` (optional, object): Iteration counts keyed by DAT filename. Values are nonnegative integers; additional DAT names are allowed.
 
 If neither `population.updated_at` nor the top-level `updated_at` is present, TreeStats stores the last result but does not create a historical population observation.
 

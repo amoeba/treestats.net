@@ -315,7 +315,7 @@ describe "AdminStory" do
         server: 'Hollowtide PK',
         outcome: 'accepted',
         count: 7,
-        measured_at: Time.utc(2026, 11, 7, 22, 0),
+        population_updated_at: Time.utc(2026, 11, 7, 22, 0),
         document_updated_at: Time.utc(2026, 11, 7, 22, 1)
       )
       original_targets = DataPoller.method(:targets)

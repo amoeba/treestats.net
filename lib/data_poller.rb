@@ -30,9 +30,13 @@ module DataPoller
   class JobDeadlineExceeded < Timeout::Error; end
 
   # Parsed standard server document. Timestamps are epoch seconds.
+  Emulator = Struct.new(
+    :name, :version, :server_version, :database_version, :dat_iterations,
+    keyword_init: true
+  )
   Document = Struct.new(
     :count, :measured_at, :document_updated_at, :name,
-    :emulator_name, :emulator_version, :schema_url, :document_version
+    :emulator, :schema_url, :document_version
   )
 
   # Parses the standard server document. All fields are optional. A count
@@ -46,7 +50,7 @@ module DataPoller
     document_version = optional_integer(payload, "version", minimum: 1)
     raise Error, "unsupported document version #{document_version}" if document_version && document_version != 1
     name = optional_string(payload, "name")
-    emulator_name, emulator_version = parse_emulator(payload["emulator"])
+    emulator = parse_emulator(payload["emulator"])
 
     if payload.key?("population")
       population = payload["population"]
@@ -70,8 +74,7 @@ module DataPoller
       measured_at: measured_at,
       document_updated_at: document_updated_at,
       name: name,
-      emulator_name: emulator_name,
-      emulator_version: emulator_version,
+      emulator: emulator,
       schema_url: schema_url,
       document_version: document_version
     )
@@ -94,14 +97,32 @@ module DataPoller
   end
 
   def self.parse_emulator(emulator)
-    return [nil, nil] if emulator.nil?
+    return nil if emulator.nil?
     raise Error, "emulator must be an object" unless emulator.is_a?(Hash)
 
     name = emulator["name"]
     version = emulator["version"]
-    raise Error, "emulator.name must be a string" unless name.nil? || name.is_a?(String)
-    raise Error, "emulator.version must be a string" unless version.nil? || version.is_a?(String)
-    [name, version]
+    server_version = emulator["server_version"]
+    database_version = emulator["database_version"]
+    dat_iterations = emulator["dat_iterations"]
+
+    %w[name version server_version database_version].each do |key|
+      value = emulator[key]
+      raise Error, "emulator.#{key} must be a string" unless value.nil? || value.is_a?(String)
+    end
+    valid_dat_iterations = dat_iterations.nil? || (
+      dat_iterations.is_a?(Hash) &&
+      dat_iterations.values.all? { |value| value.is_a?(Integer) && value >= 0 }
+    )
+    raise Error, "emulator.dat_iterations must be an object of nonnegative integers" unless valid_dat_iterations
+
+    Emulator.new(
+      name: name,
+      version: version,
+      server_version: server_version,
+      database_version: database_version,
+      dat_iterations: dat_iterations
+    )
   end
 
   def self.parse_rfc3339(value, field = "updated_at")
@@ -240,7 +261,7 @@ module DataPoller
           if existing && existing["c"] == count
             # Recover the only crash window: observation insert succeeded, state update did not.
             DataPollState.collection.update_one({server: @server, lease_id: lease_id}, {"$max" => {last_accepted_updated_at: timestamp}, "$set" => {last_checked_at: Time.now.utc, last_outcome: "duplicate", error_summary: nil, consecutive_failures: 0}, "$unset" => {lease_until: "", lease_id: ""}})
-            record_server_info(result, "duplicate", received_at)
+            record_server_info(result, "duplicate")
             return :duplicate
           end
           raise Error, existing ? "conflicting measurement timestamp" : "measurement timestamp did not advance"
@@ -262,7 +283,7 @@ module DataPoller
           raise Error, "conflicting measurement timestamp" unless existing && existing["c"] == count
         end
         record_acceptance(timestamp, lease_id)
-        record_server_info(result, "accepted", received_at)
+        record_server_info(result, "accepted")
         :accepted
       rescue JobDeadlineExceeded => error
         warn("Data poll job exceeded its execution bound for #{@server}")
@@ -340,26 +361,33 @@ module DataPoller
       )
       return :overlap unless updated.matched_count == 1
 
-      record_server_info(result, outcome, received_at)
+      record_server_info(result, outcome)
       outcome.to_sym
     end
 
-    def record_server_info(result, outcome, received_at)
+    def record_server_info(result, outcome)
+      now = Time.now.utc
       ServerInfo.collection.update_one(
         {server: @server},
-        {"$set" => {
-          server: @server,
-          fetched_at: Time.at(received_at).utc,
-          outcome: outcome,
-          count: result.count,
-          measured_at: result.measured_at && Time.at(result.measured_at).utc,
-          document_updated_at: result.document_updated_at && Time.at(result.document_updated_at).utc,
-          name: result.name,
-          emulator_name: result.emulator_name,
-          emulator_version: result.emulator_version,
-          schema_url: result.schema_url,
-          document_version: result.document_version
-        }},
+        {
+          "$set" => {
+            server: @server,
+            updated_at: now,
+            outcome: outcome,
+            count: result.count,
+            population_updated_at: result.measured_at && Time.at(result.measured_at).utc,
+            document_updated_at: result.document_updated_at && Time.at(result.document_updated_at).utc,
+            name: result.name,
+            emulator_name: result.emulator&.name,
+            emulator_version: result.emulator&.version,
+            emulator_server_version: result.emulator&.server_version,
+            emulator_database_version: result.emulator&.database_version,
+            emulator_dat_iterations: result.emulator&.dat_iterations,
+            schema_url: result.schema_url,
+            document_version: result.document_version
+          },
+          "$setOnInsert" => {created_at: now}
+        },
         upsert: true
       )
     rescue => error

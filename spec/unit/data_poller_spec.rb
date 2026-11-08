@@ -149,7 +149,13 @@ describe "DataPoller", :unit do
       {updated_at: valid_time, schema: 1},
       {updated_at: valid_time, emulator: "ACE"},
       {updated_at: valid_time, emulator: {name: 1}},
-      {updated_at: valid_time, emulator: {version: 1}}
+      {updated_at: valid_time, emulator: {version: 1}},
+      {updated_at: valid_time, emulator: {server_version: 1}},
+      {updated_at: valid_time, emulator: {database_version: 1}},
+      {updated_at: valid_time, emulator: {dat_iterations: []}},
+      {updated_at: valid_time, emulator: {dat_iterations: {"client_portal.dat" => -1}}},
+      {updated_at: valid_time, emulator: {dat_iterations: {"client_portal.dat" => 1.0}}},
+      {updated_at: valid_time, emulator: {dat_iterations: {"client_portal.dat" => "2072"}}}
     ]
 
     documents.each do |document|
@@ -227,7 +233,7 @@ describe "DataPoller", :unit do
     info = ServerInfo.where(server: "FallbackTime").first
     assert_equal "accepted", info.outcome
     assert_equal 5, info.count
-    assert_equal timestamp.to_i, info.measured_at.to_i
+    assert_equal timestamp.to_i, info.population_updated_at.to_i
     assert_equal timestamp.to_i, info.document_updated_at.to_i
   end
 
@@ -243,7 +249,7 @@ describe "DataPoller", :unit do
     info = ServerInfo.where(server: "NoTimestamp").first
     assert_equal "no_timestamp", info.outcome
     assert_equal 3, info.count
-    assert_nil info.measured_at
+    assert_nil info.population_updated_at
     assert_nil info.document_updated_at
   end
 
@@ -257,7 +263,7 @@ describe "DataPoller", :unit do
     info = ServerInfo.where(server: "NoCount").first
     assert_equal "empty", info.outcome
     assert_nil info.count
-    assert_equal Time.iso8601(updated_at).to_i, info.measured_at.to_i
+    assert_equal Time.iso8601(updated_at).to_i, info.population_updated_at.to_i
     assert_equal Time.iso8601(updated_at).to_i, info.document_updated_at.to_i
   end
 
@@ -267,18 +273,29 @@ describe "DataPoller", :unit do
       schema: "https://treestats.net/schemas/asherons-call-server/v1/schema.json",
       version: 1,
       name: "Example World",
-      emulator: {name: "ACE", version: "1.2.3"}
+      emulator: {
+        name: "ACE",
+        version: "1.2.3",
+        server_version: "1.78.4832.20261104180934-master-402a24e",
+        database_version: "v0.9.296",
+        dat_iterations: {"client_portal.dat" => 2072, "client_hires.dat" => 0}
+      }
     )
 
     assert_equal :accepted, poll_for("Metadata", transport_for(document))
     info = ServerInfo.where(server: "Metadata").first
     assert_equal "accepted", info.outcome
     assert_equal 4, info.count
-    assert_equal timestamp, info.measured_at.to_i
+    assert_equal timestamp, info.population_updated_at.to_i
     assert_equal timestamp, info.document_updated_at.to_i
+    refute_nil info.created_at
+    refute_nil info.updated_at
     assert_equal "Example World", info.name
     assert_equal "ACE", info.emulator_name
     assert_equal "1.2.3", info.emulator_version
+    assert_equal "1.78.4832.20261104180934-master-402a24e", info.emulator_server_version
+    assert_equal "v0.9.296", info.emulator_database_version
+    assert_equal({"client_portal.dat" => 2072, "client_hires.dat" => 0}, info.emulator_dat_iterations)
     assert_equal "https://treestats.net/schemas/asherons-call-server/v1/schema.json", info.schema_url
     assert_equal 1, info.document_version
   end
