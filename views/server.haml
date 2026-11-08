@@ -79,6 +79,7 @@
       %tr
         %th Time
         %th Players
+        %th Source
     %tbody
       - @recent_player_counts.each do |player_count|
         %tr
@@ -86,6 +87,7 @@
             %time{:datetime => player_count.created_at.utc.iso8601}
               = player_count.created_at.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
           %td= AppHelper.add_commas(player_count.count)
+          %td= player_count.effective_source == "server" ? "Server poll" : "Plugin"
 
 %script{:src => javascript_path('d3.min')}
 %script{:src => javascript_path('sparkline')}
