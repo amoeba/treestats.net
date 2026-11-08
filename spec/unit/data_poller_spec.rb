@@ -528,6 +528,14 @@ describe "DataPoller", :unit do
     assert_nil job.perform("NotRegistered", slot)
   end
 
+  it "reports invalid polling config from the dispatcher without raising" do
+    original = DataPoller.method(:dispatch)
+    DataPoller.define_singleton_method(:dispatch) { |_slot| raise DataPoller::Error, "unknown polling target" }
+    assert_equal :invalid_config, DispatchDataPollsJob.new.perform(DataPoller.current_slot)
+  ensure
+    DataPoller.define_singleton_method(:dispatch, original) if original
+  end
+
   it "runs a fresh standalone Sidekiq boot with PlayerCount loaded without Sinatra" do
     stdout, stderr, status = Open3.capture3(RbConfig.ruby, "-e", 'require "./lib/sidekiq_boot"; abort unless defined?(PlayerCount); puts "ready"')
     assert status.success?, stderr

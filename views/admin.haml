@@ -14,7 +14,11 @@
       %section
         %h2 Poll targets
         %p= "Configured interval: #{@poll_interval}"
-        - if @poll_targets.empty?
+        - if @poll_config_error
+          %p
+            %strong Poll configuration error:
+            = @poll_config_error
+        - elsif @poll_targets.empty?
           %p No poll targets are configured.
         - else
           %table

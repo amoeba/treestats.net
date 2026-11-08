@@ -47,12 +47,20 @@ module AdminHelper
   end
 
   def render_admin_dashboard
-    states = DataPollState.in(server: DataPoller.targets.keys).to_a.each_with_object({}) do |state, result|
-      result[state.server] = state
-    end
-    @poll_interval = DataPoller.config.fetch("interval", DataPoller::DEFAULT_INTERVAL)
-    @poll_targets = DataPoller.targets.map do |server, target|
-      {server: server, url: target.url, fallback_url: target.fallback_url, state: states[server]}
+    @poll_config_error = nil
+    @poll_interval = DataPoller::DEFAULT_INTERVAL
+    @poll_targets = []
+    begin
+      @poll_interval = DataPoller.config.fetch("interval", DataPoller::DEFAULT_INTERVAL)
+      targets = DataPoller.targets
+      states = DataPollState.in(server: targets.keys).to_a.each_with_object({}) do |state, result|
+        result[state.server] = state
+      end
+      @poll_targets = targets.map do |server, target|
+        {server: server, url: target.url, fallback_url: target.fallback_url, state: states[server]}
+      end
+    rescue DataPoller::Error, Psych::SyntaxError => error
+      @poll_config_error = error.message
     end
     @tokens = ServerAuthToken.asc(:server).to_a
     @registered_servers = ServerHelper.servers.sort

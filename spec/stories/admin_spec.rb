@@ -333,6 +333,20 @@ describe "AdminStory" do
     ensure
       DataPoller.define_singleton_method(:targets, original_targets) if original_targets
     end
+
+    it "shows a poll configuration error instead of failing" do
+      original_targets = DataPoller.method(:targets)
+      DataPoller.define_singleton_method(:targets) { raise DataPoller::Error, 'unknown polling target' }
+      sign_in_admin
+
+      get '/admin'
+
+      assert_equal 200, last_response.status
+      assert_includes last_response.body, 'Poll configuration error'
+      assert_includes last_response.body, 'unknown polling target'
+    ensure
+      DataPoller.define_singleton_method(:targets, original_targets) if original_targets
+    end
   end
 
   private

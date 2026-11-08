@@ -43,6 +43,9 @@ Sidekiq.configure_server do |config|
   end
 
   config.on(:startup) do
+    # Fail fast on invalid polling config instead of surfacing it on the first
+    # dispatch or the admin dashboard.
+    DataPoller.targets
     Sidekiq::Cron::Job.load_from_hash(
       "probe_job" => {
         "cron" => "*/5 * * * *",

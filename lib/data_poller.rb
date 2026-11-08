@@ -336,6 +336,9 @@ class DispatchDataPollsJob
     end
     return :invalid_slot unless slot
     DataPoller.dispatch(slot)
+  rescue DataPoller::Error => error
+    warn("Data poll dispatch failed: #{error.class}: #{error.message}")
+    :invalid_config
   rescue ArgumentError, TypeError
     :invalid_slot
   end
