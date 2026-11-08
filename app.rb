@@ -28,6 +28,7 @@ end
 
 %w[
   lib/clock.rb
+  lib/data_poller.rb
   lib/graph_job.rb
   lib/query_cache_job.rb
   lib/stats_job.rb
@@ -115,6 +116,7 @@ class TreeStats < Sinatra::Base
     include Sinatra::TreeStats::AssetHelper
     include RequestHelper
     include AdminHelper
+    include UploadHelper
   end
 
   configure :production do
