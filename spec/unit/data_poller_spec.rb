@@ -27,9 +27,9 @@ describe "DataPoller", :unit do
     DataPoller.define_singleton_method(:current_slot, original)
   end
 
-  def poll_for(server, transport, slot: next_slot)
+  def poll_for(server, transport, slot: next_slot, url: "https://population.example.test/x", fallback_url: nil)
     with_test_slot(slot) do
-      DataPoller::Poll.new(server: server, url: "https://population.example.test/x", slot: slot, transport: transport).call
+      DataPoller::Poll.new(server: server, url: url, fallback_url: fallback_url, slot: slot, transport: transport).call
     end
   end
 
@@ -311,13 +311,9 @@ describe "DataPoller", :unit do
       Struct.new(:code, :body).new("200", JSON.generate(document))
     end
 
-    outcome = DataPoller::Poll.new(
-      server: "Fallback",
+    outcome = poll_for("Fallback", transport,
       url: "http://fallback.example.test/",
-      fallback_url: "https://fallback.example.test/",
-      slot: DataPoller.current_slot,
-      transport: transport
-    ).call
+      fallback_url: "https://fallback.example.test/")
 
     assert_equal :accepted, outcome
     assert_equal ["http://fallback.example.test/", "https://fallback.example.test/"], urls
@@ -330,13 +326,9 @@ describe "DataPoller", :unit do
     https_response = Struct.new(:code, :body).new("200", JSON.generate(document))
     transport = ->(uri) { (uri.scheme == "http") ? http_response : https_response }
 
-    outcome = DataPoller::Poll.new(
-      server: "RedirectFallback",
+    outcome = poll_for("RedirectFallback", transport,
       url: "http://redirect.example.test/",
-      fallback_url: "https://redirect.example.test/",
-      slot: DataPoller.current_slot,
-      transport: transport
-    ).call
+      fallback_url: "https://redirect.example.test/")
 
     assert_equal :accepted, outcome
     assert_equal 2, PlayerCount.where(s: "RedirectFallback").first.c
@@ -350,29 +342,38 @@ describe "DataPoller", :unit do
       Struct.new(:code, :body).new("200", JSON.generate(document))
     end
 
-    outcome = DataPoller::Poll.new(
-      server: "NoDataFallback",
+    outcome = poll_for("NoDataFallback", transport,
       url: "http://nodata.example.test/",
-      fallback_url: "https://nodata.example.test/",
-      slot: DataPoller.current_slot,
-      transport: transport
-    ).call
+      fallback_url: "https://nodata.example.test/")
 
     assert_equal :failure, outcome
     assert_equal ["http://nodata.example.test/"], urls
     assert_equal 0, PlayerCount.where(s: "NoDataFallback").count
   end
 
+  it "does not try the HTTPS fallback when HTTP succeeds" do
+    document = standard_document(count: 1, updated_at: Time.now.to_i - 60)
+    urls = []
+    transport = lambda do |uri|
+      urls << uri.to_s
+      Struct.new(:code, :body).new("200", JSON.generate(document))
+    end
+
+    outcome = poll_for("NoFallback", transport,
+      url: "http://no-fallback.example.test/",
+      fallback_url: "https://no-fallback.example.test/")
+
+    assert_equal :accepted, outcome
+    assert_equal ["http://no-fallback.example.test/"], urls
+    assert_equal 1, PlayerCount.where(s: "NoFallback").first.c
+  end
+
   it "records both failures when HTTP and its HTTPS fallback fail" do
     transport = ->(uri) { raise Errno::ECONNREFUSED, uri.host }
 
-    outcome = DataPoller::Poll.new(
-      server: "BothFail",
+    outcome = poll_for("BothFail", transport,
       url: "http://bothfail.example.test/",
-      fallback_url: "https://bothfail.example.test/",
-      slot: DataPoller.current_slot,
-      transport: transport
-    ).call
+      fallback_url: "https://bothfail.example.test/")
 
     assert_equal :failure, outcome
     state = DataPollState.collection.find(server: "BothFail").first
@@ -438,11 +439,17 @@ describe "DataPoller", :unit do
 
   it "accepts and strips valid explicit target URLs" do
     server = DataPoller.server_list.first[:name]
-    ["https://example.test/data.json", " http://example.test:9000/path?q=1 "].each do |url|
+    ["https://example.test/data.json", " http://example.test:9000/path?q=1 ", "http://[2001:db8::1]:9000/", "http://example.test:65535/"].each do |url|
       target = DataPoller.targets_from({server => {"enabled" => true, "url" => url}})[server]
       assert_equal url.strip, target.url
       assert_nil target.fallback_url
     end
+  end
+
+  it "rejects out-of-range ports and accepts IPv6 URLs" do
+    assert_equal "http://[2001:db8::1]:9000/", DataPoller.parse_http_url("http://[2001:db8::1]:9000/").to_s
+    assert_equal 65_535, DataPoller.parse_http_url("http://example.test:65535/").port
+    assert_raises(DataPoller::Error) { DataPoller.parse_http_url("http://example.test:65536/") }
   end
 
   it "validates disabled target URL types but does not require a valid URL" do

@@ -4,8 +4,10 @@ describe "ServerInfoStandardStory" do
   it "serves the published server information schema" do
     get "/schemas/asherons-call-server/v1/schema.json"
     assert_equal 200, last_response.status
+    assert_equal "application/json", last_response.headers["Content-Type"]
 
     schema = JSON.parse(last_response.body)
+    assert_equal true, schema["additionalProperties"]
     assert_equal "https://treestats.net/schemas/asherons-call-server/v1/schema.json", schema["$id"]
     assert_equal "object", schema["type"]
     refute schema.key?("required")
