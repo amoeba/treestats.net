@@ -6,6 +6,7 @@ module Sinatra
           app.get '/admin/login/?' do
             halt 404 if admin?
 
+            headers['Cache-Control'] = 'no-store, private'
             @csrf_token = csrf_token
             session[:login_form_rendered_at] = Time.now.to_f
 

@@ -25,6 +25,8 @@ describe "AdminStory" do
       assert_includes last_response.body, 'name="password"'
       assert_includes last_response.body, 'name="authenticity_token"'
       assert_includes last_response.body, 'noindex'
+      assert_includes last_response.body, 'no-referrer'
+      assert_includes last_response.headers['Cache-Control'], 'no-store'
     end
 
     it "is hidden when already logged in" do
@@ -185,6 +187,7 @@ describe "AdminStory" do
       assert_equal ServerAuthTokenHelper.digest(issued_token), record.token_digest
       assert_includes last_response.body, record.updated_at.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
       assert_includes last_response.body, 'admin-utc-time'
+      assert_includes last_response.headers['Cache-Control'], 'no-store'
     end
 
     it "creates unique indexes for server tokens" do
@@ -255,6 +258,15 @@ describe "AdminStory" do
   end
 
   describe "GET /admin" do
+    it "does not let caches store the dashboard" do
+      sign_in_admin
+
+      get '/admin'
+
+      assert_equal 200, last_response.status
+      assert_includes last_response.headers['Cache-Control'], 'no-store'
+    end
+
     it "shows configured poll target status" do
       DataPollState.create!(
         server: 'Hollowtide PK',

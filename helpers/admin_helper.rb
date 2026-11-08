@@ -26,6 +26,9 @@ module AdminHelper
 
   def require_admin!
     halt 404 unless admin?
+    # Admin responses can contain bearer tokens (e.g. a freshly issued upload
+    # token), so they must never be stored by a browser or intermediary cache.
+    headers['Cache-Control'] = 'no-store, private'
   end
 
   def csrf_token
