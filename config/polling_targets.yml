@@ -1,6 +1,6 @@
-# Polling is opt-in. List each server to poll by its name from
-# data/servers.rb. A blank URL polls the standard root endpoint, e.g.
-# http://play.example.net:9000/. A URL overrides that default.
+# Polling is opt-in. Each server is listed by its name from data/servers.rb
+# and declares whether it is enabled. An omitted url polls the standard root
+# endpoint, e.g. http://play.example.net:9000/. A url overrides that default.
 #
 # How often each target is polled. Friendly units: 15m, 1hr, 6 hours, 1d.
 # Minute intervals must divide an hour evenly; hour intervals must divide a day.
@@ -10,6 +10,13 @@ interval: 15m
 #
 # targets:
 #   "ServerName":
-#   "Other Server": https://status.example.net/data.json
+#     enabled: true
+#   "Other Server":
+#     enabled: true
+#     url: https://status.example.net/data.json
+#   "Not Ready Yet":
+#     enabled: false
 targets:
-  "Hollowtide PK": "https://hollowtide.org/population.json"
+  "Hollowtide PK":
+    enabled: true
+    url: https://hollowtide.org/population.json

@@ -96,9 +96,13 @@ describe "DataPoller", :unit do
     assert_equal 0, PlayerCount.where(s: "InvalidStandard").count
   end
 
-  it "polls only configured servers and resolves a blank URL to the standard root" do
+  it "polls only enabled servers and resolves an omitted URL to the standard root" do
     first = DataPoller.server_list.first
-    targets = DataPoller.targets_from({first[:name] => nil, "Other" => "https://example.test/data.json"})
+    targets = DataPoller.targets_from({
+      first[:name] => {"enabled" => true},
+      "Other" => {"enabled" => true, "url" => "https://example.test/data.json"},
+      "Disabled" => {"enabled" => false}
+    })
     assert_equal "http://#{first[:host]}:#{first[:port]}/", targets[first[:name]]
     assert_equal "https://example.test/data.json", targets["Other"]
     assert_equal 2, targets.size
@@ -107,8 +111,10 @@ describe "DataPoller", :unit do
     assert_equal "https://hollowtide.org/population.json", DataPoller.targets["Hollowtide PK"]
   end
 
-  it "requires a configured server with no URL to exist in the server list" do
-    assert_raises(DataPoller::Error) { DataPoller.targets_from({"Not a Server" => nil}) }
+  it "requires enabled servers to have a valid config and known name" do
+    assert_raises(DataPoller::Error) { DataPoller.targets_from({"Not a Server" => {"enabled" => true}}) }
+    assert_raises(DataPoller::Error) { DataPoller.targets_from({"Server" => {"enabled" => "yes"}}) }
+    assert_raises(DataPoller::Error) { DataPoller.targets_from({"Server" => nil}) }
   end
 
   it "accepts an old but advancing measurement and suppresses duplicate/conflicting/regressive timestamps" do

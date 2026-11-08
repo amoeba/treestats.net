@@ -31,16 +31,23 @@ module DataPoller
     end
   end
 
-  # Polling is opt-in. Servers listed in config/polling_targets.yml are polled;
-  # a blank URL means the standard root endpoint from data/servers.rb.
+  # Polling is opt-in. Servers enabled in config/polling_targets.yml are
+  # polled; an omitted URL means the standard root endpoint from data/servers.rb.
   def self.targets
     targets_from(config.fetch("targets", {}) || {})
   end
 
   def self.targets_from(configured)
     roots = discovered_targets
-    configured.each_with_object({}) do |(server, url), result|
+    configured.each_with_object({}) do |(server, settings), result|
       raise Error, "invalid target name for #{server.inspect}" unless server.is_a?(String)
+      raise Error, "invalid target settings for #{server}" unless settings.is_a?(Hash)
+
+      enabled = settings["enabled"]
+      raise Error, "enabled must be true or false for #{server}" unless [true, false].include?(enabled)
+      next unless enabled
+
+      url = settings["url"]
       raise Error, "invalid target URL for #{server}" unless url.nil? || url.is_a?(String)
 
       result[server] = url || roots[server] || raise(Error, "unknown polling target #{server.inspect}; add it to data/servers.rb or give a URL")
