@@ -57,4 +57,4 @@ All fields are optional. `population.updated_at` is the measurement time; when i
 - The last successfully parsed document is stored per server and shown in the admin dashboard. A document with no count is recorded as `empty`; a count without a measurement time is recorded as `no_timestamp`.
 - Other JSON fields, including `schema`, `version`, `name`, and `emulator`, are ignored for now. TreeStats binds the server identity from reviewed configuration; do not rely on identity or provenance fields in the document.
 - Keep the game/exporter clock synchronized. A measurement timestamp must not exceed response receipt time. Old but previously unaccepted measurements can be accepted; there is no age cutoff.
-- HTTP and HTTPS are both accepted. Redirects are not followed.
+- HTTP and HTTPS are both accepted. Redirects are not followed. Poll requests bypass proxy environment variables (`http_proxy`, `HTTP_PROXY`, `https_proxy`, `HTTPS_PROXY`) and connect directly.

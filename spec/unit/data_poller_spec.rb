@@ -3,6 +3,7 @@ require_relative "../../lib/data_poller"
 require_relative "../../lib/sidekiq_job_metadata_middleware"
 require "open3"
 require "rbconfig"
+require "socket"
 
 describe "DataPoller", :unit do
   before do
@@ -775,6 +776,27 @@ describe "DataPoller", :unit do
     assert_raises(Timeout::Error) do
       read_response("https://public.example.test/", http_factory: ->(*) { client }, total_timeout: 0.01)
     end
+  end
+
+  it "ignores proxy environment variables and connects directly" do
+    server = TCPServer.new("127.0.0.1", 0)
+    port = server.addr[1]
+    thread = Thread.new do
+      client = server.accept
+      nil while (line = client.gets) && line != "\r\n"
+      body = "{}"
+      client.write("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: #{body.bytesize}\r\nConnection: close\r\n\r\n#{body}")
+      client.close
+    end
+
+    with_env("HTTP_PROXY" => "http://proxy.example:8080", "HTTPS_PROXY" => "http://proxy.example:8080") do
+      body, = read_response("http://127.0.0.1:#{port}/")
+      assert_equal "{}", body
+    end
+  ensure
+    thread&.kill
+    thread&.join
+    server&.close
   end
 
   it "rejects invalid response URLs" do

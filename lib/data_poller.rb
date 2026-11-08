@@ -276,15 +276,14 @@ module DataPoller
 
     def read_response(url: @url, transport: @transport, http_factory: nil, total_timeout: TOTAL_TIMEOUT_SECONDS)
       uri = DataPoller.parse_http_url(url)
-      injected_transport = transport || http_factory
-      proxy_env = ENV["http_proxy"] || ENV["HTTP_PROXY"] || ENV["https_proxy"] || ENV["HTTPS_PROXY"]
-      raise Error, "target URL may not use a proxy" if !injected_transport && proxy_env
       body = +""
       response = if transport
         stub = transport.call(uri)
         body = stub.body.to_s
         stub
       else
+        # Pass nil as the proxy address so Net::HTTP connects directly even when
+        # http_proxy/HTTP_PROXY/https_proxy/HTTPS_PROXY are set.
         http = http_factory ? http_factory.call(uri.host, uri.port, nil) : Net::HTTP.new(uri.host, uri.port, nil)
         http.use_ssl = uri.is_a?(URI::HTTPS)
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
