@@ -27,7 +27,7 @@ module DataPoller
 
   # Accepts both the standard nested document and the legacy flat shape used by
   # explicit config overrides. Returns [count, epoch_seconds].
-  def self.parse_measurement(payload)
+  def self.parse_population(payload)
     raise Error, "response must be an object" unless payload.is_a?(Hash)
 
     if payload.key?("population")
@@ -145,7 +145,7 @@ module DataPoller
 
       begin
         body, received_at = read_response
-        count, timestamp = DataPoller.parse_measurement(JSON.parse(body))
+        count, timestamp = DataPoller.parse_population(JSON.parse(body))
         raise Error, "updated_at is in the future" if timestamp > received_at.floor
 
         lease = DataPollState.collection.find(server: @server, lease_id: lease_id).first
