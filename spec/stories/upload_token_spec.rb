@@ -158,6 +158,32 @@ describe "UploadTokenStory" do
     assert_equal '127.0.0.1', Character.unscoped.find_by(server: 'Token Server', name: 'Token User').ip
   end
 
+  it "records direct uploads as server-sourced" do
+    token = create_server_token('Token Server')
+
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    character = Character.unscoped.find_by(server: 'Token Server', name: 'Token User')
+    assert_equal Character::SERVER_SOURCE, character.upload_source
+    assert character.uploaded_by_server?
+  end
+
+  it "clears server provenance when the plugin uploads next" do
+    token = create_server_token('Token Server')
+    post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+    assert_equal Character::SERVER_SOURCE, Character.unscoped.find_by(server: 'Token Server', name: 'Token User').upload_source
+
+    without_env('TREESTATS_SECRET') do
+      post '/', upload_body('Token Server')
+    end
+
+    assert_equal 200, last_response.status
+    character = Character.unscoped.find_by(server: 'Token Server', name: 'Token User')
+    assert_nil character.upload_source
+    refute character.uploaded_by_server?
+  end
+
   it "rejects an oversized direct upload before reading it" do
     oversized = 'x' * (UploadHelper::MAX_UPLOAD_BYTES + 1)
 

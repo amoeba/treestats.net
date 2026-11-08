@@ -28,7 +28,10 @@
     Last updated
     = AppHelper.relative_time(@character["updated_at"])
     via
-    %a{:href => "https://github.com/amoeba/treestats/releases"} Decal Plugin
+    - if @character.uploaded_by_server?
+      Direct Upload
+    - else
+      %a{:href => "https://github.com/amoeba/treestats/releases"} Decal Plugin
 
   - if @character.attribs
     .tabcontainer

@@ -190,6 +190,10 @@ module UploadHelper
       character.vassals = nil
     end
 
+    # Provenance of the most recent upload, set after assign_attributes so a
+    # payload cannot claim its own source. nil means the plugin.
+    character[:us] = token_required ? Character::SERVER_SOURCE : nil
+
     # IP Address
     # Plugin uploads originate from the player's machine, so request.ip is the
     # player's address. Direct server uploads speak for many players, so the
