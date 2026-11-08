@@ -91,6 +91,36 @@ describe "DataPoller", :unit do
     assert_raises(DataPoller::Error) { DataPoller.parse_rfc3339(timestamp.strftime("%Y-%m-%dT%H:%M:%S")) }
   end
 
+  it "rejects non-RFC3339 and out-of-range timestamps" do
+    [
+      "2026-02-30T18:00:00Z",      # impossible calendar date
+      "2026-11-07T18:00:00+02",    # offset must be ±HH:MM
+      "2026-11-07T18:00:00+0200",  # basic offset form
+      "2026-11-07T18:00:00+02:60", # invalid offset minutes
+      "2026-11-07T18:00:00+24:00", # invalid offset hour
+      "2026-11-07T24:00:00Z",      # hour 24 is not RFC3339
+      "2026-11-07T18:60:00Z",      # minute 60
+      "2026-11-07T12:00:60Z",      # leap second not at 23:59 UTC
+      "26-11-07T18:00:00Z",        # two-digit year
+      "2026-11-07T18:00:00"        # missing offset
+    ].each do |value|
+      assert_raises(DataPoller::Error, value) { DataPoller.parse_rfc3339(value) }
+    end
+  end
+
+  it "accepts RFC3339 fractional seconds and the 23:59 UTC leap second" do
+    {
+      "2026-11-07T18:00:00Z" => Time.utc(2026, 11, 7, 18).to_i,
+      "2026-11-07T18:00:00.0526487Z" => Time.utc(2026, 11, 7, 18).to_i,
+      "2026-11-07T20:00:00+02:00" => Time.utc(2026, 11, 7, 18).to_i,
+      "2026-11-07T13:00:00-05:00" => Time.utc(2026, 11, 7, 18).to_i
+    }.each do |value, epoch|
+      assert_equal epoch, DataPoller.parse_rfc3339(value), value
+    end
+
+    assert_equal Time.utc(2026, 11, 8).to_i, DataPoller.parse_rfc3339("2026-11-07T23:59:60Z")
+  end
+
   it "rejects malformed standard population documents" do
     now = Time.now.utc
     valid_time = (now - 60).strftime("%Y-%m-%dT%H:%M:%SZ")

@@ -19,10 +19,14 @@ module DataPoller
   TOTAL_TIMEOUT_SECONDS = 12
   JOB_TIMEOUT_SECONDS = 90
   LEASE_SECONDS = 120
-  # RFC3339 requires an explicit offset. Time.iso8601 alone accepts naive
-  # timestamps by assuming local time, so require every component from Date's
-  # ISO8601 parser, including the offset.
-  RFC3339_PARTS = %i[year mon mday hour min sec offset].freeze
+  # RFC3339 requires an explicit Z or ±HH:MM offset. DateTime.rfc3339 and
+  # Time.iso8601 normalize out-of-range components (2026-02-30 -> 2026-03-02,
+  # 24:00 -> next day), so reject those explicitly. The checks mirror
+  # json_schemer's date-time format validation (MIT):
+  # https://github.com/davishmcclurg/json_schemer/blob/v2.5.0/lib/json_schemer/format.rb
+  RFC3339_OFFSET = /(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])\z/i
+  RFC3339_HOUR_24 = /[Tt\s]24:/
+  RFC3339_LEAP_SECOND = /[Tt\s]\d{2}:\d{2}:60/
   class JobDeadlineExceeded < Timeout::Error; end
 
   # Accepts both the standard nested document and the legacy flat shape used by
@@ -50,15 +54,25 @@ module DataPoller
   end
 
   def self.parse_rfc3339(value, field = "updated_at")
-    parts = value.is_a?(String) && Date._iso8601(value)
-    unless parts && RFC3339_PARTS.all? { |key| parts.key?(key) }
-      raise Error, "#{field} must be an RFC3339 timestamp"
-    end
+    raise Error, "#{field} must be an RFC3339 timestamp" unless valid_rfc3339?(value)
 
     Time.iso8601(value).to_i
   rescue ArgumentError, RangeError, TypeError
     raise Error, "#{field} must be an RFC3339 timestamp"
   end
+
+  def self.valid_rfc3339?(value)
+    return false unless value.is_a?(String)
+    return false if RFC3339_HOUR_24.match?(value)
+
+    datetime = DateTime.rfc3339(value)
+    return false if RFC3339_LEAP_SECOND.match?(value) && datetime.new_offset.strftime("%H:%M") != "23:59"
+
+    RFC3339_OFFSET.match?(value)
+  rescue ArgumentError
+    false
+  end
+  private_class_method :valid_rfc3339?
 
   def self.server_source_filter
     {"$or" => [{PlayerCount::SOURCE_FIELD => PlayerCount::SERVER_SOURCE}, {"source" => "server"}]}
