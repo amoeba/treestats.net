@@ -35,9 +35,18 @@ describe "CharacterStory" do
     # updates patron field on ones that are not
     #
 
-    it "reports update failure when the character isn't created" do
+    it "reports an invalid payload when required fields are missing" do
       post('/', '{}')
-      assert_equal last_response.body, "Character update failed."
+
+      assert_equal 400, last_response.status
+      assert_includes last_response.body, "Invalid upload payload: server is required."
+    end
+
+    it "ignores unknown fields on plugin uploads" do
+      post('/', JSON.generate(name: 'extra', server: 'test', _id: '0' * 24, key: 'abc', some_extra: true))
+
+      assert_equal 200, last_response.status
+      assert_equal 'Character was updated successfully.', last_response.body
     end
 
     it "reports that levels 1 can't be uploaded with phatac temporarily" do
