@@ -1,4 +1,5 @@
-# Polling targets for fetching server data from public HTTP endpoints
+# TreeStats polls the root of every server's game endpoint, e.g.
+# http://play.example.net:9000/, by default. Entries here override that URL.
 #
 # How often each target is polled. Friendly units: 15m, 1hr, 6 hours, 1d.
 # Minute intervals must divide an hour evenly; hour intervals must divide a day.

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://treestats.net/schemas/asherons-call-server/v1/schema.json",
+  "title": "Asheron's Call Server Information",
+  "description": "A document served at the root of an Asheron's Call server's public game endpoint. No fields are required; unknown fields are ignored by consumers.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "type": "string",
+      "format": "uri",
+      "description": "Canonical URL of the JSON Schema describing this document."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Version of the server information document format."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The server or world name as configured by the operator."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this document was generated, as an RFC3339 timestamp with an explicit offset."
+    },
+    "population": {
+      "type": "object",
+      "description": "Current in-world player population.",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of connected, in-world player characters, including bots and multiboxed characters."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the population was measured, as an RFC3339 timestamp with an explicit offset."
+        }
+      },
+      "required": ["count", "updated_at"]
+    },
+    "emulator": {
+      "type": "object",
+      "description": "Server emulator software and version.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["name", "version"]
+    }
+  },
+  "additionalProperties": true
+}

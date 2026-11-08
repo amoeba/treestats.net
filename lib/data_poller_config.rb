@@ -18,11 +18,37 @@ module DataPoller
     YAML.safe_load_file(File.expand_path("../config/polling_targets.yml", __dir__)) || {}
   end
 
+  # Servers may serve their info document at the root of the public game
+  # endpoint, e.g. http://play.example.net:9000/. That is the default target.
+  def self.discovered_targets
+    server_list.each_with_object({}) do |server, result|
+      name = server[:name].to_s
+      host = server[:host].to_s.strip
+      port = server[:port].to_s.strip
+      next if name.empty? || host.empty? || port.empty?
+
+      result[name] = "http://#{host}:#{port}/"
+    end
+  end
+
+  # Explicit targets in config/polling_targets.yml take precedence over the
+  # discovered root endpoint, which lets operators point at a nonstandard URL.
   def self.targets
+    discovered_targets.merge(configured_targets)
+  end
+
+  def self.configured_targets
     config.fetch("targets", {}).each_with_object({}) do |(server, url), result|
       raise Error, "invalid target mapping for #{server}" unless server.is_a?(String) && url.is_a?(String)
       result[server] = url
     end
+  end
+
+  def self.server_list
+    require_relative "../data/servers"
+    SERVERS
+  rescue LoadError
+    []
   end
 
   # Accepts friendly intervals such as "15m", "30 mins", "1hr", "6 hours", "1d".

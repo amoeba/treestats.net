@@ -53,6 +53,57 @@ describe "DataPoller", :unit do
     refute_includes observation.serializable_hash({}).keys, "source"
   end
 
+  it "accepts the standard population document with an RFC3339 measurement time" do
+    timestamp = Time.now.utc - 60
+    document = {
+      schema: "https://treestats.net/schemas/asherons-call-server/v1/schema.json",
+      version: 1,
+      updated_at: timestamp.strftime("%Y-%m-%dT%H:%M:%SZ"),
+      name: "Dereth.AC",
+      population: {
+        count: 7,
+        updated_at: "#{timestamp.strftime("%Y-%m-%dT%H:%M:%S")}.0526487Z"
+      },
+      emulator: {name: "ACE", version: "1.2.3"}
+    }
+
+    assert_equal :accepted, poll_for("Standard", transport_for(document))
+    observation = PlayerCount.where(s: "Standard").first
+    assert_equal 7, observation.c
+    assert_equal timestamp.to_i, observation.c_at.to_i
+    assert_equal PlayerCount::SERVER_SOURCE, observation.source
+  end
+
+  it "rejects malformed standard population documents" do
+    now = Time.now.utc
+    valid_time = (now - 60).strftime("%Y-%m-%dT%H:%M:%SZ")
+    documents = [
+      {population: nil},
+      {population: []},
+      {population: {count: 1}},
+      {population: {updated_at: valid_time}},
+      {population: {count: -1, updated_at: valid_time}},
+      {population: {count: 1.0, updated_at: valid_time}},
+      {population: {count: "1", updated_at: valid_time}},
+      {population: {count: 1, updated_at: (now - 60).to_i}},
+      {population: {count: 1, updated_at: (now - 60).strftime("%Y-%m-%dT%H:%M:%S")}},
+      {population: {count: 1, updated_at: (now + 60).strftime("%Y-%m-%dT%H:%M:%SZ")}}
+    ]
+
+    documents.each do |document|
+      assert_equal :failure, poll_for("InvalidStandard", transport_for(document)), document.inspect
+    end
+    assert_equal 0, PlayerCount.where(s: "InvalidStandard").count
+  end
+
+  it "derives HTTP root targets for listed servers and prefers explicit overrides" do
+    first = DataPoller.server_list.first
+    assert_equal "http://#{first[:host]}:#{first[:port]}/", DataPoller.discovered_targets[first[:name]]
+    assert_equal DataPoller.server_list.size, DataPoller.discovered_targets.size
+    assert DataPoller.discovered_targets.values.all? { |url| url.start_with?("http://") && url.end_with?("/") }
+    assert_equal "https://hollowtide.org/population.json", DataPoller.targets["Hollowtide PK"]
+  end
+
   it "accepts an old but advancing measurement and suppresses duplicate/conflicting/regressive timestamps" do
     start = Time.now.to_i - 7200
     assert_equal :accepted, poll_for("PollTest", transport_for(count: 2, updated_at: start))
@@ -317,6 +368,19 @@ describe "DataPoller", :unit do
     assert_equal 0, options[:max_retries]
     assert_nil options[:proxy]
 
+    options.clear
+    result = read_response("http://public.example.test/",
+      http_factory: ->(host, port, proxy) {
+        options[:host] = host
+        options[:port] = port
+        options[:proxy] = proxy
+        client
+      })
+    assert_equal "{\"count\":1,\"updated_at\":1}", result.first
+    assert_equal "public.example.test", options[:host]
+    assert_equal false, options[:use_ssl]
+    assert_nil options[:proxy]
+
     oversized = Object.new
     oversized.define_singleton_method(:code) { "200" }
     oversized.define_singleton_method(:read_body) { |&block| block.call("x" * (DataPoller::MAX_BODY_BYTES + 1)) }
@@ -334,7 +398,7 @@ describe "DataPoller", :unit do
     end
   end
 
-  it "rejects non-HTTPS responses" do
-    assert_raises(DataPoller::Error) { read_response("http://example.com/") }
+  it "rejects non-HTTP response targets" do
+    assert_raises(DataPoller::Error) { read_response("ftp://example.com/") }
   end
 end

@@ -3,6 +3,7 @@
 require "json"
 require "net/http"
 require "openssl"
+require "time"
 require "uri"
 require "timeout"
 require "securerandom"
@@ -17,7 +18,42 @@ module DataPoller
   TOTAL_TIMEOUT_SECONDS = 12
   JOB_TIMEOUT_SECONDS = 90
   LEASE_SECONDS = 120
+  # RFC3339 requires an explicit offset; Time.iso8601 alone also accepts naive
+  # timestamps by assuming local time, which would make measurement times
+  # depend on the worker's time zone.
+  RFC3339_PATTERN = /\A\d{4}-\d{2}-\d{2}[Tt]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[Zz]|[+-]\d{2}:\d{2})\z/
   class JobDeadlineExceeded < Timeout::Error; end
+
+  # Accepts both the standard nested document and the legacy flat shape used by
+  # explicit config overrides. Returns [count, epoch_seconds].
+  def self.parse_measurement(payload)
+    raise Error, "response must be an object" unless payload.is_a?(Hash)
+
+    if payload.key?("population")
+      population = payload["population"]
+      raise Error, "population must be an object" unless population.is_a?(Hash)
+
+      count = population["count"]
+      timestamp = parse_rfc3339(population["updated_at"])
+    else
+      count = payload["count"]
+      timestamp = payload["updated_at"]
+      raise Error, "updated_at must be an integer Unix timestamp" unless timestamp.is_a?(Integer) && timestamp >= 0
+    end
+
+    raise Error, "count must be a nonnegative integer" unless count.is_a?(Integer) && count >= 0
+    [count, timestamp]
+  end
+
+  def self.parse_rfc3339(value)
+    unless value.is_a?(String) && RFC3339_PATTERN.match?(value)
+      raise Error, "population.updated_at must be an RFC3339 timestamp"
+    end
+
+    Time.iso8601(value).to_i
+  rescue ArgumentError, RangeError
+    raise Error, "population.updated_at must be an RFC3339 timestamp"
+  end
 
   def self.server_source_filter
     {"$or" => [{PlayerCount::SOURCE_FIELD => PlayerCount::SERVER_SOURCE}, {"source" => "server"}]}
@@ -107,12 +143,7 @@ module DataPoller
 
       begin
         body, received_at = read_response
-        payload = JSON.parse(body)
-        raise Error, "response must be an object" unless payload.is_a?(Hash)
-        count = payload["count"]
-        timestamp = payload["updated_at"]
-        raise Error, "count must be a nonnegative integer" unless count.is_a?(Integer) && count >= 0
-        raise Error, "updated_at must be an integer Unix timestamp" unless timestamp.is_a?(Integer) && timestamp >= 0
+        count, timestamp = DataPoller.parse_measurement(JSON.parse(body))
         raise Error, "updated_at is in the future" if timestamp > received_at.floor
 
         lease = DataPollState.collection.find(server: @server, lease_id: lease_id).first
@@ -167,9 +198,10 @@ module DataPoller
 
     def read_response(transport: @transport, http_factory: nil, total_timeout: TOTAL_TIMEOUT_SECONDS)
       uri = URI.parse(@url)
-      raise Error, "target URL must be HTTPS without credentials or fragment" unless uri.is_a?(URI::HTTPS) && uri.host && !uri.userinfo && !uri.fragment
+      raise Error, "target URL must use HTTP or HTTPS without credentials or fragment" unless uri.is_a?(URI::HTTP) && uri.host && !uri.userinfo && !uri.fragment
       injected_transport = transport || http_factory
-      raise Error, "target URL may not use a proxy" if !injected_transport && (ENV["https_proxy"] || ENV["HTTPS_PROXY"])
+      proxy_env = ENV["http_proxy"] || ENV["HTTP_PROXY"] || ENV["https_proxy"] || ENV["HTTPS_PROXY"]
+      raise Error, "target URL may not use a proxy" if !injected_transport && proxy_env
       body = +""
       response = if transport
         stub = transport.call(uri)
@@ -177,7 +209,7 @@ module DataPoller
         stub
       else
         http = http_factory ? http_factory.call(uri.host, uri.port, nil) : Net::HTTP.new(uri.host, uri.port, nil)
-        http.use_ssl = true
+        http.use_ssl = uri.is_a?(URI::HTTPS)
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         http.open_timeout = OPEN_TIMEOUT_SECONDS
         http.read_timeout = READ_TIMEOUT_SECONDS
