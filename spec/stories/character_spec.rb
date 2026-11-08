@@ -42,6 +42,23 @@ describe "CharacterStory" do
       assert_includes last_response.body, "Invalid upload payload: server is required."
     end
 
+    it "saves the character when the plugin reports a zero server population" do
+      PlayerCount.where(server: 'test').destroy
+      payload = JSON.parse(File.read(File.expand_path('../../util/plugin/plugin_message.txt', __dir__)))
+      payload['server'] = 'test'
+      payload['server_population'] = 0
+
+      without_env('TREESTATS_SECRET') do
+        post '/', JSON.generate(payload)
+      end
+
+      assert_equal 200, last_response.status
+      assert_nil PlayerCount.where(server: 'test').first
+      character = Character.unscoped.find_by(server: 'test', name: 'Mr Adventure')
+      assert_equal 275, character.level
+      assert_equal 9, character.vassals.length
+    end
+
     it "ignores unknown fields on plugin uploads" do
       post('/', JSON.generate(name: 'extra', server: 'test', _id: '0' * 24, key: 'abc', some_extra: true))
 

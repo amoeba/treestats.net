@@ -199,15 +199,15 @@ describe "UploadTokenStory" do
     assert_equal 400, last_response.status
   end
 
-  it "rejects an invalid server_population and writes nothing" do
+  it "ignores an invalid server_population and still saves the character" do
     token = create_server_token('Token Server')
 
     post '/characters', JSON.generate(server: 'Token Server', name: 'Token User', server_population: -5),
       'HTTP_X_TREESTATS_SERVER_TOKEN' => token
 
-    assert_equal 400, last_response.status
+    assert_equal 200, last_response.status
     assert_equal 0, PlayerCount.where(server: 'Token Server').count
-    assert_nil Character.unscoped.where(server: 'Token Server', name: 'Token User').first
+    refute_nil Character.unscoped.where(server: 'Token Server', name: 'Token User').first
   end
 
   it "drops malformed vassal entries instead of crashing" do

@@ -31,7 +31,7 @@ module UploadPayload
         # An empty name is allowed so the level-1 message is preserved.
         payload[key] = require_string(key, value, allow_empty: key == "name")
       when "server_population"
-        population = population_value(value) unless value.nil?
+        population = population_value(value)
       else
         next unless Character::UPLOAD_FIELDS.include?(key)
 
@@ -127,16 +127,15 @@ module UploadPayload
   end
   private_class_method :vassals
 
+  # Population samples are best effort: a bad value must not drop the
+  # character upload. Only a positive integer becomes a PlayerCount.
   def self.population_value(value)
     count = case value
             when Integer then value
             when String then Integer(value, 10, exception: false)
             end
-    unless count.is_a?(Integer) && count.positive?
-      raise Invalid.new("server_population", "must be a positive integer")
-    end
 
-    count
+    count if count.is_a?(Integer) && count.positive?
   end
   private_class_method :population_value
 end

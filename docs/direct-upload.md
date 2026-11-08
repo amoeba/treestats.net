@@ -27,7 +27,9 @@ may be at most 1 MiB. Direct uploads are authenticated by the token instead of
 the plugin's `TREESTATS_SECRET` body check.
 
 If the payload contains `server_population`, a player count sample is recorded in
-addition to the character. It must be a positive integer.
+addition to the character. It is best effort: only a positive integer is
+recorded, and anything else (0, negative, non-numeric) is ignored so the
+character upload still succeeds.
 
 Unknown fields are ignored, not rejected, so extra metadata (including Mongo's
 `_id`) is harmless. Known fields are type-checked — integers must be integers or

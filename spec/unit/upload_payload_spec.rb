@@ -56,13 +56,14 @@ describe UploadPayload do
     end
   end
 
-  it "validates that the population is a positive integer" do
+  it "treats the population as best effort" do
     assert_equal 5, sanitize("server" => "s", "name" => "n", "server_population" => 5).population
     assert_equal 1_000_000, sanitize("server" => "s", "name" => "n", "server_population" => 1_000_000).population
-    assert_raises(UploadPayload::Invalid) { sanitize("server" => "s", "name" => "n", "server_population" => 0) }
-    assert_raises(UploadPayload::Invalid) { sanitize("server" => "s", "name" => "n", "server_population" => -1) }
-    assert_raises(UploadPayload::Invalid) { sanitize("server" => "s", "name" => "n", "server_population" => "abc") }
-    assert_raises(UploadPayload::Invalid) { sanitize("server" => "s", "name" => "n", "server_population" => 1.5) }
+    assert_nil sanitize("server" => "s", "name" => "n", "server_population" => 0).population
+    assert_nil sanitize("server" => "s", "name" => "n", "server_population" => -1).population
+    assert_nil sanitize("server" => "s", "name" => "n", "server_population" => "abc").population
+    assert_nil sanitize("server" => "s", "name" => "n", "server_population" => 1.5).population
+    assert_nil sanitize("server" => "s", "name" => "n", "server_population" => nil).population
   end
 
   it "drops malformed vassal entries" do
