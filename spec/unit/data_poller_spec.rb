@@ -96,12 +96,19 @@ describe "DataPoller", :unit do
     assert_equal 0, PlayerCount.where(s: "InvalidStandard").count
   end
 
-  it "derives HTTP root targets for listed servers and prefers explicit overrides" do
+  it "polls only configured servers and resolves a blank URL to the standard root" do
     first = DataPoller.server_list.first
-    assert_equal "http://#{first[:host]}:#{first[:port]}/", DataPoller.discovered_targets[first[:name]]
-    assert_equal DataPoller.server_list.size, DataPoller.discovered_targets.size
-    assert DataPoller.discovered_targets.values.all? { |url| url.start_with?("http://") && url.end_with?("/") }
+    targets = DataPoller.targets_from({first[:name] => nil, "Other" => "https://example.test/data.json"})
+    assert_equal "http://#{first[:host]}:#{first[:port]}/", targets[first[:name]]
+    assert_equal "https://example.test/data.json", targets["Other"]
+    assert_equal 2, targets.size
+
+    assert_equal ["Hollowtide PK"], DataPoller.targets.keys
     assert_equal "https://hollowtide.org/population.json", DataPoller.targets["Hollowtide PK"]
+  end
+
+  it "requires a configured server with no URL to exist in the server list" do
+    assert_raises(DataPoller::Error) { DataPoller.targets_from({"Not a Server" => nil}) }
   end
 
   it "accepts an old but advancing measurement and suppresses duplicate/conflicting/regressive timestamps" do

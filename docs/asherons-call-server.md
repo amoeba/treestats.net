@@ -56,4 +56,4 @@ Consumers must ignore unknown fields. All timestamps are RFC3339 strings with an
 
 ## Reference implementation
 
-The ACE mod `ACE.Mods.Treestats` serves a document of this shape from the game endpoint. TreeStats polls the root `/` of every server in the community list and also accepts the legacy flat shape (`{"count": 42, "updated_at": 1760000000}`) for explicit overrides in `config/polling_targets.yml`. Servers that serve the document elsewhere can be listed explicitly in that file.
+The ACE mod `ACE.Mods.Treestats` serves a document of this shape from the game endpoint. TreeStats polls opted-in servers at the root `/` and also accepts the legacy flat shape (`{"count": 42, "updated_at": 1760000000}`) for explicit overrides in `config/polling_targets.yml`. Servers that serve the document elsewhere can be listed with an explicit URL in that file.

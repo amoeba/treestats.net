@@ -1,5 +1,6 @@
-# TreeStats polls the root of every server's game endpoint, e.g.
-# http://play.example.net:9000/, by default. Entries here override that URL.
+# Polling is opt-in. List each server to poll by its name from
+# data/servers.rb. A blank URL polls the standard root endpoint, e.g.
+# http://play.example.net:9000/. A URL overrides that default.
 #
 # How often each target is polled. Friendly units: 15m, 1hr, 6 hours, 1d.
 # Minute intervals must divide an hour evenly; hour intervals must divide a day.
@@ -8,6 +9,7 @@ interval: 15m
 # Example:
 #
 # targets:
-#   "ServerName": https://status.example.net/data.json
+#   "ServerName":
+#   "Other Server": https://status.example.net/data.json
 targets:
   "Hollowtide PK": "https://hollowtide.org/population.json"

@@ -31,16 +31,19 @@ module DataPoller
     end
   end
 
-  # Explicit targets in config/polling_targets.yml take precedence over the
-  # discovered root endpoint, which lets operators point at a nonstandard URL.
+  # Polling is opt-in. Servers listed in config/polling_targets.yml are polled;
+  # a blank URL means the standard root endpoint from data/servers.rb.
   def self.targets
-    discovered_targets.merge(configured_targets)
+    targets_from(config.fetch("targets", {}) || {})
   end
 
-  def self.configured_targets
-    config.fetch("targets", {}).each_with_object({}) do |(server, url), result|
-      raise Error, "invalid target mapping for #{server}" unless server.is_a?(String) && url.is_a?(String)
-      result[server] = url
+  def self.targets_from(configured)
+    roots = discovered_targets
+    configured.each_with_object({}) do |(server, url), result|
+      raise Error, "invalid target name for #{server.inspect}" unless server.is_a?(String)
+      raise Error, "invalid target URL for #{server}" unless url.nil? || url.is_a?(String)
+
+      result[server] = url || roots[server] || raise(Error, "unknown polling target #{server.inspect}; add it to data/servers.rb or give a URL")
     end
   end
 

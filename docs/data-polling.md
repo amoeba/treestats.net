@@ -9,23 +9,23 @@ At this time, we only support polling for population count data but this could b
 
 ## Polling Targets
 
-TreeStats polls the root of every server's public game endpoint as listed in `./data/servers.rb`:
+Polling is opt-in. Add each server to `./config/polling_targets.yml` by its name from `./data/servers.rb`:
+
+```yaml
+interval: 15m
+targets:
+  Example Server:
+  Other Server: https://status.example.net/data.json
+```
+
+A blank URL polls the server's public game endpoint root:
 
 ```
 http://<server-host>:<game-port>/
 ```
 
 The document served there is described by the [Asheron's Call Server Information](./asherons-call-server.md) standard.
-
-Operators can override the discovered URL for a server in `./config/polling_targets.yml`:
-
-```yaml
-interval: 15m
-targets:
-  Example Server: https://status.example.net/population.json
-```
-
-Explicit targets take precedence over the discovered root endpoint.
+A URL overrides the root endpoint for servers that serve the document elsewhere.
 
 The `interval` field is global for all targets and defines how often we poll all of them.
 `interval` accepts friendly units such as `15m`, `30 mins`, `1hr`, `6 hours`, or `1d`. Minute intervals must divide an hour evenly (1, 2, 3, 4, 5, 6, 10, 12, 15, 20, or 30), and hour intervals must divide a day evenly (1, 2, 3, 4, 6, 8, 12, or 24). The process fails fast at boot on an unsupported value, and changing it requires restarting the Sidekiq worker so the cron schedule is reloaded.
