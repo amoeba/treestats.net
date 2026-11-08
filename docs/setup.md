@@ -52,7 +52,8 @@ bundle exec rake test
 
 ## Admin Setup
 
-The site has a single admin user used to archive characters via the in-page widget.
+The site has a single admin user used to archive characters and manage server
+upload tokens.
 
 ### Create the admin
 
@@ -64,7 +65,9 @@ This prompts for a name and password (minimum 12 characters). The credential is 
 
 ### Log in
 
-Visit `/admin/login` (not linked from anywhere). After signing in, an admin widget appears at the bottom-right corner of every character page.
+Visit `/admin/login` (not linked from anywhere). After signing in, an admin widget appears at the bottom-right corner of every character page, and an **Admin** link appears in the site footer. The dashboard at `/admin` shows data-polling status and issues server upload tokens.
+
+See [Direct Uploads](direct-upload.md) for the token-authenticated upload API.
 
 ### Session secret
 
