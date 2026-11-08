@@ -8,4 +8,5 @@ interval: 15m
 #
 # targets:
 #   "ServerName": https://status.example.net/data.json
-targets: {}
+targets:
+  "Hollowtide PK": "https://hollowtide.org/population.json"
