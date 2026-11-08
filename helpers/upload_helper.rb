@@ -90,6 +90,20 @@ module UploadHelper
       return "Upload payload must be a JSON object."
     end
 
+    begin
+      upload = UploadPayload.sanitize(json_text)
+    rescue UploadPayload::Invalid => e
+      status 400
+      return "Invalid upload payload: #{e}."
+    end
+
+    if upload.ignored.any?
+      headers['X-Upload-Ignored-Fields'] = UploadPayload.ignored_header(upload.ignored)
+      puts "Upload ignored fields: #{upload.ignored.join(', ')}" unless ENV['RACK_ENV'] == 'test'
+    end
+
+    json_text = upload.payload
+
     if token_required
       unless ServerAuthTokenHelper.authenticate(json_text['server'], server_token)
         status 403
@@ -112,24 +126,15 @@ module UploadHelper
       return "Not allowed."
     end
 
-    # Remove verification key if it exists
-    if (json_text.has_key?("key"))
-      json_text = json_text.tap { |h| h.delete("key") }
-    end
-
     # Extract information for later in this method
     name = json_text['name']
     server = json_text['server']
-    server_pop = json_text['server_population']
     allegiance_name = json_text['allegiance_name']
 
     # PlayerCount
-    # Only save a PlayerCount if this message contains one
-    if(json_text.has_key?("server_population"))
-      json_text = json_text.tap { |h| h.delete('server_population')}
-      # No source field: an absent source is the compact plugin default.
-      PlayerCount.create(server: server, count: server_pop)
-    end
+    # Only save a PlayerCount if this message contains one.
+    # No source field: an absent source is the compact plugin default.
+    PlayerCount.create(server: server, count: upload.population) if upload.population
 
     # Character
     # Convert "birth" field so it's stored as DateTime with GMT-5
