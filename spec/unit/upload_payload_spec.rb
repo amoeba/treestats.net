@@ -56,12 +56,13 @@ describe UploadPayload do
     end
   end
 
-  it "validates the population range" do
+  it "validates that the population is a positive integer" do
     assert_equal 5, sanitize("server" => "s", "name" => "n", "server_population" => 5).population
-    assert_equal 0, sanitize("server" => "s", "name" => "n", "server_population" => 0).population
+    assert_equal 1_000_000, sanitize("server" => "s", "name" => "n", "server_population" => 1_000_000).population
+    assert_raises(UploadPayload::Invalid) { sanitize("server" => "s", "name" => "n", "server_population" => 0) }
     assert_raises(UploadPayload::Invalid) { sanitize("server" => "s", "name" => "n", "server_population" => -1) }
     assert_raises(UploadPayload::Invalid) { sanitize("server" => "s", "name" => "n", "server_population" => "abc") }
-    assert_raises(UploadPayload::Invalid) { sanitize("server" => "s", "name" => "n", "server_population" => 100_001) }
+    assert_raises(UploadPayload::Invalid) { sanitize("server" => "s", "name" => "n", "server_population" => 1.5) }
   end
 
   it "drops malformed vassal entries" do

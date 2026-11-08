@@ -17,8 +17,6 @@ module UploadPayload
   KNOWN_FIELDS = (SCALAR_FIELDS + INTEGER_FIELDS + HASH_FIELDS + PERSON_FIELDS +
     ARRAY_FIELDS + %w[vassals]).freeze
 
-  MAX_POPULATION = 100_000
-
   class Invalid < StandardError
     attr_reader :field
 
@@ -144,8 +142,8 @@ module UploadPayload
             when Integer then value
             when String then Integer(value, 10, exception: false)
             end
-    unless count.is_a?(Integer) && count >= 0 && count <= MAX_POPULATION
-      raise Invalid.new("server_population", "must be an integer between 0 and #{MAX_POPULATION}")
+    unless count.is_a?(Integer) && count.positive?
+      raise Invalid.new("server_population", "must be a positive integer")
     end
 
     count
