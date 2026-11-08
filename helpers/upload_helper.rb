@@ -45,7 +45,7 @@ module UploadHelper
       return "Upload too large."
     end
 
-    server_token = request.env[ServerAuthTokenHelper::HEADER].to_s
+    server_token = request.env[ServerAuthTokenHelper::RACK_HEADER].to_s
     if token_required && server_token.empty?
       status 401
       return "Server upload token is required."
@@ -91,8 +91,7 @@ module UploadHelper
     end
 
     if token_required
-      token_record = ServerAuthTokenHelper.authenticate(json_text['server'], server_token)
-      unless token_record
+      unless ServerAuthTokenHelper.authenticate(json_text['server'], server_token)
         status 403
         return "Failed to verify server upload token. Character was not saved."
       end

@@ -20,12 +20,12 @@
           %table
             %thead
               %tr
-                %th Server
-                %th Endpoint
-                %th Last check
-                %th Outcome
-                %th Consecutive failures
-                %th Error
+                %th{:scope => "col"} Server
+                %th{:scope => "col"} Endpoint
+                %th{:scope => "col"} Last check
+                %th{:scope => "col"} Outcome
+                %th{:scope => "col"} Consecutive failures
+                %th{:scope => "col"} Error
             %tbody
               - @poll_targets.each do |target|
                 %tr
@@ -53,9 +53,9 @@
           %table
             %thead
               %tr
-                %th Server
-                %th Last issued
-                %th
+                %th{:scope => "col"} Server
+                %th{:scope => "col"} Last issued
+                %th{:scope => "col"}
             %tbody
               - @tokens.each do |token|
                 %tr
