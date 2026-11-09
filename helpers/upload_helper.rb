@@ -109,7 +109,6 @@ module UploadHelper
       return "Invalid upload payload: #{e}."
     end
 
-    raw_payload = json_text
     json_text = upload.payload
 
     if token_required
@@ -134,7 +133,7 @@ module UploadHelper
       return "Not allowed."
     end
 
-    sample = UploadSampling.sample(raw_payload) if !token_required && ENV["RACK_ENV"] == "production"
+    sample = UploadSampling.sample(text) if !token_required && ENV["RACK_ENV"] == "production"
 
     # Extract information for later in this method
     name = json_text['name']

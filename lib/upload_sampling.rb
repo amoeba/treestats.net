@@ -7,20 +7,20 @@ module UploadSampling
     raise ArgumentError, "UPLOAD_SAMPLE_RATE must be a number between 0 and 1"
   end
 
-  def self.sample(payload)
+  def self.sample(text)
     return if RATE <= 0 || rand >= RATE
 
-    without_credentials(payload)
+    text.dup
   rescue
     puts "Failed to prepare upload sample."
     nil
   end
 
-  def self.capture(payload)
-    return unless payload
+  def self.capture(text)
+    return unless text
 
     Sentry.with_scope do |scope|
-      scope.set_context("character_upload", payload)
+      scope.add_attachment(bytes: text, filename: "character-upload.json", content_type: "application/json")
       Sentry.capture_message("Sampled plugin character upload")
     end
   rescue

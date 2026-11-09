@@ -101,16 +101,17 @@ describe "UploadTokenStory" do
   it "samples successful plugin uploads before normalization, but not direct uploads" do
     token = create_server_token('Token Server')
     payload = {name: 'Token User', server: 'Token Server', level: '50', birth: '1/15/2000 8:30:00 PM'}
+    body = JSON.pretty_generate(payload)
     sampled = []
     captured = []
 
     original_sample = UploadSampling.method(:sample)
     original_capture = UploadSampling.method(:capture)
-    UploadSampling.define_singleton_method(:sample) { |body| sampled << body['level']; :sample }
+    UploadSampling.define_singleton_method(:sample) { |text| sampled << text; :sample }
     UploadSampling.define_singleton_method(:capture) { |sample| captured << sample }
     begin
       with_env('RACK_ENV' => 'production') do
-        without_env('TREESTATS_SECRET') { post '/', JSON.generate(payload) }
+        without_env('TREESTATS_SECRET') { post '/', body }
         assert_equal 200, last_response.status
         post '/characters', JSON.generate(payload), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
         assert_equal 200, last_response.status
@@ -120,7 +121,7 @@ describe "UploadTokenStory" do
       UploadSampling.define_singleton_method(:capture, original_capture)
     end
 
-    assert_equal ['50'], sampled
+    assert_equal [body], sampled
     assert_equal [:sample], captured
   end
 

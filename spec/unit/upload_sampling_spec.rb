@@ -6,7 +6,7 @@ require "sentry/transport/dummy_transport"
 require_relative "../../lib/sentry_upload_filter"
 
 describe UploadSampling do
-  it "preserves real plugin data and unknown fields while removing credentials" do
+  it "removes credentials from diagnostic logs without changing character data" do
     payload = JSON.parse(File.read(File.expand_path("../../util/plugin/plugin_message.txt", __dir__)))
     payload["extra_game_field"] = {"value" => 123, "token" => "credential"}
     sample = UploadSampling.without_credentials(payload)
@@ -19,7 +19,7 @@ describe UploadSampling do
     assert payload.key?("key")
   end
 
-  it "sends the character payload through Sentry without credentials" do
+  it "sends the exact plugin JSON as an attachment in the Sentry envelope" do
     Sentry.init do |config|
       config.dsn = "http://public@example.invalid/1"
       config.transport.transport_class = Sentry::DummyTransport
@@ -27,15 +27,18 @@ describe UploadSampling do
       config.enabled_environments = ["test"]
       config.before_send = SentryUploadFilter.method(:filter)
     end
-    payload = {"name" => "Example Character", "skills" => {"alchemy" => {"base" => 500}}, "key" => "credential"}
+    text = JSON.pretty_generate("name" => "Example Character", "key" => "example-key", "unknown" => "x" * 10_000)
 
-    UploadSampling.capture(UploadSampling.without_credentials(payload))
-    event = Sentry.get_current_client.transport.events.fetch(0).to_json_compatible
+    UploadSampling.capture(text)
+    transport = Sentry.get_current_client.transport
+    event = transport.events.fetch(0).to_json_compatible
+    attachment = transport.envelopes.fetch(0).items.find { |item| item.headers[:type] == "attachment" }
 
     assert_equal "Sampled plugin character upload", event["message"]
-    assert_equal "Example Character", event.dig("contexts", "character_upload", "name")
-    assert_equal 500, event.dig("contexts", "character_upload", "skills", "alchemy", "base")
-    refute event.dig("contexts", "character_upload").key?("key")
+    refute_nil attachment
+    assert_equal "character-upload.json", attachment.headers[:filename]
+    assert_equal "application/json", attachment.headers[:content_type]
+    assert_equal text, attachment.payload
   ensure
     Sentry.close
   end
@@ -58,7 +61,7 @@ describe UploadSampling do
 
   it "samples at the configured endpoints of the rate range" do
     file = File.expand_path("../../lib/upload_sampling.rb", __dir__)
-    command = [RbConfig.ruby, "-r", file, "-e", "print UploadSampling.sample({'level' => 50}).nil?"]
+    command = [RbConfig.ruby, "-r", file, "-e", "print UploadSampling.sample('{}').nil?"]
 
     output, _, status = Open3.capture3({"UPLOAD_SAMPLE_RATE" => "0"}, *command)
     assert status.success?
@@ -69,18 +72,17 @@ describe UploadSampling do
     assert_equal "false", output
   end
 
-  it "captures original values before later changes to the payload" do
+  it "copies the exact request body before it can be changed" do
     file = File.expand_path("../../lib/upload_sampling.rb", __dir__)
     script = <<~RUBY
-      require "json"
-      payload = {"name" => "Example", "skills" => {"alchemy" => {"base" => 500}}, "key" => "credential"}
-      sample = UploadSampling.sample(payload)
-      payload["skills"]["alchemy"]["base"] = 1
-      print JSON.generate(sample)
+      text = "{ \\"level\\": 50 }"
+      sample = UploadSampling.sample(text)
+      text.replace("changed")
+      print sample
     RUBY
     output, _, status = Open3.capture3({"UPLOAD_SAMPLE_RATE" => "1"}, RbConfig.ruby, "-r", file, "-e", script)
 
     assert status.success?
-    assert_equal({"name" => "Example", "skills" => {"alchemy" => {"base" => 500}}}, JSON.parse(output))
+    assert_equal '{ "level": 50 }', output
   end
 end
