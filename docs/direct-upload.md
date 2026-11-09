@@ -21,10 +21,11 @@ X-TreeStats-Server-Token: ts_...
 Content-Type: application/json
 ```
 
-The body is the same JSON the Decal plugin sends. The payload must be a JSON
-object, its `server` field must match the server the token was issued for, and it
-may be at most 1 MiB. Direct uploads are authenticated by the token instead of
-the plugin's `TREESTATS_SECRET` body check.
+The body is the same JSON the Decal plugin sends. Its canonical shape is
+described by the [character upload schema](https://treestats.net/schemas/character/v2/schema.json).
+The payload must be a JSON object, its `server` field must match the server the
+token was issued for, and it may be at most 1 MiB. Direct uploads are
+authenticated by the token instead of the plugin's `TREESTATS_SECRET` body check.
 
 If the payload contains `server_population`, a player count sample is recorded in
 addition to the character. It is best effort: only a positive integer is
@@ -56,11 +57,15 @@ the server the token was issued for:
 {
   "name": "Maximal Example",
   "server": "Example Server",
-  "race": 1,
-  "gender": 1,
+  "account_name": "example-account",
+  "version": "2",
+  "race": "Aluvian",
+  "gender": "Male",
   "level": 275,
+  "allegiance_name": "Example Allegiance",
   "rank": 10,
   "followers": 42,
+  "server_population": 123,
   "deaths": 3,
   "birth": "01/15/2000 08:30:00 PM",
   "total_xp": 1234567890,
@@ -68,40 +73,34 @@ the server the token was issued for:
   "skill_credits": 12,
   "luminance_earned": 5000,
   "luminance_total": 7500,
-  "properties": {
-    "times_enlightened": 2,
-    "augmentations": {
-      "critical_frequency": 5
-    }
-  },
   "attribs": {
-    "strength": {"creation": 100, "base": 100, "buffed": 100},
-    "endurance": {"creation": 100, "base": 100, "buffed": 100},
-    "coordination": {"creation": 100, "base": 100, "buffed": 100},
-    "quickness": {"creation": 100, "base": 100, "buffed": 100},
-    "focus": {"creation": 100, "base": 100, "buffed": 100},
-    "self": {"creation": 100, "base": 100, "buffed": 100}
+    "strength": {"name": "Strength", "base": 100, "creation": 100},
+    "endurance": {"name": "Endurance", "base": 100, "creation": 100},
+    "quickness": {"name": "Quickness", "base": 100, "creation": 100},
+    "coordination": {"name": "Coordination", "base": 100, "creation": 100},
+    "focus": {"name": "Focus", "base": 100, "creation": 100},
+    "self": {"name": "Self", "base": 100, "creation": 100}
   },
   "vitals": {
-    "health": {"creation": 100, "base": 100, "buffed": 100},
-    "stamina": {"creation": 100, "base": 100, "buffed": 100},
-    "mana": {"creation": 100, "base": 100, "buffed": 100}
+    "health": {"name": "Health", "base": 100},
+    "stamina": {"name": "Stamina", "base": 100},
+    "mana": {"name": "Mana", "base": 100}
   },
   "skills": {
-    "alchemy": {"training": "Specialized", "base": 500, "buffed": 500}
+    "alchemy": {"name": "alchemy", "base": 500, "training": "Specialized"}
   },
-  "allegiance_name": "Example Allegiance",
   "monarch": {"name": "Example Monarch", "race": 1, "gender": 1, "rank": 10},
   "patron": {"name": "Example Patron", "race": 1, "gender": 1, "rank": 9},
   "vassals": [
     {"name": "Example Vassal", "race": 1, "gender": 1, "rank": 9}
   ],
-  "version": 1,
   "current_title": 0,
   "titles": [1, 2, 3],
-  "account_name": "example-account",
   "location": "Holtburg",
-  "server_population": 123
+  "properties": {
+    "354": 7,
+    "355": 12
+  }
 }
 ```
 

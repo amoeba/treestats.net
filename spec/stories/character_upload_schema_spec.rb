@@ -13,6 +13,10 @@ describe "CharacterUploadSchemaStory" do
     File.expand_path("../../util/multi/characters/magus_recent.json", __dir__)
   end
 
+  def docs_path
+    File.expand_path("../../docs/direct-upload.md", __dir__)
+  end
+
   def schema
     @schema ||= JSON.parse(File.read(schema_path))
   end
@@ -23,6 +27,12 @@ describe "CharacterUploadSchemaStory" do
 
   def vassal_payload
     @vassal_payload ||= JSON.parse(File.read(vassal_payload_path))
+  end
+
+  def docs_example(name)
+    body = File.read(docs_path)[/<!-- example:#{name} -->\s*```json\n(.*?)```/m, 1]
+    refute_nil body, "docs are missing the #{name} example"
+    JSON.parse(body)
   end
 
   it "serves the published character upload schema" do
@@ -56,6 +66,22 @@ describe "CharacterUploadSchemaStory" do
     payload = vassal_payload.merge("location" => "Holtburg")
 
     assert_empty validate(schema, payload)
+  end
+
+  it "validates the documented upload examples" do
+    %w[minimal maximal].each do |name|
+      errors = validate(schema, docs_example(name))
+
+      assert_empty errors, "#{name} example does not match the schema: #{errors.join(", ")}"
+    end
+  end
+
+  it "accepts the documented upload examples" do
+    %w[minimal maximal].each do |name|
+      result = UploadPayload.sanitize(docs_example(name))
+
+      assert_equal docs_example(name)["name"], result.payload["name"]
+    end
   end
 
   it "accepts the canonical full.json payload" do
