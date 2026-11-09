@@ -103,7 +103,7 @@ module UploadHelper
     end
 
     begin
-      upload = UploadPayload.sanitize(json_text)
+      upload = UploadPayload.sanitize(json_text, allow_account_name: !token_required)
     rescue UploadPayload::Invalid => e
       status 400
       return "Invalid upload payload: #{e}."

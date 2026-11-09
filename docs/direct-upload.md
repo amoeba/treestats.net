@@ -21,11 +21,19 @@ X-TreeStats-Server-Token: ts_...
 Content-Type: application/json
 ```
 
-The body is the same JSON the Decal plugin sends. Its canonical shape is
-described by the [character upload schema](https://treestats.net/schemas/character/v2/schema.json).
+The body uses the Decal plugin's character format, except that account names
+are not allowed. Its shape is described by the
+[direct upload schema](https://treestats.net/schemas/character/v2/schema.json#/$defs/directUpload).
 The payload must be a JSON object, its `server` field must match the server the
 token was issued for, and it may be at most 1 MiB. Direct uploads are
 authenticated by the token instead of the plugin's `TREESTATS_SECRET` body check.
+
+`account_name` is **plugin-only**: only uploads to `POST /` may set it.
+`POST /characters` returns `400` with an explanatory message if `account_name`
+is present, including `null` or an empty string. This also applies to related
+characters (`monarch`, `patron`, and `vassals`) and the stored-field alias `acc`.
+A rejected upload writes no character or population data. Direct uploads that
+omit these fields preserve any account name previously set by the plugin.
 
 If the payload contains `server_population`, a player count sample is recorded in
 addition to the character. It is best effort: only a positive integer is
@@ -61,7 +69,6 @@ the string form.
 {
   "name": "Maximal Example",
   "server": "Example Server",
-  "account_name": "example-account",
   "version": "2",
   "race": "Aluvian",
   "gender": "Male",
@@ -113,7 +120,7 @@ the string form.
 | Status | Meaning |
 |---|---|
 | 200 | Character accepted |
-| 400 | Body is not valid JSON or not a JSON object, or the character is invalid |
+| 400 | Body is not valid JSON or not a JSON object, contains a plugin-only account field, or the character is invalid |
 | 401 | Token header missing |
 | 403 | Token invalid or revoked, or the server is a retail server |
 | 413 | Body larger than 1 MiB |

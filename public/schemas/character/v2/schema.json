@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://treestats.net/schemas/character/v2/schema.json",
   "title": "Character Upload",
-  "description": "A character upload payload sent by the Asheron's Call Decal plugin to POST /. Only name and server are required; TreeStats ignores unknown fields.",
+  "description": "A character upload payload sent by the Asheron's Call Decal plugin to POST /. Only name and server are required; TreeStats ignores unknown fields. Direct uploads to POST /characters use the #/$defs/directUpload subschema, which forbids account names.",
   "type": "object",
   "required": [
     "name",
@@ -20,7 +20,7 @@
     },
     "account_name": {
       "type": "string",
-      "description": "Account name as reported by the client."
+      "description": "Plugin-only account name as reported by the client. Allowed on POST /; forbidden on POST /characters, even when null or empty."
     },
     "location": {
       "type": "string",
@@ -238,6 +238,26 @@
   },
   "additionalProperties": true,
   "$defs": {
+    "directUpload": {
+      "title": "Direct Character Upload",
+      "description": "Server-token-authenticated payload for POST /characters. Account names are forbidden, including on related characters; their presence returns HTTP 400.",
+      "allOf": [
+        {"$ref": "#"},
+        {"$ref": "#/$defs/withoutAccountNames"}
+      ]
+    },
+    "withoutAccountNames": {
+      "description": "Reject account fields by presence, including Mongoid's stored-field alias, wherever character data can be updated.",
+      "properties": {
+        "account_name": false,
+        "acc": false,
+        "monarch": {"$ref": "#/$defs/withoutAccountNames"},
+        "patron": {"$ref": "#/$defs/withoutAccountNames"},
+        "vassals": {
+          "items": {"$ref": "#/$defs/withoutAccountNames"}
+        }
+      }
+    },
     "attribute": {
       "type": "object",
       "properties": {

@@ -76,6 +76,38 @@ describe UploadPayload do
     assert_equal [{}, {"name" => "v"}], result.payload["vassals"]
   end
 
+  it "allows account names on plugin payloads by default" do
+    result = sanitize("server" => "s", "name" => "n", "account_name" => "plugin-account")
+
+    assert_equal "plugin-account", result.payload["account_name"]
+  end
+
+  it "rejects account fields by presence on direct payloads" do
+    %w[account_name acc].each do |key|
+      ["account", "", nil, 123, {}].each do |value|
+        error = assert_raises(UploadPayload::Invalid) do
+          UploadPayload.sanitize({"server" => "s", "name" => "n", key => value}, allow_account_name: false)
+        end
+
+        assert_equal key, error.field
+        assert_includes error.to_s, "only allowed for plugin uploads"
+      end
+    end
+  end
+
+  it "rejects account fields on related characters in direct payloads" do
+    [
+      {"monarch" => {"name" => "m", "account_name" => "account"}},
+      {"patron" => {"name" => "p", "acc" => nil}},
+      {"vassals" => [{"name" => "v", "account_name" => ""}]},
+      {"monarch" => {"name" => "m", "vassals" => [{"name" => "v", "acc" => "account"}]}}
+    ].each do |related|
+      assert_raises(UploadPayload::Invalid) do
+        UploadPayload.sanitize({"server" => "s", "name" => "n"}.merge(related), allow_account_name: false)
+      end
+    end
+  end
+
   it "keeps null known fields as nil" do
     result = sanitize("server" => "s", "name" => "n", "patron" => nil, "level" => nil)
 
