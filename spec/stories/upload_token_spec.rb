@@ -98,6 +98,32 @@ describe "UploadTokenStory" do
     assert_equal 200, last_response.status
   end
 
+  it "samples successful legacy uploads before normalization, but not direct uploads" do
+    token = create_server_token('Token Server')
+    payload = {name: 'Token User', server: 'Token Server', level: '50', birth: '1/15/2000 8:30:00 PM'}
+    sampled = []
+    captured = []
+
+    original_sample = UploadSampling.method(:sample)
+    original_capture = UploadSampling.method(:capture)
+    UploadSampling.define_singleton_method(:sample) { |body| sampled << body['level']; :sample }
+    UploadSampling.define_singleton_method(:capture) { |sample| captured << sample }
+    begin
+      with_env('RACK_ENV' => 'production') do
+        without_env('TREESTATS_SECRET') { post '/', JSON.generate(payload) }
+        assert_equal 200, last_response.status
+        post '/characters', JSON.generate(payload), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+        assert_equal 200, last_response.status
+      end
+    ensure
+      UploadSampling.define_singleton_method(:sample, original_sample)
+      UploadSampling.define_singleton_method(:capture, original_capture)
+    end
+
+    assert_equal ['50'], sampled
+    assert_equal [:sample], captured
+  end
+
   it "requires a server token on the direct upload endpoint" do
     post '/characters', upload_body('Token Server')
 

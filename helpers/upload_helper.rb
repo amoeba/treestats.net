@@ -17,8 +17,6 @@ module UploadHelper
     rescue SyntaxError => e
       # Allow uploads on eval exception
       puts "UploadHelper.validate: Eval failed, passing upload."
-      puts "UploadHelper.validate:   text: #{text}"
-      puts "UploadHelper.validate:   secret: #{secret}"
 
       return true
     end
@@ -28,8 +26,6 @@ module UploadHelper
     rescue => e
       # Allow uploads on call exception
       puts "UploadHelper.validate: Call failed, passing upload."
-      puts "UploadHelper.validate:   text: #{text}"
-      puts "UploadHelper.validate:   secret: #{secret}"
 
       return true
     end
@@ -67,8 +63,7 @@ module UploadHelper
       if !valid
         status 403
 
-        print_and_maybe_sentry("Failed to verify: #{text}")
-        puts "Upload failed with text: #{text}"
+        print_and_maybe_sentry("Failed to verify character upload.")
 
         return "Failed to verify character update. Character was not saved."
       end
@@ -85,7 +80,7 @@ module UploadHelper
 
     unless json_text.is_a?(Hash)
       status 400
-      print_and_maybe_sentry("Upload payload is not a JSON object: #{text}")
+      print_and_maybe_sentry("Upload payload is not a JSON object.")
 
       return "Upload payload must be a JSON object."
     end
@@ -97,6 +92,7 @@ module UploadHelper
       return "Invalid upload payload: #{e}."
     end
 
+    raw_payload = json_text
     json_text = upload.payload
 
     if token_required
@@ -116,10 +112,12 @@ module UploadHelper
     # Disallow uploads from retail servers
     if AppHelper.retail_servers.include?(json_text['server'])
       status 403
-      print_and_maybe_sentry("Upload of characters from retail servers blocked: #{json_text}")
+      print_and_maybe_sentry("Upload of characters from retail servers blocked.")
 
       return "Not allowed."
     end
+
+    sample = UploadSampling.sample(raw_payload) if !token_required && ENV["RACK_ENV"] == "production"
 
     # Extract information for later in this method
     name = json_text['name']
@@ -139,7 +137,7 @@ module UploadHelper
 
     # Log extra debug info if birth ends up being nil
     if json_text["birth"].nil? && ENV['RACK_ENV'] != 'test'
-      print_and_maybe_sentry("Failed to parse birth field with the following JSON: #{json_text}")
+      print_and_maybe_sentry("Failed to parse birth field in character upload.")
     end
 
     # Maybe temporary maybe not: Reject updates from that have
@@ -153,7 +151,7 @@ module UploadHelper
       if json_text["patron"]["name"] == "??"
         status 400
 
-        print_and_maybe_sentry("Character updated failed due to \"??\" patron bug: #{json_text}")
+        print_and_maybe_sentry("Character update failed due to \"??\" patron bug.")
 
         return "Malformed patron name. Ignoring your update."
       end
@@ -211,13 +209,13 @@ module UploadHelper
     redis.incr "uploads:monthly:#{Time.now.utc.strftime("%Y%m")}"
 
     if(character.valid?)
+      UploadSampling.capture(sample) if sample
       "Character was updated successfully."
     else
       status 400
 
       if ENV['RACK_ENV'] != 'test'
         puts 'Character updated failed...'
-        puts json_text
       end
 
       if name == ""

@@ -2,10 +2,13 @@
 if ENV['RACK_ENV'] == 'production'
   require 'sentry-ruby'
   require 'sentry-resque'
+  require_relative 'lib/sentry_upload_filter'
 
   Sentry.init do |config|
     config.dsn = ENV['SENTRY_DSN']
     config.traces_sample_rate = 0.01
+    config.before_send = SentryUploadFilter.method(:filter)
+    config.before_send_transaction = SentryUploadFilter.method(:filter)
 
     if ENV['GIT_REV']
       config.release = ENV['GIT_REV']
@@ -16,6 +19,7 @@ end
 # Regular app startup begins now
 require 'bundler/setup'
 Bundler.require(:default)
+require_relative 'lib/upload_sampling'
 
 require 'sinatra/redis'
 require 'sinatra/cross_origin'

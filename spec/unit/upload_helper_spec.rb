@@ -10,17 +10,19 @@ describe UploadHelper do
 
   it "prints an informative message when eval fails" do
     with_env("TREESTATS_SECRET" => "foo(") do
-      assert_output /eval failed/i do
-        UploadHelper.validate("whatever")
-      end
+      output, = capture_io { UploadHelper.validate("private-payload") }
+      assert_match(/eval failed/i, output)
+      refute_includes output, "private-payload"
+      refute_includes output, "foo("
     end
   end
 
   it "prints an informative message when call fails" do
     with_env("TREESTATS_SECRET" => "y") do
-      assert_output /call failed/i do
-        UploadHelper.validate("whatever")
-      end
+      output, = capture_io { UploadHelper.validate("private-payload") }
+      assert_match(/call failed/i, output)
+      refute_includes output, "private-payload"
+      refute_includes output, "secret:"
     end
   end
 
@@ -39,5 +41,11 @@ describe UploadHelper do
   it "fails on an empty or too-short message" do
     assert UploadHelper.validate(nil) == false
     assert UploadHelper.validate("") == false
+  end
+
+  it "does not log invalid birth values" do
+    output, = capture_io { assert_nil CharacterHelper.parse_birth("private-birth-value") }
+
+    refute_includes output, "private-birth-value"
   end
 end
