@@ -314,6 +314,9 @@ module DataPoller
         http.read_timeout = READ_TIMEOUT_SECONDS
         http.write_timeout = WRITE_TIMEOUT_SECONDS if http.respond_to?(:write_timeout=)
         http.max_retries = 0 if http.respond_to?(:max_retries=)
+        # Reject responses that end before all bytes promised by Content-Length arrive.
+        # Net::HTTP otherwise treats them as complete, and valid JSON could still be accepted.
+        http.ignore_eof = false
         req = Net::HTTP::Get.new(uri.request_uri, {"Accept" => "application/json"})
         Timeout.timeout(total_timeout) do
           http.start do |connection|
