@@ -1,0 +1,322 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://treestats.net/schemas/character/v2/schema.json",
+  "title": "Character Upload",
+  "description": "A character upload payload sent by the Asheron's Call Decal plugin to POST /. Only name and server are required; TreeStats ignores unknown fields.",
+  "type": "object",
+  "required": [
+    "name",
+    "server"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Character name. The Decal plugin may send an empty name for level-1 characters."
+    },
+    "server": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Server or world name."
+    },
+    "account_name": {
+      "type": "string",
+      "description": "Account name as reported by the client."
+    },
+    "location": {
+      "type": "string",
+      "description": "Character's current location, when the plugin is configured to share it."
+    },
+    "version": {
+      "type": [
+        "string",
+        "integer"
+      ],
+      "enum": [
+        "1",
+        "2",
+        1,
+        2
+      ],
+      "description": "Payload format version emitted by the Decal plugin. Observed values are \"1\" and \"2\"."
+    },
+    "race": {
+      "type": [
+        "string",
+        "integer"
+      ],
+      "description": "Race name or ID as emitted by the Decal plugin, for example \"Gharu'ndim\" or 2."
+    },
+    "gender": {
+      "type": [
+        "string",
+        "integer"
+      ],
+      "enum": [
+        "Male",
+        "Female",
+        0,
+        1,
+        2
+      ],
+      "description": "Gender name or ID as emitted by the Decal plugin."
+    },
+    "level": {
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
+      "minimum": 0
+    },
+    "allegiance_name": {
+      "type": "string"
+    },
+    "rank": {
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
+      "minimum": 0
+    },
+    "followers": {
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
+      "minimum": 0
+    },
+    "server_population": {
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
+      "minimum": 0,
+      "description": "Observed in-world population at upload time."
+    },
+    "deaths": {
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
+      "minimum": 0
+    },
+    "birth": {
+      "type": "string",
+      "pattern": "^\\d{1,2}/\\d{1,2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2}(?: [AP]M)?$",
+      "description": "Character creation time in US date format, with either 12-hour AM/PM or 24-hour time, for example \"5/3/2012 3:23:08 AM\"."
+    },
+    "total_xp": {
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
+      "minimum": 0
+    },
+    "unassigned_xp": {
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
+      "minimum": 0
+    },
+    "skill_credits": {
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
+      "minimum": 0
+    },
+    "luminance_earned": {
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
+      "minimum": 0
+    },
+    "luminance_total": {
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
+      "minimum": 0
+    },
+    "attribs": {
+      "type": "object",
+      "description": "Character attributes keyed by attribute name.",
+      "properties": {
+        "strength": {
+          "$ref": "#/$defs/attribute"
+        },
+        "endurance": {
+          "$ref": "#/$defs/attribute"
+        },
+        "quickness": {
+          "$ref": "#/$defs/attribute"
+        },
+        "coordination": {
+          "$ref": "#/$defs/attribute"
+        },
+        "focus": {
+          "$ref": "#/$defs/attribute"
+        },
+        "self": {
+          "$ref": "#/$defs/attribute"
+        }
+      }
+    },
+    "vitals": {
+      "type": "object",
+      "description": "Character vitals keyed by vital name.",
+      "properties": {
+        "health": {
+          "$ref": "#/$defs/vital"
+        },
+        "stamina": {
+          "$ref": "#/$defs/vital"
+        },
+        "mana": {
+          "$ref": "#/$defs/vital"
+        }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "description": "Character skills keyed by skill name.",
+      "additionalProperties": {
+        "$ref": "#/$defs/skill"
+      }
+    },
+    "monarch": {
+      "$ref": "#/$defs/person",
+      "description": "Allegiance monarch, when the character belongs to an allegiance."
+    },
+    "patron": {
+      "$ref": "#/$defs/person",
+      "description": "Patron, when the character has one."
+    },
+    "vassals": {
+      "type": "array",
+      "description": "Characters sworn to this character.",
+      "items": {
+        "$ref": "#/$defs/person"
+      }
+    },
+    "current_title": {
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
+      "minimum": 0
+    },
+    "titles": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "properties": {
+      "type": "object",
+      "description": "Character property values keyed by numeric property ID.",
+      "patternProperties": {
+        "^[0-9]+$": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "attribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "base": {
+          "type": "integer"
+        },
+        "creation": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": true
+    },
+    "vital": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "base": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": true
+    },
+    "skill": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "base": {
+          "type": "integer"
+        },
+        "training": {
+          "type": "string",
+          "enum": [
+            "Unusable",
+            "Untrained",
+            "Trained",
+            "Specialized"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "person": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "race": {
+          "type": [
+            "integer",
+            "string"
+          ]
+        },
+        "gender": {
+          "type": [
+            "integer",
+            "string"
+          ]
+        },
+        "rank": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "followers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}
