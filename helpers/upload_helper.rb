@@ -4,6 +4,13 @@ module UploadHelper
   # Character payloads are a few KB; anything this large is a bug or abuse.
   MAX_UPLOAD_BYTES = 1024 * 1024
 
+  def self.loggable_payload(text)
+    payload = JSON.parse(text)
+    UploadSampling.without_credentials(payload) if payload.is_a?(Hash)
+  rescue JSON::ParserError
+    nil
+  end
+
   def self.validate(text)
     return false if text.nil? or text.length <= 0
 
@@ -17,8 +24,8 @@ module UploadHelper
     rescue SyntaxError => e
       # Allow uploads on eval exception
       puts "UploadHelper.validate: Eval failed, passing upload."
-      puts "UploadHelper.validate:   text: #{text}"
-      puts "UploadHelper.validate:   secret: #{secret}"
+      payload = loggable_payload(text)
+      puts "UploadHelper.validate:   text: #{payload}" if payload
 
       return true
     end
@@ -28,8 +35,8 @@ module UploadHelper
     rescue => e
       # Allow uploads on call exception
       puts "UploadHelper.validate: Call failed, passing upload."
-      puts "UploadHelper.validate:   text: #{text}"
-      puts "UploadHelper.validate:   secret: #{secret}"
+      payload = loggable_payload(text)
+      puts "UploadHelper.validate:   text: #{payload}" if payload
 
       return true
     end
@@ -62,13 +69,18 @@ module UploadHelper
     end
 
     unless token_required
-      # Legacy plugin uploads authenticate their signed request body.
+      # Plugin-endpoint uploads use the configured body verifier.
       valid = UploadHelper.validate(text)
       if !valid
         status 403
 
-        print_and_maybe_sentry("Failed to verify: #{text}")
-        puts "Upload failed with text: #{text}"
+        payload = UploadHelper.loggable_payload(text)
+        if payload
+          print_and_maybe_sentry("Failed to verify: #{payload}")
+          puts "Upload failed with text: #{payload}"
+        else
+          print_and_maybe_sentry("Failed to verify character upload.")
+        end
 
         return "Failed to verify character update. Character was not saved."
       end
@@ -85,7 +97,7 @@ module UploadHelper
 
     unless json_text.is_a?(Hash)
       status 400
-      print_and_maybe_sentry("Upload payload is not a JSON object: #{text}")
+      print_and_maybe_sentry("Upload payload is not a JSON object.")
 
       return "Upload payload must be a JSON object."
     end
@@ -116,10 +128,12 @@ module UploadHelper
     # Disallow uploads from retail servers
     if AppHelper.retail_servers.include?(json_text['server'])
       status 403
-      print_and_maybe_sentry("Upload of characters from retail servers blocked: #{json_text}")
+      print_and_maybe_sentry("Upload of characters from retail servers blocked: #{UploadSampling.without_credentials(json_text)}")
 
       return "Not allowed."
     end
+
+    sample = UploadSampling.sample(text) if !token_required && ENV["RACK_ENV"] == "production"
 
     # Extract information for later in this method
     name = json_text['name']
@@ -139,7 +153,7 @@ module UploadHelper
 
     # Log extra debug info if birth ends up being nil
     if json_text["birth"].nil? && ENV['RACK_ENV'] != 'test'
-      print_and_maybe_sentry("Failed to parse birth field with the following JSON: #{json_text}")
+      print_and_maybe_sentry("Failed to parse birth field with the following JSON: #{UploadSampling.without_credentials(json_text)}")
     end
 
     # Maybe temporary maybe not: Reject updates from that have
@@ -153,7 +167,7 @@ module UploadHelper
       if json_text["patron"]["name"] == "??"
         status 400
 
-        print_and_maybe_sentry("Character updated failed due to \"??\" patron bug: #{json_text}")
+        print_and_maybe_sentry("Character updated failed due to \"??\" patron bug: #{UploadSampling.without_credentials(json_text)}")
 
         return "Malformed patron name. Ignoring your update."
       end
@@ -211,13 +225,14 @@ module UploadHelper
     redis.incr "uploads:monthly:#{Time.now.utc.strftime("%Y%m")}"
 
     if(character.valid?)
+      UploadSampling.capture(sample) if sample
       "Character was updated successfully."
     else
       status 400
 
       if ENV['RACK_ENV'] != 'test'
         puts 'Character updated failed...'
-        puts json_text
+        puts UploadSampling.without_credentials(json_text)
       end
 
       if name == ""

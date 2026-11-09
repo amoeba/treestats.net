@@ -8,8 +8,7 @@ module Sinatra
     module Routing
       module Upload
         def self.registered(app)
-          # Existing Decal-plugin endpoint. It always uses the legacy body
-          # verifier so plugin behavior remains unchanged.
+          # Primary Decal-plugin endpoint; uses the configured body verifier.
           app.post '/' do
             process_character_upload(token_required: false)
           end
