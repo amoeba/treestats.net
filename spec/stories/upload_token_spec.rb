@@ -98,7 +98,7 @@ describe "UploadTokenStory" do
     assert_equal 200, last_response.status
   end
 
-  it "samples successful plugin-endpoint uploads before normalization, but not direct uploads" do
+  it "samples successful plugin uploads before normalization, but not direct uploads" do
     token = create_server_token('Token Server')
     payload = {name: 'Token User', server: 'Token Server', level: '50', birth: '1/15/2000 8:30:00 PM'}
     sampled = []

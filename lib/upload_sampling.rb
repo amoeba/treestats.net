@@ -38,7 +38,7 @@ module UploadSampling
       scope.clear_breadcrumbs
       scope.set_user({})
       scope.set_context("upload_shape", summary)
-      Sentry.capture_message("Sampled plugin-endpoint character upload")
+      Sentry.capture_message("Sampled plugin character upload")
     end
   rescue
     puts "Failed to capture upload shape sample."
