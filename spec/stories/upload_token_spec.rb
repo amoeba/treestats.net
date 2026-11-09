@@ -254,6 +254,27 @@ describe "UploadTokenStory" do
     assert_equal 123, PlayerCount.find_by(server: 'Example Server').count
   end
 
+  it "uses race and gender names on the character and IDs in allegiance records" do
+    token = create_server_token('Token Server')
+    payload = {
+      name: 'Token User',
+      server: 'Token Server',
+      race: 'Sho',
+      gender: 'Female',
+      patron: {name: 'Patron', race: 3, gender: 2, rank: 1}
+    }
+
+    post '/characters', JSON.generate(payload), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    character = Character.unscoped.find_by(server: 'Token Server', name: 'Token User')
+    assert_equal 'Sho', character.race
+    assert_equal 'Female', character.gender
+    patron = Character.unscoped.find_by(server: 'Token Server', name: 'Patron')
+    assert_equal 'Sho', patron.race
+    assert_equal 'Female', patron.gender
+  end
+
   it "ignores unknown fields without failing" do
     token = create_server_token('Token Server')
     payload = JSON.parse(upload_body('Token Server')).merge('_id' => '0' * 24, 'plugin_version' => '3')

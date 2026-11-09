@@ -78,7 +78,7 @@ A complete example:
 }
 ```
 
-Note: Unlike at the root of the document, in allegiance records, race and gender are integers instead of strings and correspond to the following values:
+For direct uploads, provide race and gender as names (strings) at the root of the document. In allegiance records, use integer IDs for race and gender:
 
 Race
 
@@ -110,7 +110,7 @@ A JSON schema document is provided at https://treestats.net/schemas/character/v2
 | Status | Meaning |
 |---|---|
 | 200 | Character accepted |
-| 400 | Body is not valid JSON or not a JSON object, contains a plugin-only account field, or the character is invalid |
+| 400 | A non-empty body is not valid JSON or is not a JSON object, a plugin-only account field is present, or the character is invalid |
 | 401 | Token header missing |
 | 403 | Token invalid or revoked, or the server is a retail server |
 | 413 | Body larger than 1 MiB |
@@ -118,6 +118,7 @@ A JSON schema document is provided at https://treestats.net/schemas/character/v2
 
 ## Rate limits
 
-Each token allows 1,000 requests per hour. Responses include `RateLimit-Limit`,
-`RateLimit-Remaining`, and `RateLimit-Reset` (seconds until the window resets);
-`X-RateLimit-Reset` carries the same reset time as a Unix timestamp.
+Each token allows 1,000 requests in a fixed one-hour window. Requests that pass
+token and server validation include `RateLimit-Limit`, `RateLimit-Remaining`,
+and `RateLimit-Reset` (seconds until the window resets); `X-RateLimit-Reset`
+carries the same reset time as a Unix timestamp.
