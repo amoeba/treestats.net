@@ -90,6 +90,18 @@ describe "CharacterUploadSchemaStory" do
     end
   end
 
+  it "documents the allegiance race and gender IDs used by uploads" do
+    docs = File.read(docs_path)
+    race_mapping = docs[/^Race\n\n(.*?)(?=\n\nGender)/m, 1]
+    gender_mapping = docs[/^Gender\n\n(.*?)(?=\n\n##)/m, 1]
+
+    expected_races = RaceHelper::RACES.map { |id, name| "- `#{id}` — #{name}" }.join("\n")
+    expected_genders = GenderHelper::GENDERS.map { |id, name| "- `#{id}` — #{name}" }.join("\n")
+
+    assert_equal expected_races, race_mapping
+    assert_equal expected_genders, gender_mapping
+  end
+
   it "allows plugin account names but rejects them in the direct upload schema" do
     direct_schema = schema.fetch("$defs").fetch("directUpload")
     payload = {"name" => "Example", "server" => "Example Server"}
