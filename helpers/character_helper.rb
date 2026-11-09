@@ -15,7 +15,8 @@ module CharacterHelper
     begin
       parsed = DateTime.strptime("#{birth} EST", "%m/%d/%Y %H:%M:%S %p %Z")
     rescue ArgumentError
-      # Try the alternate format below.
+      puts "ArgumentError caught trying to parse '#{birth} EST' as a DateTime with format %m/%d/%Y %H:%M:%S %p %Z"
+      puts "Error was `#{$!}`"
     end
 
     # Try our second one
@@ -23,7 +24,8 @@ module CharacterHelper
       begin
         parsed = DateTime.strptime("#{birth} EST", "%m/%d/%Y %H:%M:%S %Z")
       rescue ArgumentError
-        # Leave invalid dates unset.
+        puts "ArgumentError caught trying to parse '#{birth} EST' as a DateTime with format %m/%d/%Y %H:%M:%S %Z"
+        puts "Error was `#{$!}`"
       end
     end
 

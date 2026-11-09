@@ -5,7 +5,7 @@ module SentryUploadFilter
     request = event.request
     return event unless request
 
-    request.headers&.delete_if { |key, _| key.casecmp?("X-TreeStats-Server-Token") }
+    request.headers&.delete_if { |key, _| %w[X-TreeStats-Server-Token Authorization].any? { |name| key.casecmp?(name) } }
 
     return event unless request.method == "POST"
 
@@ -16,13 +16,18 @@ module SentryUploadFilter
     end
     return event unless path.nil? || path.empty? || ["/", "/characters", "/characters/"].include?(path)
 
-    request.data = nil
-    request.headers = nil
+    data = request.data
+    data = JSON.parse(data) if data.is_a?(String)
+    request.data = data.is_a?(Hash) ? UploadSampling.without_credentials(data) : nil
     request.cookies = nil
     request.query_string = nil
     request.env = nil
-    event.user&.delete(:ip_address)
-    event.user&.delete("ip_address")
+    event
+  rescue JSON::ParserError
+    request.data = nil
+    request.cookies = nil
+    request.query_string = nil
+    request.env = nil
     event
   end
 end

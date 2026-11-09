@@ -4,6 +4,13 @@ module UploadHelper
   # Character payloads are a few KB; anything this large is a bug or abuse.
   MAX_UPLOAD_BYTES = 1024 * 1024
 
+  def self.loggable_payload(text)
+    payload = JSON.parse(text)
+    UploadSampling.without_credentials(payload) if payload.is_a?(Hash)
+  rescue JSON::ParserError
+    nil
+  end
+
   def self.validate(text)
     return false if text.nil? or text.length <= 0
 
@@ -17,6 +24,8 @@ module UploadHelper
     rescue SyntaxError => e
       # Allow uploads on eval exception
       puts "UploadHelper.validate: Eval failed, passing upload."
+      payload = loggable_payload(text)
+      puts "UploadHelper.validate:   text: #{payload}" if payload
 
       return true
     end
@@ -26,6 +35,8 @@ module UploadHelper
     rescue => e
       # Allow uploads on call exception
       puts "UploadHelper.validate: Call failed, passing upload."
+      payload = loggable_payload(text)
+      puts "UploadHelper.validate:   text: #{payload}" if payload
 
       return true
     end
@@ -63,7 +74,13 @@ module UploadHelper
       if !valid
         status 403
 
-        print_and_maybe_sentry("Failed to verify character upload.")
+        payload = UploadHelper.loggable_payload(text)
+        if payload
+          print_and_maybe_sentry("Failed to verify: #{payload}")
+          puts "Upload failed with text: #{payload}"
+        else
+          print_and_maybe_sentry("Failed to verify character upload.")
+        end
 
         return "Failed to verify character update. Character was not saved."
       end
@@ -112,7 +129,7 @@ module UploadHelper
     # Disallow uploads from retail servers
     if AppHelper.retail_servers.include?(json_text['server'])
       status 403
-      print_and_maybe_sentry("Upload of characters from retail servers blocked.")
+      print_and_maybe_sentry("Upload of characters from retail servers blocked: #{UploadSampling.without_credentials(json_text)}")
 
       return "Not allowed."
     end
@@ -137,7 +154,7 @@ module UploadHelper
 
     # Log extra debug info if birth ends up being nil
     if json_text["birth"].nil? && ENV['RACK_ENV'] != 'test'
-      print_and_maybe_sentry("Failed to parse birth field in character upload.")
+      print_and_maybe_sentry("Failed to parse birth field with the following JSON: #{UploadSampling.without_credentials(json_text)}")
     end
 
     # Maybe temporary maybe not: Reject updates from that have
@@ -151,7 +168,7 @@ module UploadHelper
       if json_text["patron"]["name"] == "??"
         status 400
 
-        print_and_maybe_sentry("Character update failed due to \"??\" patron bug.")
+        print_and_maybe_sentry("Character updated failed due to \"??\" patron bug: #{UploadSampling.without_credentials(json_text)}")
 
         return "Malformed patron name. Ignoring your update."
       end
@@ -216,6 +233,7 @@ module UploadHelper
 
       if ENV['RACK_ENV'] != 'test'
         puts 'Character updated failed...'
+        puts UploadSampling.without_credentials(json_text)
       end
 
       if name == ""

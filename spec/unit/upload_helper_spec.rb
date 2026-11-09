@@ -26,6 +26,15 @@ describe UploadHelper do
     end
   end
 
+  it "logs character data but not upload credentials on verifier errors" do
+    with_env("TREESTATS_SECRET" => "foo(") do
+      output, = capture_io { UploadHelper.validate(JSON.generate(name: "Example", key: "credential")) }
+      assert_includes output, "Example"
+      refute_includes output, "credential"
+      refute_includes output, "foo("
+    end
+  end
+
   it "returns false when a message fails validation" do
     with_env("TREESTATS_SECRET" => "x == \"apple\"") do
       assert !UploadHelper.validate("orange")
@@ -41,11 +50,5 @@ describe UploadHelper do
   it "fails on an empty or too-short message" do
     assert UploadHelper.validate(nil) == false
     assert UploadHelper.validate("") == false
-  end
-
-  it "does not log invalid birth values" do
-    output, = capture_io { assert_nil CharacterHelper.parse_birth("private-birth-value") }
-
-    refute_includes output, "private-birth-value"
   end
 end

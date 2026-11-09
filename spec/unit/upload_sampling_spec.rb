@@ -6,51 +6,20 @@ require "sentry/transport/dummy_transport"
 require_relative "../../lib/sentry_upload_filter"
 
 describe UploadSampling do
-  it "summarizes realistic plugin values without retaining identifying data" do
+  it "preserves real plugin data and unknown fields while removing credentials" do
     payload = JSON.parse(File.read(File.expand_path("../../util/plugin/plugin_message.txt", __dir__)))
-    summary = UploadSampling.summarize(payload)
+    payload["extra_game_field"] = {"value" => 123, "token" => "credential"}
+    sample = UploadSampling.without_credentials(payload)
 
-    assert_equal "1", summary[:version]
-    assert_equal "integer", summary[:fields]["level"][:type]
-    assert_equal "positive:100_to_999", summary[:fields]["level"][:range]
-    assert_equal "us_12h", summary[:birth_format]
-    assert_equal %w[Specialized Trained Untrained Unusable], summary[:skills][:training]
-    assert_equal %w[numeric], summary[:properties][:key_types]
-    assert_equal %w[integer], summary[:titles][:item_types]
-    refute_includes summary.to_s, payload["name"]
-    refute_includes summary.to_s, payload["birth"]
-    refute_includes summary.to_s, payload["key"]
+    assert_equal payload["name"], sample["name"]
+    assert_equal payload["birth"], sample["birth"]
+    assert_equal payload["skills"], sample["skills"]
+    assert_equal({"value" => 123}, sample["extra_game_field"])
+    refute sample.key?("key")
+    assert payload.key?("key")
   end
 
-  it "does not copy arbitrary field names or values from nested objects" do
-    payload = {
-      "name" => "private-name", "server" => "private-server", "version" => "private-version",
-      "attribs" => {"private-key" => {"name" => "private-attribute"}},
-      "skills" => {"private-skill" => {"name" => "private-name", "training" => "private-training"}},
-      "properties" => {"private-property" => "private-value"},
-      "vassals" => [{"name" => "private-vassal"}], "private-field" => "private-value"
-    }
-    summary = UploadSampling.summarize(payload)
-
-    assert_equal "other", summary[:version]
-    assert_equal ["other"], summary[:skills][:training]
-    assert_equal ["other"], summary[:properties][:key_types]
-    assert summary[:attribs][:other_keys]
-    refute_includes summary.to_s, "private"
-  end
-
-  it "bounds nested collection processing" do
-    payload = {"skills" => (0..100).to_h { |i| [i.to_s, {"training" => "Trained"}] },
-               "titles" => Array.new(101, 1)}
-    summary = UploadSampling.summarize(payload)
-
-    assert summary[:skills][:truncated]
-    assert summary[:titles][:truncated]
-  end
-
-  it "sends only the sanitized summary through Sentry" do
-    character = ["private", "character"].join("-")
-    token = ["private", "token"].join("-")
+  it "sends the character payload through Sentry without credentials" do
     Sentry.init do |config|
       config.dsn = "http://public@example.invalid/1"
       config.transport.transport_class = Sentry::DummyTransport
@@ -58,21 +27,15 @@ describe UploadSampling do
       config.enabled_environments = ["test"]
       config.before_send = SentryUploadFilter.method(:filter)
     end
-    env = Rack::MockRequest.env_for("https://example.test/", method: "POST",
-      input: JSON.generate(name: character),
-      **{"HTTP_X_TREESTATS_SERVER_TOKEN" => token})
-    summary = UploadSampling.summarize({"name" => character, "server" => "example", "level" => 50})
+    payload = {"name" => "Example Character", "skills" => {"alchemy" => {"base" => 500}}, "key" => "credential"}
 
-    Sentry.with_scope do |scope|
-      scope.set_rack_env(env)
-      UploadSampling.capture(summary)
-    end
+    UploadSampling.capture(UploadSampling.without_credentials(payload))
     event = Sentry.get_current_client.transport.events.fetch(0).to_json_compatible
 
     assert_equal "Sampled plugin character upload", event["message"]
-    assert_equal "positive:10_to_99", event.dig("contexts", "upload_shape", "fields", "level", "range")
-    refute_includes event.to_s, character
-    refute_includes event.to_s, token
+    assert_equal "Example Character", event.dig("contexts", "character_upload", "name")
+    assert_equal 500, event.dig("contexts", "character_upload", "skills", "alchemy", "base")
+    refute event.dig("contexts", "character_upload").key?("key")
   ensure
     Sentry.close
   end
@@ -104,5 +67,20 @@ describe UploadSampling do
     output, _, status = Open3.capture3({"UPLOAD_SAMPLE_RATE" => "1"}, *command)
     assert status.success?
     assert_equal "false", output
+  end
+
+  it "captures original values before later changes to the payload" do
+    file = File.expand_path("../../lib/upload_sampling.rb", __dir__)
+    script = <<~RUBY
+      require "json"
+      payload = {"name" => "Example", "skills" => {"alchemy" => {"base" => 500}}, "key" => "credential"}
+      sample = UploadSampling.sample(payload)
+      payload["skills"]["alchemy"]["base"] = 1
+      print JSON.generate(sample)
+    RUBY
+    output, _, status = Open3.capture3({"UPLOAD_SAMPLE_RATE" => "1"}, RbConfig.ruby, "-r", file, "-e", script)
+
+    assert status.success?
+    assert_equal({"name" => "Example", "skills" => {"alchemy" => {"base" => 500}}}, JSON.parse(output))
   end
 end
