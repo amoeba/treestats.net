@@ -1,0 +1,176 @@
+require_relative "../story_helper"
+
+describe "CharacterUploadSchemaStory" do
+  def schema_path
+    File.expand_path("../../public/schemas/character/v2/schema.json", __dir__)
+  end
+
+  def full_payload_path
+    File.expand_path("../../util/full/full.json", __dir__)
+  end
+
+  def vassal_payload_path
+    File.expand_path("../../util/multi/characters/magus_recent.json", __dir__)
+  end
+
+  def schema
+    @schema ||= JSON.parse(File.read(schema_path))
+  end
+
+  def full_payload
+    @full_payload ||= JSON.parse(File.read(full_payload_path))
+  end
+
+  def vassal_payload
+    @vassal_payload ||= JSON.parse(File.read(vassal_payload_path))
+  end
+
+  it "serves the published character upload schema" do
+    get "/schemas/character/v2/schema.json"
+
+    assert_equal 200, last_response.status
+    assert_equal "application/json", last_response.headers["Content-Type"]
+    assert_equal schema, JSON.parse(last_response.body)
+  end
+
+  it "describes every field in the canonical full.json payload" do
+    assert_empty full_payload.keys - schema.fetch("properties").keys
+  end
+
+  it "only describes fields the uploader accepts" do
+    uploadable = Character::UPLOAD_FIELDS + %w[server_population]
+
+    assert_empty schema.fetch("properties").keys - uploadable
+  end
+
+  it "validates the canonical full.json payload" do
+    assert_empty validate(schema, full_payload)
+  end
+
+  it "describes vassals and location" do
+    assert_equal "array", schema.dig("properties", "vassals", "type")
+    assert_equal "string", schema.dig("properties", "location", "type")
+  end
+
+  it "validates a payload with vassals and location" do
+    payload = vassal_payload.merge("location" => "Holtburg")
+
+    assert_empty validate(schema, payload)
+  end
+
+  it "accepts the canonical full.json payload" do
+    result = UploadPayload.sanitize(full_payload)
+
+    assert_equal full_payload["name"], result.payload["name"]
+    assert_equal full_payload["server"], result.payload["server"]
+    assert_equal full_payload["server_population"], result.population
+  end
+
+  private
+
+  # Minimal validator for the JSON Schema keywords this schema uses. Keeping
+  # the suite dependency-free means the canonical payload is still checked
+  # against the published schema on every run.
+  def validate(node, value, path = "$")
+    node = resolve_ref(node, schema)
+
+    errors = []
+    errors.concat(validate_type(node, value, path))
+    errors.concat(validate_value(node, value, path))
+
+    case value
+    when Hash
+      errors.concat(validate_object(node, value, path))
+    when Array
+      errors.concat(validate_array(node, value, path))
+    end
+
+    errors
+  end
+
+  def resolve_ref(node, root)
+    ref = node["$ref"]
+    return node unless ref&.start_with?("#/")
+
+    root.dig(*ref.delete_prefix("#/").split("/"))
+  end
+
+  def validate_type(node, value, path)
+    types = Array(node["type"])
+    return [] if types.empty? || types.any? { |type| matches_type?(type, value) }
+
+    ["#{path}: expected #{types.join(" or ")}"]
+  end
+
+  def matches_type?(type, value)
+    case type
+    when "object" then value.is_a?(Hash)
+    when "array" then value.is_a?(Array)
+    when "string" then value.is_a?(String)
+    when "integer" then value.is_a?(Integer)
+    when "number" then value.is_a?(Numeric)
+    when "boolean" then value == true || value == false
+    when "null" then value.nil?
+    else true
+    end
+  end
+
+  def validate_value(node, value, path)
+    errors = []
+
+    if node.key?("const") && value != node["const"]
+      errors << "#{path}: expected #{node["const"].inspect}"
+    end
+
+    if node.key?("enum") && !node["enum"].include?(value)
+      errors << "#{path}: expected one of #{node["enum"].inspect}"
+    end
+
+    if value.is_a?(String) && node["pattern"] && !Regexp.new(node["pattern"]).match?(value)
+      errors << "#{path}: does not match #{node["pattern"]}"
+    end
+
+    if value.is_a?(Numeric) && node.key?("minimum") && value < node["minimum"]
+      errors << "#{path}: must be at least #{node["minimum"]}"
+    end
+
+    errors
+  end
+
+  def validate_object(node, value, path)
+    errors = []
+
+    Array(node["required"]).each do |key|
+      errors << "#{path}: missing #{key.inspect}" unless value.key?(key)
+    end
+
+    properties = node["properties"] || {}
+    patterns = node["patternProperties"] || {}
+    additional = node["additionalProperties"]
+
+    value.each do |key, child|
+      child_path = "#{path}.#{key}"
+
+      if properties.key?(key)
+        errors.concat(validate(properties[key], child, child_path))
+      elsif (_pattern, subschema = patterns.find { |candidate, _| Regexp.new(candidate).match?(key) })
+        errors.concat(validate(subschema, child, child_path))
+      elsif additional == false
+        errors << "#{child_path}: unexpected key"
+      elsif additional.is_a?(Hash)
+        errors.concat(validate(additional, child, child_path))
+      end
+    end
+
+    errors
+  end
+
+  def validate_array(node, value, path)
+    items = node["items"]
+    return [] unless items
+
+    value.each_with_index.flat_map do |child, index|
+      validate(items, child, "#{path}[#{index}]")
+    end
+  end
+end
