@@ -90,6 +90,24 @@ describe "CharacterUploadSchemaStory" do
     end
   end
 
+  it "requires names for root race and gender and integer IDs in direct allegiance records" do
+    direct_schema = schema.fetch("$defs").fetch("directUpload")
+    payload = {
+      "name" => "Example",
+      "server" => "Example Server",
+      "race" => "Sho",
+      "gender" => "Female",
+      "patron" => {"name" => "Patron", "race" => 3, "gender" => 2}
+    }
+
+    assert_empty validate(direct_schema, payload)
+    refute_empty validate(direct_schema, payload.merge("race" => 3))
+    refute_empty validate(direct_schema, payload.merge("gender" => 2))
+    refute_empty validate(direct_schema, payload.merge(
+      "patron" => {"name" => "Patron", "race" => "3", "gender" => "2"}
+    ))
+  end
+
   it "documents the allegiance race and gender IDs used by uploads" do
     docs = File.read(docs_path)
     race_mapping = docs[/^Race\n\n(.*?)(?=\n\nGender)/m, 1]
