@@ -3,8 +3,8 @@
 # without failing. Fields that drive queries must be strings so a JSON object
 # can never be interpreted as a Mongo operator.
 #
-# Field groups live on Character (UPLOAD_*_FIELDS); this module only enforces the
-# shape of each group.
+# Field groups live on Character (UPLOAD_*_FIELDS); this module enforces their
+# shapes and source-specific restrictions.
 module UploadPayload
   class Invalid < StandardError
     attr_reader :field
@@ -21,8 +21,15 @@ module UploadPayload
 
   Result = Struct.new(:payload, :population, keyword_init: true)
 
-  def self.sanitize(raw, allow_account_name: true)
-    reject_account_names(raw) unless allow_account_name
+  def self.sanitize(raw, source:)
+    case source
+    when :direct
+      reject_account_names(raw)
+    when :plugin
+      # Only plugin uploads may set account fields.
+    else
+      raise ArgumentError, "Unknown upload source: #{source.inspect}"
+    end
 
     payload = {}
     population = nil

@@ -86,7 +86,7 @@ describe "CharacterUploadSchemaStory" do
 
       refute payload.key?("account_name")
       assert_empty validate(schema.fetch("$defs").fetch("directUpload"), payload)
-      assert_equal payload["name"], UploadPayload.sanitize(payload, allow_account_name: false).payload["name"]
+      assert_equal payload["name"], UploadPayload.sanitize(payload, source: :direct).payload["name"]
     end
   end
 
@@ -113,7 +113,7 @@ describe "CharacterUploadSchemaStory" do
 
   it "accepts the documented upload examples" do
     %w[minimal maximal].each do |name|
-      result = UploadPayload.sanitize(docs_example(name))
+      result = UploadPayload.sanitize(docs_example(name), source: :direct)
 
       assert_equal docs_example(name)["name"], result.payload["name"]
     end
@@ -134,11 +134,11 @@ describe "CharacterUploadSchemaStory" do
     payload = full_payload.merge("level" => "5", "server_population" => "138")
 
     assert_empty validate(schema, payload)
-    assert_equal 5, UploadPayload.sanitize(payload).payload["level"]
+    assert_equal 5, UploadPayload.sanitize(payload, source: :plugin).payload["level"]
   end
 
   it "accepts the canonical full.json payload" do
-    result = UploadPayload.sanitize(full_payload)
+    result = UploadPayload.sanitize(full_payload, source: :plugin)
 
     assert_equal full_payload["name"], result.payload["name"]
     assert_equal full_payload["server"], result.payload["server"]

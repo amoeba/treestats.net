@@ -46,14 +46,14 @@ module UploadHelper
     result
   end
 
-  def process_character_upload(token_required:)
+  def process_character_upload(source:)
     if request.content_length.to_i > MAX_UPLOAD_BYTES
       status 413
       return "Upload too large."
     end
 
     server_token = request.env[ServerAuthTokenHelper::RACK_HEADER].to_s
-    if token_required && server_token.empty?
+    if source == :direct && server_token.empty?
       status 401
       return "Server upload token is required."
     end
@@ -68,7 +68,7 @@ module UploadHelper
       return "Upload too large."
     end
 
-    unless token_required
+    if source == :plugin
       # Plugin-endpoint uploads use the configured body verifier.
       valid = UploadHelper.validate(text)
       if !valid
@@ -103,7 +103,7 @@ module UploadHelper
     end
 
     begin
-      upload = UploadPayload.sanitize(json_text, allow_account_name: !token_required)
+      upload = UploadPayload.sanitize(json_text, source: source)
     rescue UploadPayload::Invalid => e
       status 400
       return "Invalid upload payload: #{e}."
@@ -111,7 +111,7 @@ module UploadHelper
 
     json_text = upload.payload
 
-    if token_required
+    if source == :direct
       unless ServerAuthTokenHelper.authenticate(json_text['server'], server_token)
         status 403
         return "Failed to verify server upload token. Character was not saved."
@@ -133,7 +133,7 @@ module UploadHelper
       return "Not allowed."
     end
 
-    sample = UploadSampling.sample(text) if !token_required && ENV["RACK_ENV"] == "production"
+    sample = UploadSampling.sample(text) if source == :plugin && ENV["RACK_ENV"] == "production"
 
     # Extract information for later in this method
     name = json_text['name']
@@ -206,13 +206,13 @@ module UploadHelper
 
     # Provenance of the most recent upload, set after assign_attributes so a
     # payload cannot claim its own source. nil means the plugin.
-    character[:us] = token_required ? Character::SERVER_SOURCE : nil
+    character[:us] = source == :direct ? Character::SERVER_SOURCE : nil
 
     # IP Address
     # Plugin uploads originate from the player's machine, so request.ip is the
     # player's address. Direct server uploads speak for many players, so the
     # caller's address is the game server and must not overwrite a player IP.
-    character.ip = request.ip unless token_required
+    character.ip = request.ip if source == :plugin
 
     character.save
     character.touch
