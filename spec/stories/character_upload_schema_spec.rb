@@ -80,9 +80,40 @@ describe "CharacterUploadSchemaStory" do
     end
   end
 
+  it "validates the documented examples against the direct upload schema" do
+    %w[minimal maximal].each do |name|
+      payload = docs_example(name)
+
+      refute payload.key?("account_name")
+      assert_empty validate(schema.fetch("$defs").fetch("directUpload"), payload)
+      assert_equal payload["name"], UploadPayload.sanitize(payload, source: :direct).payload["name"]
+    end
+  end
+
+  it "allows plugin account names but rejects them in the direct upload schema" do
+    direct_schema = schema.fetch("$defs").fetch("directUpload")
+    payload = {"name" => "Example", "server" => "Example Server"}
+
+    assert_empty validate(schema, payload.merge("account_name" => "plugin-account"))
+    %w[account_name acc].each do |key|
+      ["account", "", nil].each do |value|
+        refute_empty validate(direct_schema, payload.merge(key => value))
+      end
+    end
+
+    [
+      {"monarch" => {"name" => "Monarch", "account_name" => "account"}},
+      {"patron" => {"name" => "Patron", "acc" => nil}},
+      {"vassals" => [{"name" => "Vassal", "account_name" => ""}]},
+      {"monarch" => {"name" => "Monarch", "vassals" => [{"name" => "Vassal", "acc" => "account"}]}}
+    ].each do |related|
+      refute_empty validate(direct_schema, payload.merge(related))
+    end
+  end
+
   it "accepts the documented upload examples" do
     %w[minimal maximal].each do |name|
-      result = UploadPayload.sanitize(docs_example(name))
+      result = UploadPayload.sanitize(docs_example(name), source: :direct)
 
       assert_equal docs_example(name)["name"], result.payload["name"]
     end
@@ -103,11 +134,11 @@ describe "CharacterUploadSchemaStory" do
     payload = full_payload.merge("level" => "5", "server_population" => "138")
 
     assert_empty validate(schema, payload)
-    assert_equal 5, UploadPayload.sanitize(payload).payload["level"]
+    assert_equal 5, UploadPayload.sanitize(payload, source: :plugin).payload["level"]
   end
 
   it "accepts the canonical full.json payload" do
-    result = UploadPayload.sanitize(full_payload)
+    result = UploadPayload.sanitize(full_payload, source: :plugin)
 
     assert_equal full_payload["name"], result.payload["name"]
     assert_equal full_payload["server"], result.payload["server"]
@@ -120,9 +151,12 @@ describe "CharacterUploadSchemaStory" do
   # the suite dependency-free means the canonical payload is still checked
   # against the published schema on every run.
   def validate(node, value, path = "$")
+    return [] if node == true
+    return ["#{path}: forbidden value"] if node == false
+
     node = resolve_ref(node, schema)
 
-    errors = []
+    errors = Array(node["allOf"]).flat_map { |child| validate(child, value, path) }
     errors.concat(validate_type(node, value, path))
     errors.concat(validate_value(node, value, path))
 
@@ -138,6 +172,7 @@ describe "CharacterUploadSchemaStory" do
 
   def resolve_ref(node, root)
     ref = node["$ref"]
+    return root if ref == "#"
     return node unless ref&.start_with?("#/")
 
     root.dig(*ref.delete_prefix("#/").split("/"))
@@ -176,6 +211,10 @@ describe "CharacterUploadSchemaStory" do
 
     if value.is_a?(String) && node["pattern"] && !Regexp.new(node["pattern"]).match?(value)
       errors << "#{path}: does not match #{node["pattern"]}"
+    end
+
+    if value.is_a?(String) && node.key?("minLength") && value.length < node["minLength"]
+      errors << "#{path}: must have at least #{node["minLength"]} characters"
     end
 
     if value.is_a?(Numeric) && node.key?("minimum") && value < node["minimum"]

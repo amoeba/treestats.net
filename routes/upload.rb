@@ -10,12 +10,12 @@ module Sinatra
         def self.registered(app)
           # Primary Decal-plugin endpoint; uses the configured body verifier.
           app.post '/' do
-            process_character_upload(token_required: false)
+            process_character_upload(source: :plugin)
           end
 
           # Direct server uploads require a server-scoped upload token.
           app.post '/characters/?' do
-            process_character_upload(token_required: true)
+            process_character_upload(source: :direct)
           end
         end
       end

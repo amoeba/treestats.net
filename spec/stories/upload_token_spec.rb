@@ -37,6 +37,77 @@ describe "UploadTokenStory" do
     assert last_response.headers['RateLimit-Reset'].to_i.between?(1, 3600)
   end
 
+  it "rejects account_name on direct uploads regardless of its value without writing data" do
+    token = create_server_token('Token Server')
+
+    ['claimed-account', '', nil, 123, {}].each do |account_name|
+      payload = JSON.parse(upload_body('Token Server')).merge(
+        'account_name' => account_name,
+        'server_population' => 123,
+        'monarch' => {'name' => 'Monarch'},
+        'allegiance_name' => 'Allegiance'
+      )
+
+      post '/characters', JSON.generate(payload), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+      assert_equal 400, last_response.status
+      assert_includes last_response.body, 'account_name is only allowed for plugin uploads to POST /'
+      assert_equal 0, Character.unscoped.where(server: 'Token Server').count
+      assert_equal 0, PlayerCount.where(server: 'Token Server').count
+      assert_equal 0, Allegiance.where(server: 'Token Server').count
+    end
+  end
+
+  it "rejects account fields on related characters and the stored-field alias" do
+    token = create_server_token('Token Server')
+    [
+      {'acc' => 'claimed-account'},
+      {'monarch' => {'name' => 'Monarch', 'account_name' => 'claimed-account'}},
+      {'patron' => {'name' => 'Patron', 'acc' => nil}},
+      {'vassals' => [{'name' => 'Vassal', 'account_name' => ''}]}
+    ].each do |fields|
+      payload = JSON.parse(upload_body('Token Server')).merge(fields)
+
+      post '/characters/', JSON.generate(payload), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+      assert_equal 400, last_response.status
+      assert_includes last_response.body, 'only allowed for plugin uploads'
+      assert_equal 0, Character.unscoped.where(server: 'Token Server').count
+    end
+  end
+
+  it "preserves a plugin account on valid direct uploads and rejected account changes" do
+    token = create_server_token('Token Server')
+    payload = JSON.parse(upload_body('Token Server')).merge('account_name' => 'plugin-account', 'level' => 10)
+
+    without_env('TREESTATS_SECRET') do
+      post '/', JSON.generate(payload)
+    end
+    assert_equal 200, last_response.status
+    character = Character.unscoped.find_by(server: 'Token Server', name: 'Token User')
+    assert_equal 'plugin-account', character.account_name
+
+    [nil, '', 'other-account'].each do |account_name|
+      post '/characters', JSON.generate(payload.merge('account_name' => account_name, 'level' => 20)),
+        'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+      assert_equal 400, last_response.status
+      character.reload
+      assert_equal 'plugin-account', character.account_name
+      assert_equal 10, character.level
+      refute character.uploaded_by_server?
+    end
+
+    post '/characters', JSON.generate(payload.reject { |key, _| key == 'account_name' }.merge('level' => 30)),
+      'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+    assert_equal 200, last_response.status
+    character.reload
+    assert_equal 'plugin-account', character.account_name
+    assert_equal 30, character.level
+    assert character.uploaded_by_server?
+  end
+
   it "rejects a token issued for another server without writing anything" do
     token = create_server_token('Token Server')
 
@@ -168,6 +239,7 @@ describe "UploadTokenStory" do
 
       payload = JSON.parse(body)
       assert_empty payload.keys - allowed, "#{name} example contains fields the uploader ignores"
+      refute payload.key?('account_name'), "#{name} direct upload example contains a plugin-only field"
 
       post '/characters', body, 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
 

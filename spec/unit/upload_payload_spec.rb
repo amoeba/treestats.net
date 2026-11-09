@@ -3,7 +3,7 @@ require "./helpers/upload_payload"
 
 describe UploadPayload do
   def sanitize(hash)
-    UploadPayload.sanitize(hash)
+    UploadPayload.sanitize(hash, source: :plugin)
   end
 
   it "requires string server and name" do
@@ -74,6 +74,49 @@ describe UploadPayload do
     )
 
     assert_equal [{}, {"name" => "v"}], result.payload["vassals"]
+  end
+
+  it "allows account names on plugin payloads" do
+    result = sanitize("server" => "s", "name" => "n", "account_name" => "plugin-account")
+
+    assert_equal "plugin-account", result.payload["account_name"]
+  end
+
+  it "rejects account fields by presence on direct payloads" do
+    %w[account_name acc].each do |key|
+      ["account", "", nil, 123, {}].each do |value|
+        error = assert_raises(UploadPayload::Invalid) do
+          UploadPayload.sanitize({"server" => "s", "name" => "n", key => value}, source: :direct)
+        end
+
+        assert_equal key, error.field
+        assert_includes error.to_s, "only allowed for plugin uploads"
+      end
+    end
+  end
+
+  it "rejects account fields on related characters in direct payloads" do
+    [
+      {"monarch" => {"name" => "m", "account_name" => "account"}},
+      {"patron" => {"name" => "p", "acc" => nil}},
+      {"vassals" => [{"name" => "v", "account_name" => ""}]},
+      {"monarch" => {"name" => "m", "vassals" => [{"name" => "v", "acc" => "account"}]}}
+    ].each do |related|
+      assert_raises(UploadPayload::Invalid) do
+        UploadPayload.sanitize({"server" => "s", "name" => "n"}.merge(related), source: :direct)
+      end
+    end
+  end
+
+  it "requires an explicit, recognized upload source" do
+    payload = {"server" => "s", "name" => "n", "account_name" => "account"}
+
+    assert_raises(ArgumentError) { UploadPayload.sanitize(payload) }
+    [nil, :server, :unknown, "plugin"].each do |source|
+      error = assert_raises(ArgumentError) { UploadPayload.sanitize(payload, source: source) }
+
+      assert_includes error.message, "Unknown upload source"
+    end
   end
 
   it "keeps null known fields as nil" do

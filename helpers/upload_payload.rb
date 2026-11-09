@@ -3,8 +3,8 @@
 # without failing. Fields that drive queries must be strings so a JSON object
 # can never be interpreted as a Mongo operator.
 #
-# Field groups live on Character (UPLOAD_*_FIELDS); this module only enforces the
-# shape of each group.
+# Field groups live on Character (UPLOAD_*_FIELDS); this module enforces their
+# shapes and source-specific restrictions.
 module UploadPayload
   class Invalid < StandardError
     attr_reader :field
@@ -21,7 +21,16 @@ module UploadPayload
 
   Result = Struct.new(:payload, :population, keyword_init: true)
 
-  def self.sanitize(raw)
+  def self.sanitize(raw, source:)
+    case source
+    when :direct
+      reject_account_names(raw)
+    when :plugin
+      # Only plugin uploads may set account fields.
+    else
+      raise ArgumentError, "Unknown upload source: #{source.inspect}"
+    end
+
     payload = {}
     population = nil
 
@@ -45,6 +54,29 @@ module UploadPayload
 
     Result.new(payload: payload, population: population)
   end
+
+  # Related-character hashes can reach Character#set in the upload callbacks.
+  # Check them too, including Mongoid's stored-field alias, before any writes.
+  # Presence is forbidden even when the value is null or an empty string.
+  def self.reject_account_names(raw, path = nil)
+    return unless raw.is_a?(Hash)
+
+    %w[account_name acc].each do |key|
+      next unless raw.key?(key)
+
+      field = [path, key].compact.join(".")
+      raise Invalid.new(field, "is only allowed for plugin uploads to POST /, not direct uploads to POST /characters")
+    end
+
+    Character::UPLOAD_PERSON_FIELDS.each do |key|
+      reject_account_names(raw[key], [path, key].compact.join("."))
+    end
+
+    Array(raw["vassals"]).each_with_index do |vassal, index|
+      reject_account_names(vassal, [path, "vassals[#{index}]"].compact.join("."))
+    end
+  end
+  private_class_method :reject_account_names
 
   def self.coerce(key, value)
     case key
