@@ -8,7 +8,7 @@ describe SentryUploadFilter do
     config.send_default_pii = true
     event = Sentry::ErrorEvent.new(configuration: config)
     event.rack_env = Rack::MockRequest.env_for(
-      "https://example.test#{path}?token=credential",
+      "https://example.test#{path}?token=credential&page=2",
       method: method,
       input: body,
       **{
@@ -45,7 +45,7 @@ describe SentryUploadFilter do
     SentryUploadFilter.filter(event, {})
 
     refute_includes event.request.headers.to_s, "credential"
-    assert_equal "token=credential", event.request.query_string
+    assert_equal({"token" => "[Filtered]", "page" => "2"}, event.request.query_string)
   end
 
   it "accepts events without a request" do
