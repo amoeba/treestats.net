@@ -1,0 +1,23 @@
+%h2.title News
+%p Updates from TreeStats.
+%table.dashboard.news-archive
+  %thead
+    %tr
+      %th{:scope => "col"} Announcement
+      %th{:scope => "col"} Published (UTC)
+  %tbody
+    - if @posts.empty?
+      %tr
+        %td{:colspan => 2} No news posts yet.
+    - @posts.each do |post|
+      %tr
+        %td
+          %a{:href => "/news/#{post.slug}"}= post.title
+        %td
+          %time{:datetime => post.published_at.utc.iso8601}= post.published_at.utc.strftime('%Y-%m-%d %H:%M')
+%nav.news-pagination{:"aria-label" => "News pages"}
+  - if @page > 1
+    %a{:href => "/news?page=#{@page - 1}"} ← Newer
+  %span= "Page #{@page}"
+  - if @has_next
+    %a{:href => "/news?page=#{@page + 1}"} Older →

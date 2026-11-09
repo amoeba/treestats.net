@@ -1,0 +1,30 @@
+%h1 News
+%p
+  %a{:href => "/admin/news/new"} Create news post
+%p All announcements are published as TreeStats. Posts can be unpublished, but cannot be deleted.
+- if @posts.empty?
+  %p No news posts yet.
+- else
+  %table
+    %thead
+      %tr
+        %th{:scope => "col"} Title
+        %th{:scope => "col"} Status
+        %th{:scope => "col"} Published (UTC)
+        %th{:scope => "col"} Actions
+    %tbody
+      - @posts.each do |post|
+        %tr
+          %td= post.title
+          %td= post.status.capitalize
+          %td= post.published_at&.utc&.strftime('%Y-%m-%d %H:%M:%S') || '—'
+          %td
+            %a{:href => "/admin/news/#{post.id}/edit"} Edit
+            - if post.published?
+              %a{:href => "/news/#{post.slug}"} View published post
+%nav.news-pagination{:"aria-label" => "News pages"}
+  - if @page > 1
+    %a{:href => "/admin/news?page=#{@page - 1}"} ← Newer
+  %span= "Page #{@page}"
+  - if @has_next
+    %a{:href => "/admin/news?page=#{@page + 1}"} Older →

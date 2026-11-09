@@ -26,6 +26,8 @@ gem 'sidekiq-cron'
 gem 'connection_pool', '~> 2.4'
 
 gem 'haml'
+gem 'redcarpet', '~> 3.6'
+gem 'sanitize', '~> 7.0'
 
 group :development do
   gem 'nokogiri'
