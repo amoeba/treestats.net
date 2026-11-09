@@ -15,7 +15,7 @@ module CharacterHelper
     begin
       parsed = DateTime.strptime("#{birth} EST", "%m/%d/%Y %H:%M:%S %p %Z")
     rescue ArgumentError
-      # Try the other legacy format below.
+      # Try the alternate format below.
     end
 
     # Try our second one
