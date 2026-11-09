@@ -27,47 +27,81 @@
       "description": "Character's current location, when the plugin is configured to share it."
     },
     "version": {
-      "type": "string",
+      "type": [
+        "string",
+        "integer"
+      ],
       "enum": [
         "1",
-        "2"
+        "2",
+        1,
+        2
       ],
       "description": "Payload format version emitted by the Decal plugin. Observed values are \"1\" and \"2\"."
     },
     "race": {
-      "type": "string",
-      "description": "Race name as emitted by the Decal plugin, for example \"Gharu'ndim\"."
+      "type": [
+        "string",
+        "integer"
+      ],
+      "description": "Race name or ID as emitted by the Decal plugin, for example \"Gharu'ndim\" or 2."
     },
     "gender": {
-      "type": "string",
+      "type": [
+        "string",
+        "integer"
+      ],
       "enum": [
         "Male",
-        "Female"
+        "Female",
+        0,
+        1,
+        2
       ],
-      "description": "Gender name as emitted by the Decal plugin."
+      "description": "Gender name or ID as emitted by the Decal plugin."
     },
     "level": {
-      "type": "integer",
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
       "minimum": 0
     },
     "allegiance_name": {
       "type": "string"
     },
     "rank": {
-      "type": "integer",
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
       "minimum": 0
     },
     "followers": {
-      "type": "integer",
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
       "minimum": 0
     },
     "server_population": {
-      "type": "integer",
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
       "minimum": 0,
       "description": "Observed in-world population at upload time."
     },
     "deaths": {
-      "type": "integer",
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
       "minimum": 0
     },
     "birth": {
@@ -76,23 +110,43 @@
       "description": "Character creation time in US date format, with either 12-hour AM/PM or 24-hour time, for example \"5/3/2012 3:23:08 AM\"."
     },
     "total_xp": {
-      "type": "integer",
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
       "minimum": 0
     },
     "unassigned_xp": {
-      "type": "integer",
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
       "minimum": 0
     },
     "skill_credits": {
-      "type": "integer",
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
       "minimum": 0
     },
     "luminance_earned": {
-      "type": "integer",
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
       "minimum": 0
     },
     "luminance_total": {
-      "type": "integer",
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
       "minimum": 0
     },
     "attribs": {
@@ -157,7 +211,11 @@
       }
     },
     "current_title": {
-      "type": "integer",
+      "type": [
+        "integer",
+        "string"
+      ],
+      "pattern": "^[0-9]+$",
       "minimum": 0
     },
     "titles": {
@@ -235,10 +293,16 @@
           "type": "string"
         },
         "race": {
-          "type": "integer"
+          "type": [
+            "integer",
+            "string"
+          ]
         },
         "gender": {
-          "type": "integer"
+          "type": [
+            "integer",
+            "string"
+          ]
         },
         "rank": {
           "type": "integer",

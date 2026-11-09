@@ -35,6 +35,10 @@ describe "CharacterUploadSchemaStory" do
     JSON.parse(body)
   end
 
+  def fixture_paths
+    Dir[File.expand_path("../../util/**/*.{json,txt}", __dir__)].sort
+  end
+
   it "serves the published character upload schema" do
     get "/schemas/character/v2/schema.json"
 
@@ -82,6 +86,24 @@ describe "CharacterUploadSchemaStory" do
 
       assert_equal docs_example(name)["name"], result.payload["name"]
     end
+  end
+
+  it "validates the upload fixtures" do
+    fixture_paths.each do |path|
+      payload = JSON.parse(File.read(path))
+      next unless payload.is_a?(Hash)
+
+      errors = validate(schema, payload)
+
+      assert_empty errors, "#{File.basename(path)} does not match the schema: #{errors.join(", ")}"
+    end
+  end
+
+  it "accepts numeric strings for integer fields" do
+    payload = full_payload.merge("level" => "5", "server_population" => "138")
+
+    assert_empty validate(schema, payload)
+    assert_equal 5, UploadPayload.sanitize(payload).payload["level"]
   end
 
   it "accepts the canonical full.json payload" do

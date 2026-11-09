@@ -52,6 +52,10 @@ Only `name` and `server` are required. This is the smallest useful upload:
 Every accepted field, with the shapes and types they expect. `server` must match
 the server the token was issued for:
 
+`race` and `gender` may be names or numeric IDs, including in `monarch`,
+`patron`, and `vassals`. `version` may be a string or integer; the example uses
+the string form.
+
 <!-- example:maximal -->
 ```json
 {
