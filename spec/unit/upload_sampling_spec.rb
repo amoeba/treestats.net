@@ -35,6 +35,7 @@ describe UploadSampling do
     attachment = transport.envelopes.fetch(0).items.find { |item| item.headers[:type] == "attachment" }
 
     assert_equal "Sampled plugin character upload", event["message"]
+    assert_equal "info", event["level"]
     refute_nil attachment
     assert_equal "character-upload.json", attachment.headers[:filename]
     assert_equal "application/json", attachment.headers[:content_type]

@@ -21,7 +21,7 @@ module UploadSampling
 
     Sentry.with_scope do |scope|
       scope.add_attachment(bytes: text, filename: "character-upload.json", content_type: "application/json")
-      Sentry.capture_message("Sampled plugin character upload")
+      Sentry.capture_message("Sampled plugin character upload", level: :info)
     end
   rescue
     puts "Failed to capture upload sample."
