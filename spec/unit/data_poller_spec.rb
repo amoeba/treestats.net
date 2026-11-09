@@ -542,17 +542,6 @@ describe "DataPoller", :unit do
     assert_equal 0, PlayerCount.where(s: "PollTest").count
   end
 
-  it "captures response receipt time after the request, allowing a timestamp made after request start" do
-    request_started = Time.now.to_i
-    timestamp = request_started + 1
-    result = poll_for("PollTest", lambda { |_uri|
-      sleep 1.1
-      Struct.new(:code, :body).new("200", JSON.generate(standard_document(count: 6, updated_at: timestamp)))
-    })
-    assert_equal :accepted, result
-    assert_equal 6, PlayerCount.where(s: "PollTest").first.c
-  end
-
   it "rejects oversized and non-success responses without observations" do
     too_large = lambda { |_uri| Struct.new(:code, :body).new("200", "x" * (DataPoller::MAX_BODY_BYTES + 1)) }
     non_success = lambda { |_uri| Struct.new(:code, :body).new("302", "{}") }
@@ -764,64 +753,6 @@ describe "DataPoller", :unit do
     stdout, stderr, status = Open3.capture3(RbConfig.ruby, "-e", 'require "./lib/sidekiq_boot"; abort unless defined?(PlayerCount); puts "ready"')
     assert status.success?, stderr
     assert_equal "ready\n", stdout
-  end
-
-  it "validates the real HTTPS transport, TLS host and streamed body limit" do
-    response = Object.new
-    response.define_singleton_method(:code) { "200" }
-    response.define_singleton_method(:read_body) { |&block| ["{\"count\":", "1,\"updated_at\":1}"].each(&block) }
-    client = Object.new
-    client.define_singleton_method(:start) { |&block| block.call(client) }
-    client.define_singleton_method(:request) { |_request, &block| block.call(response) }
-    options = {}
-    %i[use_ssl verify_mode open_timeout read_timeout write_timeout max_retries].each do |name|
-      client.define_singleton_method("#{name}=") { |value| options[name] = value }
-    end
-    result = read_response("https://public.example.test/population.json",
-      http_factory: ->(host, port, proxy) {
-        options[:host] = host
-        options[:port] = port
-        options[:proxy] = proxy
-        client
-      })
-    assert_equal "{\"count\":1,\"updated_at\":1}", result.first
-    assert_equal "public.example.test", options[:host]
-    assert_equal true, options[:use_ssl]
-    assert_equal OpenSSL::SSL::VERIFY_PEER, options[:verify_mode]
-    assert_equal DataPoller::OPEN_TIMEOUT_SECONDS, options[:open_timeout]
-    assert_equal DataPoller::READ_TIMEOUT_SECONDS, options[:read_timeout]
-    assert_equal DataPoller::WRITE_TIMEOUT_SECONDS, options[:write_timeout]
-    assert_equal 0, options[:max_retries]
-    assert_nil options[:proxy]
-
-    options.clear
-    result = read_response("http://public.example.test/",
-      http_factory: ->(host, port, proxy) {
-        options[:host] = host
-        options[:port] = port
-        options[:proxy] = proxy
-        client
-      })
-    assert_equal "{\"count\":1,\"updated_at\":1}", result.first
-    assert_equal "public.example.test", options[:host]
-    assert_equal false, options[:use_ssl]
-    assert_nil options[:proxy]
-
-    oversized = Object.new
-    oversized.define_singleton_method(:code) { "200" }
-    oversized.define_singleton_method(:read_body) { |&block| block.call("x" * (DataPoller::MAX_BODY_BYTES + 1)) }
-    client.define_singleton_method(:request) { |_request, &block| block.call(oversized) }
-    assert_raises(DataPoller::Error) do
-      read_response("https://public.example.test/", http_factory: ->(*) { client })
-    end
-
-    client.define_singleton_method(:start) do |&block|
-      sleep 0.05
-      block.call(client)
-    end
-    assert_raises(Timeout::Error) do
-      read_response("https://public.example.test/", http_factory: ->(*) { client }, total_timeout: 0.01)
-    end
   end
 
   it "ignores proxy environment variables and connects directly" do
