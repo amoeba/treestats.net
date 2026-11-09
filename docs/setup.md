@@ -49,7 +49,7 @@ bundle exec rake test
 | `SIDEKIQ_WEB_USERNAME` | optional | Sidekiq dashboard username (defaults to `admin`) |
 | `SIDEKIQ_WEB_PASSWORD` | optional | Sidekiq dashboard password — omit to disable the dashboard |
 | `SENTRY_DSN` | optional | Sentry error reporting DSN (production only) |
-| `UPLOAD_SAMPLE_RATE` | optional | Fraction of successful legacy uploads to sample for Sentry shape diagnostics, from `0` to `1`; defaults to `0` (off). Set at app boot; for 1%, use `0.01`. Samples contain allowlisted field types, shapes, training categories, and coarse numeric ranges, not raw payloads or identifiers. |
+| `UPLOAD_SAMPLE_RATE` | optional | Fraction of successful uploads to the plugin endpoint (`POST /`) to sample for Sentry shape diagnostics, from `0` to `1`; defaults to `0` (off). Set at app boot; for 1%, use `0.01`. Samples contain allowlisted field types, shapes, training categories, and coarse numeric ranges, not raw payloads or identifiers. Server-token uploads to `POST /characters` are not sampled. |
 
 ## Admin Setup
 

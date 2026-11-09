@@ -24,10 +24,10 @@ describe "UploadTokenStory" do
     )
   end
 
-  it "accepts a matching server token without calling the legacy validator" do
+  it "accepts a matching server token without calling the plugin body verifier" do
     token = create_server_token('Token Server')
 
-    with_env('TREESTATS_SECRET' => 'x == "legacy"') do
+    with_env('TREESTATS_SECRET' => 'x == "plugin"') do
       post '/characters', upload_body('Token Server'), 'HTTP_X_TREESTATS_SERVER_TOKEN' => token
     end
 
@@ -82,15 +82,15 @@ describe "UploadTokenStory" do
     assert last_response.headers['RateLimit-Reset'].to_i.between?(1, 3600)
   end
 
-  it "uses the legacy validator when no server token header is sent" do
-    with_env('TREESTATS_SECRET' => 'x == "legacy"') do
+  it "uses the plugin body verifier when no server token header is sent" do
+    with_env('TREESTATS_SECRET' => 'x == "plugin"') do
       post '/', 'other'
     end
 
     assert_equal 403, last_response.status
   end
 
-  it "accepts a legacy plugin upload at the root endpoint" do
+  it "accepts a plugin upload at the root endpoint" do
     without_env('TREESTATS_SECRET') do
       post '/', upload_body('Token Server')
     end
@@ -98,7 +98,7 @@ describe "UploadTokenStory" do
     assert_equal 200, last_response.status
   end
 
-  it "samples successful legacy uploads before normalization, but not direct uploads" do
+  it "samples successful plugin-endpoint uploads before normalization, but not direct uploads" do
     token = create_server_token('Token Server')
     payload = {name: 'Token User', server: 'Token Server', level: '50', birth: '1/15/2000 8:30:00 PM'}
     sampled = []
@@ -144,7 +144,7 @@ describe "UploadTokenStory" do
     assert_equal 0, PlayerCount.where(server: 'Token Server').count
   end
 
-  it "rejects valid JSON that is not an object on the legacy endpoint" do
+  it "rejects valid JSON that is not an object on the plugin endpoint" do
     without_env('TREESTATS_SECRET') do
       ['null', '[]', '5'].each do |body|
         post '/', body
@@ -311,7 +311,7 @@ describe "UploadTokenStory" do
     assert_equal 413, last_response.status
   end
 
-  it "rejects an oversized legacy upload before reading it" do
+  it "rejects an oversized plugin-endpoint upload before reading it" do
     oversized = 'x' * (UploadHelper::MAX_UPLOAD_BYTES + 1)
 
     without_env('TREESTATS_SECRET') do

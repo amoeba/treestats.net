@@ -58,7 +58,7 @@ module UploadHelper
     end
 
     unless token_required
-      # Legacy plugin uploads authenticate their signed request body.
+      # Plugin-endpoint uploads use the configured body verifier.
       valid = UploadHelper.validate(text)
       if !valid
         status 403

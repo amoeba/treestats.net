@@ -69,6 +69,7 @@ describe UploadSampling do
     end
     event = Sentry.get_current_client.transport.events.fetch(0).to_json_compatible
 
+    assert_equal "Sampled plugin-endpoint character upload", event["message"]
     assert_equal "positive:10_to_99", event.dig("contexts", "upload_shape", "fields", "level", "range")
     refute_includes event.to_s, character
     refute_includes event.to_s, token
