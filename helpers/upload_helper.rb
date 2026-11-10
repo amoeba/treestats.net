@@ -141,7 +141,7 @@ module UploadHelper
     allegiance_name = json_text['allegiance_name']
 
     # PlayerCount
-    # Only save a PlayerCount if this message contains one.
+    # Only plugin uploads can contribute a population sample.
     # No source field: an absent source is the compact plugin default.
     PlayerCount.create(server: server, count: upload.population) if upload.population
 

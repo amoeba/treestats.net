@@ -13,6 +13,10 @@ X-TreeStats-Server-Token: ts_...
 Content-Type: application/json
 ```
 
+`server_population` is **plugin-only**. Direct uploads ignore it regardless of
+its value: no player count sample is recorded, and its presence does not cause
+an error. Population sampling from plugin uploads to `POST /` is unchanged.
+
 ## Example Payloads
 
 Only `name` and `server` are required. This is the smallest useful upload:
@@ -39,7 +43,6 @@ A complete example:
   "allegiance_name": "Example Allegiance",
   "rank": 10,
   "followers": 42,
-  "server_population": 123,
   "deaths": 3,
   "birth": "01/15/2000 08:30:00 PM",
   "total_xp": 1234567890,

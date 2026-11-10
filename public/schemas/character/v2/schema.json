@@ -88,13 +88,7 @@
       "minimum": 0
     },
     "server_population": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "pattern": "^[0-9]+$",
-      "minimum": 0,
-      "description": "Observed in-world population at upload time."
+      "description": "Plugin-only observed in-world population at upload time. POST / records positive integers or positive integer strings on a best-effort basis and ignores other values. POST /characters ignores this field regardless of its value; it does not reject the upload."
     },
     "deaths": {
       "type": [
@@ -240,7 +234,7 @@
   "$defs": {
     "directUpload": {
       "title": "Direct Character Upload",
-      "description": "Server-token-authenticated payload for POST /characters. Account names are forbidden, including on related characters; their presence returns HTTP 400.",
+      "description": "Server-token-authenticated payload for POST /characters. Account names are forbidden, including on related characters; their presence returns HTTP 400. Player count data (server_population) is ignored regardless of its value, without rejecting the upload.",
       "allOf": [
         {"$ref": "#"},
         {

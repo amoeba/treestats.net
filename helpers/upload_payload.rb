@@ -40,7 +40,7 @@ module UploadPayload
         # An empty name is allowed so the level-1 message is preserved.
         payload[key] = require_string(key, value, allow_empty: key == "name")
       when "server_population"
-        population = population_value(value)
+        population = population_value(value) if source == :plugin
       else
         next unless Character::UPLOAD_FIELDS.include?(key)
 
@@ -159,8 +159,9 @@ module UploadPayload
   end
   private_class_method :vassals
 
-  # Population samples are best effort: a bad value must not drop the
-  # character upload. Only a positive integer becomes a PlayerCount.
+  # Only plugin uploads contribute population samples. They are best effort:
+  # a bad value must not drop the character upload. Only a positive integer
+  # becomes a PlayerCount.
   def self.population_value(value)
     count = case value
             when Integer then value
