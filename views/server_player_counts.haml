@@ -1,0 +1,22 @@
+%h2.title= "#{@server} — Player counts"
+%p Last two weeks of raw observations. Each marker is one observation; nothing is averaged or summed. All times are UTC.
+%p Direct polls are blue circles; plug-in uploads are orange triangles (including legacy uploads without a source).
+%link{:rel => "stylesheet", :href => stylesheet_path('server_player_counts')}
+#server-player-counts{:data => {:url => @observations_url}}
+  %fieldset
+    %legend Chart series
+    %label.poll-series
+      %input{:type => "checkbox", :name => "server", :checked => true}
+      Direct polling (circles)
+    %label.plugin-series
+      %input{:type => "checkbox", :name => "plugin", :checked => true}
+      Plug-in (triangles)
+    %label
+      %input{:type => "checkbox", :name => "combined"}
+      Combined chronological line
+  %p The combined line connects all observations from the enabled sources in time order, without aggregation. Lines may span gaps in collection.
+  %p.chart-status{:role => "status", "aria-live" => "polite"} Loading observations…
+  .chart
+  %noscript Enable JavaScript to view the player count chart.
+%script{:src => javascript_path('d3.min')}
+%script{:src => javascript_path('server_player_counts')}
