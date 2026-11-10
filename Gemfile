@@ -23,7 +23,6 @@ gem 'resque'
 
 gem 'sidekiq'
 gem 'sidekiq-cron'
-gem 'connection_pool', '~> 2.4'
 
 gem 'haml'
 
