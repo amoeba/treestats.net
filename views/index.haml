@@ -41,160 +41,23 @@
 
   != haml :_dashboard_uploads_latest
 
-%h2 News
-
-%div
-  %p
-    %p Update <code>2023-12-26 2200 UTC</code>
-    %h3 Update on recent brief outage
-    %p
-      <a href="https://treestats.net">treestats.net</a> was unavailable for roughly 90 minutes today after going down while perming a routine upgrade. Services have been fully restored but please reach out <a href="https://discord.gg/MDSSYeW2c5">on Discord</a> if you see any issues.
-    %p
-      <strong>Synopsis:</strong> Partially for my memory but also for anyone who's curious about the reason for the outage, here's a summary: Just prior to the outage, I updated the system TreeStats runs on with <code>apt upgrade</code> which is somethingn I do on a semi-regular basis. This upgraded packages for my deployment tool, <a href="https://dokku.com/">Dokku</a>, which resulted in a mix of incompatible binaries from different versions of Dokku for reasons I don't yet understand.
-    %p
-      Rather than attempting to downgrade back to a known working version of Dokku, I decided to take advantage of the already-underway downtime to upgrade the operating system from Debian 10 to 12, upgrade Dokku from a 0.2x version to a 0.3x version (which I've been meaning to do for a while), and also upgrade MongoDB and Redis images up a few major versions each. With these upgrades now done, it should be easier to continue to do upgrades without downtime.
-
-%div
-  %p
-    %p Update <code>2023-01-01 0300 UTC</code>
-    %h3 Private servers list now uses Community List
-    %p
-      For quite some time, this website has used a curated list of private servers, mainly out of convenience. During this time, the community has created a
-      %a{:href => "https://github.com/acresources/serverslist"} Community List
-      which has, more or less, contained the same set of servers.
-      Because the TreeStats list hasn't always matched the
-      %a{:href => "https://github.com/acresources/serverslist"} Community List
-      \, server operators have had to submit changes in both locations. To simplify and unify the list of private servers, TreeStats now synchronizes with the
-      %a{:href => "https://github.com/acresources/serverslist"} Community List.
-
-%div
-  %p
-    %p Update <code>2021-07-11 0500 UTC</code>
-    %h3 Fixed: Incorrect total count of characters for some servers
-    %p
-      All incorrect total character counts have now been fixed and the bug causing the issue has been fixed as well.
-
-%div
-  %p
-    %p Update <code>2021-04-17 0012 UTC</code>
-    %h3 Incorrect total count of characters for some servers
-    %p
-      I'm aware of an issue where some servers show total character counts that are much higher than reality. No fix has been applied at this point but I expect to apply a fix in the coming weeks.
-
-%div
-  %p
-    %p Update <code>2018-07-09 0830 UTC</code>
-    %h3 Update on character upload issues
-    %p
-      I did a bit of debugging and determined the issue with uploading new characters was due to a minor change I made in my DNS settings that was causing the interacting in an odd with with .NET's HTTP library. The end result was that a completely malformed response body was being sent back to the plugin and no characters were being uploaded. I have reverted the change and, as far as I can tell, everything is back to normal. Sorry for the outage.
-
-%div
-  %p
-    %p Update <code>2018-07-09 0730 UTC</code>
-    %h3 Outage postmortem
-    %p
-      First off, my apologies for the instability and the downtime of the website. Looking at my logs, TreeStats was being hammered by bots and, since I was on vacation, I wasn't able to keep ahead of them without a real Internet connection. I've since come back from vacation and took the opportunity to do a system-wide upgrade on the VM running TreeStats and brought the site back up in full.
-    %p
-      After bringing the site back up, I found out that the most recent update to TreeStats was about three days ago. I am still investigating whether this was a fault with the site or if the playrs on the private servrs that usually submit data just weren't submitting.
-    %p
-      I fully expect the bots to come back at some point so expect some of the more intensive services like allegiance chains and rankings to be disabled at times until I implemented proper caching for those. I've laid the groundwork for a caching infrastructure that may solve all of these problems so I hope there will be minimal distruption to services.
-
-%div
-  %p
-    %p Update <code>2018-06-27 2100 UTC</code>
-    %h3 Recent instability and downtime
-    %p
-      The site started having trouble keeping up with requests starting some time yesterday. I implemented some quick fixes but the rate of requests was still too high for the small VM TreeStats.net runs on over on <a href="https://www.digitalocean.com/">DigitalOcean</a>. I bumped the RAM up to 3GB today after continued instability and downtime earlier today and things seem to be back in operation. Please get in touch in <a href="https://discord.gg/6hUvBrx">Discord</a> if you see anything not working normally or want to contribute anything to the $15/mo hosting plan TreeStats.net runs on.
-
-%div
-  %p
-    %p Update <code>2018-03-08 0500 UTC</code>
-    %h3 Player counts have been reinstated
-    %ul
-      %li Player counts (historical and current) are not working again
-      %li Added a table to the front page to show the servers with the most tracked players
-
-%div
-  %p
-    %p Update <code>2018-01-07 1008 UTC</code>
-    %h3 Hardware update & minor tweaks
-    %ul
-      %li Had a <5min downtime to resize the VM TreeStats runs on from 1GB of RAM to 2GB.
-      %li Changed what's shown on the index page from the number of uploads per month to the latest 10 uploaded characters
-      %li Minor bug fixes
-
-%div
-  %p
-    %p Update <code>2016-08-08 0600 UTC</code>
-    %h3 (Another) New plugin release + Installer
-    %ul
-      %li There is now an installer. I'm not sure if anyone was needing this but I always intended to do one. Hopefully it works for everyone and not just me?
-      %li Getting warned about sending too many updates when you weren't sending any manually should be fixed. I'm not sure how many users were experiencing this.
-
-%div
-  %p
-    %p Update <code>2016-08-03 1719 UTC</code>
-    %h3 New plugin release!
-    %ul
-      %li TreeStats (the plugin) now lets you view your characters and their stats together. Create an account using the Accounts tab in the plugin and any characters you upload after that will be grouped together. I hope this is helpful for people comparing stuff like augs across characters.
-
-      %li Also fixed a bug with locales and dates breaking uploads for probably exactly one person. I'm sorry!!!
-
-      %li And sorry for breaking uploads overnight.
-
-%div
-  %p
-    Update <code>2016-06-25 1719 UTC</code>
-  %p
-    %ul
-      %li Increased how far you can zoom out in the chain view. Some people apparently have huge chains!
-
-%div
-  %p
-    Update <code>2016-02-24 0800 UTC</code>
-  %p
-    %ul
-      %li Titles should now display as they do ingame. I had made some bad assumptions before. FYI to anyone who cares: I get the titles from portal.dat so you'll see titles that may not be listed anywhere else, like acpedia.
-
-%div
-  %p
-    Update <code>2016-02-23 1600 UTC</code>
-  %p
-    %ul
-      %li The 'Titles' tab on the character pages now show the title count for that character
-      %li The titles shown in the 'Titles' tab of your character now link to their corresponding page in the Titles listing
-      %li The Titles listing now sorts by server, then by character name
-      %li The Titles listing is now sorted by title name
-
-%div
-  %p
-    Update <code>2016-02-20 1600 UTC</code>
-  %p
-    %ul
-      %li Per user request, I've added a <a href="/titles">titles</a> listing so you can find players that have a particular title.
-      %li Added a ranking for the number of times a character has been Enlightened: <a href="/rankings?ranking=times_enlightened">/rankings?ranking=times_enlightened</a>
-
-%div
-  %p
-    Update <code>2016-02-16 0000 UTC</code>
-  %p
-    %ul
-      %li Complete re-write of the ranking system. This fixes an 'Internal Server Error' some users were receiving when they tried to sort in reverse order
-      %li Added a Rankings Index at <a href="/rankings">/rankings</a> that shows all possible rankings.
-      %li Added new rankings: Total XP, Followers
-      %li Rankings for vitals are now in their own group
-      %li The 'Most Titles' ranking is now under the Other grouping
-
-%div
-  %p
-    Update <code>2015-12-29 0500 UTC</code>
-  %p
-    I've decided to start putting updates here on the front page instead if hiding them away in commit messages. Here are a few updates:
-
-    %ul
-      %li Added a subheader to the top of the website so Google shows something useful.
-      %li Extracted the introductory text from the front page into its own page: <a href="/about">http://treestats.net/about</a>.
-      %li Wrote up a small section on the pseudo-API for TreeStats at <a href="/api">http://treestats.net/api</a>.
-      %li Removed the monthly uploads chart from the front page and made the daily uploads chart wider.
-      %li Made the <a href="/player_counts-latest.json">latest player counts</a> API endpoint pretty-print its output.
-      %li Fixed long-standing but in the accounts view for where the 'birth' field wasn't working.
+  %section.home-news{:"aria-label" => "News"}
+    %table.dashboard.news-dashboard
+      %thead
+        %tr
+          %th{:scope => "col"} News
+          %th.news-date{:scope => "col"} Date
+      %tbody
+        - if @news_posts.empty?
+          %tr
+            %td{:colspan => 2} No news posts yet.
+        - @news_posts.each do |post|
+          %tr
+            %td
+              %a{:href => "/news/#{post.slug}"}= post.title
+            %td.news-date
+              %time{:datetime => post.published_at.utc.iso8601, :title => post.published_at.utc.strftime('%Y-%m-%d %H:%M:%S UTC')}= post.published_at.utc.strftime('%Y-%m-%d')
+    %div.right
+      %a{:href => '/news.atom', :type => 'application/atom+xml'} Atom feed
+      ·
+      %a{:href => "/news"} → View all news

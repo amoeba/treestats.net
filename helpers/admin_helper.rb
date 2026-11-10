@@ -46,7 +46,7 @@ module AdminHelper
     RateLimiter.record!(redis, admin_login_rate_limit_key, LOGIN_RATE_LIMIT_WINDOW)
   end
 
-  def render_admin_dashboard
+  def render_admin_servers
     @poll_config_error = nil
     @poll_interval = DataPoller::DEFAULT_INTERVAL
     @poll_targets = []
@@ -67,7 +67,7 @@ module AdminHelper
     end
     @tokens = ServerAuthToken.asc(:server).to_a
     @registered_servers = ServerHelper.servers.sort
-    haml :admin, layout: false
+    haml :admin_servers, layout: false
   end
 
   def generate_upload_token
