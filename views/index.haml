@@ -41,21 +41,23 @@
 
   != haml :_dashboard_uploads_latest
 
-%section.home-news{:"aria-label" => "News"}
-  %table.dashboard.news-dashboard
-    %thead
-      %tr
-        %th{:scope => "col"} News
-        %th.news-date{:scope => "col"} Date
-    %tbody
-      - if @news_posts.empty?
+  %section.home-news{:"aria-label" => "News"}
+    %table.dashboard.news-dashboard
+      %thead
         %tr
-          %td{:colspan => 2} No news posts yet.
-      - @news_posts.each do |post|
-        %tr
-          %td
-            %a{:href => "/news/#{post.slug}"}= post.title
-          %td.news-date
-            %time{:datetime => post.published_at.utc.iso8601, :title => post.published_at.utc.strftime('%Y-%m-%d %H:%M:%S UTC')}= post.published_at.utc.strftime('%Y-%m-%d')
-  %div.right
-    %a{:href => "/news"} → View all news
+          %th{:scope => "col"} News
+          %th.news-date{:scope => "col"} Date
+      %tbody
+        - if @news_posts.empty?
+          %tr
+            %td{:colspan => 2} No news posts yet.
+        - @news_posts.each do |post|
+          %tr
+            %td
+              %a{:href => "/news/#{post.slug}"}= post.title
+            %td.news-date
+              %time{:datetime => post.published_at.utc.iso8601, :title => post.published_at.utc.strftime('%Y-%m-%d %H:%M:%S UTC')}= post.published_at.utc.strftime('%Y-%m-%d')
+    %div.right
+      %a{:href => '/news.atom', :type => 'application/atom+xml'} Atom feed
+      ·
+      %a{:href => "/news"} → View all news

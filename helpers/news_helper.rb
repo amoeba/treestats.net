@@ -3,6 +3,7 @@ require_relative '../lib/news_markdown'
 
 module NewsHelper
   NEWS_PAGE_SIZE = 20
+  NEWS_BASE_URL = 'https://treestats.net'
 
   def news_page
     value = params.fetch('page', '1').to_s

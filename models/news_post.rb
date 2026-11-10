@@ -7,10 +7,8 @@ class NewsPost
   field :status, type: String, default: 'draft'
   field :published_at, type: Time
   field :slug, type: String
-  field :legacy_id, type: String
 
   index({slug: 1}, {unique: true, partial_filter_expression: {slug: {'$type' => 'string'}}})
-  index({legacy_id: 1}, {unique: true, partial_filter_expression: {legacy_id: {'$type' => 'string'}}})
   index({status: 1, published_at: -1, _id: -1})
 
   validates :title, presence: true, length: {maximum: 200}
@@ -26,8 +24,7 @@ class NewsPost
   scope :published, -> { where(status: 'published', :published_at.lte => Time.now).order_by(published_at: :desc, _id: :desc) }
 
   def self.ensure_indexes!
-    # Also callable by the deployment/import tools; unique indexes are enforced
-    # by MongoDB, not just application-level validation.
+    # Unique indexes are enforced by MongoDB, not just application-level validation.
     create_indexes
   end
 

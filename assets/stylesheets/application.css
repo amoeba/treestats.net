@@ -623,9 +623,11 @@ table.deflist td:first-child {
 /* Dashboards */
 
 #dashboards {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 360px));
+  align-items: start;
   gap: 1.5em;
+  container-type: inline-size;
 }
 
 table.dashboard {
@@ -822,13 +824,20 @@ pre {
 }
 
 /* News */
-.home-news { margin-top: 1.5rem; max-width: 720px; }
+.home-news {
+  grid-column: 1 / span 2;
+  min-width: 0;
+}
+@container (width < 621px) {
+  .home-news { grid-column: 1; }
+}
 table.news-dashboard,
 table.news-archive {
   display: table;
   width: 100%;
   max-width: 900px;
 }
+table.dashboard.news-dashboard { max-width: none; }
 table.news-dashboard td,
 table.news-archive td { white-space: normal; overflow-wrap: anywhere; }
 table.news-dashboard .news-date {

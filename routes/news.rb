@@ -3,6 +3,13 @@ module Sinatra
     module Routing
       module News
         def self.registered(app)
+          app.get '/news.atom' do
+            @posts = NewsPost.published.limit(NewsHelper::NEWS_PAGE_SIZE).to_a
+            @feed_updated_at = @posts.map { |post| post.updated_at || post.published_at }.max || Time.utc(1970)
+            content_type 'application/atom+xml', charset: 'utf-8'
+            haml :news_atom, layout: false, format: :xhtml
+          end
+
           app.get '/news/?' do
             @page = news_page
             @posts = NewsPost.published.skip((@page - 1) * NewsHelper::NEWS_PAGE_SIZE)
