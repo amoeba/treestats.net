@@ -277,3 +277,46 @@ body.admin-panel-page {
   background-color: #000;
   border: 1px solid #444;
 }
+
+/* News management */
+.admin-panel .news-editor {
+  display: grid;
+  align-items: start;
+  max-width: 850px;
+  gap: 0.75rem;
+}
+.news-editor input,
+.news-editor textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #666;
+  border-radius: 3px;
+  background: #000;
+  color: #fff;
+  font: inherit;
+}
+.news-editor textarea {
+  resize: vertical;
+  font-family: ui-monospace, monospace;
+}
+.news-editor label { font-weight: bold; }
+.news-editor p { margin: 0 0 0.5rem; color: #ccc; }
+.news-actions,
+.news-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.news-errors {
+  border-left: 3px solid #ff8888;
+  padding: 0.25rem 1rem;
+}
+.news-preview {
+  border: 1px solid #af7a30;
+  padding: 1rem;
+  max-width: 850px;
+  overflow-wrap: anywhere;
+}
+.news-body pre { white-space: pre-wrap; }

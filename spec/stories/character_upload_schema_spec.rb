@@ -91,6 +91,36 @@ describe "CharacterUploadSchemaStory" do
     end
   end
 
+  it "requires names for root race and gender and integer IDs in direct allegiance records" do
+    direct_schema = schema.fetch("$defs").fetch("directUpload")
+    payload = {
+      "name" => "Example",
+      "server" => "Example Server",
+      "race" => "Sho",
+      "gender" => "Female",
+      "patron" => {"name" => "Patron", "race" => 3, "gender" => 2}
+    }
+
+    assert_empty validate(direct_schema, payload)
+    refute_empty validate(direct_schema, payload.merge("race" => 3))
+    refute_empty validate(direct_schema, payload.merge("gender" => 2))
+    refute_empty validate(direct_schema, payload.merge(
+      "patron" => {"name" => "Patron", "race" => "3", "gender" => "2"}
+    ))
+  end
+
+  it "documents the allegiance race and gender IDs used by uploads" do
+    docs = File.read(docs_path)
+    race_mapping = docs[/^Race\n\n(.*?)(?=\n\nGender)/m, 1]
+    gender_mapping = docs[/^Gender\n\n(.*?)(?=\n\n##)/m, 1]
+
+    expected_races = RaceHelper::RACES.map { |id, name| "- `#{id}` — #{name}" }.join("\n")
+    expected_genders = GenderHelper::GENDERS.map { |id, name| "- `#{id}` — #{name}" }.join("\n")
+
+    assert_equal expected_races, race_mapping
+    assert_equal expected_genders, gender_mapping
+  end
+
   it "allows plugin account names but rejects them in the direct upload schema" do
     direct_schema = schema.fetch("$defs").fetch("directUpload")
     payload = {"name" => "Example", "server" => "Example Server"}

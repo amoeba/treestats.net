@@ -1,0 +1,24 @@
+%h2.title News
+%p
+  %a{:href => '/news.atom', :type => 'application/atom+xml'} Atom feed
+%table.dashboard.news-archive
+  %thead
+    %tr
+      %th{:scope => "col"} Title
+      %th{:scope => "col"} Date
+  %tbody
+    - if @posts.empty?
+      %tr
+        %td{:colspan => 2} No news posts yet.
+    - @posts.each do |post|
+      %tr
+        %td
+          %a{:href => "/news/#{post.slug}"}= post.title
+        %td
+          %time{:datetime => post.published_at.utc.iso8601, :title => post.published_at.utc.strftime('%Y-%m-%d %H:%M:%S UTC')}= post.published_at.utc.strftime('%Y-%m-%d')
+%nav.news-pagination{:"aria-label" => "News pages"}
+  - if @page > 1
+    %a{:href => "/news?page=#{@page - 1}"} ← Newer
+  %span= "Page #{@page}"
+  - if @has_next
+    %a{:href => "/news?page=#{@page + 1}"} Older →

@@ -1,0 +1,37 @@
+- form_path = @post.persisted? ? "/admin/news/#{@post.id}" : '/admin/news'
+%h1= @post.persisted? ? 'Edit news post' : 'Create news post'
+%p
+  Status:
+  %strong= @editor_published ? 'Published' : 'Draft'
+  - if @post.persisted? && @editor_published
+    %a{:href => "/news/#{@post.slug}"} View published post
+    %span Changes take effect immediately when saved.
+- if @post.errors.any?
+  %div.news-errors{:role => "alert"}
+    %h2 Please correct the following:
+    %ul
+      - @post.errors.full_messages.each do |message|
+        %li= message
+%form.news-editor{:method => "post", :action => form_path}
+  %input{:type => "hidden", :name => "authenticity_token", :value => csrf_token}
+  %label{:for => "news-title"} Title
+  %input{:type => "text", :id => "news-title", :name => "title", :value => @post.title, :required => true, :maxlength => 200}
+  %label{:for => "news-body"} Body (Markdown)
+  %p#news-markdown-help Use paragraphs, **bold**, *emphasis*, [links](https://example.com), lists, and backticks for code. Raw HTML is disabled.
+  %textarea{:id => "news-body", :name => "body", :rows => 18, :required => true, :maxlength => 100000, :"aria-describedby" => "news-markdown-help"}= @post.body
+  %label{:for => "news-date"} Publication date and time (UTC)
+  %input{:type => "datetime-local", :id => "news-date", :name => "published_at", :step => 1, :value => @publication_input}
+  %p Leave blank to use the current time when publishing. Backdating is allowed; future dates are not. Saving edits does not move the publication date forward.
+  %div.news-actions
+    %button{:type => "submit", :formaction => "#{form_path}/preview"} Preview
+    %button{:type => "submit", :name => "action", :value => "save"}= @editor_published ? 'Save changes' : 'Save draft'
+    - if @editor_published
+      %button{:type => "submit", :name => "action", :value => "unpublish"} Unpublish to draft
+    - else
+      %button{:type => "submit", :name => "action", :value => "publish"} Publish
+- if @preview_html
+  %section.news-preview{:"aria-label" => "Unsaved preview"}
+    %h2 Unsaved preview
+    %article.news-body
+      %h3= @post.title
+      != @preview_html

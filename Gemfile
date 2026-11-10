@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '3.4.9'
+ruby file: ".ruby-version"
 
 gem 'json'
 gem 'oj'
@@ -23,9 +23,10 @@ gem 'resque'
 
 gem 'sidekiq'
 gem 'sidekiq-cron'
-gem 'connection_pool', '~> 2.4'
 
 gem 'haml'
+gem 'redcarpet', '~> 3.6'
+gem 'sanitize', '~> 7.0'
 
 group :development do
   gem 'nokogiri'

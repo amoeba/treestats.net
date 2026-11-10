@@ -1,19 +1,11 @@
 # Direct Uploads
 
-Servers can push character updates straight to TreeStats instead of relying on
-the [Decal plugin](https://github.com/amoeba/treestats).
-
-## Getting a token
-
-1. Sign in at `/admin/login` and open **Administration** (`/admin`).
-2. Under **Server upload tokens**, pick the server and choose **Generate token**.
-3. Copy the token from the page that follows. It is shown once.
-
-Tokens are scoped to one server. Reissuing replaces the token and immediately
-invalidates the previous one; revoking deletes it. Treat the token as a secret
-and send it only over HTTPS.
+Servers can push character updates directly to TreeStats instead of relying on
+the [Decal plugin](https://github.com/amoeba/treestats). Direct uploads require a special, admin-issued token that is intended for server operators and is restricted to uploading characters on a single server.
 
 ## Uploading
+
+Once you have a token, send a POST to `/characters` like this:
 
 ```
 POST /characters
@@ -21,30 +13,11 @@ X-TreeStats-Server-Token: ts_...
 Content-Type: application/json
 ```
 
-The body uses the Decal plugin's character format, except that account names
-are not allowed and player count data is ignored. Its shape is described by the
-[direct upload schema](https://treestats.net/schemas/character/v2/schema.json#/$defs/directUpload).
-The payload must be a JSON object, its `server` field must match the server the
-token was issued for, and it may be at most 1 MiB. Direct uploads are
-authenticated by the token instead of the plugin's `TREESTATS_SECRET` body check.
-
-`account_name` is **plugin-only**: only uploads to `POST /` may set it.
-`POST /characters` returns `400` with an explanatory message if `account_name`
-is present, including `null` or an empty string. This also applies to related
-characters (`monarch`, `patron`, and `vassals`) and the stored-field alias `acc`.
-A rejected upload writes no character or population data. Direct uploads that
-omit these fields preserve any account name previously set by the plugin.
-
 `server_population` is **plugin-only**. Direct uploads ignore it regardless of
 its value: no player count sample is recorded, and its presence does not cause
 an error. Population sampling from plugin uploads to `POST /` is unchanged.
 
-Unknown fields are ignored, not rejected, so extra metadata (including Mongo's
-`_id`) is harmless. Known fields are type-checked — integers must be integers or
-numeric strings, and object/array fields must have the expected shape — and a
-payload with a bad known field returns `400` with a message naming it.
-
-## Example payloads
+## Example Payloads
 
 Only `name` and `server` are required. This is the smallest useful upload:
 
@@ -56,12 +29,7 @@ Only `name` and `server` are required. This is the smallest useful upload:
 }
 ```
 
-Every accepted field, with the shapes and types they expect. `server` must match
-the server the token was issued for:
-
-`race` and `gender` may be names or numeric IDs, including in `monarch`,
-`patron`, and `vassals`. `version` may be a string or integer; the example uses
-the string form.
+A complete example:
 
 <!-- example:maximal -->
 ```json
@@ -113,12 +81,39 @@ the string form.
 }
 ```
 
+For direct uploads, provide race and gender as names (strings) at the root of the document. In allegiance records, use integer IDs for race and gender:
+
+Race
+
+- `1` — Aluvian
+- `2` — Gharu'ndim
+- `3` — Sho
+- `4` — Viamontian
+- `5` — Shadowbound
+- `6` — Gearknight
+- `7` — Tumerok
+- `8` — Lugian
+- `9` — Empyrean
+- `10` — Penumbraen
+- `11` — Undead
+- `12` — Olthoi
+- `13` — OlthoiAcid
+
+Gender
+
+- `1` — Male
+- `2` — Female
+
+## Schema
+
+A JSON schema document is provided at https://treestats.net/schemas/character/v2/schema.json. Uploads aren't validated against this schema but it may help when creating JSON documents.
+
 ## Responses
 
 | Status | Meaning |
 |---|---|
 | 200 | Character accepted |
-| 400 | Body is not valid JSON or not a JSON object, contains a plugin-only account field, or the character is invalid |
+| 400 | A non-empty body is not valid JSON or is not a JSON object, a plugin-only account field is present, or the character is invalid |
 | 401 | Token header missing |
 | 403 | Token invalid or revoked, or the server is a retail server |
 | 413 | Body larger than 1 MiB |
@@ -126,6 +121,7 @@ the string form.
 
 ## Rate limits
 
-Each token allows 1,000 requests per hour. Responses include `RateLimit-Limit`,
-`RateLimit-Remaining`, and `RateLimit-Reset` (seconds until the window resets);
-`X-RateLimit-Reset` carries the same reset time as a Unix timestamp.
+Each token allows 1,000 requests in a fixed one-hour window. Requests that pass
+token and server validation include `RateLimit-Limit`, `RateLimit-Remaining`,
+and `RateLimit-Reset` (seconds until the window resets); `X-RateLimit-Reset`
+carries the same reset time as a Unix timestamp.

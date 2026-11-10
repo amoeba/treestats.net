@@ -75,14 +75,20 @@ module Sinatra
           app.get '/admin/?' do
             require_admin!
 
-            render_admin_dashboard
+            haml :admin, layout: false
+          end
+
+          app.get '/admin/servers/?' do
+            require_admin!
+
+            render_admin_servers
           end
 
           app.get '/admin/token/?' do
             require_admin!
 
             @issued = session.delete(:issued_token)
-            redirect '/admin' unless @issued
+            redirect '/admin/servers' unless @issued
 
             haml :admin_token, layout: false
           end
@@ -101,7 +107,7 @@ module Sinatra
             token = ServerAuthToken.where(id: id).first
             halt 404 unless token
             token.destroy
-            redirect '/admin'
+            redirect '/admin/servers'
           end
 
           # Catch anything else under /admin before the /:server catch-all

@@ -58,6 +58,8 @@ class TreeStats < Sinatra::Base
 
   # Routes (alpha order)
   register Sinatra::TreeStats::Routing::Accounts
+  # News management routes must precede Admin's /admin/* catch-all.
+  register Sinatra::TreeStats::Routing::News
   register Sinatra::TreeStats::Routing::Admin
   register Sinatra::TreeStats::Routing::Allegiances
   register Sinatra::TreeStats::Routing::Chain
@@ -119,6 +121,7 @@ class TreeStats < Sinatra::Base
     include Sinatra::TreeStats::AssetHelper
     include RequestHelper
     include AdminHelper
+    include NewsHelper
     include UploadHelper
   end
 

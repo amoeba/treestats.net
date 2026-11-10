@@ -190,18 +190,18 @@
       }
     },
     "monarch": {
-      "$ref": "#/$defs/person",
+      "$ref": "#/$defs/relatedCharacter",
       "description": "Allegiance monarch, when the character belongs to an allegiance."
     },
     "patron": {
-      "$ref": "#/$defs/person",
+      "$ref": "#/$defs/relatedCharacter",
       "description": "Patron, when the character has one."
     },
     "vassals": {
       "type": "array",
       "description": "Characters sworn to this character.",
       "items": {
-        "$ref": "#/$defs/person"
+        "$ref": "#/$defs/relatedCharacter"
       }
     },
     "current_title": {
@@ -237,6 +237,30 @@
       "description": "Server-token-authenticated payload for POST /characters. Account names are forbidden, including on related characters; their presence returns HTTP 400. Player count data (server_population) is ignored regardless of its value, without rejecting the upload.",
       "allOf": [
         {"$ref": "#"},
+        {
+          "properties": {
+            "race": {"type": "string"},
+            "gender": {"type": "string"},
+            "monarch": {"$ref": "#/$defs/directRelatedCharacter"},
+            "patron": {"$ref": "#/$defs/directRelatedCharacter"},
+            "vassals": {"items": {"$ref": "#/$defs/directRelatedCharacter"}}
+          }
+        },
+        {"$ref": "#/$defs/withoutAccountNames"}
+      ]
+    },
+    "directRelatedCharacter": {
+      "allOf": [
+        {"$ref": "#/$defs/relatedCharacter"},
+        {
+          "properties": {
+            "race": {"type": "integer"},
+            "gender": {"type": "integer"},
+            "monarch": {"$ref": "#/$defs/directRelatedCharacter"},
+            "patron": {"$ref": "#/$defs/directRelatedCharacter"},
+            "vassals": {"items": {"$ref": "#/$defs/directRelatedCharacter"}}
+          }
+        },
         {"$ref": "#/$defs/withoutAccountNames"}
       ]
     },
@@ -300,7 +324,7 @@
       },
       "additionalProperties": true
     },
-    "person": {
+    "relatedCharacter": {
       "type": "object",
       "properties": {
         "name": {
