@@ -22,7 +22,7 @@ Content-Type: application/json
 ```
 
 The body uses the Decal plugin's character format, except that account names
-are not allowed. Its shape is described by the
+are not allowed and player count data is ignored. Its shape is described by the
 [direct upload schema](https://treestats.net/schemas/character/v2/schema.json#/$defs/directUpload).
 The payload must be a JSON object, its `server` field must match the server the
 token was issued for, and it may be at most 1 MiB. Direct uploads are
@@ -35,10 +35,9 @@ characters (`monarch`, `patron`, and `vassals`) and the stored-field alias `acc`
 A rejected upload writes no character or population data. Direct uploads that
 omit these fields preserve any account name previously set by the plugin.
 
-If the payload contains `server_population`, a player count sample is recorded in
-addition to the character. It is best effort: only a positive integer is
-recorded, and anything else (0, negative, non-numeric) is ignored so the
-character upload still succeeds.
+`server_population` is **plugin-only**. Direct uploads ignore it regardless of
+its value: no player count sample is recorded, and its presence does not cause
+an error. Population sampling from plugin uploads to `POST /` is unchanged.
 
 Unknown fields are ignored, not rejected, so extra metadata (including Mongo's
 `_id`) is harmless. Known fields are type-checked — integers must be integers or
@@ -76,7 +75,6 @@ the string form.
   "allegiance_name": "Example Allegiance",
   "rank": 10,
   "followers": 42,
-  "server_population": 123,
   "deaths": 3,
   "birth": "01/15/2000 08:30:00 PM",
   "total_xp": 1234567890,

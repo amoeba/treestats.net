@@ -85,6 +85,7 @@ describe "CharacterUploadSchemaStory" do
       payload = docs_example(name)
 
       refute payload.key?("account_name")
+      refute payload.key?("server_population")
       assert_empty validate(schema.fetch("$defs").fetch("directUpload"), payload)
       assert_equal payload["name"], UploadPayload.sanitize(payload, source: :direct).payload["name"]
     end
@@ -108,6 +109,17 @@ describe "CharacterUploadSchemaStory" do
       {"monarch" => {"name" => "Monarch", "vassals" => [{"name" => "Vassal", "acc" => "account"}]}}
     ].each do |related|
       refute_empty validate(direct_schema, payload.merge(related))
+    end
+  end
+
+  it "allows ignored population data of any type in the direct upload schema" do
+    direct_schema = schema.fetch("$defs").fetch("directUpload")
+
+    [123, "123", 0, -5, "abc", 1.5, nil, true, {}, []].each do |value|
+      payload = {"name" => "Example", "server" => "Example Server", "server_population" => value}
+
+      assert_empty validate(direct_schema, payload)
+      assert_nil UploadPayload.sanitize(payload, source: :direct).population
     end
   end
 

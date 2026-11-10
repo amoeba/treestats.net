@@ -231,7 +231,7 @@ describe "UploadTokenStory" do
     token = create_server_token('Example Server')
     docs = File.read(File.expand_path('../../docs/direct-upload.md', __dir__))
 
-    allowed = Character::UPLOAD_FIELDS + %w[server_population]
+    allowed = Character::UPLOAD_FIELDS - %w[account_name]
 
     %w[minimal maximal].each do |name|
       body = docs[/<!-- example:#{name} -->\s*```json\n(.*?)```/m, 1]
@@ -251,7 +251,7 @@ describe "UploadTokenStory" do
     refute_nil character.birth
     assert_equal 'Example Patron', character.patron['name']
     assert_equal ['Example Vassal'], character.vassals.map { |vassal| vassal['name'] }
-    assert_equal 123, PlayerCount.find_by(server: 'Example Server').count
+    assert_equal 0, PlayerCount.where(server: 'Example Server').count
   end
 
   it "ignores unknown fields without failing" do
@@ -298,15 +298,26 @@ describe "UploadTokenStory" do
     assert_equal 400, last_response.status
   end
 
-  it "ignores an invalid server_population and still saves the character" do
+  it "ignores server_population on direct uploads and still saves the character" do
     token = create_server_token('Token Server')
 
-    post '/characters', JSON.generate(server: 'Token Server', name: 'Token User', server_population: -5),
-      'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+    [123, "123", 0, -5, "abc", 1.5, nil, true, {}, []].each_with_index do |population, index|
+      post '/characters', JSON.generate(server: 'Token Server', name: 'Token User', level: index + 1, server_population: population),
+        'HTTP_X_TREESTATS_SERVER_TOKEN' => token
+
+      assert_equal 200, last_response.status
+      assert_equal 0, PlayerCount.where(server: 'Token Server').count
+      assert_equal index + 1, Character.unscoped.find_by(server: 'Token Server', name: 'Token User').level
+    end
+  end
+
+  it "still records population samples from plugin uploads" do
+    without_env('TREESTATS_SECRET') do
+      post '/', JSON.generate(server: 'Token Server', name: 'Token User', server_population: 123)
+    end
 
     assert_equal 200, last_response.status
-    assert_equal 0, PlayerCount.where(server: 'Token Server').count
-    refute_nil Character.unscoped.where(server: 'Token Server', name: 'Token User').first
+    assert_equal 123, PlayerCount.find_by(server: 'Token Server').count
   end
 
   it "drops malformed vassal entries instead of crashing" do

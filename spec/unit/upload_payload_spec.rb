@@ -66,6 +66,17 @@ describe UploadPayload do
     assert_nil sanitize("server" => "s", "name" => "n", "server_population" => nil).population
   end
 
+  it "ignores population data on direct payloads regardless of its value" do
+    [123, "123", 0, -5, "abc", 1.5, nil, true, {}, []].each do |value|
+      result = UploadPayload.sanitize(
+        {"server" => "s", "name" => "n", "server_population" => value}, source: :direct
+      )
+
+      assert_nil result.population
+      assert_equal({"server" => "s", "name" => "n"}, result.payload)
+    end
+  end
+
   it "drops malformed vassal entries" do
     result = sanitize(
       "server" => "s",
