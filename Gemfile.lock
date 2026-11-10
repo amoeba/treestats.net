@@ -26,7 +26,7 @@ GEM
       tzinfo
     coderay (1.1.3)
     concurrent-ruby (1.3.8)
-    connection_pool (2.5.5)
+    connection_pool (3.0.2)
     crass (1.0.8)
     cronex (0.15.0)
       tzinfo
@@ -177,12 +177,12 @@ GEM
     sentry-sidekiq (7.2.0)
       sentry-ruby (~> 7.2.0)
       sidekiq (>= 5.0)
-    sidekiq (8.0.10)
-      connection_pool (>= 2.5.0)
-      json (>= 2.9.0)
-      logger (>= 1.6.2)
-      rack (>= 3.1.0)
-      redis-client (>= 0.23.2)
+    sidekiq (8.1.7)
+      connection_pool (>= 3.0.0)
+      json (>= 2.16.0)
+      logger (>= 1.7.0)
+      rack (>= 3.2.0)
+      redis-client (>= 0.29.0)
     sidekiq-cron (2.4.0)
       cronex (>= 0.13.0)
       fugit (~> 1.8, >= 1.11.1)
@@ -235,7 +235,6 @@ PLATFORMS
 DEPENDENCIES
   bcrypt
   clockwork
-  connection_pool (~> 2.4)
   foreman
   haml
   json
