@@ -230,7 +230,6 @@ PLATFORMS
 DEPENDENCIES
   bcrypt
   clockwork
-  connection_pool (~> 2.4)
   foreman
   haml
   json
