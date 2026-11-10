@@ -175,7 +175,7 @@ describe "AdminStory" do
       server = ServerHelper.servers.first
       sign_in_admin
 
-      get '/admin'
+      get '/admin/servers'
       post '/admin/upload-tokens', server: server, authenticity_token: extract_csrf
 
       assert_equal 302, last_response.status
@@ -195,7 +195,7 @@ describe "AdminStory" do
       refute_equal issued_token, record.token_digest
       assert_equal ServerAuthTokenHelper.digest(issued_token), record.token_digest
 
-      get '/admin'
+      get '/admin/servers'
       assert_includes last_response.body, record.updated_at.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
       assert_includes last_response.body, 'admin-utc-time'
       assert_includes last_response.headers['Cache-Control'], 'no-store'
@@ -212,7 +212,7 @@ describe "AdminStory" do
       get '/admin/token'
 
       assert_equal 302, last_response.status
-      assert_equal '/admin', URI(last_response.location).path
+      assert_equal '/admin/servers', URI(last_response.location).path
       assert_equal 1, ServerAuthToken.where(server: server).count
       refute_nil ServerAuthTokenHelper.authenticate(server, issued_token)
     end
@@ -225,7 +225,7 @@ describe "AdminStory" do
 
     it "creates unique indexes for server tokens" do
       sign_in_admin
-      get '/admin'
+      get '/admin/servers'
       post '/admin/upload-tokens', server: ServerHelper.servers.first, authenticity_token: extract_csrf
 
       indexes = ServerAuthToken.collection.indexes.to_a
@@ -263,7 +263,7 @@ describe "AdminStory" do
     it "rejects an unregistered server" do
       sign_in_admin
 
-      get '/admin'
+      get '/admin/servers'
       post '/admin/upload-tokens', server: 'Unregistered Server', authenticity_token: extract_csrf
 
       assert_equal 422, last_response.status
@@ -277,15 +277,32 @@ describe "AdminStory" do
       )
       sign_in_admin
 
-      get '/admin'
+      get '/admin/servers'
       post "/admin/upload-tokens/#{token.id}/revoke", authenticity_token: extract_csrf
 
       assert_equal 302, last_response.status
+      assert_equal '/admin/servers', URI(last_response.location).path
       assert_nil ServerAuthToken.where(id: token.id).first
     end
   end
 
   describe "GET /admin" do
+    it "links to news and server administration without loading poll data" do
+      original_targets = DataPoller.method(:targets)
+      DataPoller.define_singleton_method(:targets) { raise 'Landing page must not load polling data' }
+      sign_in_admin
+
+      get '/admin'
+
+      assert_equal 200, last_response.status
+      assert_includes last_response.body, 'href="/admin/news"'
+      assert_includes last_response.body, 'href="/admin/servers"'
+      refute_includes last_response.body, 'Configured interval:'
+      refute_includes last_response.body, 'name="server"'
+    ensure
+      DataPoller.define_singleton_method(:targets, original_targets) if original_targets
+    end
+
     it "returns 404 for unknown admin paths" do
       sign_in_admin
 
@@ -301,6 +318,14 @@ describe "AdminStory" do
 
       assert_equal 200, last_response.status
       assert_includes last_response.headers['Cache-Control'], 'no-store'
+    end
+
+  end
+
+  describe "GET /admin/servers" do
+    it "is hidden from anonymous visitors" do
+      get '/admin/servers'
+      assert_equal 404, last_response.status
     end
 
     it "shows configured poll target status" do
@@ -328,7 +353,7 @@ describe "AdminStory" do
       end
       sign_in_admin
 
-      get '/admin'
+      get '/admin/servers'
 
       assert_equal 200, last_response.status
       assert_includes last_response.body, '<body class="admin-panel-page">'
@@ -349,7 +374,7 @@ describe "AdminStory" do
       DataPoller.define_singleton_method(:targets) { raise DataPoller::Error, 'unknown polling target' }
       sign_in_admin
 
-      get '/admin'
+      get '/admin/servers'
 
       assert_equal 200, last_response.status
       assert_includes last_response.body, 'Poll configuration error'
@@ -383,7 +408,7 @@ describe "AdminStory" do
   end
 
   def issue_token(server)
-    get '/admin'
+    get '/admin/servers'
     post '/admin/upload-tokens', server: server, authenticity_token: extract_csrf
     follow_redirect!
     last_response.body[/<pre>([^<]+)<\/pre>/, 1]&.strip

@@ -831,6 +831,14 @@ table.news-archive {
 }
 table.news-dashboard td,
 table.news-archive td { white-space: normal; overflow-wrap: anywhere; }
+table.news-dashboard .news-date {
+  width: 1%;
+  padding-left: 1rem;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+table.news-dashboard td.news-date { color: #bbb; }
 table.news-archive td:last-child { white-space: nowrap; width: 12rem; }
 .news-post { max-width: 850px; overflow-wrap: anywhere; }
 .news-meta { color: #ccc; }

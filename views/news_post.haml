@@ -3,7 +3,6 @@
 %article.news-post
   %h2.title= @post.title
   %p.news-meta
-    By TreeStats ·
     %time{:datetime => @post.published_at.utc.iso8601}= @post.published_at.utc.strftime('%Y-%m-%d %H:%M UTC')
   .news-body
     != NewsMarkdown.render(@post.body)

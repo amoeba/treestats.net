@@ -1,0 +1,88 @@
+!!!
+%html{:lang => "en"}
+  %head
+    %meta{:charset => "utf-8"}
+    %meta{:name => "robots", :content => "noindex, nofollow, noarchive, nosnippet"}
+    %meta{:name => "referrer", :content => "no-referrer"}
+    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
+    %title Server administration
+    %link{:rel => "stylesheet", :href => stylesheet_path("admin")}
+  %body.admin-panel-page
+    %main.admin-panel
+      %nav{:"aria-label" => "Administration"}
+        %a{:href => "/admin"} Administration
+        %span / Servers
+      %h1 Servers
+
+      %section
+        %h2 Poll targets
+        %p= "Configured interval: #{@poll_interval}"
+        - if @poll_config_error
+          %p
+            %strong Poll configuration error:
+            = @poll_config_error
+        - elsif @poll_targets.empty?
+          %p No poll targets are configured.
+        - else
+          %table
+            %thead
+              %tr
+                %th{:scope => "col"} Server
+                %th{:scope => "col"} Endpoint
+                %th{:scope => "col"} Last check
+                %th{:scope => "col"} Outcome
+                %th{:scope => "col"} Last count
+                %th{:scope => "col"} Population updated at
+                %th{:scope => "col"} Document updated at
+                %th{:scope => "col"} Consecutive failures
+                %th{:scope => "col"} Error
+            %tbody
+              - @poll_targets.each do |target|
+                %tr
+                  %td= target[:server]
+                  %td
+                    %a{:href => target[:url]}= target[:url]
+                    - if target[:fallback_url]
+                      %div= "fallback: #{target[:fallback_url]}"
+                  %td= target[:state]&.last_checked_at || "Never"
+                  %td= target[:state]&.last_outcome || "Never"
+                  %td= target[:info]&.count || "-"
+                  %td= target[:info]&.population_updated_at&.utc&.iso8601 || "-"
+                  %td= target[:info]&.document_updated_at&.utc&.iso8601 || "-"
+                  %td= target[:state]&.consecutive_failures || 0
+                  %td= target[:state]&.error_summary || "-"
+
+      %section
+        %h2 Server upload tokens
+        %p Generate one token per server. Reissuing or revoking a token immediately invalidates the previous token. The new token is shown on its own page.
+
+        %form{:method => "post", :action => "/admin/upload-tokens"}
+          %input{:type => "hidden", :name => "authenticity_token", :value => csrf_token}
+          %label{:for => "server-token-server"} Server name
+          %select{:name => "server", :id => "server-token-server", :required => true}
+            - @registered_servers.each do |server|
+              %option{:value => server}= server
+          %button{:type => "submit"} Generate token
+
+        - unless @tokens.empty?
+          %table
+            %thead
+              %tr
+                %th{:scope => "col"} Server
+                %th{:scope => "col"} Last issued
+                %th{:scope => "col"}
+            %tbody
+              - @tokens.each do |token|
+                %tr
+                  %td= token.server
+                  %td
+                    %time.admin-utc-time{:datetime => token.updated_at.utc.iso8601}
+                      = token.updated_at.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
+                  %td
+                    %form{:method => "post", :action => "/admin/upload-tokens/#{token.id}/revoke"}
+                      %input{:type => "hidden", :name => "authenticity_token", :value => csrf_token}
+                      %button{:type => "submit"} Revoke
+    :javascript
+      document.querySelectorAll(".admin-utc-time").forEach((time) => {
+        time.title = new Date(time.dateTime).toLocaleString();
+      });

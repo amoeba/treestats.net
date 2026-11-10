@@ -82,10 +82,17 @@ describe 'NewsStory' do
     get '/'
     links = Nokogiri::HTML(last_response.body).css('.news-dashboard tbody a')
     assert_equal posts.last(5).reverse.map(&:title), links.map(&:text)
+    dates = Nokogiri::HTML(last_response.body).css('.news-dashboard time')
+    assert_equal posts.last(5).reverse.map { |post| post.published_at.utc.strftime('%Y-%m-%d') }, dates.map(&:text)
+    assert_equal posts.last.published_at.utc.iso8601, dates.first['datetime']
+    assert_equal '2020-01-22 00:00 UTC', dates.first['title']
     refute_includes last_response.body, 'Secret body text'
     get '/news'
     assert_equal 200, last_response.status
-    assert_equal 20, Nokogiri::HTML(last_response.body).css('.news-archive tbody a').length
+    archive = Nokogiri::HTML(last_response.body)
+    assert_equal 'Title', archive.at_css('.news-archive th').text
+    refute_includes last_response.body, 'Updates from TreeStats.'
+    assert_equal 20, archive.css('.news-archive tbody a').length
     assert_includes last_response.body, '/news?page=2'
     refute_includes last_response.body, 'Draft announcement'
     get '/news?page=2'
@@ -110,6 +117,7 @@ describe 'NewsStory' do
     get '/admin/news'
     assert_includes last_response.headers['Cache-Control'], 'no-store'
     assert_includes last_response.body, draft.title
+    refute_includes last_response.body, 'All announcements are published as TreeStats.'
     %w[invalid-id 000000000000000000000001].each do |id|
       get "/admin/news/#{id}/edit"
       assert_equal 404, last_response.status
@@ -126,6 +134,7 @@ describe 'NewsStory' do
     post "/admin/news/#{announcement.id}/preview", editor_fields(title: '<script>bad</script>', body: '**Preview only** <script>bad</script>')
     assert_equal 200, last_response.status
     assert_includes last_response.body, '<strong>Preview only</strong>'
+    refute_includes last_response.body, 'By TreeStats'
     refute_includes last_response.body, '<script>bad</script>'
     assert_includes last_response.body, 'value="&lt;script&gt;bad&lt;/script&gt;"'
     assert_equal 'Original body', announcement.reload.body
@@ -169,7 +178,7 @@ describe 'NewsStory' do
     get "/news/#{slug}"
     assert_equal 200, last_response.status
     assert_includes last_response.body, '<strong>Dereth</strong>'
-    assert_includes last_response.body, 'TreeStats'
+    refute_includes last_response.body, 'By TreeStats'
     assert_includes last_response.body, '2020-01-02'
 
     sign_in

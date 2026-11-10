@@ -1,9 +1,8 @@
 %h2.title News
-%p Updates from TreeStats.
 %table.dashboard.news-archive
   %thead
     %tr
-      %th{:scope => "col"} Announcement
+      %th{:scope => "col"} Title
       %th{:scope => "col"} Published (UTC)
   %tbody
     - if @posts.empty?

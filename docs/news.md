@@ -16,8 +16,8 @@ an operator imports the historical entries.
 6. **Unpublish to draft** hides a post from the homepage, archive and its public
    URL. Republishing uses the same URL. There is deliberately no delete action.
 
-All posts are attributed publicly to **TreeStats**. Markdown supports paragraphs,
-links, emphasis, lists and code. Raw HTML is escaped and rendered output is
+Public posts show only the title, publication date, and body, without an author
+byline. Markdown supports paragraphs, links, emphasis, lists and code. Raw HTML is escaped and rendered output is
 sanitized, including link protocols. Preview and public rendering use the same
 safety rules.
 
@@ -30,7 +30,8 @@ safety rules.
 - A readable slug is assigned at first publication and stays stable after title
   changes, unpublishing and republishing. Duplicate titles get a unique suffix.
 - Public lists are ordered by publication date, newest first (then ID for ties).
-  The homepage shows only the latest five titles; `/news` shows 20 posts per page.
+  The homepage shows the latest five titles alongside compact UTC dates (hover
+  for the full timestamp); `/news` shows 20 posts per page.
 - Draft and unknown URLs return 404. Management pages are admin-only, no-store,
   and excluded from indexing; writes and previews require CSRF tokens.
 

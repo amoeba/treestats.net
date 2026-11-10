@@ -1,7 +1,6 @@
 %h1 News
 %p
   %a{:href => "/admin/news/new"} Create news post
-%p All announcements are published as TreeStats. Posts can be unpublished, but cannot be deleted.
 - if @posts.empty?
   %p No news posts yet.
 - else

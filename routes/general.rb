@@ -30,7 +30,7 @@ module Sinatra
               .limit(10)
               .only(:name, :server, :updated_at)
 
-            @news_posts = NewsPost.published.limit(5).only(:title, :slug).to_a
+            @news_posts = NewsPost.published.limit(5).only(:title, :slug, :published_at).to_a
 
             haml :index
           end
