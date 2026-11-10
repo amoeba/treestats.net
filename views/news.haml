@@ -3,7 +3,7 @@
   %thead
     %tr
       %th{:scope => "col"} Title
-      %th{:scope => "col"} Published (UTC)
+      %th{:scope => "col"} Date
   %tbody
     - if @posts.empty?
       %tr
@@ -13,7 +13,7 @@
         %td
           %a{:href => "/news/#{post.slug}"}= post.title
         %td
-          %time{:datetime => post.published_at.utc.iso8601}= post.published_at.utc.strftime('%Y-%m-%d %H:%M')
+          %time{:datetime => post.published_at.utc.iso8601, :title => post.published_at.utc.strftime('%Y-%m-%d %H:%M:%S UTC')}= post.published_at.utc.strftime('%Y-%m-%d')
 %nav.news-pagination{:"aria-label" => "News pages"}
   - if @page > 1
     %a{:href => "/news?page=#{@page - 1}"} ← Newer

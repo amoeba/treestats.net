@@ -85,12 +85,17 @@ describe 'NewsStory' do
     dates = Nokogiri::HTML(last_response.body).css('.news-dashboard time')
     assert_equal posts.last(5).reverse.map { |post| post.published_at.utc.strftime('%Y-%m-%d') }, dates.map(&:text)
     assert_equal posts.last.published_at.utc.iso8601, dates.first['datetime']
-    assert_equal '2020-01-22 00:00 UTC', dates.first['title']
+    assert_equal '2020-01-22 00:00:00 UTC', dates.first['title']
+    assert_equal 'Date', Nokogiri::HTML(last_response.body).at_css('.news-dashboard th.news-date').text
     refute_includes last_response.body, 'Secret body text'
     get '/news'
     assert_equal 200, last_response.status
     archive = Nokogiri::HTML(last_response.body)
-    assert_equal 'Title', archive.at_css('.news-archive th').text
+    assert_equal ['Title', 'Date'], archive.css('.news-archive th').map(&:text)
+    archive_date = archive.at_css('.news-archive time')
+    assert_equal dates.first.text, archive_date.text
+    assert_equal dates.first['title'], archive_date['title']
+    assert_equal dates.first['datetime'], archive_date['datetime']
     refute_includes last_response.body, 'Updates from TreeStats.'
     assert_equal 20, archive.css('.news-archive tbody a').length
     assert_includes last_response.body, '/news?page=2'

@@ -46,7 +46,7 @@
     %thead
       %tr
         %th{:scope => "col"} News
-        %th.news-date{:scope => "col"} Date (UTC)
+        %th.news-date{:scope => "col"} Date
     %tbody
       - if @news_posts.empty?
         %tr
@@ -56,6 +56,6 @@
           %td
             %a{:href => "/news/#{post.slug}"}= post.title
           %td.news-date
-            %time{:datetime => post.published_at.utc.iso8601, :title => post.published_at.utc.strftime('%Y-%m-%d %H:%M UTC')}= post.published_at.utc.strftime('%Y-%m-%d')
+            %time{:datetime => post.published_at.utc.iso8601, :title => post.published_at.utc.strftime('%Y-%m-%d %H:%M:%S UTC')}= post.published_at.utc.strftime('%Y-%m-%d')
   %div.right
     %a{:href => "/news"} → View all news
