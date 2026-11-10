@@ -1,0 +1,14 @@
+#server-player-counts { max-width: 1200px; }
+#server-player-counts fieldset { display: flex; flex-wrap: wrap; gap: 1.5rem; border: 1px solid #af7a30; }
+#server-player-counts label { cursor: pointer; }
+#server-player-counts .poll-series { color: #62c5ff; }
+#server-player-counts .plugin-series { color: #ffb454; }
+#server-player-counts .chart { background: #000; border: 1px solid #af7a30; }
+#server-player-counts svg { display: block; width: 100%; height: auto; }
+#server-player-counts .axis path,
+#server-player-counts .axis line { fill: none; stroke: #aaa; shape-rendering: crispEdges; }
+#server-player-counts .axis text,
+#server-player-counts .axis-label { fill: #ddd; font-size: 12px; }
+#server-player-counts .combined-line { fill: none; stroke: #ddd; stroke-width: 1.5; opacity: 0.7; }
+#server-player-counts .observation { stroke: #000; stroke-width: 0.5; fill-opacity: 0.8; }
+#server-player-counts .observation:hover { stroke: white; stroke-width: 2; fill-opacity: 1; }

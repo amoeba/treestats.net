@@ -42,6 +42,31 @@ module Sinatra
             return JSON.pretty_generate(servers)
           end
 
+          # Unlisted diagnostic view; keep raw observations separate from the
+          # existing aggregated API and its backwards-compatible serialization.
+          app.get "/servers/:server/player-counts/?" do |server|
+            headers "X-Robots-Tag" => "noindex, nofollow"
+            @server = server
+            @observations_url = "/servers/#{URI.encode_www_form_component(server).gsub('+', '%20')}/player-counts.json"
+            haml :server_player_counts
+          end
+
+          app.get "/servers/:server/player-counts.json" do |server|
+            headers "X-Robots-Tag" => "noindex, nofollow"
+            content_type :json
+            now = Time.now.utc
+            since = now - 14 * 24 * 60 * 60
+            observations = PlayerCount.where(s: server, :c_at.gte => since, :c_at.lte => now)
+              .asc(:c_at).map do |observation|
+                {
+                  time: observation.created_at.utc.iso8601(3),
+                  count: observation.count,
+                  source: observation.effective_source
+                }
+              end
+            JSON.generate({start: since.iso8601(3), end: now.iso8601(3), observations: observations})
+          end
+
           app.get "/:server/?" do |server|
             @characters = Character.where(server: server)
               .desc(:updated_at).limit(25)
@@ -49,7 +74,6 @@ module Sinatra
             @uploaded = Character.unscoped.where(server: server).count
 
             @online = PlayerCount.where(s: server).desc(:c_at).limit(1).first
-            @recent_player_counts = PlayerCount.where(s: server).desc(:c_at).limit(50).to_a
             @details = ServerHelper.server_details.filter { |s| s[:name] == server }.first
             @softwares = ServerHelper.softwares
 
