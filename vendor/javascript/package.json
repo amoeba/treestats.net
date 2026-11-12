@@ -1,0 +1,16 @@
+{
+  "name": "treestats-vendored-javascript",
+  "version": "0.0.0",
+  "private": true,
+  "description": "npm-managed browser JavaScript vendored into assets/javascripts",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "vendor": "node vendor.mjs",
+    "vendor:check": "node vendor.mjs --check"
+  },
+  "dependencies": {
+    "d3": "^7.9.2"
+  }
+}
