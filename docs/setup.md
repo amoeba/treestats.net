@@ -87,3 +87,16 @@ bundle exec rake assets:precompile
 ```
 
 This fingerprints and writes files to `public/assets/`.
+
+### Vendored JavaScript
+
+Browser dependencies managed by npm live in `vendor/javascript/` and are copied into `assets/javascripts/` so production builds do not need Node.js. Keeping the npm project out of the repo root prevents Dokku from detecting a Node.js buildpack instead of the Ruby one. To update or add a vendored dependency:
+
+```sh
+npm ci --prefix vendor/javascript
+npm run vendor --prefix vendor/javascript
+```
+
+Commit the generated files under `assets/javascripts/` along with `vendor/javascript/package-lock.json`. CI runs `npm run vendor:check` and fails if a vendored file is out of date.
+
+Dependabot updates `vendor/javascript` weekly. A workflow runs the vendor script on Dependabot pull requests and commits the regenerated asset to the PR.

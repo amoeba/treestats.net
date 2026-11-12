@@ -1,0 +1,53 @@
+name: Vendor JavaScript
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "vendor/javascript/**"
+      - "assets/javascripts/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vendor-javascript-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  vendor:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Dependabot branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: vendor/javascript/package-lock.json
+
+      - name: Install dependencies
+        working-directory: vendor/javascript
+        run: npm ci --ignore-scripts
+
+      - name: Vendor dependencies
+        working-directory: vendor/javascript
+        run: npm run vendor
+
+      - name: Commit vendored files
+        run: |
+          if git diff --quiet -- assets/javascripts; then
+            echo "Vendored assets are already up to date."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/javascripts
+          git commit -m "Vendor updated JavaScript dependencies"
+          git push

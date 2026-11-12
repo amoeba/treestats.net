@@ -28,6 +28,18 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: vendor/javascript/package-lock.json
+
+      - name: Verify vendored JavaScript is current
+        working-directory: vendor/javascript
+        run: |
+          npm ci --ignore-scripts
+          npm run vendor:check
+
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
