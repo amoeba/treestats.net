@@ -29,6 +29,22 @@ var popchart_v2 = function (selector) {
     classic: d3.schemeTableau10,
     mono: ["#fff", "#ccc", "#999", "#666", "#eee", "#aaa"],
     site: ["#3975a5", "#d6a33d", "#5e9bbd", "#bb7a24", "#8ab6cc", "#edc86c"],
+    earth: [
+      "#dfb04f", // golden yellow
+      "#a43551", // deep raspberry
+      "#cd2b59", // vivid raspberry
+      "#42719d", // steel blue
+      "#3e84c0", // architectural blue
+      "#db7a35", // burnt orange
+      "#c06f3e", // terracotta
+      "#955d40", // earth brown
+      "#e29a83", // dusty rose
+      "#c6b9b6", // warm taupe
+      "#a19290", // stone gray
+      "#5e5556", // charcoal
+      "#848261", // olive green
+      "#e9e2d7", // warm ivory
+    ],
     viridis: d3.quantize(d3.interpolateViridis, 6),
   };
   const colorScale = d3.scaleOrdinal(palettes.classic);
@@ -1302,7 +1318,7 @@ var popchart_v2 = function (selector) {
         render({});
         d3.select(selector).selectAll(".server-swatch").style("background-color", (s) => seriesColor(s));
       });
-    [{ value: "classic", text: "Classic" }, { value: "mono", text: "Black & white" }, { value: "site", text: "Blue & gold" }, { value: "viridis", text: "Viridis" }].forEach((opt) => {
+    [{ value: "classic", text: "Classic" }, { value: "mono", text: "Black & white" }, { value: "site", text: "Blue & gold" }, { value: "earth", text: "Warm earth" }, { value: "viridis", text: "Viridis" }].forEach((opt) => {
       paletteSel.append("option").attr("value", opt.value).property("selected", opt.value === paletteType).text(opt.text);
     });
 
