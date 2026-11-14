@@ -14,28 +14,27 @@ module Sinatra
             tracked_servers = ServerHelper.all_servers
             @total_servers = tracked_servers.size
 
-            # Mongo counts are expensive; cache them briefly like the other
-            # dashboard aggregates. v3: server cards are now total vs. total
-            # including unlisted (uploads from servers not on the tracked list).
-            cache_key = "stats-page-counts:v3"
-            counts = if redis.exists?(cache_key)
-              Marshal.restore(redis.get(cache_key))
-            else
-              distinct_with_uploads = Character.unscoped.distinct(:server)
-              unlisted_with_uploads = (distinct_with_uploads - tracked_servers).size
+            # Character counts are computed from collection metadata instead of
+            # scanning: the unfiltered total comes from estimated_document_count
+            # (WiredTiger metadata, O(1)) and the default-scope total is that
+            # minus the tiny excluded minority (archived docs or names starting
+            # with "+"), counted with the ar partial index and the n prefix
+            # bounds of /^\+/. The metadata estimate can drift by a handful of
+            # documents after an unclean mongod shutdown.
+            estimated_total = Character.collection.estimated_document_count
+            excluded = Character.collection.count_documents(
+              '$or' => [{ 'ar' => true }, { 'n' => /^\+/ }]
+            )
 
-              fresh = {
-                :total_servers_incl_unlisted => tracked_servers.size + unlisted_with_uploads,
-                :total_characters => Character.count,
-                :total_characters_incl_filtered => Character.unscoped.count
-              }
-              redis.setex(cache_key, 300, Marshal.dump(fresh))
-              fresh
-            end
+            @total_characters = estimated_total - excluded
+            @total_characters_incl_filtered = estimated_total
 
-            @total_servers_incl_unlisted = counts[:total_servers_incl_unlisted]
-            @total_characters = counts[:total_characters]
-            @total_characters_incl_filtered = counts[:total_characters_incl_filtered]
+            # distinct(:server) over the s index — index-key scan, not a
+            # document scan.
+            distinct_with_uploads = Character.unscoped.distinct(:server)
+            unlisted_with_uploads = (distinct_with_uploads - tracked_servers).size
+
+            @total_servers_incl_unlisted = tracked_servers.size + unlisted_with_uploads
 
             haml :stats
           end
