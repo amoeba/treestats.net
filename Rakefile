@@ -74,6 +74,15 @@ task :simulate do
   end
 end
 
+namespace :characters do
+  desc 'Create the character collection indexes (ar partial, n, s)'
+  task :ensure_indexes do
+    require './app'
+    Character.ensure_indexes!
+    puts 'Character indexes ensured.'
+  end
+end
+
 namespace :admin do
   desc 'Create or reset the single site admin (prompts for name and password)'
   task :create do

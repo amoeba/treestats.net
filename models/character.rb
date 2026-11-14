@@ -77,6 +77,18 @@ class Character
 
   field :lo,  as: :location,          type: String
 
+  # Indexes used by the /stats page counts (and cheap enough to keep around
+  # for everything else). The archived partial index is tiny; n and s are
+  # full indexes. Call Character.ensure_indexes! once per environment
+  # (rake characters:ensure_indexes) to build them.
+  index({ s: 1 })
+  index({ n: 1 })
+  index({ ar: 1 }, { partial_filter_expression: { ar: true } })
+
+  def self.ensure_indexes!
+    create_indexes
+  end
+
   # Upload payload groups, by the shape each field expects. UploadPayload
   # validates according to these groups; anything not listed is never set from
   # a payload. Every model field must appear in exactly one group or in
