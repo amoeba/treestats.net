@@ -33,13 +33,13 @@ namespace :servers do
         software: server.xpath('./emu').first.content,
         host: server.xpath('./server_host').first.content,
         port: server.xpath('./server_port').first.content,
-        website_url: server.xpath('./website_url').first.content,
-        discord_url: server.xpath('./discord_url').first.content
+        website_url: server.at_xpath('./website_url')&.text&.strip,
+        discord_url: server.at_xpath('./discord_url')&.text&.strip
       }
 
       # clean up
-      s.delete(:website_url) if s[:website_url].length <= 0
-      s.delete(:discord_url) if s[:discord_url].length <= 0
+      s.delete(:website_url) if s[:website_url].nil? || s[:website_url].length <= 0
+      s.delete(:discord_url) if s[:discord_url].nil? || s[:discord_url].length <= 0
 
       servers.push(s)
     end
