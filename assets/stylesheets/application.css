@@ -823,6 +823,44 @@ pre {
   padding: 0.5em;
 }
 
+/* Stats page */
+#stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1em;
+  margin: 1em 0;
+}
+
+.stat-card {
+  background-color: #0c0c2c;
+  border: 1px solid #af7a30;
+  border-radius: 8px;
+  padding: 1.25em 1em 1em;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.stat-card .stat-label {
+  font-size: 80%;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #cfcfe8;
+}
+
+.stat-card .stat-value {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: gold;
+  margin: 0.15em 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-card .stat-unit {
+  font-size: 75%;
+  color: #9a9ab8;
+}
+
 /* News */
 .home-news {
   grid-column: 1 / span 2;

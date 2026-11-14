@@ -1,0 +1,23 @@
+%h2.title Stats
+
+#stat-cards
+  .stat-card
+    .stat-label Total Uploads
+    .stat-value= AppHelper.add_commas(@total_uploads)
+    .stat-unit uploads since July 2015
+  .stat-card
+    .stat-label Total Servers
+    .stat-value= AppHelper.add_commas(@total_servers)
+    .stat-unit retail + private servers
+  .stat-card
+    .stat-label Total Servers (incl. Unlisted)
+    .stat-value= AppHelper.add_commas(@total_servers_incl_unlisted)
+    .stat-unit incl. unlisted servers seen in uploads
+  .stat-card
+    .stat-label Total Characters
+    .stat-value= AppHelper.add_commas(@total_characters)
+    .stat-unit excl. filtered (archived, +names)
+  .stat-card
+    .stat-label Total Characters (incl. Filtered)
+    .stat-value= AppHelper.add_commas(@total_characters_incl_filtered)
+    .stat-unit incl. filtered (archived, +names)

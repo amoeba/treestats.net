@@ -3,6 +3,43 @@ module Sinatra
     module Routing
       module Stats
         def self.registered(app)
+          app.get '/stats' do
+            # Total uploads, from the redis counters incremented on each
+            # upload. The monthly counters exist since July 2015 and are far
+            # fewer keys to sum than the daily ones (both are incremented
+            # together, so the sums agree).
+            keys = redis.keys("uploads:monthly:*")
+            @total_uploads = keys.empty? ? 0 : redis.mget(keys).sum { |v| v.to_i }
+
+            tracked_servers = ServerHelper.all_servers
+            @total_servers = tracked_servers.size
+
+            # Mongo counts are expensive; cache them briefly like the other
+            # dashboard aggregates. v3: server cards are now total vs. total
+            # including unlisted (uploads from servers not on the tracked list).
+            cache_key = "stats-page-counts:v3"
+            counts = if redis.exists?(cache_key)
+              Marshal.restore(redis.get(cache_key))
+            else
+              distinct_with_uploads = Character.unscoped.distinct(:server)
+              unlisted_with_uploads = (distinct_with_uploads - tracked_servers).size
+
+              fresh = {
+                :total_servers_incl_unlisted => tracked_servers.size + unlisted_with_uploads,
+                :total_characters => Character.count,
+                :total_characters_incl_filtered => Character.unscoped.count
+              }
+              redis.setex(cache_key, 300, Marshal.dump(fresh))
+              fresh
+            end
+
+            @total_servers_incl_unlisted = counts[:total_servers_incl_unlisted]
+            @total_characters = counts[:total_characters]
+            @total_characters_incl_filtered = counts[:total_characters_incl_filtered]
+
+            haml :stats
+          end
+
           app.get '/stats/uploads/daily' do
             value = redis.keys "uploads:daily:*"
 
