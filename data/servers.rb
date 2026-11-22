@@ -201,7 +201,7 @@ SERVERS = [{name: "ACPrime",
   discord_url: "https://discord.gg/jd3dEJf"},
  {name: "Hollowtide PK",
   description:
-   "End of retail with Darktide rules, plus our own client with VTank-style automation built in (any OS, or play in the browser at hollowtide.org). Retired events revived on a yearly calendar.",
+   "Darktide rules PK server. PK Night every Sunday 7 PM Pacific, a PK ranking, and retired retail events revived on a yearly calendar. Play in your browser at hollowtide.org, or our desktop and Android client with VTank-style automation built in; the retail client works too.",
   type: "PvP",
   software: "ACE",
   host: "hollowtide.org",
